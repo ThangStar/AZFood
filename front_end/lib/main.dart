@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
@@ -29,13 +28,13 @@ class Home extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
-          title: Text("Material Theme Builder"),
+          title: const Text("Material Theme Builder"),
         ),
-        body: Center(
+        body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Update with your UI',
               ),
             ],
@@ -44,4 +43,4 @@ class Home extends StatelessWidget {
         floatingActionButton:
             FloatingActionButton(onPressed: () => {}, tooltip: 'Increment'));
   }
-}    
+}

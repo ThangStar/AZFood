@@ -11,9 +11,9 @@
 
 ### 🤝 Chức năng chính
 - quản lí bàn
-- Tính tiền( Lưu hóa đơn, xuất hóa đơn) , lưu công nợ ⇒ huy bổ sung
+- Tính tiền( Lưu hóa đơn, xuất hóa đơn) , lưu công nợ
 - Quản lý menu  ⇒ huy bổ sung
-- Quản lý khách hàng (lưu thông tin khách hàng , lịch sử thanh toán hóa đơn của khách hàng) ⇒ H bổ sung
+- Quản lý khách hàng (lưu thông tin khách hàng , lịch sử thanh toán hóa đơn của khách hàng)
 - lên món ăn
 - quản lí nhân viên
 - thống kê doanh thu
@@ -22,7 +22,7 @@
 
 ![](https://img.shields.io/badge/Code-flutter-informational?style=flat&logo=flutter&color=61DAFB)
 
-![](https://img.shields.io/badge/Code-JavaScript-informational?style=flat&logo=JavaScript&color=F7DF1E)
+![](https://img.shields.io/badge/Backend-JavaScript-informational?style=flat&logo=JavaScript&color=F7DF1E)
 </br>
 
 ![](https://img.shields.io/badge/Tools-Figma-informational?style=flat&logo=Figma&color=F24E1E)

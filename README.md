@@ -30,8 +30,6 @@
 ![](https://img.shields.io/badge/Tools-GitHub-informational?style=flat&logo=GitHub&color=181717)
 
 
-## 📈 Cá nhân
-
-[![Anurag's github stats](https://github-readme-stats.vercel.app/api?username=ThangStar)](https://github.com/ThangStar)
+## 📈 Khác
 
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=yushi1007&layout=compact)](https://github.com/yushi1007)

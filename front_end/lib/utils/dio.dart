@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:restaurant_manager_app/api/path.api.dart';
 import 'package:restaurant_manager_app/utils/auth.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 
@@ -10,6 +11,7 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.headers['Authorization'] = 'Bearer $token';
+    options.headers['Access-Control-Allow-Origin'] = '*';
     super.onRequest(options, handler);
   }
 }
@@ -18,24 +20,38 @@ class Http {
   late Dio dio;
   late String accessToken;
   late String refreshToken;
-
   Http() {
-    dio = Dio();
+    dio = Dio(BaseOptions(
+        baseUrl: "http://52.196.9.15:8000",
+        headers: {'Content-Type': 'application/json'},
+        connectTimeout: const Duration(seconds: 10)));
     accessToken = Auth.getAccessTokenFromStorage();
     refreshToken = Auth.getRefreshTokenFromStorage();
 
     if (accessToken.isEmpty) {
       if (refreshToken.isNotEmpty) {
         //Call API if u only has refresh token
-        dio.interceptors.add(AuthInterceptor(accessToken));
+        dio.interceptors.add(AuthInterceptor(refreshToken));
         final response = handleRefreshToken();
         response is Success
             ? print('request success!: ${response.data}')
             : print('request failure: ${response}');
-      }else{
+      } else {
         //Haven't access + refresh token => close connect + back to login
         dio.close();
       }
+    } else {
+      // dio.interceptors.add(AuthInterceptor(accessToken));
+      callApi();
+    }
+  }
+  void callApi() async {
+    try {
+      var response = await dio.post(ApiPath.login,
+          data: {"username": "trung1234", "password": "123123"});
+      print("OK: $response");
+    } catch (err) {
+      print("ERROR: $err");
     }
   }
 

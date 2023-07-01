@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 
+//: // is require
+
+var colorScheme = (BuildContext context) => Theme.of(context).colorScheme;
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
   primary: Color(0xFF3941F4),
   onPrimary: Color(0xFFFFFFFF),
   primaryContainer: Color(0xFFE0E0FF),
   onPrimaryContainer: Color(0xFF00006E),
-  secondary: Color(0xFF3941F4),
+  secondary: Color(0xFF6E85E3),//button
   onSecondary: Color(0xFFFFFFFF),
   secondaryContainer: Color(0xFFE0E0FF),
   onSecondaryContainer: Color(0xFF00006E),
-  tertiary: Color(0xFF984062),
+  tertiary: Color(0xFFD4D4D8), //gray
   onTertiary: Color(0xFFFFFFFF),
   tertiaryContainer: Color(0xFFFFD9E3),
   onTertiaryContainer: Color(0xFF3E001E),
@@ -31,7 +34,7 @@ const lightColorScheme = ColorScheme(
   shadow: Color(0xFF000000),
   surfaceTint: Color(0xFF3941F4),
   outlineVariant: Color(0xFFC7C5D0),
-  scrim: Color(0xFF000000),
+  scrim: Color(0xFF000000),//text
 );
 
 const darkColorScheme = ColorScheme(

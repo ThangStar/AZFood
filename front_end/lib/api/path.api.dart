@@ -1,4 +1,5 @@
 class ApiPath {
-  static String login = "/login";
+  static String login = "/auth/login";
   static String register = "/register";
+
 }

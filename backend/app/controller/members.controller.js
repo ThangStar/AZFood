@@ -44,24 +44,63 @@ exports.createMember = async (req, res) => {
     }
 
 };
-exports.getList = async(req , res) => {
-    try {
-        const isAdmin = await Auth.checkAdmin(req);
-        if (isAdmin) {
-                const queryRaw = "SELECT * FROM users";
-                const resultRaw = await sequelize.query(queryRaw, {
-                    raw: true,
-                    logging: false,
-                    replacements: [],
-                    type: QueryTypes.SELECT
-                });
-                res.send({resultRaw})
-                res.status(200);
-        } else {
-            res.status(401).send('member is not admin');
+exports.getList = async (req, res) => {
+
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        const queryRaw = "SELECT * FROM users";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (e) {
+            res.status(500);
+            res.send(error)
         }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+
+    } else {
+        res.status(401).send('member is not admin');
     }
+
+}
+exports.getDetails = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    const id = req.body.id;
+    if (checkAuth) {
+        const queryRaw = "SELECT * FROM users WHERE id = ?;";
+        const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [id], type: QueryTypes.SELECT });
+        res.status(200);
+        res.send(resultRaw[0]);
+    } else {
+        res.status(401);
+    }
+};
+
+exports.delete = async (req, res) => {
+    const isAdmin = await Auth.checkAdmin(req);
+    const body = req.body;
+    if (isAdmin) {
+        const queryRaw = "DELETE FROM users WHERE id=? ";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.id],
+                type: QueryTypes.DELETE
+            });
+            res.send({})
+            res.status(200);
+        } catch (e) {
+            console.error(e);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    } else {
+        res.status(401).send('member is not admin');
+    }
+
 }

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const constant = require("../config/constant");
 const sha1 = require('sha1');
 const db = require("../models");
-const Jwt = require('../config/checkJWT')
+const Jwt = require('../config/checkJwt')
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 
@@ -21,12 +21,10 @@ exports.login = async (req, res) => {
   const checkMember = resultRaw && resultRaw.length && resultRaw.length > 0 ? resultRaw[0] : null;
 
   if (checkMember) {
-    //Sing JWT, valid for 1 hour
     const token = jwt.sign({ userId: checkMember.id, username: checkMember.username },constant.jwtSecret,
       { expiresIn: constant.jwtSecretExp }
     );
-    //Send the jwt in the response
-
+   
     res.send({
       "connexion": true,
       "jwtToken": token,

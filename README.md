@@ -23,13 +23,19 @@
 ![](https://img.shields.io/badge/Code-flutter-informational?style=flat&logo=flutter&color=61DAFB)
 
 ![](https://img.shields.io/badge/Backend-JavaScript-informational?style=flat&logo=JavaScript&color=F7DF1E)
+![](https://img.shields.io/badge/Backend-Node.js-informational?style=flat&logo=Node.js&color=339933)
+</br>
+
+![](https://img.shields.io/badge/Web-React-informational?style=flat&logo=React&color=61DAFB)
 </br>
 
 ![](https://img.shields.io/badge/Tools-Figma-informational?style=flat&logo=Figma&color=F24E1E)
 ![](https://img.shields.io/badge/Tools-NPM-informational?style=flat&logo=NPM&color=CB3837)
 ![](https://img.shields.io/badge/Tools-GitHub-informational?style=flat&logo=GitHub&color=181717)
+![](https://img.shields.io/badge/Tools-Notion-informational?style=flat&logo=Notion&color=000000)
+![](https://img.shields.io/badge/Tools-Discord-informational?style=flat&logo=Discord&color=000000)
 
 
-## 📈 Khác
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=yushi1007&layout=compact)](https://github.com/yushi1007)
+
+

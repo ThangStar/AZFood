@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:restaurant_manager_app/ui/screens/login_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 
@@ -20,11 +21,11 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: SvgPicture.asset('assets/images/logo.svg')),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -47,35 +48,55 @@ class _AuthScreenState extends State<AuthScreen> {
                 ],
               ),
             ),
-            const Text("Quản lí mọi thứ trên điện thoại của bạn"),
-            Column(
-              children: [
-                MyButton(
+            Text(
+              "Quản lí mọi thứ trên điện thoại của bạn",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  Hero(
+                    transitionOnUserGestures: true,
+                    tag: "login_hero",
+                    child: MyButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, _, __) =>
+                                        const LoginScreen(),
+                              ));
+                          // showMyBottomSheet(
+                          //   context: context,
+                          //   builder: (context) {
+                          //     return LoginForm();
+                          //   },
+                          // );
+                        },
+                        value: "Đăng Nhập"),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  MyButton(
                     onPressed: () {
                       showMyBottomSheet(
                         context: context,
                         builder: (context) {
-                          return LoginForm();
+                          return RegisterForm();
                         },
                       );
                     },
-                    value: "Đăng Nhập"),
-                const SizedBox(
-                  height: 6,
-                ),
-                MyButton(
-                  onPressed: () {
-                    showMyBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return RegisterForm();
-                      },
-                    );
-                  },
-                  value: "Đăng Kí",
-                  isOutline: true,
-                )
-              ],
+                    value: "Đăng Kí",
+                    isOutline: true,
+                  )
+                ],
+              ),
             )
           ],
         ),

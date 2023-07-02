@@ -24,7 +24,7 @@ class MyButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         onTap:onPressed,
         child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
             width: double.infinity,
             child: Text(
               textAlign: TextAlign.center,
@@ -32,10 +32,10 @@ class MyButton extends StatelessWidget {
               style: Theme
                   .of(context)
                   .textTheme
-                  .bodyLarge
+                  .bodyMedium
                   ?.copyWith(
                   color: isOutline ? colorScheme(context).scrim : colorScheme(
-                      context).background),
+                      context).onPrimary),
             )),
       ),
     );

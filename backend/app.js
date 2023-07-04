@@ -17,9 +17,9 @@ app.use(bodyParser.urlencoded({
   app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({ extended: true }));
 
-require("./app/routes/members.route.js")(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+require("./app/routes/members.route.js")(app);

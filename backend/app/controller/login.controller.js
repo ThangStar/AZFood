@@ -10,6 +10,7 @@ const sequelize = db.sequelize;
 exports.login = async (req, res) => {
   const username = req.body.username;
   let userPwd = req.body.password;
+  console.log("req.body", req.body)
 
   userPwd = sha1(userPwd);
 
@@ -27,12 +28,15 @@ exports.login = async (req, res) => {
     );
     //Send the jwt in the response
 
-    res.send({
-      "connexion": true,
-      "jwtToken": token,
-      "id": checkMember.id,
-      "username": checkMember.username
-    });
+    //[note]: return data client: type is Json
+    res.send(JSON.stringify(
+      {
+        "connexion": true,
+        "jwtToken": token,
+        "id": checkMember.id,
+        "username": checkMember.username
+      })
+    )
     return;
   } else {
     console.log("ERROR - function login can not find member with username", username);

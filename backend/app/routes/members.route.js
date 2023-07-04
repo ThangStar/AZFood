@@ -4,7 +4,6 @@ module.exports = app => {
     const member = require('../controller/members.controller.js')
   
     var router = require("express").Router();
-  
     // Login
     router.post("/login", login.login);
     router.post("/create",[jwt.checkJwt] , member.createMember );

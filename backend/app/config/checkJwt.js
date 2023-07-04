@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const constant = require("../config/constant");
 
 exports.checkJwt = (req, res, next) => {
+
   let token = req.headers["authorization"];
 
   if (typeof token == 'undefined') {
@@ -13,7 +14,9 @@ exports.checkJwt = (req, res, next) => {
   let jwtPayload;
 
   try {
+
     jwtPayload = jwt.verify(token, constant.jwtSecret);
+
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
     console.log("ERROR - function checkJwt", error, token);

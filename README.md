@@ -4,6 +4,8 @@
 <a href="https://www.yushi.dev/" target="_blank" rel="noreferrer">DỰ ÁN 2</a> 👋
 </h3>
 
+![Presentation](https://github.com/ThangStar/restaurant_manager_app/assets/52882277/05da895d-e4a2-48fd-bcf9-7e0c118342b4)
+
 <h2 align="center">
  Ứng dụng quản lí nhà hàng
 </h2> 

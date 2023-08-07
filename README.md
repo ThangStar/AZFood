@@ -1,4 +1,6 @@
 
+![Presentation](https://github.com/ThangStar/restaurant_manager_app/assets/52882277/8d505f0a-3e16-4fe4-a657-44f0c7f94147)
+
 
 <h3 align="center">
 <a href="https://www.yushi.dev/" target="_blank" rel="noreferrer">DỰ ÁN 2</a> 👋

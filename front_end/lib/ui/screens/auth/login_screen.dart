@@ -31,7 +31,7 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset('assets/images/logo.svg'),
+                    SvgPicture.asset('assets/svgs/logo.svg'),
                     const SizedBox(
                       height: 24,
                     ),

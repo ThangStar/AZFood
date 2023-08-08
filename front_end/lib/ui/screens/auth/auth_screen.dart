@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:restaurant_manager_app/ui/screens/login_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 
-import '../utils/utils.dart';
+import '../../utils/utils.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -22,7 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
       appBar: AppBar(
         leading: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: SvgPicture.asset('assets/images/logo.svg')),
+            child: SvgPicture.asset('assets/svgs/logo.svg')),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

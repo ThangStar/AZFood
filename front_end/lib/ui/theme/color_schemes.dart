@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 var colorScheme = (BuildContext context) => Theme.of(context).colorScheme;
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
-  primary: Color(0xFF3941F4),
+  primary: Color(0xFF1573FE), // primary
   onPrimary: Color(0xFFFFFFFF), //text
   primaryContainer: Color(0xFFE0E0FF),
   onPrimaryContainer: Color(0xFF00006E),

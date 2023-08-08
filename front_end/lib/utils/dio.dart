@@ -47,7 +47,7 @@ class Http {
   }
   void callApi() async {
     try {
-      var response = await dio.post(ApiPath.login,
+      var response = await dio.post(Path.login,
           data: {"username": "trung1234", "password": "123123"});
       print("OK: $response");
     } catch (err) {

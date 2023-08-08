@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:restaurant_manager_app/ui/screens/auth_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/auth/auth_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset('assets/images/logo.svg', width: 230),
+              SvgPicture.asset('assets/svg/logo.svg', width: 230),
               const SizedBox(height: 80,),
               const SizedBox(
                   width: 200,

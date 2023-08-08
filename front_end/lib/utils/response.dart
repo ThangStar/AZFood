@@ -1,12 +1,15 @@
 class Success{
-  final Object data;
+  final String data;
   final int? statusCode;
   Success({required this.data, this.statusCode = 201});
 }
 
 class Failure{
-  final Object dataErr;
+  final Object? dataErr;
   final int? statusCode;
+  final String messageErr;
 
-  Failure({required this.dataErr, this.statusCode = 404});
+  //if status code is null => check by messageErr
+
+  Failure( { this.dataErr, this.statusCode, this.messageErr = ""});
 }

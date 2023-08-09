@@ -4,15 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
+import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_drawer.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/notification_news.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   List<Model.Table> tables = [
     Model.Table(
         status: 1, sumPrice: 324234, tableName: "Bàn số 1", time: "2h30p"),
@@ -20,18 +26,22 @@ class HomeScreen extends StatelessWidget {
         status: 2, sumPrice: 3234, tableName: "Bàn số 2", time: "8h30p"),
     Model.Table(
         status: 2, sumPrice: 3234, tableName: "Bàn số 3", time: "20h30p"),
-    Model.Table(
-        status: 0, sumPrice: 3234, tableName: "Bàn số 4", time: "18h30p"),
+    Model.Table(status: 0, sumPrice: 0, tableName: "Bàn số 4", time: "0h00p"),
     Model.Table(
         status: 1, sumPrice: 32434, tableName: "Bàn số 5", time: "12h30p"),
     Model.Table(
         status: 0, sumPrice: 32234, tableName: "Bàn số 6", time: "2h32p")
   ];
 
+  List<String> filterStatus = ["Tất cả", "Chờ", "Hoạt động", "bận"];
+
+  int posFilterStatusSelected = 0;
+  bool isShowFilter = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer:MyDrawer(),
+      drawer: const MyDrawer(),
       floatingActionButton: FloatingActionButton(
           backgroundColor: colorScheme(context).primary,
           onPressed: () {},
@@ -44,14 +54,15 @@ class HomeScreen extends StatelessWidget {
         children: [
           SingleChildScrollView(
             child: Container(
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
+              decoration: BoxDecoration(
+                  color: colorScheme(context).onPrimary,
+                  image: const DecorationImage(
                       fit: BoxFit.cover,
                       alignment: Alignment.bottomCenter,
                       image: AssetImage('assets/images/bg_main.png'))),
               child: ClipRRect(
                   child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 50.0, sigmaY: 50.0),
+                filter: ImageFilter.blur(sigmaX: 80.0, sigmaY: 80.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +81,8 @@ class HomeScreen extends StatelessWidget {
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
+                                ?.copyWith(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
                           ).animate().moveY(),
                           const PageIndex(),
                         ],
@@ -85,13 +97,60 @@ class HomeScreen extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text("Đã áp dụng bộ lọc: "),
+                            RichText(
+                              text: TextSpan(
+                                  text: "Trạng thái: ",
+                                  style: TextStyle(
+                                      color: colorScheme(context)
+                                          .scrim
+                                          .withOpacity(0.8)),
+                                  children: [
+                                    TextSpan(
+                                        text:
+                                            "${filterStatus[posFilterStatusSelected]}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold))
+                                  ]),
+                            ),
                             IconButton(
                                 color: colorScheme(context).primary,
-                                onPressed: () => null,
-                                icon: const Icon(Icons.filter_alt_outlined))
+                                onPressed: () {
+                                  setState(() {
+                                    isShowFilter = !isShowFilter;
+                                  });
+                                },
+                                icon: Icon(isShowFilter
+                                    ? Icons.filter_alt_rounded
+                                    : Icons.filter_alt_outlined))
                           ],
                         )),
+                    AnimatedContainer(
+                      height: isShowFilter ? 60 : 0,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: const BoxDecoration(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      duration: 200.ms,
+                      child: Row(children: [
+                        Wrap(
+                          spacing: 8,
+                          children: filterStatus
+                              .asMap()
+                              .entries
+                              .map((e) => MyChipToggle(
+                                    isSelected:
+                                        posFilterStatusSelected == e.key,
+                                    label: e.value,
+                                    onTap: () {
+                                      setState(() {
+                                        posFilterStatusSelected = e.key;
+                                      });
+                                    },
+                                  ))
+                              .toList(),
+                        )
+                      ]),
+                    ),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
@@ -101,6 +160,7 @@ class HomeScreen extends StatelessWidget {
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisSpacing: 6,
                               mainAxisSpacing: 6,
+                              mainAxisExtent: 160,
                               crossAxisCount: 2),
                       itemBuilder: (context, index) {
                         Model.Table table = tables[index];
@@ -113,6 +173,9 @@ class HomeScreen extends StatelessWidget {
                             .fade(duration: (500 * index).ms);
                       },
                       itemCount: tables.length,
+                    ),
+                    const SizedBox(
+                      height: 24,
                     )
                   ],
                 ),
@@ -223,16 +286,14 @@ class ToolbarProfile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(12)),
-                      child: IconButton(
-                          onPressed: () => null,
-                          icon: Icon(
-                            Icons.person_4,
-                            color: Colors.white.withOpacity(0.8),
-                          ))),
+                      child: Icon(
+                        Icons.person_4,
+                        color: Colors.white.withOpacity(0.8),
+                      )),
                   const SizedBox(
                     width: 8,
                   ),

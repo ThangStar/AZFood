@@ -53,13 +53,14 @@ class PageIndex extends StatelessWidget {
           ),
           child: ClipRRect(
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 50.0, sigmaY: 50.0),
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 5.0),
               child: Text(
                 "1",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: colorScheme(context).primary),
+                    
               ),
             ),
           ),

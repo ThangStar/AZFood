@@ -22,7 +22,7 @@ class AuthenticationBloc
 
   FutureOr<void> _loginAuthEvent(
       LoginAutEvent event, Emitter<AuthenticationState> emit) async {
-    Object response = await AuthApi.login(event.username, event.password);
+    Object response = await Api.login(event.username, event.password);
     if (response is Success) {
       print("jsonDecode(response.data): ${jsonDecode(response.data)}");
       LoginResult loginResult = LoginResult.fromRawJson(response.data);

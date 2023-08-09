@@ -35,7 +35,7 @@ class PageIndex extends StatelessWidget {
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               width: 6,
             ),
             Text(

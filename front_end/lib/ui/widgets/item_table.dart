@@ -35,7 +35,7 @@ class ItemTable extends StatelessWidget {
                                 ? Border.all(
                                     color: table.status == 1
                                         ? const Color(0xFF049C6B)
-                                        : Colors.red)
+                                        : Colors.red, width: 2)
                                 : null),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,

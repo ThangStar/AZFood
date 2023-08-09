@@ -1,8 +1,8 @@
 
-
 <h3 align="center">
 <a href="https://www.yushi.dev/" target="_blank" rel="noreferrer">DỰ ÁN 2</a> 👋
 </h3>
+![Presentation](https://github.com/ThangStar/restaurant_manager_app/assets/52882277/6d60c4f9-8113-4a49-a35b-b5c6146a84ce)
 
 ![Presentation](https://github.com/ThangStar/restaurant_manager_app/assets/52882277/05da895d-e4a2-48fd-bcf9-7e0c118342b4)
 

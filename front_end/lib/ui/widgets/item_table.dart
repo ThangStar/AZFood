@@ -16,10 +16,10 @@ class ItemTable extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-            color: colorScheme(context).tertiary.withOpacity(0.3)),
+            color: colorScheme(context).onPrimary.withOpacity(0.3)),
         child: ClipRRect(
             child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -35,8 +35,11 @@ class ItemTable extends StatelessWidget {
                                 ? Border.all(
                                     color: table.status == 1
                                         ? const Color(0xFF049C6B)
-                                        : Colors.red, width: 2)
-                                : null),
+                                        : Colors.red,
+                                    width: 2)
+                                : Border.all(
+                                    color: colorScheme(context).tertiary,
+                                    width: 2)),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -46,10 +49,10 @@ class ItemTable extends StatelessWidget {
                                   .textTheme
                                   .titleMedium
                                   ?.copyWith(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: table.status == 1
-                                          ? const Color(0xFF049C6B)
+                                              ? const Color(0xFF049C6B)
                                           : colorScheme(context)
                                               .scrim
                                               .withOpacity(0.8)),
@@ -57,11 +60,19 @@ class ItemTable extends StatelessWidget {
                             SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.access_time_sharp),
-                                Text(" ${table.time}")
+                                Icon(Icons.access_time_sharp, color: colorScheme(context)
+                                              .scrim
+                                              .withOpacity(0.6),),
+                                Text(
+                                  " ${table.time}",
+                                  style: TextStyle(
+                                      color: colorScheme(context)
+                                              .scrim
+                                              .withOpacity(0.6)),
+                                )
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 30,
                             ),
                             Row(
@@ -72,12 +83,13 @@ class ItemTable extends StatelessWidget {
                                         .textTheme
                                         .bodyLarge
                                         ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        color:  table.status == 1
-                                          ? const Color(0xFF049C6B)
+                                            fontWeight: FontWeight.bold,
+                                            color:  table.status != 0
+                                          ? table.status ==1? const Color(0xFF049C6B) : Colors.redAccent
                                           : colorScheme(context)
                                               .scrim
                                               .withOpacity(0.8))),
+                                Spacer(),
                                 table.status == 2
                                     ? Icon(Icons.error, color: Colors.red)
                                     : SizedBox.shrink()

@@ -6,7 +6,7 @@ var colorScheme = (BuildContext context) => Theme.of(context).colorScheme;
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
   primary: Color(0xFF1573FE), // primary
-  onPrimary: Color(0xFFFFFFFF), //text
+  onPrimary: Color.fromARGB(255, 255, 255, 255), //text
   primaryContainer: Color(0xFFE0E0FF),
   onPrimaryContainer: Color(0xFF00006E),
   secondary: Color(0xFF6E85E3),//button
@@ -37,10 +37,10 @@ const lightColorScheme = ColorScheme(
   scrim: Color(0xFF000000),//text
 );
 
-const darkColorScheme = ColorScheme(
+var darkColorScheme = ColorScheme(
   brightness: Brightness.dark,
   primary: Color(0xFFBFC2FF),
-  onPrimary: Color(0xFFFFFFFF),
+  onPrimary: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
   primaryContainer: Color(0xFF161BDF),
   onPrimaryContainer: Color(0xFFE0E0FF),
   secondary: Color(0xFF0100AC),

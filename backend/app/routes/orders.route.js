@@ -8,8 +8,8 @@ module.exports = app => {
     router.post("/create",[jwt.checkJwt] , orders.createOrder );
     router.post("/update",[jwt.checkJwt] , orders.updateOrder );
     router.post("/delete",[jwt.checkJwt] , orders.deleteOrder );
-    router.post("/payBill",[jwt.checkJwt] , orders.payBill );
-    // router.get("/getOrder",[jwt.checkJwt] , orders.getOrdersForTable );
+    // router.post("/payBill",[jwt.checkJwt] , orders.payBill );
+    router.get("/getOrder",[jwt.checkJwt] , orders.getOrdersForTable );
     
   
     app.use('/api/orders', router);

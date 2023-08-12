@@ -13,21 +13,21 @@ exports.createProduct = async (req, res) => {
             console.log("id ", body.id);
             if (body.id) {
                 console.log("Update");
-                const queryRaw = "UPDATE products SET name = ?, price = ?, status = ?, category = ? WHERE id = ?";
+                const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, status = CASE WHEN category = 1 THEN 1 ELSE ? END, quantity = ? WHERE id = ?";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.name, body.price, body.status, body.category , body.id],
+                    replacements: [body.name, body.price, body.category, body.status, body.quantity, body.id],
                     type: QueryTypes.UPDATE
                 });
                 res.status(200).json({ message: 'products updated successfully' });
             } else {
                 console.log("Insert");
-                const queryRaw = "INSERT INTO products (name, price, status, category) VALUES (?, ?, ?, ?);";
+                const queryRaw = "INSERT INTO products (name, price, category, status, quantity) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ?);";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.name, body.price, body.status, body.category],
+                    replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity],
                     type: QueryTypes.INSERT
                 });
                 res.status(200).json({ message: 'products created successfully' });
@@ -35,7 +35,7 @@ exports.createProduct = async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' , error});
+        res.status(500).json({ message: 'Internal server error', error });
     }
 }
 

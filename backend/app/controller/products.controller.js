@@ -1,54 +1,49 @@
-
-const sha1 = require('sha1');
 const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller')
 
-// Create and Save a new member
-exports.createMember = async (req, res) => {
+
+exports.createProduct = async (req, res) => {
     try {
         const body = req.body;
-        body.password = sha1(body.password);
-
         const isAdmin = await Auth.checkAdmin(req);
+
         if (isAdmin) {
+            console.log("id ", body.id);
             if (body.id) {
                 console.log("Update");
-                const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?, email = ? WHERE id = ?;";
+                const queryRaw = "UPDATE products SET name = ?, price = ?, status = ?, category = ? WHERE id = ?";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.id],
+                    replacements: [body.name, body.price, body.status, body.category , body.id],
                     type: QueryTypes.UPDATE
                 });
-                res.status(200).json({ message: 'Member updated successfully' });
+                res.status(200).json({ message: 'products updated successfully' });
             } else {
                 console.log("Insert");
-                const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber, email) VALUES (?, ?, ?, ?, ?, ?);";
+                const queryRaw = "INSERT INTO products (name, price, status, category) VALUES (?, ?, ?, ?);";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email],
+                    replacements: [body.name, body.price, body.status, body.category],
                     type: QueryTypes.INSERT
                 });
-                res.status(200).json({ message: 'Member created successfully' });
+                res.status(200).json({ message: 'products created successfully' });
             }
-
-        } else {
-            res.status(401).send('member is not admin');
         }
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error' , error});
     }
+}
 
-};
 exports.getList = async (req, res) => {
-
+    
     const isAdmin = await Auth.checkAdmin(req);
     if (isAdmin) {
-        const queryRaw = "SELECT * FROM users";
+        const queryRaw = "SELECT * FROM products";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -64,7 +59,55 @@ exports.getList = async (req, res) => {
         }
 
     } else {
-        res.status(401).send('member is not admin');
+        res.status(401).send('user is not admin');
+    }
+
+}
+exports.getListCategory = async (req, res) => {
+    
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        const queryRaw = "SELECT * FROM category";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (e) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(401).send('user is not admin');
+    }
+
+}
+exports.getListStatus = async (req, res) => {
+    
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        const queryRaw = "SELECT * FROM statusProduct";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (e) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(401).send('user is not admin');
     }
 
 }
@@ -72,7 +115,7 @@ exports.getDetails = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     const id = req.body.id;
     if (checkAuth) {
-        const queryRaw = "SELECT * FROM users WHERE id = ?;";
+        const queryRaw = "SELECT * FROM products WHERE id = ?;";
         const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [id], type: QueryTypes.SELECT });
         res.status(200);
         res.send(resultRaw[0]);
@@ -85,7 +128,7 @@ exports.delete = async (req, res) => {
     const isAdmin = await Auth.checkAdmin(req);
     const body = req.body;
     if (isAdmin) {
-        const queryRaw = "DELETE FROM users WHERE id=? ";
+        const queryRaw = "DELETE FROM products WHERE id=? ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,

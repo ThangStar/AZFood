@@ -1,7 +1,7 @@
 const db = require("../models");
 const { QueryTypes } = require("sequelize");
 const sequelize = db.sequelize;
-const Jwt = require("../config/checkJWT");
+const Jwt = require("../config/checkJwt");
 
 exports.checkAuth = async (req) => {
   

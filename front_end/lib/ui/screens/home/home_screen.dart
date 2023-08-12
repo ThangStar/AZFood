@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
@@ -131,7 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       duration: 200.ms,
-                      child: Row(children: [
+                      child: Row(
+                        children: [
                         Wrap(
                           spacing: 8,
                           children: filterStatus
@@ -164,7 +166,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisCount: 2),
                       itemBuilder: (context, index) {
                         Model.Table table = tables[index];
-                        return ItemTable(table: table)
+                        return ItemTable(
+                          table: table,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CurrentBookingScreen(),
+                                ));
+                          },
+                        )
                             .animate()
                             .moveX(
                                 begin: index % 2 != 0 ? -300 : -100,

@@ -1,26 +1,24 @@
 module.exports = (sequelize, Sequelize) => {
-    const Products = sequelize.define("orders", {
+    const OrderItems = sequelize.define("orderItems", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      name: {
-        type: Sequelize.STRING
+      orderID: {
+        type: Sequelize.INTEGER
       },
-      price: {
-        type: Sequelize.DOUBLE
-      },
-      status: {
+      productID: {
         type: Sequelize.INTEGER
       },
       quantity: {
         type: Sequelize.INTEGER
+    },
+      subTotal: {
+        type: Sequelize.DOUBLE
       },
-      category: {
-        type: Sequelize.INTEGER
-      },
+      
     });
   
-    return Products;
+    return OrderItems;
   };

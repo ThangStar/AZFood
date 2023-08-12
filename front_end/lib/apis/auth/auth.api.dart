@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:restaurant_manager_app/api/path.api.dart';
+import 'package:restaurant_manager_app/apis/path.api.dart';
 import 'package:restaurant_manager_app/utils/dio.dart';
 
-import '../utils/response.dart';
+import '../../utils/response.dart';
 
 
-class Api {
+class AuthApi {
 
   static Future<Object> login(String username, String password) async {
     //if: u has assets token? => call api send asset token

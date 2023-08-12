@@ -18,36 +18,26 @@ class _BillScreenState extends State<BillScreen> {
         padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
-            Stack(children: [
-              Column(
+            Stack(
                 children: [
-                  const HeaderBill(),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: Row(
-                      children: [
-                        ClipOval(
+                  Column(
+                    children: [
+                      const HeaderBill(),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: ClipOval(
                           child: Container(
                             width: 50,
                             height: 50,
                             color: const Color.fromARGB(255, 255, 255, 255),
                           ),
                         ),
-                        ClipOval(
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const BodyBill(),
+                    ],
                   ),
-                  const BodyBill(),
-                ],
-              ),
-            ]),
+                ]),
           ],
         ),
       ),

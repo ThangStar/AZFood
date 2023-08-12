@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:restaurant_manager_app/api/path.api.dart';
+import 'package:restaurant_manager_app/apis/path.api.dart';
 import 'package:restaurant_manager_app/utils/auth.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 

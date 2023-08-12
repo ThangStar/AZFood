@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_manager_app/constants/key_storages.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/home_sceen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
+                builder: (context) =>  HomeScreen(),
               ));
         }
       },

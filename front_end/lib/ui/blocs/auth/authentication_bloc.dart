@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:restaurant_manager_app/api/auth.api.dart';
+import 'package:restaurant_manager_app/apis/auth/auth.api.dart';
 import 'package:restaurant_manager_app/constants/key_storages.dart';
 import 'package:restaurant_manager_app/model/login_result.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
@@ -22,7 +22,7 @@ class AuthenticationBloc
 
   FutureOr<void> _loginAuthEvent(
       LoginAutEvent event, Emitter<AuthenticationState> emit) async {
-    Object response = await Api.login(event.username, event.password);
+    Object response = await AuthApi.login(event.username, event.password);
     if (response is Success) {
       print("jsonDecode(response.data): ${jsonDecode(response.data)}");
       LoginResult loginResult = LoginResult.fromRawJson(response.data);

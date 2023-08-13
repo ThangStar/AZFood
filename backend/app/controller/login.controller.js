@@ -25,18 +25,16 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ userId: checkMember.id, username: checkMember.username },constant.jwtSecret,
       { expiresIn: constant.jwtSecretExp }
     );
-    //Send the jwt in the response
 
     //[note]: return data client: type is Json
-    res.send(JSON.stringify(
-      {
-        "connexion": true,
-        "jwtToken": token,
-        "id": checkMember.id,
-        "username": checkMember.username
-      })
-    )
-    return;
+    res.send({
+      "connexion": true,
+      "jwtToken": token,
+      "id": checkMember.id,
+      "username": checkMember.username,
+      "role": checkMember.role
+    });
+    return  res.status(200);
   } else {
     console.log("ERROR - function login can not find member with username", username);
     res.status(400).send({

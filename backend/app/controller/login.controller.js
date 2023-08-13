@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
     return;
   } else {
     console.log("ERROR - function login can not find member with username", username);
-    res.send({
+    res.status(400).send({
       "connexion": false
     });
   }

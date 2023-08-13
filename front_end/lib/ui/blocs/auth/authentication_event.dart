@@ -10,5 +10,8 @@ class LoginAutEvent extends AuthenticationEvent{
   final String username;
   final String password;
 
-  LoginAutEvent({required this.username, required this.password});
+  const LoginAutEvent({required this.username, required this.password});
+  @override
+  // TODO: implement props
+  List<Object?> get props => [username, password];
 }

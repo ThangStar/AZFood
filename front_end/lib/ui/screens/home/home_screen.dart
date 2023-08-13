@@ -254,7 +254,9 @@ class ToolbarHome extends StatelessWidget {
                           )
                           .shake(delay: 1.seconds),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   )
                 ],
               ),

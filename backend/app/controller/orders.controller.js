@@ -222,4 +222,89 @@ exports.getOrdersForTable = async (req, res) => {
     }
 };
 
+exports.payBill = async (req, res) => {
+    const isAuth = await Auth.checkAuth(req);
+    if (isAuth) {
+        const tableID = req.body.id;
+        try {
+            // Lấy thông tin tổng số tiền và chi tiết hoá đơn
+            const getBillDetailsQuery = `
+                SELECT p.name AS productName, oi.quantity, p.price, u.name AS userName, o.totalAmount , o.id
+                FROM orders o
+                INNER JOIN orderItems oi ON o.id = oi.orderID
+                INNER JOIN products p ON oi.productID = p.id
+                INNER JOIN users u ON o.userID = u.id
+                WHERE o.tableID = ?
+            `;
+
+            const billDetails = await sequelize.query(getBillDetailsQuery, {
+                raw: true,
+                logging: false,
+                replacements: [tableID],
+                type: QueryTypes.SELECT
+            });
+
+            // Tính tổng số tiền của hoá đơn
+            let totalInvoiceAmount = 0;
+            let idOder;
+            for (const detail of billDetails) {
+                totalInvoiceAmount += detail.totalAmount;
+                idOder = detail.id
+            }
+
+            // Lưu thông tin hoá đơn vào bảng invoice
+            const createInvoiceQuery = `
+                INSERT INTO invoice (tableID,total, createAt, userName )
+                VALUES (?, ?, ? , ?)
+            `;
+
+            const invoiceResult = await sequelize.query(createInvoiceQuery, {
+                raw: true,
+                logging: false,
+                replacements: [tableID , totalInvoiceAmount, new Date(), billDetails[0].userName ],
+                type: QueryTypes.INSERT
+            });
+
+            const invoiceID = invoiceResult[0];
+
+            // Lưu chi tiết hoá đơn vào bảng invoiceDetails
+            for (const detail of billDetails) {
+                const createInvoiceDetailsQuery = `
+                    INSERT INTO invoiceDetials (invoiceID, poductName, quantity, totalAmount)
+                    VALUES (?, ?, ?, ?)
+                `;
+
+                await sequelize.query(createInvoiceDetailsQuery, {
+                    raw: true,
+                    logging: false,
+                    replacements: [invoiceID, detail.productName, detail.quantity, detail.totalAmount],
+                    type: QueryTypes.INSERT
+                });
+            }
+
+            // Cập nhật trạng thái của bàn sau khi thanh toán
+            const updateTableStatusQuery = 'UPDATE tables SET status = ? WHERE id = ?';
+            await sequelize.query(updateTableStatusQuery, {
+                raw: true,
+                logging: false,
+                replacements: [1, tableID],
+                type: QueryTypes.UPDATE
+            });
+
+            console.log("idOder" , idOder);
+            await sequelize.transaction(async transaction => {
+                const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
+
+                await sequelize.query(deleteOrderItemsQuery, {raw: true,logging: false,replacements: [idOder],type: QueryTypes.DELETE,transaction});
+                const deleteOrderQuery = `DELETE FROM orders WHERE tableID = ?;`;
+                await sequelize.query(deleteOrderQuery, {raw: true,logging: false,replacements: [tableID],type: QueryTypes.DELETE,transaction});
+            });
+            res.status(200).json({ message: 'Bill paid successfully', invoiceID });
+        } catch (error) {
+            res.status(500).json({ message: 'Error paying bill', error: error.message });
+        }
+    } else {
+        res.status(403).json({ message: 'Unauthorized' });
+    }
+};
 

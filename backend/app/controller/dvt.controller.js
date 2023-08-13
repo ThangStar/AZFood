@@ -1,54 +1,48 @@
-
-const sha1 = require('sha1');
 const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller')
 
-// Create and Save a new member
-exports.createMember = async (req, res) => {
+exports.createDVT = async (req, res) => {
     try {
         const body = req.body;
-        body.password = sha1(body.password);
-
         const isAdmin = await Auth.checkAdmin(req);
+
         if (isAdmin) {
+            
             if (body.id) {
                 console.log("Update");
-                const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?, email = ? WHERE id = ?;";
+                const queryRaw = "UPDATE donViTinh SET tenDVT = ? WHERE id = ?";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.id],
+                    replacements: [body.tenDVT, body.id],
                     type: QueryTypes.UPDATE
                 });
-                res.status(200).json({ message: 'Member updated successfully' });
+                res.status(200).json({ message: 'dvt updated successfully' });
             } else {
                 console.log("Insert");
-                const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber, email) VALUES (?, ?, ?, ?, ?, ?);";
+                const queryRaw = "INSERT INTO donViTinh (tenDVT) VALUES(?) ;";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email],
+                    replacements: [body.tenDVT],
                     type: QueryTypes.INSERT
                 });
-                res.status(200).json({ message: 'Member created successfully' });
+                res.status(200).json({ message: 'dvt created successfully' });
             }
-
-        } else {
-            res.status(401).send('member is not admin');
         }
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error', error });
     }
-
 };
-exports.getList = async (req, res) => {
 
+exports.getList = async (req, res) => {
+    
     const isAdmin = await Auth.checkAdmin(req);
     if (isAdmin) {
-        const queryRaw = "SELECT * FROM users";
+        const queryRaw = "SELECT * FROM donViTinh";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -58,34 +52,22 @@ exports.getList = async (req, res) => {
             });
             res.send({ resultRaw })
             res.status(200);
-        } catch (error) {
+        } catch (e) {
             res.status(500);
             res.send(error)
         }
 
     } else {
-        res.status(401).send('member is not admin');
+        res.status(401).send('user is not admin');
     }
 
 }
-exports.getDetails = async (req, res) => {
-    const checkAuth = Auth.checkAuth(req);
-    const id = req.body.id;
-    if (checkAuth) {
-        const queryRaw = "SELECT * FROM users WHERE id = ?;";
-        const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [id], type: QueryTypes.SELECT });
-        res.status(200);
-        res.send(resultRaw[0]);
-    } else {
-        res.status(401);
-    }
-};
 
 exports.delete = async (req, res) => {
     const isAdmin = await Auth.checkAdmin(req);
     const body = req.body;
     if (isAdmin) {
-        const queryRaw = "DELETE FROM users WHERE id=? ";
+        const queryRaw = "DELETE FROM donViTinh WHERE id=? ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,

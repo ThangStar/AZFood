@@ -1,7 +1,9 @@
 const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
-const Auth = require('./checkAuth.controller')
+const Auth = require('./checkAuth.controller');
+const { Server } = require('socket.io');
+const io = new Server();
 
 exports.createOrder = async (req, res) => {
     try {
@@ -67,6 +69,7 @@ exports.createOrder = async (req, res) => {
                         type: QueryTypes.UPDATE,
                         transaction
                     });
+                    io.emit('tableStatusChanged', { tableID: orderData.tableID, status: 2 });
                     return orderId;
                 });
 
@@ -178,7 +181,49 @@ exports.deleteOrder = async (req, res) => {
                     transaction
                 });
             });
+            
+            res.status(200).json({ message: 'Order deleted successfully' });
+        } else {
+            res.status(403).json({ message: 'you are not logned in' });
+        }
 
+    } catch (error) {
+        console.error('Error deleting order:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
+exports.deleteAllOrder = async (req, res) => {
+    try {
+        const tableID = req.body.id; 
+        const isAuth = await Auth.checkAuth(req);
+        var idOrder = 0 ;
+        if (isAuth) {
+            console.log("Delete All Order in Table");
+            // Lấy id của orderID từ bàn
+            const deleteOrderItemsQuery = `SELECT * FROM orders WHERE tableID = ?;`;
+            const idOrders = await sequelize.query(deleteOrderItemsQuery, {raw: true,logging: false,replacements: [tableID],type: QueryTypes.SELECT});
+           
+            for (const order of idOrders) {
+                idOrder = order.id
+            }
+            await sequelize.transaction(async transaction => {
+                const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
+
+                await sequelize.query(deleteOrderItemsQuery, {raw: true,logging: false,replacements: [idOrder],type: QueryTypes.DELETE,transaction});
+                const deleteOrderQuery = `DELETE FROM orders WHERE tableID = ?;`;
+                await sequelize.query(deleteOrderQuery, {raw: true,logging: false,replacements: [tableID],type: QueryTypes.DELETE,transaction});
+            });
+            //chuyển trạng thái bàn về trôngs
+            const updateTableStatusQuery = 'UPDATE tables SET status = ? WHERE id = ?';
+                    await sequelize.query(updateTableStatusQuery, {
+                        raw: true,
+                        logging: false,
+                        replacements: [3, tableID],
+                        type: QueryTypes.UPDATE,
+                        transaction
+                    });
+            io.emit('tableStatusChanged', { tableID: orderData.tableID, newStatus: 3 });
             res.status(200).json({ message: 'Order deleted successfully' });
         } else {
             res.status(403).json({ message: 'you are not logned in' });
@@ -290,7 +335,7 @@ exports.payBill = async (req, res) => {
                 replacements: [1, tableID],
                 type: QueryTypes.UPDATE
             });
-
+            io.emit('tableStatusChanged', { tableID: orderData.tableID, newStatus: 1 });
             console.log("idOder" , idOder);
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;

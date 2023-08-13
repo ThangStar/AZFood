@@ -38,7 +38,7 @@ exports.getCurrentLogin = (req) => {
     
     return null;
   }
-  const { userId, username } = jwtPayload;
+  const { userId, username  } = jwtPayload;
 
   return {"userId": userId, "username": username};
 };

@@ -24,14 +24,14 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ userId: checkMember.id, username: checkMember.username },constant.jwtSecret,
       { expiresIn: constant.jwtSecretExp }
     );
-   
     res.send({
       "connexion": true,
       "jwtToken": token,
       "id": checkMember.id,
-      "username": checkMember.username
+      "username": checkMember.username,
+      "role": checkMember.role
     });
-    return;
+    return  res.status(200);
   } else {
     console.log("ERROR - function login can not find member with username", username);
     res.send({

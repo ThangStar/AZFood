@@ -13,7 +13,10 @@ module.exports = app => {
     router.get("/details", [jwt.checkJwt],member.getDetails);
     router.get("/account", [jwt.checkJwt],login.account);
     router.get("/checkAuth", [jwt.checkJwt] , Auth.getUserLogin);
+    router.get("/search", [jwt.checkJwt] , member.searchUser);
+  
   
     app.use('/api/user', router);
     
   };
+  

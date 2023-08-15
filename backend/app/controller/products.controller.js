@@ -17,7 +17,7 @@ exports.createProduct = async (req, res) => {
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.name, body.price, body.category, body.status, body.quantity,body.dvtID, body.id],
+                    replacements: [body.name, body.price, body.category, body.status, body.quantity, body.dvtID, body.id],
                     type: QueryTypes.UPDATE
                 });
                 res.status(200).json({ message: 'products updated successfully' });
@@ -40,33 +40,53 @@ exports.createProduct = async (req, res) => {
 }
 
 exports.getList = async (req, res) => {
-    
-    const isAdmin = await Auth.checkAdmin(req);
-    if (isAdmin) {
-        const queryRaw = "SELECT * FROM products";
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
         try {
+            const PAGE_SIZE = 2;
+            const currentPage = parseInt(req.query.page) || 1;
+            const offset = (currentPage - 1) * PAGE_SIZE;
+
+            const totalCountQuery = `SELECT COUNT(*) AS total FROM products`;
+            const totalCountResult = await sequelize.query(totalCountQuery, {
+                raw: true,
+                logging: false,
+                type: QueryTypes.SELECT
+            });
+
+            const queryRaw = `SELECT *FROM products LIMIT :limit OFFSET :offset`;
+
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [],
+                replacements: {
+                    limit: PAGE_SIZE,
+                    offset: offset
+                },
                 type: QueryTypes.SELECT
             });
-            res.send({ resultRaw })
-            res.status(200);
+
+            const totalPages = Math.ceil(totalCountResult[0].total / PAGE_SIZE);
+
+            res.status(200).json({
+                data: resultRaw,
+                currentPage: currentPage,
+                totalPages: totalPages,
+                totalItems: totalCountResult[0].total
+            });
         } catch (error) {
-            res.status(500);
-            res.send(error)
+            res.status(500).json({ error: 'Internal server error' });
+            console.log("error" , error)
         }
-
     } else {
-        res.status(401).send('user is not admin');
+        res.status(401).send('User is not admin');
     }
+};
 
-}
 exports.getListCategory = async (req, res) => {
-    
-    const isAdmin = await Auth.checkAdmin(req);
-    if (isAdmin) {
+
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
         const queryRaw = "SELECT * FROM category";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
@@ -88,9 +108,9 @@ exports.getListCategory = async (req, res) => {
 
 }
 exports.getListStatus = async (req, res) => {
-    
-    const isAdmin = await Auth.checkAdmin(req);
-    if (isAdmin) {
+
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
         const queryRaw = "SELECT * FROM statusProduct";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
@@ -147,3 +167,44 @@ exports.delete = async (req, res) => {
     }
 
 }
+
+exports.filterCategory = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    const categoryID = req.body.category;
+    if (checkAuth) {
+        const queryRaw = "SELECT * FROM products WHERE category = ?;";
+        const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [categoryID], type: QueryTypes.SELECT });
+        res.status(200);
+        res.send(resultRaw);
+    } else {
+        res.status(401);
+    }
+};
+
+exports.searchProduct = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
+        try {
+            const name = req.body.name;
+
+            const queryRaw = `SELECT *FROM products where name LIKE :name`;
+
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: {
+                    name: `%${name}%`},
+                type: QueryTypes.SELECT
+            });
+            res.status(200).json({
+                data: resultRaw,
+                
+            });
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+            console.log("error" , error)
+        }
+    } else {
+        res.status(401).send('User is not admin');
+    }
+};

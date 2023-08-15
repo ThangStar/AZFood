@@ -315,7 +315,7 @@ exports.payBill = async (req, res) => {
             // Lưu chi tiết hoá đơn vào bảng invoiceDetails
             for (const detail of billDetails) {
                 const createInvoiceDetailsQuery = `
-                    INSERT INTO invoiceDetials (invoiceID, poductName, quantity, totalAmount)
+                    INSERT INTO invoiceDetails (invoiceID, poductName, quantity, totalAmount)
                     VALUES (?, ?, ?, ?)
                 `;
 
@@ -335,7 +335,7 @@ exports.payBill = async (req, res) => {
                 replacements: [1, tableID],
                 type: QueryTypes.UPDATE
             });
-            io.emit('tableStatusChanged', { tableID: orderData.tableID, newStatus: 1 });
+            io.emit('tableStatusChanged', { tableID: tableID, newStatus: 1 });
             console.log("idOder" , idOder);
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;

@@ -1,17 +1,20 @@
 part of 'authentication_bloc.dart';
 
-abstract class AuthenticationState extends Equatable {
-  const AuthenticationState();
-}
-
-class AuthenticationInitial extends AuthenticationState {
+class AuthenticationState extends Equatable {
   final Object data;
-  const AuthenticationInitial({this.data = const []});
+  const AuthenticationState({this.data = const []});
   @override
   List<Object> get props => [data];
 }
 
-class AuthLoginSuccess extends AuthenticationInitial{
+class AuthLoginProgress extends AuthenticationState {
+  @override
+  // TODO: implement props
+  List<Object> get props => [];
   //save token to local
 }
 
+class AuthLoginSuccess extends AuthenticationState {
+}
+class AuthLoginFailed extends AuthenticationState {
+}

@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_manager_app/constants/key_storages.dart';
+import 'package:restaurant_manager_app/model/login_result.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/home_sceen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   bool cbxSaveLogin = false;
+  bool isShowAlert = false;
 
   @override
   void initState() {
@@ -39,10 +41,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _fillDataForm() async {
-    passwordController.text =
-        await MySharePreferences.loadSavedData(KeyStorages.keyPassword) ?? "";
-    usernameController.text =
-        await MySharePreferences.loadSavedData(KeyStorages.keyUsername) ?? "";
+    LoginResult? rs =
+        await MySharePreferences.loadSavedData(KeyStorages.myProfile);
+    if (rs != null) {
+      passwordController.text = rs.username;
+      // usernameController.text = ;
+    }
   }
 
   void _onChangeShowPass() {
@@ -61,8 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
+                builder: (context) => HomeScreen(),
               ));
+        } else if (state is AuthLoginFailed) {
+          setState(() {
+            isShowAlert = true;
+          });
         }
       },
       child: Scaffold(
@@ -85,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SvgPicture.asset('assets/images/logo.svg'),
+                      SvgPicture.asset('assets/svgs/logo.svg'),
                       const SizedBox(
                         height: 24,
                       ),
@@ -99,7 +107,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 18,
                       ),
+                      MyAlert(
+                        height: isShowAlert ? null : 0,
+                        icon: Icons.warning_rounded,
+                        title: "Thông báo",
+                        message: "Tài khoản hoặc mật khẩu không chính xác",
+                      ),
+                      const SizedBox(
+                        height: 6,
+                      ),
                       MyTextField(
+                        onChanged: (p0) {
+                          if(isShowAlert){
+                            setState(() {
+                              isShowAlert = false;
+                            });
+                          }
+                        },
                         hintText: "Nhập tài khoản",
                         icon: const Icon(Icons.person),
                         label: "Tài khoản",
@@ -142,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 16,
                       ),
-                      Divider(),
+                      const Divider(),
                       const SizedBox(
                         height: 16,
                       ),

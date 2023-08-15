@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:restaurant_manager_app/api/path.api.dart';
+import 'package:restaurant_manager_app/apis/path.api.dart';
+import 'package:restaurant_manager_app/constants/env.dart';
+import 'package:restaurant_manager_app/routers/auth.router.dart';
 import 'package:restaurant_manager_app/utils/auth.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 
@@ -22,32 +24,33 @@ class Http {
   late String refreshToken;
   Http() {
     dio = Dio(BaseOptions(
-        baseUrl: "http://52.196.9.15:8000",
+        baseUrl: Env.BASE_URL ?? "http://localhost:8080",
         headers: {'Content-Type': 'application/json'},
         connectTimeout: const Duration(seconds: 10)));
-    accessToken = Auth.getAccessTokenFromStorage();
-    refreshToken = Auth.getRefreshTokenFromStorage();
 
-    if (accessToken.isEmpty) {
-      if (refreshToken.isNotEmpty) {
-        //Call API if u only has refresh token
-        dio.interceptors.add(AuthInterceptor(refreshToken));
-        final response = handleRefreshToken();
-        response is Success
-            ? print('request success!: ${response.data}')
-            : print('request failure: ${response}');
-      } else {
-        //Haven't access + refresh token => close connect + back to login
-        dio.close();
-      }
-    } else {
-      // dio.interceptors.add(AuthInterceptor(accessToken));
-      callApi();
-    }
+    // accessToken = Auth.getAccessTokenFromStorage();
+    // refreshToken = Auth.getRefreshTokenFromStorage();
+
+    // if (accessToken.isEmpty) {
+    //   if (refreshToken.isNotEmpty) {
+    //     //Call API if u only has refresh token
+    //     dio.interceptors.add(AuthInterceptor(refreshToken));
+    //     final response = handleRefreshToken();
+    //     response is Success
+    //         ? print('request success!: ${response.data}')
+    //         : print('request failure: ${response}');
+    //   } else {
+    //     //Haven't access + refresh token => close connect + back to login
+    //     dio.close();
+    //   }
+    // } else {
+    //   // dio.interceptors.add(AuthInterceptor(accessToken));
+    //   callApi();
+    // }
   }
   void callApi() async {
     try {
-      var response = await dio.post(Path.login,
+      var response = await dio.post(AuthRouter.login,
           data: {"username": "trung1234", "password": "123123"});
       print("OK: $response");
     } catch (err) {
@@ -55,7 +58,6 @@ class Http {
     }
   }
 
-  //chạy hàm này để lấy refresh token nếu assetToken hết hạn
   Object handleRefreshToken() async {
     Response response;
     try {

@@ -9,7 +9,7 @@ class MyTextField extends StatefulWidget {
       required this.controller,
       required this.icon,
       this.isPassword = false,
-      this.isShowPass = false});
+      this.isShowPass = false, this.onChanged});
 
   final String label;
   final String? hintText;
@@ -17,6 +17,7 @@ class MyTextField extends StatefulWidget {
   final Widget icon;
   final bool isPassword;
   final bool isShowPass;
+  final Function(String)? onChanged;
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
@@ -45,6 +46,7 @@ class _MyTextFieldState extends State<MyTextField> {
           onTapOutside: (event) {
             FocusManager.instance.primaryFocus?.unfocus();
           },
+          onChanged: widget.onChanged,
           obscureText: widget.isShowPass,
           style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(

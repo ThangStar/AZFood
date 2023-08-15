@@ -7,8 +7,9 @@ import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
 // status: 0 -> watting, 1 -> online, 2 -> error
 class ItemTable extends StatelessWidget {
-  const ItemTable({super.key, required this.table});
+  const ItemTable({super.key, required this.table, required this.onTap});
   final Model.Table table;
+  final Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,7 @@ class ItemTable extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () {
-                      print("object");
-                    },
+                    onTap: onTap,
                     child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 12),

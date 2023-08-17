@@ -20,35 +20,49 @@ class AuthInterceptor extends Interceptor {
 
 class Http {
   late Dio dio;
-  late String accessToken;
-  late String refreshToken;
+  late String token;
   Http() {
     dio = Dio(BaseOptions(
         baseUrl: Env.BASE_URL ?? "http://localhost:8080",
         headers: {'Content-Type': 'application/json'},
         connectTimeout: const Duration(seconds: 10)));
 
-    // accessToken = Auth.getAccessTokenFromStorage();
-    // refreshToken = Auth.getRefreshTokenFromStorage();
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest:
+            (RequestOptions options, RequestInterceptorHandler handler) async {
+          // Do something before request is sent.
+          // If you want to resolve the request with custom data,
+          // you can resolve a `Response` using `handler.resolve(response)`.
+          // If you want to reject the request with a error message,
+          // you can reject with a `DioException` using `handler.reject(dioError)`.
+          print("ALO");
 
-    // if (accessToken.isEmpty) {
-    //   if (refreshToken.isNotEmpty) {
-    //     //Call API if u only has refresh token
-    //     dio.interceptors.add(AuthInterceptor(refreshToken));
-    //     final response = handleRefreshToken();
-    //     response is Success
-    //         ? print('request success!: ${response.data}')
-    //         : print('request failure: ${response}');
-    //   } else {
-    //     //Haven't access + refresh token => close connect + back to login
-    //     dio.close();
-    //   }
-    // } else {
-    //   // dio.interceptors.add(AuthInterceptor(accessToken));
-    //   callApi();
-    // }
+          token = await Auth.getTokenFromStorage();
+
+          options.headers['Authorization'] = 'Bearer $token';
+          options.headers['Access-Control-Allow-Origin'] = '*';
+          return handler.next(options);
+        },
+        onResponse: (Response response, ResponseInterceptorHandler handler) {
+          // Do something with response data.
+          // If you want to reject the request with a error message,
+          // you can reject a `DioException` object using `handler.reject(dioError)`.
+          return handler.next(response);
+        },
+        onError: (DioException e, ErrorInterceptorHandler handler) {
+          // Do something with response error.
+          // If you want to resolve the request with some custom data,
+          // you can resolve a `Response` object using `handler.resolve(response)`.
+          print("LỖI REQUEST $e");
+          return handler.next(e);
+        },
+      ),
+    );
   }
-  void callApi() async {
+
+  void relogin() async {
+    //login to twice -> failed -> navigate to login
     try {
       var response = await dio.post(AuthRouter.login,
           data: {"username": "trung1234", "password": "123123"});
@@ -61,8 +75,7 @@ class Http {
   Object handleRefreshToken() async {
     Response response;
     try {
-      response = await dio
-          .post('/url-refreshToken', data: {refreshToken: refreshToken});
+      response = await dio.post('/url-refreshToken', data: {token: token});
       return response.statusCode == 200 || response.statusCode == 201
           ? Success(data: response.data, statusCode: response.statusCode)
           : Failure(dataErr: response.data, statusCode: response.statusCode);
@@ -71,9 +84,7 @@ class Http {
     }
   }
 }
-
 //how to use
-//  final dio = Dio();
-//     dio.interceptors.add(AuthInterceptor('your_jwt_token_here'));
+Dio http = Http().dio;
 //
 //     final response = await dio.get('https://your-api.com/endpoint');

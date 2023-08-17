@@ -5,11 +5,8 @@ class Success{
 }
 
 class Failure{
-  final Object? dataErr;
+  final String dataErr;
   final int? statusCode;
-  final String messageErr;
 
-  //if status code is null => check by messageErr
-
-  Failure( { this.dataErr, this.statusCode, this.messageErr = ""});
+  Failure({required this.dataErr, this.statusCode = 404});
 }

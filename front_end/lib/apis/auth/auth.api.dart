@@ -18,11 +18,11 @@ class AuthApi {
             data: "${response.data}", statusCode: response.statusCode);
       } else {
         print("failure login ${response.data}");
-        return Failure(dataErr: response.data, statusCode: response.statusCode);
+        return Failure(dataErr: "response.data", statusCode: response.statusCode);
       }
     } catch (err) {
       print("error login $err");
-      return Failure(messageErr: err.toString());
+      return Failure(dataErr: "err");
     }
     // return Http().dio.post(ApiPath.login);
   }

@@ -68,6 +68,32 @@ exports.getList = async (req, res) => {
     }
 
 }
+
+exports.searchUser = async (req, res) => {
+
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        const name = req.body.name;
+        const queryRaw = "SELECT * FROM users where name LIKE :name";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements:  {name: `%${name}%`},
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (error) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(401).send('member is not admin');
+    }
+
+}
 exports.getDetails = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     const id = req.body.id;

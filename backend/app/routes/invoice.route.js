@@ -7,6 +7,7 @@ module.exports = app => {
   
     router.get("/list",[jwt.checkJwt] , invoice.getList );
     router.get("/details",[jwt.checkJwt] , invoice.getDetails );
+    router.get("/search",[jwt.checkJwt] , invoice.searchByDate );
   
     app.use('/api/invoice', router);
   };

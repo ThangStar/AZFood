@@ -26,7 +26,7 @@ class AuthenticationBloc
     Object response = await AuthApi.login(event.username, event.password);
     if (response is Success) {
       emit(AuthLoginSuccess());
-      print("jsonDecode(response.data): ${jsonDecode(response.data)}");
+      // print("jsonDecode(response.data): ${jsonDecode(response.data)}");
       LoginResult loginResult = LoginResult.fromJson(response.data);
       print("loginResult: ${loginResult.username}");
 
@@ -45,7 +45,7 @@ class AuthenticationBloc
       // String? c = await MySharePreferences.loadSavedData(KeyStorages.keyPassword);
       // print("a,b,c: ${a} ${b} ${c}");
     } else if (response is Failure) {
-      print("response.dataErr: ${response.messageErr}");
+      print("response.dataErr");
       emit(AuthLoginFailed());
     }
   }

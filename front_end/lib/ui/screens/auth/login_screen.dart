@@ -74,14 +74,9 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: colorScheme(context).background,
         body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0XFFF8F6F4), Color(0XFFD2E9E9)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
+          color: colorScheme(context).tertiary.withOpacity(0.3),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -89,33 +84,28 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
-                      border: Border.all(width: 1.5, color: Colors.white),
-                      color: Colors.white.withOpacity(0.2)),
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      border: Border.all(
+                          width: 1, color: colorScheme(context).tertiary),
+                      color: colorScheme(context).background),
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            'assets/svgs/logo.svg',
-                            width: 40,
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          const Text(
-                            "ĐĂNG NHẬP",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          ),
-                        ],
+                      SvgPicture.asset('assets/svgs/logo.svg'),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      Text(
+                        "ĐĂNG NHẬP",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(
-                        height: 25,
+                        height: 18,
                       ),
                       MyAlert(
                         height: isShowAlert ? null : 0,
@@ -124,11 +114,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         message: "Tài khoản hoặc mật khẩu không chính xác",
                       ),
                       const SizedBox(
-                        height: 10,
+                        height: 6,
                       ),
                       MyTextField(
                         onChanged: (p0) {
-                          if (isShowAlert) {
+                          if(isShowAlert){
                             setState(() {
                               isShowAlert = false;
                             });
@@ -140,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: usernameController,
                       ),
                       const SizedBox(
-                        height: 15,
+                        height: 6,
                       ),
                       MyTextField(
                         isShowPass: isShowPass,
@@ -156,23 +146,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 8,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              MyCheckBox(
-                                value: cbxSaveLogin,
-                                onChanged: (p0) => _onChangeSaveLogin(p0!),
-                              ),
-                              const Text('Lưu đăng nhập', style: TextStyle(fontSize: 16),)
-                            ],
-                          ),
-                          const Text('Quên mật khẩu',  style: TextStyle(fontSize: 16, color: Colors.blue))
-                        ],
+                      MyCheckBox(
+                        value: cbxSaveLogin,
+                        onChanged: (p0) => _onChangeSaveLogin(p0!),
                       ),
                       const SizedBox(
-                        height: 25,
+                        height: 8,
                       ),
                       Hero(
                           tag: "login_hero",
@@ -185,16 +164,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           )),
                       const SizedBox(
-                        height: 20,
+                        height: 16,
                       ),
                       const Divider(),
                       const SizedBox(
-                        height: 10,
+                        height: 16,
                       ),
-                      SizedBox(
+                      Container(
                           width: double.infinity,
                           child: Text(
-                            "BloC App",
+                            "@name app",
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 color: colorScheme(context)

@@ -19,7 +19,7 @@ var textTheme = (BuildContext context) => TextTheme(
           color: colorScheme(context).scrim.withOpacity(0.8),
           letterSpacing: 0.5,
           fontWeight: FontWeight.normal,
-          fontSize: 16,
+          fontSize: 18,
           fontFamily: GoogleFonts.roboto().fontFamily),
       labelLarge: TextStyle(
           color: colorScheme(context).scrim.withOpacity(0.8),
@@ -31,7 +31,7 @@ var textTheme = (BuildContext context) => TextTheme(
           color: colorScheme(context).scrim.withOpacity(0.8),
           letterSpacing: 0.5,
           fontWeight: FontWeight.normal,
-          fontSize: 12,
+          fontSize: 16,
           fontFamily: GoogleFonts.roboto().fontFamily),
       bodySmall: TextStyle(
           color: colorScheme(context).scrim.withOpacity(0.8),

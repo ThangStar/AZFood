@@ -13,15 +13,14 @@ class AuthApi {
       Response<dynamic> response = await http.post(AuthRouter.login,
           data: {'username': username, 'password': password});
       if (response.statusCode == 200) {
-        print(response);
         return Success(response: response, statusCode: response.statusCode);
       } else {
         print("failure login ${response.data}");
         return Failure(response: response, statusCode: response.statusCode);
       }
     } on DioException catch (err) {
-      print("error login ${err.response?.data}");
-      return Failure(response: err.response?.data);
+      print("error login ${err.response}");
+      return Failure(response: err.response);
     }
     // return Http().dio.post(ApiPath.login);
   }

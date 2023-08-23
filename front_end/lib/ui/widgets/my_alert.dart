@@ -32,7 +32,7 @@ class MyAlert extends StatelessWidget {
               ? colorScheme(context).error :
               typeAlert == TypeAlert.info ?
               colorScheme(context).primary
-              : Colors.yellow,
+              : Colors.yellow[900],
         ),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: Row(

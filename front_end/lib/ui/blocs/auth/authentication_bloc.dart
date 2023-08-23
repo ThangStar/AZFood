@@ -33,14 +33,15 @@ class AuthenticationBloc
 
       //save result to storage
       try {
-        print("JSON");
+        // print(result.response);  
         // await MySharePreferences.saveData(
         //     KeyStorages.myProfile, jsonEncode(loginResult.toMap()));
       } catch (err) {
         print("err: $err");
       }
     } else if (result is Failure) {
-      if (result.response == null) {
+      print(result.response);
+      if (result.response?.data == null) {
         print("mat ket noi may chu");
         emit(AuthLoginConnectionFailed());
       } else {

@@ -7,6 +7,7 @@ import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/my_snack_bar.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
@@ -21,8 +22,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late bool isShowPass;
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController(text: "huy123");
+  final TextEditingController passwordController = TextEditingController(text: "123456");
+
+  String messageErr = '';
+  TypeAlert typeMessageErr = TypeAlert.error;
 
   bool cbxSaveLogin = false;
   bool isShowAlert = false;
@@ -43,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _fillDataForm() async {
     LoginResult? rs =
         await MySharePreferences.loadSavedData(KeyStorages.myProfile);
+        print(rs);
     if (rs != null) {
       passwordController.text = rs.username;
       // usernameController.text = ;
@@ -62,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthLoginSuccess) {
+          showMySnackBar(context, "Đăng nhập thành công", TypeSnackBar.success);
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -70,6 +76,14 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (state is AuthLoginFailed) {
           setState(() {
             isShowAlert = true;
+            messageErr = "Tài khoản hoặc mật khẩu không chính xác";
+            typeMessageErr = TypeAlert.error;
+          });
+        } else if (state is AuthLoginConnectionFailed) {
+          setState(() {
+            isShowAlert = true;
+            messageErr = "Mất kết nối đến máy chủ";
+            typeMessageErr = TypeAlert.warming;
           });
         }
       },
@@ -111,14 +125,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: isShowAlert ? null : 0,
                         icon: Icons.warning_rounded,
                         title: "Thông báo",
-                        message: "Tài khoản hoặc mật khẩu không chính xác",
+                        message: messageErr,
+                        typeAlert: typeMessageErr,
                       ),
                       const SizedBox(
                         height: 6,
                       ),
                       MyTextField(
                         onChanged: (p0) {
-                          if(isShowAlert){
+                          if (isShowAlert) {
                             setState(() {
                               isShowAlert = false;
                             });
@@ -133,6 +148,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 6,
                       ),
                       MyTextField(
+                        onChanged: (p0) {
+                          setState(() {
+                            isShowAlert = false;
+                          });
+                        },
                         isShowPass: isShowPass,
                         label: "Mật khẩu",
                         controller: passwordController,

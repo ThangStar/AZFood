@@ -14,7 +14,8 @@ class AuthLoginProgress extends AuthenticationState {
   //save token to local
 }
 
-class AuthLoginSuccess extends AuthenticationState {
-}
-class AuthLoginFailed extends AuthenticationState {
-}
+class AuthLoginSuccess extends AuthenticationState {}
+
+class AuthLoginFailed extends AuthenticationState {}
+
+class AuthLoginConnectionFailed extends AuthenticationState {}

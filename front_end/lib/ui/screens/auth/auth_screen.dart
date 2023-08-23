@@ -4,7 +4,7 @@ import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 
-import '../../utils/utils.dart';
+import '../../utils/my_bottom_sheet.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});

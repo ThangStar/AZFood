@@ -23,30 +23,30 @@ class AuthenticationBloc
   FutureOr<void> _loginAuthEvent(
       LoginAutEvent event, Emitter<AuthenticationState> emit) async {
     emit(AuthLoginProgress());
-    Object response = await AuthApi.login(event.username, event.password);
-    if (response is Success) {
+    Object result = await AuthApi.login(event.username, event.password);
+    if (result is Success) {
       emit(AuthLoginSuccess());
       // print("jsonDecode(response.data): ${jsonDecode(response.data)}");
-      LoginResult loginResult = LoginResult.fromJson(response.data);
-      print("loginResult: ${loginResult.username}");
+      // LoginResult loginResult = LoginResult.fromJson(jsonEncode(response.data));
+      // print("loginResult: ${loginResult.username}");
+      // final a  = response.data as dynamic;
 
       //save result to storage
       try {
-        await MySharePreferences.saveData(
-            KeyStorages.myProfile, jsonEncode(loginResult.toMap()));
-        sleep(const Duration(seconds: 3));
+        print("JSON");
+        // await MySharePreferences.saveData(
+        //     KeyStorages.myProfile, jsonEncode(loginResult.toMap()));
       } catch (err) {
         print("err: $err");
       }
-
-      //
-      // String? a = await MySharePreferences.loadSavedData(KeyStorages.keyToken);
-      // String? b = await MySharePreferences.loadSavedData(KeyStorages.keyUsername);
-      // String? c = await MySharePreferences.loadSavedData(KeyStorages.keyPassword);
-      // print("a,b,c: ${a} ${b} ${c}");
-    } else if (response is Failure) {
-      print("response.dataErr");
-      emit(AuthLoginFailed());
+    } else if (result is Failure) {
+      if (result.response == null) {
+        print("mat ket noi may chu");
+        emit(AuthLoginConnectionFailed());
+      } else {
+        print("tk mk k chinh xac");
+        emit(AuthLoginFailed());
+      }
     }
   }
 }

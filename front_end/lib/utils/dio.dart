@@ -73,17 +73,18 @@ class Http {
   }
 
   Object handleRefreshToken() async {
-    Response response;
+    Response response = Response(requestOptions: RequestOptions());
     try {
       response = await dio.post('/url-refreshToken', data: {token: token});
       return response.statusCode == 200 || response.statusCode == 201
-          ? Success(data: response.data, statusCode: response.statusCode)
-          : Failure(dataErr: response.data, statusCode: response.statusCode);
+          ? Success(response: response, statusCode: response.statusCode)
+          : Failure(response: response, statusCode: response.statusCode);
     } catch (err) {
-      return Failure(dataErr: "response.data");
+      return Failure(response: response);
     }
   }
 }
+
 //how to use
 Dio http = Http().dio;
 //

@@ -23,7 +23,7 @@ primary: Color(0xFF1573FE), // primary
   surface: Color(0xFFFDFBFF),
   onSurface: Color(0xFF001B3D),
   surfaceVariant: Color(0xFFE4E1EC),
-  onSurfaceVariant: Color(0xFF46464F),
+  onSurfaceVariant: Color(0xFF46464F), //color auto icon
   outline: Color(0xFF777680),
   onInverseSurface: Color(0xFFECF0FF),
   inverseSurface: Color(0xFF003062),

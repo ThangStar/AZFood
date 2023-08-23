@@ -10,19 +10,18 @@ class AuthApi {
     //if: u has assets token? => call api send asset token
     //else: send username + password call api and save asset token + refresh token
     try {
-      Response<Object> response = await Http().dio.post(AuthRouter.login,
+      Response<dynamic> response = await http.post(AuthRouter.login,
           data: {'username': username, 'password': password});
       if (response.statusCode == 200) {
-        print(response.data);
-        return Success(
-            data: "${response.data}", statusCode: response.statusCode);
+        print(response);
+        return Success(response: response, statusCode: response.statusCode);
       } else {
         print("failure login ${response.data}");
-        return Failure(dataErr: "response.data", statusCode: response.statusCode);
+        return Failure(response: response, statusCode: response.statusCode);
       }
-    } catch (err) {
-      print("error login $err");
-      return Failure(dataErr: "err");
+    } on DioException catch (err) {
+      print("error login ${err.response?.data}");
+      return Failure(response: err.response?.data);
     }
     // return Http().dio.post(ApiPath.login);
   }

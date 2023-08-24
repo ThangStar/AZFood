@@ -20,6 +20,21 @@ class ProductApi {
       print("error  ${err.response}");
       return Failure(response: err.response);
     }
-    // return Http().dio.post(ApiPath.login);
+  }
+
+   static Future<Object> getCategory() async {
+    try {
+      Response<dynamic> response = await http.get(Router.category);
+      if (response.statusCode == 200) {
+        print(response);
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error  ${err.response}");
+      return Failure(response: err.response);
+    }
   }
 }

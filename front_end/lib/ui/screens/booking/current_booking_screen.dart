@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/product_booking.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -21,72 +22,25 @@ class CurrentBookingScreen extends StatefulWidget {
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  List<ProductBooking> productBookings = [
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 0,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    )
+  List<Product> products = [
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
+    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,51 +120,77 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                         ),
                       ),
                     ),
-                    // ListView.builder(
-                    //   shrinkWrap: true,
-                    //   primary: false,
-                    //   itemCount: productBookings.length,
-                    //   itemBuilder: (context, index) {
-                    //     ProductBooking productBooking = productBookings[index];
-                    //     return ItemProduct(
-                    //       productBooking: productBooking,
-                    //       subTitle: SubTitleItemCurrentBill(
-                    //           productBooking: productBooking),
-                    //       trailling: Row(
-                    //         mainAxisSize: MainAxisSize.min,
-                    //         children: [
-                    //           Center(
-                    //             child: Container(
-                    //                 decoration: BoxDecoration(
-                    //                   borderRadius: BorderRadius.circular(6),
-                    //                   border: Border.all(
-                    //                       color: colorScheme(context).primary),
-                    //                   color: colorScheme(context)
-                    //                       .primary
-                    //                       .withOpacity(0.1),
-                    //                 ),
-                    //                 padding: const EdgeInsets.symmetric(
-                    //                     horizontal: 8, vertical: 2),
-                    //                 child: Text(
-                    //                   "10",
-                    //                   style: TextStyle(
-                    //                       fontSize: 14,
-                    //                       fontWeight: FontWeight.bold,
-                    //                       color: colorScheme(context).primary),
-                    //                 )),
-                    //           ),
-                    //           const SizedBox(
-                    //             width: 4,
-                    //           ),
-                    //           IconButton(
-                    //             icon: const Icon(Icons.more_vert),
-                    //             onPressed: () {},
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     );
-                    //   },
-                    // )
+                    ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        Product product = products[index];
+                        return ItemProduct(
+                          product: product,
+                          subTitle: SubTitleItemCurrentBill(product: product),
+                          trailling: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(
+                                          color: colorScheme(context)
+                                              .primary
+                                              .withOpacity(0.3)),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Material(
+                                          color: Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                          child: InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              padding: EdgeInsets.all(2),
+                                              child: Icon(Icons.remove,
+                                                  color: colorScheme(context)
+                                                      .primary),
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          " 10 ",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: colorScheme(context)
+                                                  .scrim
+                                                  .withOpacity(0.8)),
+                                        ),
+                                        Material(
+                                          color: Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                          child: InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              padding: EdgeInsets.all(2),
+                                              child: Icon(Icons.add,
+                                                  color: colorScheme(context)
+                                                      .primary),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
@@ -288,7 +268,7 @@ class BottomActionBill extends StatelessWidget {
               ],
             ),
             const SizedBox(
-              height: 12,
+              height: 6,
             ),
             Row(
               children: [

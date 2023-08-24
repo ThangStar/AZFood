@@ -23,8 +23,8 @@ class ItemProduct extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
       onTap: () {},
       leading: SizedBox(
-        width: 80,
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             const LeadingItemStatus(),
             const SizedBox(

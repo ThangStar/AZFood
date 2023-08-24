@@ -3,5 +3,6 @@ class Router {
   static String register = "/register";
   static String profileDetail = "/api/user/details";
   static String listProduct = "/api/products/list";
+  static String category = "/api/products/category";
 
 }

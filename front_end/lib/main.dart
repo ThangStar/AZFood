@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => ProductBloc(),),
+        BlocProvider(create: (context) => ProfileBloc(),),
         BlocProvider(
           create: (context) => AuthenticationBloc(),
         ),

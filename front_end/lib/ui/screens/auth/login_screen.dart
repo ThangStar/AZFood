@@ -22,7 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late bool isShowPass;
-  final TextEditingController usernameController = TextEditingController(text: "huy123");
+  final TextEditingController usernameController = TextEditingController(text: "");
   final TextEditingController passwordController = TextEditingController(text: "123456");
 
   String messageErr = '';
@@ -46,11 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _fillDataForm() async {
     LoginResult? rs =
-        await MySharePreferences.loadSavedData(KeyStorages.myProfile);
+        await MySharePreferences.loadProfile();
         print(rs);
     if (rs != null) {
-      passwordController.text = rs.username;
-      // usernameController.text = ;
+      usernameController.text = rs.username;
     }
   }
 

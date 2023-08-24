@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:restaurant_manager_app/apis/path.api.dart';
 import 'package:restaurant_manager_app/constants/env.dart';
-import 'package:restaurant_manager_app/routers/auth.router.dart';
+import 'package:restaurant_manager_app/routers/router.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/utils/auth.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 
@@ -36,11 +36,11 @@ class Http {
           // you can resolve a `Response` using `handler.resolve(response)`.
           // If you want to reject the request with a error message,
           // you can reject with a `DioException` using `handler.reject(dioError)`.
-          print("ALO");
+          // print("ALO");
 
-          token = await Auth.getTokenFromStorage();
+          // token = "dw";
 
-          options.headers['Authorization'] = 'Bearer $token';
+          // options.headers['Authorization'] = 'Bearer $token';
           options.headers['Access-Control-Allow-Origin'] = '*';
           return handler.next(options);
         },
@@ -64,7 +64,7 @@ class Http {
   void relogin() async {
     //login to twice -> failed -> navigate to login
     try {
-      var response = await dio.post(AuthRouter.login,
+      var response = await dio.post(Router.login,
           data: {"username": "trung1234", "password": "123123"});
       print("OK: $response");
     } catch (err) {

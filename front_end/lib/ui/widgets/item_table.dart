@@ -61,7 +61,7 @@ class ItemTable extends StatelessWidget {
                               children: [
                                 Icon(Icons.access_time_sharp, color: colorScheme(context)
                                               .scrim
-                                              .withOpacity(0.6),),
+                                              .withOpacity(0.6),size: 18),
                                 Text(
                                   " ${table.time}",
                                   style: TextStyle(

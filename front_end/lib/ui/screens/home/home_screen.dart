@@ -2,6 +2,12 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_manager_app/constants/key_storages.dart';
+import 'package:restaurant_manager_app/model/login_result.dart';
+import 'package:restaurant_manager_app/model/profile.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
@@ -13,7 +19,7 @@ import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -38,6 +44,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int posFilterStatusSelected = 0;
   bool isShowFilter = false;
+
+  void _fillData() async {
+    LoginResult? profile = await MySharePreferences.loadProfile();
+    // usernameController.text = ;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fillData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +85,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const ToolbarHome(),
+                    BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                      builder: (context, state) {
+                        Profile profile = state.profile ??
+                            Profile(
+                                id: 0,
+                                username: "ABC",
+                                password: "pass",
+                                name: "ABC",
+                                role: "admin",
+                                phoneNumber: "0123",
+                                email: "email");
+                        return ToolbarHome(
+                          profile: profile,
+                        );
+                      },
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Column(
@@ -109,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     TextSpan(
                                         text:
                                             "${filterStatus[posFilterStatusSelected]}",
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold))
                                   ]),
                             ),
@@ -132,8 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                       duration: 200.ms,
-                      child: Row(
-                        children: [
+                      child: Row(children: [
                         Wrap(
                           spacing: 8,
                           children: filterStatus
@@ -172,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => CurrentBookingScreen(),
+                                  builder: (context) => const CurrentBookingScreen(),
                                 ));
                           },
                         )
@@ -202,7 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
 class ToolbarHome extends StatelessWidget {
   const ToolbarHome({
     super.key,
+    required this.profile,
   });
+  final Profile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +272,7 @@ class ToolbarHome extends StatelessWidget {
                       Scaffold.of(context).openDrawer();
                     },
                   ),
-                  Text("Xin chào, ABC",
+                  Text("Xin chào, ${profile.name.split(' ').last}",
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
@@ -264,9 +297,9 @@ class ToolbarHome extends StatelessWidget {
             const SizedBox(
               height: 30,
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: ToolbarProfile(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ToolbarProfile(profile: profile),
             ),
             const SizedBox(
               height: 30,
@@ -280,7 +313,8 @@ class ToolbarHome extends StatelessWidget {
 }
 
 class ToolbarProfile extends StatelessWidget {
-  const ToolbarProfile({super.key});
+  const ToolbarProfile({super.key, required this.profile});
+  final Profile profile;
 
   @override
   Widget build(BuildContext context) {
@@ -314,12 +348,12 @@ class ToolbarProfile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Nhân viên: ABC",
+                        "${profile.name}",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ).animate().shimmer(),
                       Text(
-                        "25-8-2002",
+                        "${profile.email}",
                         style: TextStyle(
                           color:
                               colorScheme(context).onPrimary.withOpacity(0.6),
@@ -337,7 +371,7 @@ class ToolbarProfile extends StatelessWidget {
                         left: BorderSide(
                             color: const Color(0xFFD4D4D8).withOpacity(0.3)))),
                 child: Text(
-                  "NV0001",
+                  "NV00${profile.id}",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold, color: Colors.white),
                 ),

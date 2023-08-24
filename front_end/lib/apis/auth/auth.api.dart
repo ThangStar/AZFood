@@ -1,6 +1,7 @@
+import 'package:bloc/src/bloc.dart';
 import 'package:dio/dio.dart';
-import 'package:restaurant_manager_app/apis/path.api.dart';
-import 'package:restaurant_manager_app/routers/auth.router.dart';
+import 'package:restaurant_manager_app/routers/router.dart';
+import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/utils/dio.dart';
 
 import '../../utils/response.dart';
@@ -10,7 +11,7 @@ class AuthApi {
     //if: u has assets token? => call api send asset token
     //else: send username + password call api and save asset token + refresh token
     try {
-      Response<dynamic> response = await http.post(AuthRouter.login,
+      Response<dynamic> response = await http.post(Router.login,
           data: {'username': username, 'password': password});
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
@@ -26,6 +27,6 @@ class AuthApi {
   }
 
   static Future<Object> register() {
-    return Http().dio.post(AuthRouter.register);
+    return Http().dio.post(Router.register);
   }
 }

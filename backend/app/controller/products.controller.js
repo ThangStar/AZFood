@@ -23,7 +23,7 @@ exports.createProduct = async (req, res) => {
                 res.status(200).json({ message: 'products updated successfully' });
             } else {
                 console.log("Insert");
-                const queryRaw = "INSERT INTO products (name, price, category, status, quantity , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ?);";
+                const queryRaw = "INSERT INTO products (name, price, category, status, quantity , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ? ,?);";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
@@ -38,7 +38,26 @@ exports.createProduct = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error });
     }
 }
+exports.updateStatus = async (req, res) => {
+    try {
+        const body = req.body;
+        const isAdmin = await Auth.checkAdmin(req);
+        if (isAdmin) {
+            console.log("Update status");
+                const queryRaw = "UPDATE products SET status = ? WHERE id = ?";
+                const resultRaw = await sequelize.query(queryRaw, {
+                    raw: true,
+                    logging: false,
+                    replacements: [ body.status, body.id],
+                    type: QueryTypes.UPDATE
+                });
+                res.status(200).json({ message: 'product status updated successfully' });
+        }
+    } catch (error) {
 
+    }
+
+}
 exports.getList = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
@@ -76,7 +95,7 @@ exports.getList = async (req, res) => {
             });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
-            console.log("error" , error)
+            console.log("error", error)
         }
     } else {
         res.status(401).send('User is not admin');
@@ -108,10 +127,11 @@ exports.getListCategory = async (req, res) => {
 
 }
 exports.getListStatus = async (req, res) => {
-
     const checkAuth = Auth.checkAuth(req);
+
     if (checkAuth) {
-        const queryRaw = "SELECT * FROM statusProduct";
+        const queryRaw = "SELECT * FROM products WHERE quantity = 0 OR status = 2";
+
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -119,18 +139,16 @@ exports.getListStatus = async (req, res) => {
                 replacements: [],
                 type: QueryTypes.SELECT
             });
-            res.send({ resultRaw })
-            res.status(200);
+
+            res.status(200).send({ resultRaw });
         } catch (error) {
-            res.status(500);
-            res.send(error)
+            res.status(500).send(error);
         }
-
     } else {
-        res.status(401).send('user is not admin');
+        res.status(401).send('User is not logged in');
     }
+};
 
-}
 exports.getDetails = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     const id = req.body.id;
@@ -193,16 +211,17 @@ exports.searchProduct = async (req, res) => {
                 raw: true,
                 logging: false,
                 replacements: {
-                    name: `%${name}%`},
+                    name: `%${name}%`
+                },
                 type: QueryTypes.SELECT
             });
             res.status(200).json({
                 data: resultRaw,
-                
+
             });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
-            console.log("error" , error)
+            console.log("error", error)
         }
     } else {
         res.status(401).send('User is not admin');

@@ -166,51 +166,51 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                         ),
                       ),
                     ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: productBookings.length,
-                      itemBuilder: (context, index) {
-                        ProductBooking productBooking = productBookings[index];
-                        return ItemProduct(
-                          productBooking: productBooking,
-                          subTitle: SubTitleItemCurrentBill(
-                              productBooking: productBooking),
-                          trailling: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Center(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: colorScheme(context).primary),
-                                      color: colorScheme(context)
-                                          .primary
-                                          .withOpacity(0.1),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    child: Text(
-                                      "10",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: colorScheme(context).primary),
-                                    )),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.more_vert),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    )
+                    // ListView.builder(
+                    //   shrinkWrap: true,
+                    //   primary: false,
+                    //   itemCount: productBookings.length,
+                    //   itemBuilder: (context, index) {
+                    //     ProductBooking productBooking = productBookings[index];
+                    //     return ItemProduct(
+                    //       productBooking: productBooking,
+                    //       subTitle: SubTitleItemCurrentBill(
+                    //           productBooking: productBooking),
+                    //       trailling: Row(
+                    //         mainAxisSize: MainAxisSize.min,
+                    //         children: [
+                    //           Center(
+                    //             child: Container(
+                    //                 decoration: BoxDecoration(
+                    //                   borderRadius: BorderRadius.circular(6),
+                    //                   border: Border.all(
+                    //                       color: colorScheme(context).primary),
+                    //                   color: colorScheme(context)
+                    //                       .primary
+                    //                       .withOpacity(0.1),
+                    //                 ),
+                    //                 padding: const EdgeInsets.symmetric(
+                    //                     horizontal: 8, vertical: 2),
+                    //                 child: Text(
+                    //                   "10",
+                    //                   style: TextStyle(
+                    //                       fontSize: 14,
+                    //                       fontWeight: FontWeight.bold,
+                    //                       color: colorScheme(context).primary),
+                    //                 )),
+                    //           ),
+                    //           const SizedBox(
+                    //             width: 4,
+                    //           ),
+                    //           IconButton(
+                    //             icon: const Icon(Icons.more_vert),
+                    //             onPressed: () {},
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     );
+                    //   },
+                    // )
                   ],
                 ),
               ),

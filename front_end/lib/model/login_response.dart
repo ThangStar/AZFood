@@ -1,17 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // To parse this JSON data, do
 //
-//     final loginResult = loginResultFromJson(jsonString);
+//     final LoginResponse = LoginResponseFromJson(jsonString);
 
 import 'dart:convert';
 
-class LoginResult {
+class LoginResponse {
   bool connexion;
   String jwtToken;
   int id;
   String username;
 
-  LoginResult({
+  LoginResponse({
     required this.connexion,
     required this.jwtToken,
     required this.id,
@@ -28,8 +28,8 @@ class LoginResult {
     };
   }
 
-  factory LoginResult.fromMap(Map<String, dynamic> map) {
-    return LoginResult(
+  factory LoginResponse.fromMap(Map<String, dynamic> map) {
+    return LoginResponse(
       connexion: map['connexion'] as bool,
       jwtToken: map['jwtToken'] as String,
       id: map['id'] as int,
@@ -39,15 +39,15 @@ class LoginResult {
 
   String toJson() => json.encode(toMap());
 
-  factory LoginResult.fromJson(String source) => LoginResult.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory LoginResponse.fromJson(String source) => LoginResponse.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  LoginResult copyWith({
+  LoginResponse copyWith({
     bool? connexion,
     String? jwtToken,
     int? id,
     String? username,
   }) {
-    return LoginResult(
+    return LoginResponse(
       connexion: connexion ?? this.connexion,
       jwtToken: jwtToken ?? this.jwtToken,
       id: id ?? this.id,

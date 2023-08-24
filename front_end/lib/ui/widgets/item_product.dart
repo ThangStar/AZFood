@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/product_booking.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/leading_item_status.dart';
 
 //  Text
-//("${NumberFormat.decimalPattern().format(productBooking.money)} đ"),
+//("${NumberFormat.decimalPattern().format(product.money)} đ"),
 
 class ItemProduct extends StatelessWidget {
   const ItemProduct(
       {super.key,
-      required this.productBooking,
+      required this.product,
       required this.subTitle,
       required this.trailling});
-  final ProductBooking productBooking;
+  final Product product;
   final Widget subTitle;
   final Widget trailling;
   @override
@@ -22,7 +23,7 @@ class ItemProduct extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
       onTap: () {},
       leading: SizedBox(
-        width: 100,
+        width: 80,
         child: Row(
           children: [
             const LeadingItemStatus(),
@@ -34,7 +35,8 @@ class ItemProduct extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: Image.network(
-                  productBooking.image,
+                  product.imageUrl ??
+                      "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -45,11 +47,11 @@ class ItemProduct extends StatelessWidget {
       title: Row(
         children: [
           Text(
-            "${productBooking.name} - ",
+            "${product.name} - ",
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           Text(
-            productBooking.type,
+            "${product.category}",
             style: Theme.of(context)
                 .textTheme
                 .bodyLarge
@@ -66,10 +68,10 @@ class ItemProduct extends StatelessWidget {
 class SubTitleItemProduct extends StatelessWidget {
   const SubTitleItemProduct({
     super.key,
-    required this.productBooking,
+    required this.product,
   });
 
-  final ProductBooking productBooking;
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +79,7 @@ class SubTitleItemProduct extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6),
       child: Row(
         children: [
-          productBooking.amount == 0
+          product.quantity == 0
               ? const Icon(
                   Icons.error,
                   size: 18,
@@ -85,22 +87,19 @@ class SubTitleItemProduct extends StatelessWidget {
                 )
               : const SizedBox.shrink(),
           Container(
-            decoration: productBooking.amount == 0
+            decoration: product.quantity == 0
                 ? null
                 : BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     color: Color(0xFF049C6B),
                   ),
-            padding: productBooking.amount != 0
+            padding: product.quantity != 0
                 ? EdgeInsets.symmetric(horizontal: 12, vertical: 6)
                 : null,
             child: Text(
-              productBooking.amount == 0
-                  ? " Hết hàng"
-                  : "${productBooking.amount}",
+              product.quantity == 0 ? " Hết hàng" : "${product.quantity}",
               style: TextStyle(
-                  color:
-                      productBooking.amount == 0 ? Colors.red : Colors.white),
+                  color: product.quantity == 0 ? Colors.red : Colors.white),
             ),
           )
         ],
@@ -110,15 +109,15 @@ class SubTitleItemProduct extends StatelessWidget {
 }
 
 class SubTitleItemCurrentBill extends StatelessWidget {
-  const SubTitleItemCurrentBill({super.key, required this.productBooking});
-  final ProductBooking productBooking;
+  const SubTitleItemCurrentBill({super.key, required this.product});
+  final Product product;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.only(top: 6),
         child: Text(
-          "${NumberFormat.decimalPattern().format(productBooking.money)} đ",
+          "${NumberFormat.decimalPattern().format(product.price)} đ",
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: colorScheme(context).primary, fontWeight: FontWeight.bold),
         ));

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_manager_app/constants/key_storages.dart';
-import 'package:restaurant_manager_app/model/login_result.dart';
+import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _fillDataForm() async {
-    LoginResult? rs =
+    LoginResponse? rs =
         await MySharePreferences.loadProfile();
         print(rs);
     if (rs != null) {

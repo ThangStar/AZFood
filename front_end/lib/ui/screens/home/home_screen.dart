@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/constants/key_storages.dart';
-import 'package:restaurant_manager_app/model/login_result.dart';
+import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isShowFilter = false;
 
   void _fillData() async {
-    LoginResult? profile = await MySharePreferences.loadProfile();
+    LoginResponse? profile = await MySharePreferences.loadProfile();
     // usernameController.text = ;
   }
 

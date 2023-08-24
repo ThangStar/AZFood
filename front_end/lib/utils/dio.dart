@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:restaurant_manager_app/constants/env.dart';
+import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/routers/router.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/utils/auth.dart';
@@ -38,9 +39,13 @@ class Http {
           // you can reject with a `DioException` using `handler.reject(dioError)`.
           // print("ALO");
 
-          // token = "dw";
+          LoginResponse? loginResult = await MySharePreferences.loadProfile();
+          print("token ${loginResult?.jwtToken}");
+          if (loginResult != null) {
+            token = loginResult.jwtToken;
+            options.headers['Authorization'] = 'Bearer $token';
+          }
 
-          // options.headers['Authorization'] = 'Bearer $token';
           options.headers['Access-Control-Allow-Origin'] = '*';
           return handler.next(options);
         },

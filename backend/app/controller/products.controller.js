@@ -193,7 +193,7 @@ exports.filterCategory = async (req, res) => {
         const queryRaw = "SELECT * FROM products WHERE category = ?;";
         const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [categoryID], type: QueryTypes.SELECT });
         res.status(200);
-        res.send(resultRaw);
+        res.send({resultRaw});
     } else {
         res.status(401);
     }

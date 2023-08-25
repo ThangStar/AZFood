@@ -32,13 +32,6 @@ class Http {
       InterceptorsWrapper(
         onRequest:
             (RequestOptions options, RequestInterceptorHandler handler) async {
-          // Do something before request is sent.
-          // If you want to resolve the request with custom data,
-          // you can resolve a `Response` using `handler.resolve(response)`.
-          // If you want to reject the request with a error message,
-          // you can reject with a `DioException` using `handler.reject(dioError)`.
-          // print("ALO");
-
           LoginResponse? loginResult = await MySharePreferences.loadProfile();
           print("token ${loginResult?.jwtToken}");
           if (loginResult != null) {

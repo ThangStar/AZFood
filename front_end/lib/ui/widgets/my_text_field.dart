@@ -66,7 +66,7 @@ class _MyTextFieldState extends State<MyTextField> {
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(6),
                   borderSide:
-                      isFocus ? BorderSide(width: 1) : BorderSide.none)),
+                      isFocus ? const BorderSide(width: 1) : BorderSide.none)),
         ),
       ),
     );

@@ -10,7 +10,7 @@ class MyButtonGradient extends StatelessWidget {
           colors: [Color(0xFF4776E6), Color(0xFF8E54E9)]),
       this.backgroundColor,
       this.radius, 
-      this.padding = const EdgeInsets.symmetric(vertical: 14, horizontal: 16),  this.isFullWidth = false});
+      this.padding = const EdgeInsets.symmetric(vertical: 14, horizontal: 16)});
 
   final String text;
   final Function() onTap;
@@ -18,7 +18,6 @@ class MyButtonGradient extends StatelessWidget {
   final Color? backgroundColor;
   final double? radius;
   final EdgeInsetsGeometry? padding;
-  final bool isFullWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,6 @@ class MyButtonGradient extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: Container(
-              width: isFullWidth ? double.infinity : null,
               padding: padding,
               child: Text(
                 text,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
 class MyDrawer extends StatefulWidget {
-  const MyDrawer({super.key});
+  const MyDrawer({super.key, required this.profile});
+  final Profile profile;
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
@@ -56,9 +58,9 @@ class _MyDrawerState extends State<MyDrawer> {
                       icon: const Icon(Icons.cancel),
                     )
                   ],
-                  accountName: const Text("Nông Văn Thắng"),
+                  accountName:  Text(widget.profile.name),
                   accountEmail: Text(
-                    "thangpro@gmail.com",
+                    widget.profile.email,
                     style: TextStyle(
                         color: colorScheme(context).onPrimary.withOpacity(0.6)),
                   )),

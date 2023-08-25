@@ -8,59 +8,83 @@ import 'package:restaurant_manager_app/ui/widgets/leading_item_status.dart';
 //  Text
 //("${NumberFormat.decimalPattern().format(product.money)} đ"),
 
-class ItemProduct extends StatelessWidget {
+class ItemProduct extends StatefulWidget {
   const ItemProduct(
       {super.key,
       required this.product,
       required this.subTitle,
-      required this.trailling});
+      required this.trailling,
+      this.onTap});
   final Product product;
   final Widget subTitle;
   final Widget trailling;
+  final Function(bool)? onTap;
+
+  @override
+  State<ItemProduct> createState() => _ItemProductState();
+}
+
+class _ItemProductState extends State<ItemProduct> {
+    bool isSelected = false;
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-      onTap: () {},
-      leading: SizedBox(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const LeadingItemStatus(),
-            const SizedBox(
-              width: 5,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  product.imageUrl ??
-                      "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
-                  fit: BoxFit.cover,
+    return Opacity(
+      opacity: widget.product.quantity != 0 && widget.product.quantity != null
+          ? 1
+          : 0.6,
+      child: ListTile(
+        enabled:
+            widget.product.quantity != 0 && widget.product.quantity != null,
+        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+        onTap: () {
+          setState(() {
+            isSelected = !isSelected;
+            if (widget.onTap != null) {
+              widget.onTap!(isSelected);
+            }
+          });
+        },
+        leading: SizedBox(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const LeadingItemStatus(),
+              const SizedBox(
+                width: 5,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.network(
+                    widget.product.imageUrl ??
+                        "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
+            ],
+          ),
+        ),
+        title: Row(
+          children: [
+            Text(
+              "${widget.product.name} - ",
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
+            Text(
+              "${widget.product.category}",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: colorScheme(context).primary),
+            )
           ],
         ),
+        subtitle: widget.subTitle,
+        trailing: widget.trailling,
+        tileColor: isSelected ? Colors.amber : null,
       ),
-      title: Row(
-        children: [
-          Text(
-            "${product.name} - ",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          Text(
-            "${product.category}",
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                ?.copyWith(color: colorScheme(context).primary),
-          )
-        ],
-      ),
-      subtitle: subTitle,
-      trailing: trailling,
     );
   }
 }
@@ -118,8 +142,10 @@ class SubTitleItemCurrentBill extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6),
         child: Text(
           "${NumberFormat.decimalPattern().format(product.price)} đ",
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colorScheme(context).primary, fontWeight: FontWeight.bold),
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(color: colorScheme(context).primary),
         ));
   }
 }

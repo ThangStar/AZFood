@@ -59,7 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const MyDrawer(),
+      drawer: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+          return MyDrawer(
+              profile: state.profile ??
+                  Profile(
+                      id: 0,
+                      username: "username",
+                      password: "password",
+                      name: "name",
+                      role: "role",
+                      phoneNumber: "phoneNumber",
+                      email: "email"));
+        },
+      ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: colorScheme(context).primary,
           onPressed: () {},
@@ -203,7 +216,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const CurrentBookingScreen(),
+                                  builder: (context) =>
+                                      const CurrentBookingScreen(),
                                 ));
                           },
                         )

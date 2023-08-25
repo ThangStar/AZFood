@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+
 var colorScheme = (BuildContext context) => Theme.of(context).colorScheme;
 const lightColorScheme = ColorScheme(
   brightness: Brightness.light,
-primary: Color(0xFF1573FE), // primary
-  onPrimary: Color.fromARGB(255, 255, 255, 255), 
+  primary: Color(0xFF1573FE), // primary
+  onPrimary: Color.fromARGB(255, 255, 255, 255),
   primaryContainer: Color(0xFFE0E0FF),
   onPrimaryContainer: Color(0xFF00006E),
- secondary: Color(0xFF6E85E3),//button
+  secondary: Color(0xFF6E85E3), //button
   onSecondary: Color(0xFFFFFFFF),
   secondaryContainer: Color(0xFFE0E0FF),
   onSecondaryContainer: Color(0xFF00006E),
- tertiary: Color(0xFFD4D4D8), //gray
+  tertiary: Color(0xFFD4D4D8), //gray
   onTertiary: Color(0xFFFFFFFF),
   tertiaryContainer: Color(0xFFFFD9E3),
   onTertiaryContainer: Color(0xFF3E001E),
@@ -18,7 +19,7 @@ primary: Color(0xFF1573FE), // primary
   errorContainer: Color(0xFFFFDAD6),
   onError: Color(0xFFFFFFFF),
   onErrorContainer: Color(0xFF410002),
-  background: Color(0xFFFDFBFF), 
+  background: Color(0xFFFDFBFF),
   onBackground: Color(0xFF001B3D),
   surface: Color(0xFFFDFBFF),
   onSurface: Color(0xFF001B3D),
@@ -31,7 +32,7 @@ primary: Color(0xFF1573FE), // primary
   shadow: Color(0xFF000000),
   surfaceTint: Color(0xFF3941F4),
   outlineVariant: Color(0xFFC7C5D0),
-  scrim: Color(0xFF000000),//text
+  scrim: Color(0xFF000000), //text
 );
 
 var darkColorScheme = ColorScheme(

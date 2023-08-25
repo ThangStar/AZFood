@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
+import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
@@ -18,6 +19,7 @@ class AddProductToCurrentBookingScreen extends StatefulWidget {
 class _AddProductToCurrentBookingScreenState
     extends State<AddProductToCurrentBookingScreen>
     with TickerProviderStateMixin {
+  List<Product> productsSelected = [];
   @override
   void initState() {
     super.initState();
@@ -35,6 +37,19 @@ class _AddProductToCurrentBookingScreenState
             await Future.delayed(5.seconds);
           },
           child: Scaffold(
+            floatingActionButton: productsSelected.isNotEmpty
+                ? FloatingActionButton.extended(
+                    backgroundColor: colorScheme(context).primary,
+                    onPressed: () {},
+                    label: Text(
+                      "Xác nhận thêm",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    icon: Icon(
+                      Icons.done,
+                      color: Colors.white,
+                    ))
+                : null,
             appBar: AppBar(
               bottom: const PreferredSize(
                   preferredSize: Size.zero,
@@ -106,7 +121,19 @@ class _AddProductToCurrentBookingScreenState
                           Product product = state.productResponse!.data[index];
                           return ItemProduct(
                               product: product,
-                              subTitle: Text("${product.quantity}"),
+                              onTap: (p0) {
+                                setState(() {
+                                  p0
+                                      ? productsSelected = [
+                                          ...productsSelected,
+                                          product
+                                        ]
+                                      : productsSelected = [...productsSelected
+                                    ..removeWhere(
+                                        (element) => element.id == product.id)];
+                                });
+                              },
+                              subTitle: SubTitleProduct(product: product),
                               trailling:
                                   SubTitleItemCurrentBill(product: product));
                         });
@@ -116,6 +143,46 @@ class _AddProductToCurrentBookingScreenState
               ),
             ])),
           )),
+    );
+  }
+}
+
+class SubTitleProduct extends StatelessWidget {
+  const SubTitleProduct({super.key, required this.product});
+  final Product product;
+  @override
+  Widget build(BuildContext context) {
+    int quantity = product.quantity ?? 0;
+    return Row(
+      children: [
+        Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: quantity != 0 ? const Color(0xFF049C6B) : null,
+            ),
+            padding: quantity != 0
+                ? const EdgeInsets.symmetric(horizontal: 14, vertical: 4)
+                : null,
+            child: Row(
+              children: [
+                quantity != 0
+                    ? const SizedBox.shrink()
+                    : const Icon(
+                        Icons.error,
+                        color: Colors.red,
+                      ),
+                Text(
+                  quantity != 0 && product.category != 1
+                      ? "Kho: ${quantity}"
+                      : quantity == 0
+                          ? " Hết hàng "
+                          : "Sẵn sàng",
+                  style: TextStyle(
+                      color: quantity != 0 ? Colors.white : Colors.red),
+                ),
+              ],
+            )),
+      ],
     );
   }
 }

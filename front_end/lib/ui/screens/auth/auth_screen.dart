@@ -44,7 +44,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   SvgPicture.asset(
                       width: sizeScreen.width,
                       height: sizeScreen.height * 0.4,
-                      'assets/images/person_pay.svg'),
+                      'assets/svgs/person_pay.svg'),
                 ],
               ),
             ),
@@ -67,9 +67,8 @@ class _AuthScreenState extends State<AuthScreen> {
                           Navigator.push(
                               context,
                               PageRouteBuilder(
-                                pageBuilder:
-                                    (context, _, __) =>
-                                        const LoginScreen(),
+                                pageBuilder: (context, _, __) =>
+                                    const LoginScreen(),
                               ));
                           // showMyBottomSheet(
                           //   context: context,

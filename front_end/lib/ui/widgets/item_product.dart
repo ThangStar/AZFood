@@ -25,7 +25,7 @@ class ItemProduct extends StatefulWidget {
 }
 
 class _ItemProductState extends State<ItemProduct> {
-    bool isSelected = false;
+  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     return Opacity(
@@ -38,9 +38,11 @@ class _ItemProductState extends State<ItemProduct> {
         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
         onTap: () {
           setState(() {
-            isSelected = !isSelected;
             if (widget.onTap != null) {
-              widget.onTap!(isSelected);
+              setState(() {
+                isSelected = !isSelected;
+                widget.onTap!(isSelected);
+              });
             }
           });
         },

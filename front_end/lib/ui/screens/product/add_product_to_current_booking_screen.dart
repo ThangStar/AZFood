@@ -25,6 +25,7 @@ class _AddProductToCurrentBookingScreenState
     super.initState();
   }
 
+  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     ProductBloc productBloc = BlocProvider.of(context);
@@ -128,9 +129,11 @@ class _AddProductToCurrentBookingScreenState
                                           ...productsSelected,
                                           product
                                         ]
-                                      : productsSelected = [...productsSelected
-                                    ..removeWhere(
-                                        (element) => element.id == product.id)];
+                                      : productsSelected = [
+                                          ...productsSelected
+                                            ..removeWhere((element) =>
+                                                element.id == product.id)
+                                        ];
                                 });
                               },
                               subTitle: SubTitleProduct(product: product),

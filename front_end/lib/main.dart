@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthenticationBloc(),
         ),
       ],
-      child: MaterialApp(
+      child: MaterialApp( 
         debugShowCheckedModeBanner: false,
         theme: ThemeData(useMaterial3: true,
             colorScheme: lightColorScheme,

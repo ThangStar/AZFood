@@ -35,18 +35,19 @@ const Login = () => {
     }, [status, jwtToken, userFullname]);
 
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100">
-            <div className="col-12 col-lg-6">
-                <div className="card border-0 shadow">
-                    <div className="card-body">
-                        <h4 className="border-bottom pb-4 mb-4">Sign in</h4>
-                        <h6 className="fs-base fw-medium">Sign in with admin account:</h6>
 
-                        <hr className="my-4" />
-                        <h6 className="fs-base mb-4">Or using email address:</h6>
-                        <div className="needs-validation">
-                            <div className="input-group mb-4">
-                                <input
+        <div className="hold-transition login-page">
+            <div className="login-box">
+                <div className="login-logo">
+                    <a href="../../index2.html"><b>Quản Lý Nhà Hàng </b></a>
+                </div>
+                <div className="card">
+                    <div className="card-body login-card-body">
+                        <p className="login-box-msg">Đăng nhập để sửa dụng hệ thống</p>
+
+                        <div>
+                            <div className="input-group mb-3">
+                            <input
                                     className="form-control"
                                     type="text"
                                     placeholder="username"
@@ -54,9 +55,14 @@ const Login = () => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
                                 />
+                                <div className="input-group-append">
+                                    <div className="input-group-text">
+                                        <span className="fas fa-user"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="input-group mb-4">
-                                <input
+                            <div className="input-group mb-3">
+                            <input
                                     className="form-control"
                                     type="password"
                                     placeholder="Password"
@@ -64,10 +70,20 @@ const Login = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
+                                <div className="input-group-append">
+                                    <div className="input-group-text">
+                                        <span className="fas fa-lock"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <hr className="my-4" />
-                            <div className="text-end">
-                                <button className="btn btn-primary" onClick={handleLogin}>Sign In</button>
+                            <div className="row">
+
+
+                                <div className="col-12">
+                                    <button type="submit" className="btn btn-primary btn-block" onClick={handleLogin}>
+                                        Đănng nhập
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

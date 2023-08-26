@@ -1,11 +1,12 @@
 module.exports = app => {
+  const multer = require('multer');
     const jwt = require('../config/checkJwt.js')
     const products = require('../controller/products.controller.js')
-  
+    const upload = multer();
     var router = require("express").Router();
   
     
-    router.post("/create",[jwt.checkJwt] , products.createProduct );
+    router.post("/create",[jwt.checkJwt ,upload.single('file')] , products.createProduct );
     router.post("/updateStatus",[jwt.checkJwt] , products.updateStatus );
     router.post("/delete",[jwt.checkJwt] , products.delete );
     router.get("/list" , [jwt.checkJwt] , products.getList);

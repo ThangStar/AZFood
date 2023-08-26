@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'icomoon';
+  font-display: swap;
+  src:  url('icomoon.woff') format('woff'), url('icomoon.woff2#icons') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shipping-boat:before {
+  content: "\e900";
+}
+.icon-support-24:before {
+  content: "\e901";
+}
+.icon-money-return:before {
+  content: "\e902";
+}
+.icon-coupon:before {
+  content: "\e903";
+}

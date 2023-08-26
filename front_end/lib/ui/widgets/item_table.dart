@@ -56,7 +56,7 @@ class ItemTable extends StatelessWidget {
                                               .scrim
                                               .withOpacity(0.8)),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Row(
                               children: [
                                 Icon(Icons.access_time_sharp, color: colorScheme(context)
@@ -88,10 +88,10 @@ class ItemTable extends StatelessWidget {
                                           : colorScheme(context)
                                               .scrim
                                               .withOpacity(0.8))),
-                                Spacer(),
+                                const Spacer(),
                                 table.status == 2
-                                    ? Icon(Icons.error, color: Colors.red)
-                                    : SizedBox.shrink()
+                                    ? const Icon(Icons.error, color: Colors.red)
+                                    : const SizedBox.shrink()
                               ],
                             )
                           ],

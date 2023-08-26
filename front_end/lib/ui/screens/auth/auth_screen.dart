@@ -107,7 +107,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
-      child: Column(
+      child: const Column(
         children: [Text("ĐĂNG KÍ")],
       ),
     );

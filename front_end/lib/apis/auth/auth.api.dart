@@ -1,7 +1,5 @@
-import 'package:bloc/src/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:restaurant_manager_app/routers/router.dart';
-import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/utils/dio.dart';
 
 import '../../utils/response.dart';

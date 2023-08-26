@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:restaurant_manager_app/constants/key_storages.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
@@ -70,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => HomeScreen(),
+                builder: (context) => const HomeScreen(),
               ));
         } else if (state is AuthLoginFailed) {
           setState(() {
@@ -189,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 16,
                       ),
-                      Container(
+                      SizedBox(
                           width: double.infinity,
                           child: Text(
                             "@name app",

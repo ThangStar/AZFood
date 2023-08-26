@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button_gradient.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 
 class MyDialog extends StatelessWidget {
   const MyDialog(

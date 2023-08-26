@@ -1,9 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/product.dart';
-import 'package:restaurant_manager_app/model/product_booking.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -153,7 +151,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           child: InkWell(
                                             onTap: () {},
                                             child: Container(
-                                              padding: EdgeInsets.all(2),
+                                              padding: const EdgeInsets.all(2),
                                               child: Icon(Icons.remove,
                                                   color: colorScheme(context)
                                                       .primary),
@@ -176,7 +174,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           child: InkWell(
                                             onTap: () {},
                                             child: Container(
-                                              padding: EdgeInsets.all(2),
+                                              padding: const EdgeInsets.all(2),
                                               child: Icon(Icons.add,
                                                   color: colorScheme(context)
                                                       .primary),
@@ -261,7 +259,7 @@ class BottomActionBill extends StatelessWidget {
                     "Hủy bàn",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontSize: 16,
-                        color: Color(0xFFE4295D),
+                        color: const Color(0xFFE4295D),
                         fontWeight: FontWeight.bold),
                   ),
                 ),

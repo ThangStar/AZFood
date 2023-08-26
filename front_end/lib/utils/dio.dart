@@ -3,7 +3,6 @@ import 'package:restaurant_manager_app/constants/env.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/routers/router.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
-import 'package:restaurant_manager_app/utils/auth.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 
 class AuthInterceptor extends Interceptor {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/product.dart';
-import 'package:restaurant_manager_app/model/product_booking.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/leading_item_status.dart';
 
@@ -35,7 +34,7 @@ class _ItemProductState extends State<ItemProduct> {
       child: ListTile(
         enabled:
             widget.product.quantity != 0 && widget.product.quantity != null,
-        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
         onTap: () {
           setState(() {
             if (widget.onTap != null) {
@@ -117,10 +116,10 @@ class SubTitleItemProduct extends StatelessWidget {
                 ? null
                 : BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
-                    color: Color(0xFF049C6B),
+                    color: const Color(0xFF049C6B),
                   ),
             padding: product.quantity != 0
-                ? EdgeInsets.symmetric(horizontal: 12, vertical: 6)
+                ? const EdgeInsets.symmetric(horizontal: 12, vertical: 6)
                 : null,
             child: Text(
               product.quantity == 0 ? " Hết hàng" : "${product.quantity}",

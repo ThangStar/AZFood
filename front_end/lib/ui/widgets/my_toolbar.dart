@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 
 class MyToolbar extends StatelessWidget {
   final Widget? leading;

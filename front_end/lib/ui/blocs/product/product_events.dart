@@ -17,9 +17,6 @@ class GetProductsEvent extends ProductEvent {
 }
 
 class GetCategoryEvent extends ProductEvent {
-  @override
-  // TODO: implement props
-  List<Object> get props => super.props;
 }
 
 class GetProductFilterEvent extends ProductEvent {

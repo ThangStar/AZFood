@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_manager_app/constants/key_storages.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
@@ -153,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     TextSpan(
                                         text:
-                                            "${filterStatus[posFilterStatusSelected]}",
+                                            filterStatus[posFilterStatusSelected],
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold))
                                   ]),
@@ -362,12 +361,12 @@ class ToolbarProfile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${profile.name}",
+                        profile.name,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ).animate().shimmer(),
                       Text(
-                        "${profile.email}",
+                        profile.email,
                         style: TextStyle(
                           color:
                               colorScheme(context).onPrimary.withOpacity(0.6),

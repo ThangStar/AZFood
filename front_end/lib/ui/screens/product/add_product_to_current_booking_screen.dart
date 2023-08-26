@@ -42,11 +42,11 @@ class _AddProductToCurrentBookingScreenState
                 ? FloatingActionButton.extended(
                     backgroundColor: colorScheme(context).primary,
                     onPressed: () {},
-                    label: Text(
+                    label: const Text(
                       "Xác nhận thêm",
                       style: TextStyle(color: Colors.white),
                     ),
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.done,
                       color: Colors.white,
                     ))
@@ -176,7 +176,7 @@ class SubTitleProduct extends StatelessWidget {
                       ),
                 Text(
                   quantity != 0 && product.category != 1
-                      ? "Kho: ${quantity}"
+                      ? "Kho: $quantity"
                       : quantity == 0
                           ? " Hết hàng "
                           : "Sẵn sàng",

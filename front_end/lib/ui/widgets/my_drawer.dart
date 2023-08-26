@@ -41,7 +41,7 @@ class _MyDrawerState extends State<MyDrawer> {
         child: Container(
           color: Colors.white,
           child: ListView(
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             children: [
               UserAccountsDrawerHeader(
                   decoration: const BoxDecoration(

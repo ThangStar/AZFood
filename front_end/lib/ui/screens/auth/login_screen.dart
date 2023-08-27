@@ -21,8 +21,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late bool isShowPass;
-  final TextEditingController usernameController = TextEditingController(text: "");
-  final TextEditingController passwordController = TextEditingController(text: "123456");
+  final TextEditingController usernameController =
+      TextEditingController(text: "");
+  final TextEditingController passwordController =
+      TextEditingController(text: "123456");
 
   String messageErr = '';
   TypeAlert typeMessageErr = TypeAlert.error;
@@ -44,9 +46,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _fillDataForm() async {
-    LoginResponse? rs =
-        await MySharePreferences.loadProfile();
-        print(rs);
+    LoginResponse? rs = await MySharePreferences.loadProfile();
+    print(rs);
     if (rs != null) {
       usernameController.text = rs.username;
     }
@@ -129,37 +130,63 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 6,
                       ),
-                      MyTextField(
-                        onChanged: (p0) {
-                          if (isShowAlert) {
-                            setState(() {
-                              isShowAlert = false;
-                            });
-                          }
-                        },
-                        hintText: "Nhập tài khoản",
-                        icon: const Icon(Icons.person),
-                        label: "Tài khoản",
-                        controller: usernameController,
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      MyTextField(
-                        onChanged: (p0) {
-                          setState(() {
-                            isShowAlert = false;
-                          });
-                        },
-                        isShowPass: isShowPass,
-                        label: "Mật khẩu",
-                        controller: passwordController,
-                        hintText: "Nhập mật khẩu",
-                        icon: IconButton(
-                            icon: Icon(isShowPass
-                                ? Icons.visibility_off
-                                : Icons.visibility),
-                            onPressed: _onChangeShowPass),
+                      Form(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 4),
+                              child: Text("Tên tài khoản"),
+                            ),
+                            MyTextField(
+                              validator: (p0) {
+                                bool isEmail = RegExp(r"^[a-zA-Z0-9]{5,12}$")
+                                    .hasMatch(p0!);
+                                return isEmail
+                                    ? ""
+                                    : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
+                              },
+                              onChanged: (p0) {
+                                if (isShowAlert) {
+                                  setState(() {
+                                    isShowAlert = false;
+                                  });
+                                }
+                              },
+                              hintText: "Nhập tài khoản",
+                              icon: const Icon(Icons.person),
+                              label: "Tài khoản",
+                              controller: usernameController,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 4, top: 4),
+                              child: Text("Mật khẩu"),
+                            ),
+                            MyTextField(
+                              validator: (p0) {
+                                bool isEmail = RegExp(r"^[a-zA-Z0-9]{5,12}$")
+                                    .hasMatch(p0!);
+                                return isEmail
+                                    ? ""
+                                    : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
+                              },
+                              onChanged: (p0) {
+                                setState(() {
+                                  isShowAlert = false;
+                                });
+                              },
+                              isShowPass: isShowPass,
+                              label: "Mật khẩu",
+                              controller: passwordController,
+                              hintText: "Nhập mật khẩu",
+                              icon: IconButton(
+                                  icon: Icon(isShowPass
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                  onPressed: _onChangeShowPass),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(
                         height: 8,

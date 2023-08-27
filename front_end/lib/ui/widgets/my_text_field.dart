@@ -9,7 +9,9 @@ class MyTextField extends StatefulWidget {
       required this.controller,
       required this.icon,
       this.isPassword = false,
-      this.isShowPass = false, this.onChanged});
+      this.isShowPass = false,
+      this.validator,
+      this.onChanged});
 
   final String label;
   final String? hintText;
@@ -18,13 +20,14 @@ class MyTextField extends StatefulWidget {
   final bool isPassword;
   final bool isShowPass;
   final Function(String)? onChanged;
+  final String Function(String?)? validator;
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();
 }
 
 class _MyTextFieldState extends State<MyTextField> {
-  late bool isFocus = false;
+  bool isFocus = false;
 
   @override
   void initState() {
@@ -36,12 +39,16 @@ class _MyTextFieldState extends State<MyTextField> {
     return FocusScope(
       child: Focus(
         onFocusChange: (value) {
-
           setState(() {
             isFocus = value;
           });
         },
-        child: TextField(
+        child: TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            return widget.validator != null ? widget.validator!(value) : null;
+          },
+          keyboardType: TextInputType.emailAddress,
           controller: widget.controller,
           onTapOutside: (event) {
             FocusManager.instance.primaryFocus?.unfocus();

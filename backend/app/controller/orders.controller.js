@@ -69,7 +69,7 @@ exports.createOrder = async (req, res) => {
                         await sequelize.query(updateTableStatusQuery, {
                             raw: true,
                             logging: false,
-                            replacements: [2, orderData.tableID],
+                            replacements: [1, orderData.tableID],
                             type: QueryTypes.UPDATE,
                             transaction
                         });
@@ -272,6 +272,30 @@ exports.getOrdersForTable = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+exports.getList = async (req, res) => {
+
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        const queryRaw = "SELECT * FROM orders";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (error) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(401).send('member is not admin');
+    }
+
+}
 
 exports.payBill = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);

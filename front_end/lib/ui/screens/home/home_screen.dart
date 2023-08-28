@@ -147,8 +147,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .withOpacity(0.8)),
                                   children: [
                                     TextSpan(
-                                        text:
-                                            filterStatus[posFilterStatusSelected],
+                                        text: filterStatus[
+                                            posFilterStatusSelected],
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold))
                                   ]),
@@ -335,10 +335,12 @@ class ToolbarProfile extends StatelessWidget {
               color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12)),
           child: Row(
+                mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
+                mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
@@ -372,17 +374,19 @@ class ToolbarProfile extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 19),
-                decoration: BoxDecoration(
-                    border: Border(
-                        left: BorderSide(
-                            color: const Color(0xFFD4D4D8).withOpacity(0.3)))),
-                child: Text(
-                  "NV00${profile.id}",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+              FittedBox(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 19),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          left: BorderSide(
+                              color: const Color(0xFFD4D4D8).withOpacity(0.3)))),
+                  child: Text(
+                    "NV00${profile.id}",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 ),
               ),
             ],

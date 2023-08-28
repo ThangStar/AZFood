@@ -1,6 +1,30 @@
+'use client'
+import { AppDispatch } from '@/redux-store/store';
+import { getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function User() {
+    const dispatch: AppDispatch = useDispatch();
+    const userList: any = useSelector(getUserList);
+    const [users, setUsers] = useState<any[]>([]);
+
+    useEffect(() => {
+
+        dispatch(getUserListAsync());
+    }, [dispatch]);
+    useEffect(() => {
+
+        if (userList && userList.resultRaw) {
+            setUsers(userList.resultRaw);
+        }
+    }, [userList]);
+
+
+
+
     return (
         <>
         <div className="main-header card" >
@@ -43,22 +67,19 @@ export default function User() {
                                         STT
                                     </th>
                                     <th style={{ width: "20%" }}>
-                                        Tên Món
+                                        Tên NV
                                     </th>
                                     <th style={{ width: "10%" }}>
                                         Hình Ảnh
                                     </th>
                                     <th>
-                                        Giá
+                                        Địa chỉ
                                     </th>
                                     <th>
-                                        Loại Món
+                                        Số điện thoại
                                     </th>
                                     <th>
-                                        Đơn Vị Tính
-                                    </th>
-                                    <th>
-                                        Trạng thái / Số lượng
+                                       Email
                                     </th>
                                     <th style={{ width: "15%" }} className="text-center">
                                         actions
@@ -67,7 +88,7 @@ export default function User() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* {menuItems && menuItems.length > 0 ? menuItems.map((item: any, i: number) => (
+                                {users && users.length > 0 ? users.map((item: any, i: number) => (
                                     <tr key={item && item.id ? item.id : null}>
                                         <td>
                                             {i + 1}
@@ -79,19 +100,16 @@ export default function User() {
                                             <br />
                                         </td>
                                         <td>
-                                            <img alt="món ăn" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
+                                            <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
                                         </td>
                                         <td className="project_progress">
-                                            {item && item.price ? item.price : null}
+                                            {item && item.address ? item.address : null}
                                         </td>
                                         <td className="project_progress">
-                                            {item && item.category_name ? item.category_name : ""}
+                                            {item && item.phoneNumber ? item.phoneNumber : ""}
                                         </td>
                                         <td className="project_progress">
-                                            {item && item.dvt_name ? item.dvt_name : null}
-                                        </td>
-                                        <td className="project_progress">
-                                            {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" :  item.quantity == 0 ? "Hết hàng" : item.quantity}
+                                            {item && item.email ? item.email : null}
                                         </td>
                                         <td className="project-actions text-right">
                                             <div className="d-flex justify-content-between " >
@@ -113,7 +131,7 @@ export default function User() {
 
                                         </td>
                                     </tr>
-                                )) : ""} */}
+                                )) : ""}
 
 
                             </tbody>

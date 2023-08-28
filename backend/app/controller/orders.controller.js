@@ -243,21 +243,23 @@ exports.deleteAllOrder = async (req, res) => {
 
 exports.getOrdersForTable = async (req, res) => {
     try {
-        const tableID = req.body.id;
+  
+        const tableID = req.query.tableID;
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount, p.name AS productName, oi.quantity, oi.subTotal
+            SELECT o.id AS orderID, o.orderDate, o.totalAmount, p.name AS productName, p.dvtID AS dvt , oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id
+            INNER JOIN users u ON o.userID = u.id
             WHERE o.tableID = ?
         `;
 
             const orders = await sequelize.query(getOrdersQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID],
+                replacements: [tableID || id],
                 type: QueryTypes.SELECT
             });
 
@@ -271,7 +273,7 @@ exports.getOrdersForTable = async (req, res) => {
         console.error('Error getting orders:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
-};
+}; 
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);

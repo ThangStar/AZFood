@@ -2,6 +2,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import menuItemReducer from './menuItem-reducer/menuItemSlice';
 import tableReducer from './table-reducer/tableSlice';
 import orderReducer from './order-reducer/orderSlice';
+import userReducer from './user-reducer/userSlice';
 import authenticationReducer from './login-reducer/loginSlice';
 
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
     menuItemState: menuItemReducer,
     tableState: tableReducer,
     orderState: orderReducer,
+    userState: userReducer,
     authenticationState:authenticationReducer
   },
 });

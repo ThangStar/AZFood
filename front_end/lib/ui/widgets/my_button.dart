@@ -34,8 +34,8 @@ class MyButton extends StatelessWidget {
                   .textTheme
                   .bodyLarge
                   ?.copyWith(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
                   color: isOutline ? colorScheme(context).scrim : colorScheme(
                       context).onPrimary),
             )),

@@ -50,7 +50,6 @@ const menuItemSlice = createSlice({
   },
 });
 
-export const getMenuItemtList = (state: RootState) =>
-  state.menuItemState.menuItemList;
+export const getMenuItemtList = (state: RootState) => state.menuItemState.menuItemList;
 
 export default menuItemSlice.reducer;

@@ -1,10 +1,14 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import menuItemReducer from './menuItem-reducer/menuItemSlice';
+import tableReducer from './table-reducer/tableSlice';
+import orderReducer from './order-reducer/orderSlice';
 import authenticationReducer from './login-reducer/loginSlice';
 
 export const store = configureStore({
   reducer: {
     menuItemState: menuItemReducer,
+    tableState: tableReducer,
+    orderState: orderReducer,
     authenticationState:authenticationReducer
   },
 });

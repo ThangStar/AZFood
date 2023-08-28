@@ -31,6 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool cbxSaveLogin = false;
   bool isShowAlert = false;
+  bool isValid = false;
+  final _keyForm = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -103,35 +105,44 @@ class _LoginScreenState extends State<LoginScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SvgPicture.asset('assets/svgs/logo.svg'),
-                      const SizedBox(
-                        height: 24,
-                      ),
-                      Text(
-                        "ĐĂNG NHẬP",
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(
-                        height: 18,
-                      ),
-                      MyAlert(
-                        height: isShowAlert ? null : 0,
-                        icon: Icons.warning_rounded,
-                        title: "Thông báo",
-                        message: messageErr,
-                        typeAlert: typeMessageErr,
-                      ),
-                      const SizedBox(
-                        height: 6,
-                      ),
-                      Form(
-                        child: Column(
+                  child: Form(
+                    onChanged: () {
+                      if (_keyForm.currentState != null) {
+                        print(_keyForm.currentState!.validate());
+                        setState(() {
+                          isValid = _keyForm.currentState!.validate();
+                        });
+                      }
+                    },
+                    key: _keyForm,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SvgPicture.asset('assets/svgs/logo.svg'),
+                        const SizedBox(
+                          height: 24,
+                        ),
+                        Text(
+                          "ĐĂNG NHẬP",
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        MyAlert(
+                          height: isShowAlert ? null : 0,
+                          icon: Icons.warning_rounded,
+                          title: "Thông báo",
+                          message: messageErr,
+                          typeAlert: typeMessageErr,
+                        ),
+                        const SizedBox(
+                          height: 6,
+                        ),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Padding(
@@ -143,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 bool isEmail = RegExp(r"^[a-zA-Z0-9]{5,12}$")
                                     .hasMatch(p0!);
                                 return isEmail
-                                    ? ""
+                                    ? null
                                     : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
                               },
                               onChanged: (p0) {
@@ -159,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: usernameController,
                             ),
                             const Padding(
-                              padding: EdgeInsets.only(bottom: 4, top: 4),
+                              padding: EdgeInsets.only(bottom: 4, top: 12),
                               child: Text("Mật khẩu"),
                             ),
                             MyTextField(
@@ -167,13 +178,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                 bool isEmail = RegExp(r"^[a-zA-Z0-9]{5,12}$")
                                     .hasMatch(p0!);
                                 return isEmail
-                                    ? ""
+                                    ? null
                                     : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
                               },
                               onChanged: (p0) {
-                                setState(() {
-                                  isShowAlert = false;
-                                });
+                                if (isShowAlert) {
+                                  setState(() {
+                                    isShowAlert = false;
+                                  });
+                                }
                               },
                               isShowPass: isShowPass,
                               label: "Mật khẩu",
@@ -187,45 +200,48 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      MyCheckBox(
-                        value: cbxSaveLogin,
-                        onChanged: (p0) => _onChangeSaveLogin(p0!),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      Hero(
-                          tag: "login_hero",
-                          child: MyButton(
-                            value: "Đăng nhập",
-                            onPressed: () {
-                              authBloc.add(LoginAutEvent(
-                                  username: usernameController.text,
-                                  password: passwordController.text));
-                            },
-                          )),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      const Divider(),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            "@name app",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: colorScheme(context)
-                                    .scrim
-                                    .withOpacity(0.6)),
-                          ))
-                    ],
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        // MyCheckBox(
+                        //   value: cbxSaveLogin,
+                        //   onChanged: (p0) => _onChangeSaveLogin(p0!),
+                        // ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Hero(
+                            tag: "login_hero",
+                            child: MyButton(
+                              disable: !isValid,
+                              value: "Đăng nhập",
+                              onPressed: () {
+                                if (_keyForm.currentState!.validate()) {
+                                  authBloc.add(LoginAutEvent(
+                                      username: usernameController.text,
+                                      password: passwordController.text));
+                                }
+                              },
+                            )),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        const Divider(),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        SizedBox(
+                            width: double.infinity,
+                            child: Text(
+                              "@name app",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: colorScheme(context)
+                                      .scrim
+                                      .withOpacity(0.6)),
+                            ))
+                      ],
+                    ),
                   ),
                 ),
               ],

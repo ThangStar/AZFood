@@ -20,7 +20,7 @@ class MyTextField extends StatefulWidget {
   final bool isPassword;
   final bool isShowPass;
   final Function(String)? onChanged;
-  final String Function(String?)? validator;
+  final String? Function(String?)? validator;
 
   @override
   State<MyTextField> createState() => _MyTextFieldState();

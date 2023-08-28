@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
               SvgPicture.asset('assets/svgs/logo.svg', width: 230),
               const SizedBox(height: 80,),
               const SizedBox(
-                  width: 200,
+                  width: 180,
                   child: LinearProgressIndicator()),
               const SizedBox(height: 2,),
                Text("Đang tải..", style: Theme.of(context).textTheme.bodyLarge,)

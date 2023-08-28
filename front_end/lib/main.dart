@@ -5,6 +5,7 @@ import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/intro/splash_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 
@@ -32,8 +33,7 @@ class MyApp extends StatelessWidget {
             colorScheme: lightColorScheme,
             textTheme: textTheme(context)),
         // darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        home:const LoginScreen(),
-        // home: const AspectRatioScreen(),
+        home:const SplashScreen(),
       )
     );
   }

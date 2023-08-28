@@ -85,11 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SingleChildScrollView(
             child: Container(
               decoration: BoxDecoration(
-                  color: colorScheme(context).onPrimary,
-                  image: const DecorationImage(
-                      fit: BoxFit.cover,
-                      alignment: Alignment.bottomCenter,
-                      image: AssetImage('assets/images/bg_main.png'))),
+                  color: colorScheme(context).background,),
               child: ClipRRect(
                   child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 80.0, sigmaY: 80.0),

@@ -11,71 +11,104 @@ initializeApp(config.firebaseConfig);
 exports.createProduct = async (req, res) => {
     const storage = getStorage();
 
-    try {
-        const body = req.body;
-        const isAdmin = await Auth.checkAdmin(req);
+    const body = req.body;
+    const isAdmin = await Auth.checkAdmin(req);
 
-        if (isAdmin) {
-            console.log("id ", body.id);
-            if (body.id) {
-                console.log("Update");
-                const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, status = CASE WHEN category = 1 THEN 1 ELSE ? END, quantity = ? , dvtID=? WHERE id = ?";
-                const resultRaw = await sequelize.query(queryRaw, {
-                    raw: true,
-                    logging: false,
-                    replacements: [body.name, body.price, body.category, body.status, body.quantity, body.dvtID, body.id],
-                    type: QueryTypes.UPDATE
-                });
-                res.status(200).json({ message: 'products updated successfully' });
-            } else {
-                if (req.file) {
-                    console.log("  có file");
-                    try {
-                        const image = req.file;
-                        const imageFileName = `${Date.now()}_${image.originalname}`;
+    if (isAdmin) {
+        console.log("id ", body.id);
+        if (body.id) {
+            if (req.file) {
+                console.log("  có file");
+                try {
+                    const image = req.file;
+                    const imageFileName = `${Date.now()}_${image.originalname}`;
 
-                        const storageRef = ref(storage, `files/${imageFileName}`);
-                        const metadata = {
-                            contentType: req.file.mimetype,
-                        };
-                        const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
-                        const imgUrl = await getDownloadURL(snapshot.ref);
-
-                        // Tiếp tục xử lý và lưu dữ liệu vào MySQL
-                        const queryRaw = "INSERT INTO products (name, price, category, status, quantity, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ?, ?, ?);";
-                        const resultRaw = await sequelize.query(queryRaw, {
-                            raw: true,
-                            logging: false,
-                            replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity, body.dvtID, imgUrl],
-                            type: QueryTypes.INSERT
-                        });
-
-                        res.status(200).json({ message: 'Product created successfully' });
-                    } catch (error) {
-                        console.log("error", error);
-                    }
-
-                }
-                else {
-                    console.log("khong  có file");
-                    const queryRaw = "INSERT INTO products (name, price, category, status, quantity , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ? ,?);";
+                    const storageRef = ref(storage, `files/${imageFileName}`);
+                    const metadata = {
+                        contentType: req.file.mimetype,
+                    };
+                    const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+                    const imgUrl = await getDownloadURL(snapshot.ref);
+                    // Tiếp tục xử lý và lưu dữ liệu vào MySQL
+                    const queryRaw = "UPDATE products SET name = ? , price =? , category =? , status = CASE WHEN category = 1 THEN 1 ELSE ? END , dvtID =? , imgUrl =?  WHERE id = ?";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity, body.dvtID],
-                        type: QueryTypes.INSERT
+                        replacements: [body.name, body.price, body.category, body.status, body.dvtID, imgUrl, body.id],
+                        type: QueryTypes.UPDATE
                     });
-                    res.status(200).json({ message: 'products created successfully' });
+
+                    res.status(200).json({ message: 'Product created successfully' });
+                } catch (error) {
+                    console.log("error", error);
                 }
 
+            }
+            else {
+                try {
+                    console.log("Update");
+                    const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, status = CASE WHEN category = 1 THEN 1 ELSE ? END, dvtID=? WHERE id = ?";
+                    const resultRaw = await sequelize.query(queryRaw, {
+                        raw: true,
+                        logging: false,
+                        replacements: [body.name, body.price, body.category, body.status, body.dvtID, body.id],
+                        type: QueryTypes.UPDATE
+                    });
+                    res.status(200).json({ message: 'products updated successfully' });
 
+                } catch (error) {
+                    console.err("error", error);
+                }
 
             }
-        }
 
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error', error });
+        } else {
+            if (req.file) {
+                console.log("  có file");
+                try {
+                    const image = req.file;
+                    const imageFileName = `${Date.now()}_${image.originalname}`;
+
+                    const storageRef = ref(storage, `files/${imageFileName}`);
+                    const metadata = {
+                        contentType: req.file.mimetype,
+                    };
+                    const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+                    const imgUrl = await getDownloadURL(snapshot.ref);
+
+                    // Tiếp tục xử lý và lưu dữ liệu vào MySQL
+                    const queryRaw = "INSERT INTO products (name, price, category, status, quantity, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ?, ?, ?);";
+                    const resultRaw = await sequelize.query(queryRaw, {
+                        raw: true,
+                        logging: false,
+                        replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity, body.dvtID, imgUrl],
+                        type: QueryTypes.INSERT
+                    });
+
+                    res.status(200).json({ message: 'Product created successfully' });
+                } catch (error) {
+                    console.log("error", error);
+                }
+
+            }
+            else {
+                console.log("khong  có file");
+                const queryRaw = "INSERT INTO products (name, price, category, status, quantity , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ? ,?);";
+                const resultRaw = await sequelize.query(queryRaw, {
+                    raw: true,
+                    logging: false,
+                    replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity, body.dvtID],
+                    type: QueryTypes.INSERT
+                });
+                res.status(200).json({ message: 'products created successfully' });
+            }
+
+
+
+        }
     }
+
+
 }
 exports.updateStatus = async (req, res) => {
     try {
@@ -118,7 +151,7 @@ exports.getList = async (req, res) => {
             p.price,
             p.category,
             p.status,
-            p.quantity,
+            k.quantity,
             p.dvtID,
             p.imgUrl,
             c.name AS category_name,
@@ -129,6 +162,9 @@ exports.getList = async (req, res) => {
             category c ON p.category = c.id
         JOIN
             donViTinh d ON p.dvtID = d.id
+            LEFT JOIN
+            kho k ON p.id = k.productID
+            
         LIMIT :limit OFFSET :offset;`;
 
             const resultRaw = await sequelize.query(queryRaw, {
@@ -204,7 +240,28 @@ exports.getListStatus = async (req, res) => {
         res.status(401).send('User is not logged in');
     }
 };
+exports.getListDVT = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
 
+    if (checkAuth) {
+        const queryRaw = "SELECT * FROM donViTinh";
+
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+
+            res.status(200).send({ resultRaw });
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    } else {
+        res.status(401).send('User is not logged in');
+    }
+};
 exports.getDetails = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     const id = req.body.id;

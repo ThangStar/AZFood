@@ -16,7 +16,8 @@ exports.createOrder = async (req, res) => {
             const productID = body.productID;
             const quantity = body.quantity;
 
-            const priceQuery = 'SELECT price , quantity , status FROM products WHERE id = ?';
+            const priceQuery = 'SELECT price  , status FROM products WHERE id = ?';
+            const quantityQuery = 'SELECT SUM(quantity) AS quantity  FROM kho WHERE productID = ?';
             try {
                 const priceResult = await sequelize.query(priceQuery, {
                     raw: true,
@@ -24,9 +25,14 @@ exports.createOrder = async (req, res) => {
                     replacements: [productID],
                     type: QueryTypes.SELECT
                 });
-
+                const quantityResult = await sequelize.query(quantityQuery, {
+                    raw: true,
+                    logging: false,
+                    replacements: [productID],
+                    type: QueryTypes.SELECT
+                });
                 const price = priceResult[0].price;
-                const _quantity = priceResult[0].quantity;
+                const _quantity = quantityResult[0].quantity;
                 const _status = priceResult[0].status;
                 console.log("_quantity " ,_quantity );
                 console.log("_status " , _status);
@@ -243,21 +249,23 @@ exports.deleteAllOrder = async (req, res) => {
 
 exports.getOrdersForTable = async (req, res) => {
     try {
-        const tableID = req.body.id;
+  
+        const tableID = req.query.tableID;
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount, p.name AS productName, oi.quantity, oi.subTotal
+            SELECT o.id AS orderID, o.orderDate, o.totalAmount, p.name AS productName, p.dvtID AS dvt , oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id
+            INNER JOIN users u ON o.userID = u.id
             WHERE o.tableID = ?
         `;
 
             const orders = await sequelize.query(getOrdersQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID],
+                replacements: [tableID || id],
                 type: QueryTypes.SELECT
             });
 
@@ -271,7 +279,7 @@ exports.getOrdersForTable = async (req, res) => {
         console.error('Error getting orders:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
-};
+}; 
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
@@ -358,9 +366,9 @@ exports.payBill = async (req, res) => {
 
                 // Trừ số lượng sản phẩm từ kho
                 const updateProductQuantityQuery = `
-                 UPDATE products
+                 UPDATE kho
                  SET quantity = quantity - ?
-                 WHERE id = ?
+                 WHERE productID = ?
              `;
                 console.log("detail.productID ", detail.productID);
                 await sequelize.query(updateProductQuantityQuery, {

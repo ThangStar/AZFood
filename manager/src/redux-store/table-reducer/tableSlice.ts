@@ -29,6 +29,20 @@ export const getTableListAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const createTableListAsync = createAsyncThunk(
+  'table/create',
+  async (name : any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/table/create', name,{
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 export const getStatusTableAsync = createAsyncThunk(
   'table/get-status',
   async () => {
@@ -71,6 +85,16 @@ const TableSlice = createSlice({
         state.tableList = action.payload;
       })
       .addCase(getTableListAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(createTableListAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createTableListAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.tableList = action.payload;
+      })
+      .addCase(createTableListAsync.rejected, (state) => {
         state.status = 'failed';
       })
       .addCase(getStatusTableAsync.pending, (state) => {

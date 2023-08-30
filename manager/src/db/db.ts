@@ -3,7 +3,7 @@ const db = mysql({
   config: {
     host: "localhost", 
     port: 3306,
-    database: '`finallapp`',
+    database: 'finallapp',
     user: 'root',
     password: '12345678' 
   }

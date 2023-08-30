@@ -16,7 +16,8 @@ exports.createOrder = async (req, res) => {
             const productID = body.productID;
             const quantity = body.quantity;
 
-            const priceQuery = 'SELECT price , quantity , status FROM products WHERE id = ?';
+            const priceQuery = 'SELECT price  , status FROM products WHERE id = ?';
+            const quantityQuery = 'SELECT SUM(quantity) AS quantity  FROM kho WHERE productID = ?';
             try {
                 const priceResult = await sequelize.query(priceQuery, {
                     raw: true,
@@ -24,9 +25,14 @@ exports.createOrder = async (req, res) => {
                     replacements: [productID],
                     type: QueryTypes.SELECT
                 });
-
+                const quantityResult = await sequelize.query(quantityQuery, {
+                    raw: true,
+                    logging: false,
+                    replacements: [productID],
+                    type: QueryTypes.SELECT
+                });
                 const price = priceResult[0].price;
-                const _quantity = priceResult[0].quantity;
+                const _quantity = quantityResult[0].quantity;
                 const _status = priceResult[0].status;
                 console.log("_quantity " ,_quantity );
                 console.log("_status " , _status);
@@ -360,9 +366,9 @@ exports.payBill = async (req, res) => {
 
                 // Trừ số lượng sản phẩm từ kho
                 const updateProductQuantityQuery = `
-                 UPDATE products
+                 UPDATE kho
                  SET quantity = quantity - ?
-                 WHERE id = ?
+                 WHERE productID = ?
              `;
                 console.log("detail.productID ", detail.productID);
                 await sequelize.query(updateProductQuantityQuery, {

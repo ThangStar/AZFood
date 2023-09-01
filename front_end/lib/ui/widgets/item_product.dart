@@ -31,15 +31,17 @@ class _ItemProductState extends State<ItemProduct>
   GlobalKey key = GlobalKey();
   bool isInSideCart = false;
   late AnimationController moveController;
-  late Animation moveAnimation;
+  late Animation moveYAnimation;
+  late Animation moveXAnimation;
 
   @override
   void initState() {
     moveController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 2000));
-    moveAnimation = moveAnimation = Tween(begin: 0.0, end: 100.0)
-        .animate(moveController)
-        .drive(CurveTween(curve: Curves.bounceInOut));
+        vsync: this, duration: Duration(milliseconds: 1000));
+    moveYAnimation =
+        moveYAnimation = Tween(begin: 0.0, end: 100.0).animate(moveController);
+    moveXAnimation = Tween(begin: 0.0, end: 100.0).animate(moveController);
+
     super.initState();
   }
 
@@ -59,7 +61,6 @@ class _ItemProductState extends State<ItemProduct>
                   ? 1
                   : 0.6,
           child: ListTile(
-            key: key,
             enabled:
                 widget.product.quantity != 0 && widget.product.quantity != null,
             contentPadding:
@@ -68,16 +69,23 @@ class _ItemProductState extends State<ItemProduct>
               widget.onTap!();
               if (widget.cartKey != null && mounted) {
                 final pos = getPositionbyKey(widget.cartKey!);
-                moveAnimation = Tween(begin: 0.0, end: pos.y - 150).animate(
-                    moveController
-                        .drive(CurveTween(curve: Curves.bounceInOut)));
+                final thisPos = getPositionbyKey(key);
+                moveXAnimation = Tween(begin: 0.0, end: pos.x - thisPos.x)
+                    .animate(moveController
+                        .drive(CurveTween(curve: Curves.easeOut)));
+
+                moveYAnimation = Tween(begin: 0.0, end: pos.y - thisPos.y)
+                    .animate(moveController
+                        .drive(CurveTween(curve: Curves.bounceOut)));
 
                 print("X cart: ${pos.x} Y: ${pos.y}");
-                moveController.forward();
+                moveController.forward(from: 0);
               }
-              setState(() {
-                isInSideCart = !isInSideCart;
-              });
+              if (!isInSideCart) {
+                setState(() {
+                  isInSideCart = true;
+                });
+              }
             },
             leading: SizedBox(
               child: Row(
@@ -89,18 +97,38 @@ class _ItemProductState extends State<ItemProduct>
                   ),
                   Padding(
                     padding: const EdgeInsets.all(4.0),
-                    child: Transform.translate(
-                      offset: Offset(0, moveAnimation.value),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: Image.network(
-                          widget.product.imageUrl != null &&
-                                  widget.product.imageUrl != ''
-                              ? widget.product.imageUrl!
-                              : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
-                          fit: BoxFit.cover,
+                    child: Stack(
+                      children: [
+                        isInSideCart
+                            ? Positioned(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Image.network(
+                                    widget.product.imageUrl != null &&
+                                            widget.product.imageUrl != ''
+                                        ? widget.product.imageUrl!
+                                        : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                        Transform.translate(
+                          key: key,
+                          offset: Offset(
+                              moveXAnimation.value, moveYAnimation.value),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.network(
+                              widget.product.imageUrl != null &&
+                                      widget.product.imageUrl != ''
+                                  ? widget.product.imageUrl!
+                                  : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -127,7 +155,7 @@ class _ItemProductState extends State<ItemProduct>
           ),
         );
       },
-      animation: moveAnimation,
+      animation: moveYAnimation,
     );
   }
 }

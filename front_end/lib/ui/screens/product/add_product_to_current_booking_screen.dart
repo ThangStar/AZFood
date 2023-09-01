@@ -55,7 +55,7 @@ class _AddProductToCurrentBookingScreenState
           },
           child: Scaffold(
             floatingActionButton: FloatingActionButton.extended(
-              key: cartKey,
+                key: cartKey,
                 isExtended: false,
                 backgroundColor: colorScheme(context).primary,
                 onPressed: () {},
@@ -63,9 +63,12 @@ class _AddProductToCurrentBookingScreenState
                   "Xác nhận thêm",
                   style: TextStyle(color: Colors.white),
                 ),
-                icon: const Icon(
-                  Icons.done,
-                  color: Colors.white,
+                icon: Badge(
+                  label: Text("${productsSelected.length}"),
+                  child: Icon(
+                    Icons.shopping_cart_rounded,
+                    color: Colors.white,
+                  ),
                 )),
             appBar: AppBar(
               bottom: const PreferredSize(
@@ -92,14 +95,12 @@ class _AddProductToCurrentBookingScreenState
                 SingleChildScrollView(
                     child: Column(children: [
                   const Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: PageIndex(),
                   ),
                   BlocBuilder<ProductBloc, ProductState>(
                     buildWhen: (previous, current) =>
-                        previous.categoryResponse !=
-                        current.categoryResponse,
+                        previous.categoryResponse != current.categoryResponse,
                     builder: (context, state) {
                       if (state.categoryResponse != null) {
                         return TabBar(
@@ -107,18 +108,15 @@ class _AddProductToCurrentBookingScreenState
                               if (value != 0) {
                                 context.read<ProductBloc>().add(
                                     GetProductFilterEvent(
-                                        idCategory: state
-                                            .categoryResponse!
-                                            .category[value - 1]
-                                            .id));
+                                        idCategory: state.categoryResponse!
+                                            .category[value - 1].id));
                               } else {
                                 productBloc.add(const GetProductsEvent());
                               }
                             },
                             controller: TabController(
-                                length: state.categoryResponse!.category
-                                        .length +
-                                    1,
+                                length:
+                                    state.categoryResponse!.category.length + 1,
                                 vsync: this),
                             tabs: [
                               const Tab(
@@ -138,8 +136,7 @@ class _AddProductToCurrentBookingScreenState
                     builder: (context, state) {
                       if (state.productResponse != null) {
                         return ListView.builder(
-                            itemCount:
-                                state.productResponse!.data.length,
+                            itemCount: state.productResponse!.data.length,
                             shrinkWrap: true,
                             primary: false,
                             itemBuilder: (context, index) {
@@ -149,13 +146,14 @@ class _AddProductToCurrentBookingScreenState
                                   cartKey: cartKey,
                                   product: product,
                                   onTap: () {
-                                    productsSelected = [
-                                      ...productsSelected,
-                                      product
-                                    ];
+                                    setState(() {
+                                      productsSelected = [
+                                        ...productsSelected,
+                                        product
+                                      ];
+                                    });
                                   },
-                                  subTitle:
-                                      SubTitleProduct(product: product),
+                                  subTitle: SubTitleProduct(product: product),
                                   trailling: SubTitleItemCurrentBill(
                                       product: product));
                             });

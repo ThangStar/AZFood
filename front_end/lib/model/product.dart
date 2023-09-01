@@ -25,7 +25,7 @@ class Product {
         category: json["category"],
         status: json["status"],
         quantity: json["quantity"],
-        imageUrl: json['imageUrl']
+        imageUrl: json['imgUrl']
     );
 
     Map<String, dynamic> toJson() => {
@@ -35,6 +35,6 @@ class Product {
         "category": category,
         "status": status,
         "quantity": quantity,
-        "imageUrl": imageUrl
+        "imgUrl": imageUrl
     };
 }

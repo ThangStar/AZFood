@@ -15,12 +15,16 @@ class ItemProduct extends StatefulWidget {
       required this.subTitle,
       required this.trailling,
       this.cartKey,
+      this.hasIndicator = true,
+      this.isAddCart = false,
       this.onTap});
   final Product product;
   final Widget subTitle;
   final Widget trailling;
   final Function()? onTap;
   final GlobalKey? cartKey;
+  final bool hasIndicator;
+  final bool isAddCart;
   @override
   State<ItemProduct> createState() => _ItemProductState();
 }
@@ -37,7 +41,7 @@ class _ItemProductState extends State<ItemProduct>
   @override
   void initState() {
     moveController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
+        vsync: this, duration: const Duration(milliseconds: 1000));
     moveYAnimation =
         moveYAnimation = Tween(begin: 0.0, end: 100.0).animate(moveController);
     moveXAnimation = Tween(begin: 0.0, end: 100.0).animate(moveController);
@@ -66,8 +70,8 @@ class _ItemProductState extends State<ItemProduct>
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
             onTap: () {
-              widget.onTap!();
-              if (widget.cartKey != null && mounted) {
+              widget.onTap!() ?? () {};
+              if (widget.cartKey != null && mounted && widget.isAddCart) {
                 final pos = getPositionbyKey(widget.cartKey!);
                 final thisPos = getPositionbyKey(key);
                 moveXAnimation = Tween(begin: 0.0, end: pos.x - thisPos.x)
@@ -91,7 +95,9 @@ class _ItemProductState extends State<ItemProduct>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const LeadingItemStatus(),
+                  widget.hasIndicator
+                      ? const LeadingItemStatus()
+                      : const SizedBox.shrink(),
                   const SizedBox(
                     width: 5,
                   ),
@@ -112,7 +118,7 @@ class _ItemProductState extends State<ItemProduct>
                                   ),
                                 ),
                               )
-                            : SizedBox.shrink(),
+                            : const SizedBox.shrink(),
                         Transform.translate(
                           key: key,
                           offset: Offset(

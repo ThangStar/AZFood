@@ -11,7 +11,7 @@ class ProductApi {
       Response<dynamic> response =
           await http.get(Router.listProduct, queryParameters: {'page': page});
       if (response.statusCode == 200) {
-        print(response);
+        // print(response);
         return Success(response: response, statusCode: response.statusCode);
       } else {
         print("failure ${response.data}");

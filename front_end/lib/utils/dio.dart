@@ -32,7 +32,7 @@ class Http {
         onRequest:
             (RequestOptions options, RequestInterceptorHandler handler) async {
           LoginResponse? loginResult = await MySharePreferences.loadProfile();
-          print("token ${loginResult?.jwtToken}");
+          // print("token ${loginResult?.jwtToken}");
           if (loginResult != null) {
             token = loginResult.jwtToken;
             options.headers['Authorization'] = 'Bearer $token';

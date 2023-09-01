@@ -29,7 +29,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       ProductResponse productResponse =
           ProductResponse.fromJson(jsonDecode(result.response.toString()));
       emit(state.copyWith(productResponse: productResponse));
-      print("Success ${result.response}");
+      // print("Success ${result.response}");
     } else if (result is Failure) {
       print("failure ${result.response}");
     }
@@ -42,7 +42,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       CategoryResponse categoryResponse =
           CategoryResponse.fromJson(jsonDecode(result.response.toString()));
       emit(state.copyWith(categoryResponse: categoryResponse));
-      print("Success ${result.response}");
+      // print("Success ${result.response}");
     } else if (result is Failure) {
       print("failure ${result.response}");
     }

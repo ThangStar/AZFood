@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/checkout/check_out_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button.dart';
@@ -29,8 +30,8 @@ class _AddProductToCurrentBookingScreenState
   @override
   void initState() {
     super.initState();
-    moveController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
+    moveController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 700));
 
     moveAnimation =
         CurvedAnimation(parent: moveController, curve: Curves.easeInOut);
@@ -55,23 +56,31 @@ class _AddProductToCurrentBookingScreenState
           },
           child: Scaffold(
             floatingActionButton: FloatingActionButton.extended(
+                heroTag: "check_out",
                 key: cartKey,
                 isExtended: false,
                 backgroundColor: colorScheme(context).primary,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CheckOutScreen(productsSelected: productsSelected),
+                      ));
+                },
                 label: const Text(
                   "Xác nhận thêm",
                   style: TextStyle(color: Colors.white),
                 ),
                 icon: Badge(
                   label: Text("${productsSelected.length}"),
-                  child: Icon(
+                  child: const Icon(
                     Icons.shopping_cart_rounded,
                     color: Colors.white,
                   ),
                 )),
             appBar: AppBar(
-              bottom: const PreferredSize(
+              bottom: PreferredSize(
                   preferredSize: Size.zero,
                   child: Divider(
                     height: 1,
@@ -143,15 +152,32 @@ class _AddProductToCurrentBookingScreenState
                               Product product =
                                   state.productResponse!.data[index];
                               return ItemProduct(
+                                  isAddCart: true,
                                   cartKey: cartKey,
                                   product: product,
                                   onTap: () {
-                                    setState(() {
-                                      productsSelected = [
-                                        ...productsSelected,
-                                        product
-                                      ];
-                                    });
+                                    final index = productsSelected.indexWhere(
+                                      (element) => element.id == product.id,
+                                    );
+                                    if (index == -1) {
+                                      setState(() {
+                                        productsSelected = [
+                                          ...productsSelected,
+                                          product
+                                        ];
+                                      });
+                                    } else {
+                                      // List<Product>  newData = List.from(productsSelected);
+                                      // newData[index].quantity! = 1;
+                                      Product productUpdate =
+                                          productsSelected[index];
+                                      if (productUpdate.quantity != null) {
+                                        ++productUpdate.amountCart;
+                                      }
+                                      setState(() {
+                                        productsSelected[index] = productUpdate;
+                                      });
+                                    }
                                   },
                                   subTitle: SubTitleProduct(product: product),
                                   trailling: SubTitleItemCurrentBill(

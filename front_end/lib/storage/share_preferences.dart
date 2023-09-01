@@ -6,7 +6,7 @@ class MySharePreferences {
   static Future<LoginResponse?> loadProfile() async {
     String key = KeyStorages.myProfile;
     final prefs = await SharedPreferences.getInstance();
-    print('data saved: ${prefs.getString(key)}');
+    // print('data saved: ${prefs.getString(key)}');
     String result = prefs.getString(key) ?? "";
     return result.isEmpty ? null : LoginResponse.fromJson(result);
   }

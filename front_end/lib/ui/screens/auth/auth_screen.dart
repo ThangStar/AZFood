@@ -48,6 +48,13 @@ class _AuthScreenState extends State<AuthScreen> {
                       width: sizeScreen.width,
                       height: sizeScreen.height * 0.4,
                       'assets/svgs/person_pay.svg'),
+                  Text(
+                    "Quản lí nhà hàng thông minh với Smart Restaurant",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12
+                    ),
+                  ),
                 ],
               ),
               Hero(

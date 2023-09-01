@@ -91,63 +91,64 @@ class _ItemProductState extends State<ItemProduct>
                 });
               }
             },
-            leading: SizedBox(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  widget.hasIndicator
-                      ? const LeadingItemStatus()
-                      : const SizedBox.shrink(),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Stack(
-                      children: [
-                        isInSideCart
-                            ? Positioned(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: Image.network(
-                                    widget.product.imageUrl != null &&
-                                            widget.product.imageUrl != ''
-                                        ? widget.product.imageUrl!
-                                        : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
-                                    fit: BoxFit.cover,
-                                  ),
+            leading: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                widget.hasIndicator
+                    ? const LeadingItemStatus()
+                    : const SizedBox.shrink(),
+                const SizedBox(
+                  width: 5,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Stack(
+                    children: [
+                      isInSideCart
+                          ? Positioned(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: Image.network(
+                                  widget.product.imageUrl != null &&
+                                          widget.product.imageUrl != ''
+                                      ? widget.product.imageUrl!
+                                      : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
+                                  fit: BoxFit.cover,
                                 ),
-                              )
-                            : const SizedBox.shrink(),
-                        Transform.translate(
-                          key: key,
-                          offset: Offset(
-                              moveXAnimation.value, moveYAnimation.value),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.network(
-                              widget.product.imageUrl != null &&
-                                      widget.product.imageUrl != ''
-                                  ? widget.product.imageUrl!
-                                  : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
-                              fit: BoxFit.cover,
-                            ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      Transform.translate(
+                        key: key,
+                        offset: Offset(
+                            moveXAnimation.value, moveYAnimation.value),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            widget.product.imageUrl != null &&
+                                    widget.product.imageUrl != ''
+                                ? widget.product.imageUrl!
+                                : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
+                            fit: BoxFit.cover,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             title: Row(
               children: [
-                Text(
-                  "${widget.product.name} - ",
-                  style: Theme.of(context).textTheme.bodyLarge,
+                Flexible(
+                  child: Text(
+                    "${widget.product.name} - ",
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                 ),
                 Text(
-                  "${widget.product.category}",
+                  "${widget.product.dvtName}",
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge

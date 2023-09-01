@@ -7,9 +7,11 @@ class Product {
   int? quantity;
   String? imageUrl;
   int amountCart;
+  String? dvtName;
 
   Product(
-      {required this.id,
+      {this.dvtName,
+      required this.id,
       required this.name,
       required this.price,
       required this.category,
@@ -25,11 +27,13 @@ class Product {
       category: json["category"],
       status: json["status"],
       quantity: json["quantity"],
+      dvtName: json["dvt_name"],
       imageUrl: json['imgUrl']);
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
+        "dvt_name": dvtName,
         "price": price,
         "category": category,
         "status": status,

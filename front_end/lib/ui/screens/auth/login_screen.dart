@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         backgroundColor: colorScheme(context).background,
         body: Container(
-          color: colorScheme(context).tertiary.withOpacity(0.3),
+          color: colorScheme(context).background.withOpacity(0.3),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
                       border: Border.all(
-                          width: 1, color: colorScheme(context).tertiary),
+                          width: 2, color: colorScheme(context).onSecondary),
                       color: colorScheme(context).background),
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   padding:
@@ -118,16 +118,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SvgPicture.asset('assets/svgs/logo.svg'),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        Text(
-                          "ĐĂNG NHẬP",
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w500),
+                        Row(
+                          children: [
+                            SvgPicture.asset('assets/svgs/logo.svg', width: 40,),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Text(
+                              "ĐĂNG NHẬP",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                          ],
                         ),
                         const SizedBox(
                           height: 18,
@@ -203,12 +207,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(
                           height: 8,
                         ),
-                        // MyCheckBox(
-                        //   value: cbxSaveLogin,
-                        //   onChanged: (p0) => _onChangeSaveLogin(p0!),
-                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                MyCheckBox(
+                                  value: cbxSaveLogin,
+                                  onChanged: (p0) => _onChangeSaveLogin(p0!),
+                                ),
+                                const Text('Lưu mật khẩu')
+                              ],
+                            ),
+                            const Text('Quên mật khẩu', style: TextStyle(color: Colors.blue),)
+                          ],
+                        ),
                         const SizedBox(
-                          height: 8,
+                          height: 18,
                         ),
                         Hero(
                             tag: "login_hero",
@@ -233,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                             width: double.infinity,
                             child: Text(
-                              "@name app",
+                              "Bloc App",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: colorScheme(context)

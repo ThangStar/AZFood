@@ -61,7 +61,7 @@ class _MyTextFieldState extends State<MyTextField> {
               labelStyle: Theme.of(context)
                   .textTheme
                   .titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w400),
+                  ?.copyWith(fontWeight: FontWeight.w400 ),
               isDense: true,
               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: colorScheme(context).scrim.withOpacity(0.6)),

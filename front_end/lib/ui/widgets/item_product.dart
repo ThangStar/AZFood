@@ -78,7 +78,7 @@ class _ItemProductState extends State<ItemProduct>
                     .animate(moveController
                         .drive(CurveTween(curve: Curves.easeOut)));
 
-                moveYAnimation = Tween(begin: 0.0, end: pos.y - thisPos.y)
+                moveYAnimation = Tween(begin: 0.0, end: pos.y - thisPos.y+4)
                     .animate(moveController
                         .drive(CurveTween(curve: Curves.bounceOut)));
 

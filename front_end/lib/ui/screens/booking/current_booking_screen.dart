@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
+import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -13,7 +15,8 @@ import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
-  const CurrentBookingScreen({super.key});
+  const CurrentBookingScreen({super.key, required this.tableID});
+  final int tableID;
 
   @override
   State<CurrentBookingScreen> createState() => _CurrentBookingScreenState();
@@ -23,21 +26,15 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   List<Product> products = [
     Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
     Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
   ];
+
+  @override
+  void initState() {
+    context
+        .read<OrderBloc>()
+        .add(GetOrderInTableEvent(tableID: widget.tableID));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -5,4 +5,9 @@ class Router {
   static String listProduct = "/api/products/list";
   static String category = "/api/products/category";
   static String productsFilter = '/api/products/filterData';
+
+  //order
+  static String createOrder = '/api/orders/create';
+  static String getOrderInTable = '/api/orders/getOrder';
+
 }

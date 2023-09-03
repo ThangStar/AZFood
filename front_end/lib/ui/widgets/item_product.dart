@@ -55,6 +55,8 @@ class _ItemProductState extends State<ItemProduct>
     super.dispose();
   }
 
+  bool isShowClone = false;
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -78,11 +80,22 @@ class _ItemProductState extends State<ItemProduct>
                     .animate(moveController
                         .drive(CurveTween(curve: Curves.easeOut)));
 
-                moveYAnimation = Tween(begin: 0.0, end: pos.y - thisPos.y+4)
+                moveYAnimation = Tween(begin: 0.0, end: pos.y - thisPos.y + 4)
                     .animate(moveController
                         .drive(CurveTween(curve: Curves.bounceOut)));
-
-                print("X cart: ${pos.x} Y: ${pos.y}");
+                // print("X cart: ${pos.x} Y: ${pos.y}");
+                moveController.addStatusListener((status) {
+                  if (status == AnimationStatus.forward) {
+                    print('started');
+                    setState(() {
+                      isShowClone = true;
+                    });
+                  }else if(status == AnimationStatus.completed){
+                    setState(() {
+                      isShowClone = false;
+                    });
+                  }
+                });
                 moveController.forward(from: 0);
               }
               if (!isInSideCart) {
@@ -104,24 +117,7 @@ class _ItemProductState extends State<ItemProduct>
                   padding: const EdgeInsets.all(4.0),
                   child: Stack(
                     children: [
-                      isInSideCart
-                          ? Positioned(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(6),
-                                child: Image.network(
-                                  widget.product.imageUrl != null &&
-                                          widget.product.imageUrl != ''
-                                      ? widget.product.imageUrl!
-                                      : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                      Transform.translate(
-                        key: key,
-                        offset: Offset(
-                            moveXAnimation.value, moveYAnimation.value),
+                      Positioned(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
                           child: Image.network(
@@ -130,6 +126,24 @@ class _ItemProductState extends State<ItemProduct>
                                 ? widget.product.imageUrl!
                                 : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
                             fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Transform.translate(
+                        key: key,
+                        offset:
+                            Offset(moveXAnimation.value, moveYAnimation.value),
+                        child: Opacity(
+                          opacity: isShowClone ? 1 : 0,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.network(
+                              widget.product.imageUrl != null &&
+                                      widget.product.imageUrl != ''
+                                  ? widget.product.imageUrl!
+                                  : "https://yt3.googleusercontent.com/ytc/AOPolaQWGbDFvkId2pquCOeGl2yr_gCBFufxLNW9Z6fg3A=s900-c-k-c0x00ffffff-no-rj",
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),

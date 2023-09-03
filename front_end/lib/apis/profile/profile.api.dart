@@ -11,7 +11,6 @@ class ProfileApi {
           options: Options(headers: {'Authorization': 'Bearer $token'}),
           data: {'id': id});
       if (response.statusCode == 200) {
-        print(response);
         return Success(response: response, statusCode: response.statusCode);
       } else {
         print("failure ${response.data}");

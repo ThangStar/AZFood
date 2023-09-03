@@ -99,9 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(25),
-                      border: Border.all(
-                          width: 2, color: colorScheme(context).onSecondary),
-                      color: colorScheme(context).background),
+                      border: Border.all(color: colorScheme(context).tertiary),
+                      color: colorScheme(context).onPrimary),
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
@@ -120,7 +119,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Row(
                           children: [
-                            SvgPicture.asset('assets/svgs/logo.svg', width: 40,),
+                            SvgPicture.asset(
+                              'assets/svgs/logo.svg',
+                              width: 40,
+                            ),
                             const SizedBox(
                               width: 15,
                             ),
@@ -129,7 +131,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
                             ),
                           ],
                         ),
@@ -216,10 +220,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   value: cbxSaveLogin,
                                   onChanged: (p0) => _onChangeSaveLogin(p0!),
                                 ),
-                                const Text('Lưu mật khẩu')
+                                const Text('Ghi nhớ đăng nhập')
                               ],
                             ),
-                            const Text('Quên mật khẩu', style: TextStyle(color: Colors.blue),)
+                            const Text(
+                              'Quên mật khẩu',
+                              style: TextStyle(color: Colors.blue),
+                            )
                           ],
                         ),
                         const SizedBox(

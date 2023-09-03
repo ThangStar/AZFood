@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Model.Table(
         status: 0, sumPrice: 32234, tableName: "Bàn số 6", time: "2h32p")
   ];
-
+  GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
   List<String> filterStatus = ["Tất cả", "Chờ", "Hoạt động", "bận"];
 
   int posFilterStatusSelected = 0;
@@ -75,9 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: colorScheme(context).primary,
           onPressed: () {},
-          child: const Icon(
+          child: Icon(
             Icons.arrow_forward_sharp,
-            color: Colors.white,
+            color: colorScheme(context).onPrimary,
           )),
       body: Stack(
         fit: StackFit.expand,
@@ -85,7 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
           SingleChildScrollView(
             child: Container(
               decoration: BoxDecoration(
-                  color: colorScheme(context).background,),
+                color: colorScheme(context).background,
+              ),
               child: ClipRRect(
                   child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 80.0, sigmaY: 80.0),
@@ -275,7 +276,7 @@ class ToolbarHome extends StatelessWidget {
                   MyIconButtonBlur(
                     icon: Icon(
                       Icons.menu,
-                      color: colorScheme(context).onPrimary,
+                      color: Colors.white,
                     ),
                     onTap: () {
                       Scaffold.of(context).openDrawer();
@@ -290,7 +291,7 @@ class ToolbarHome extends StatelessWidget {
                     icon: Badge(
                       backgroundColor: Colors.redAccent,
                       child: Icon(Icons.notifications,
-                              color: colorScheme(context).onPrimary)
+                              color: Colors.white)
                           .animate(
                             onPlay: (controller) => controller.repeat(),
                           )
@@ -335,7 +336,7 @@ class ToolbarProfile extends StatelessWidget {
               color: Colors.white.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12)),
           child: Row(
-                mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -367,7 +368,7 @@ class ToolbarProfile extends StatelessWidget {
                         profile.email,
                         style: TextStyle(
                           color:
-                              colorScheme(context).onPrimary.withOpacity(0.6),
+                              Colors.white.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -381,7 +382,8 @@ class ToolbarProfile extends StatelessWidget {
                   decoration: BoxDecoration(
                       border: Border(
                           left: BorderSide(
-                              color: const Color(0xFFD4D4D8).withOpacity(0.3)))),
+                              color:
+                                  const Color(0xFFD4D4D8).withOpacity(0.3)))),
                   child: Text(
                     "NV00${profile.id}",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(

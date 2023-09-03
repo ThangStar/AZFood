@@ -1,0 +1,76 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:restaurant_manager_app/main.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+
+class MyTabBarTheme extends StatefulWidget {
+  const MyTabBarTheme({
+    super.key,
+  });
+
+  @override
+  State<MyTabBarTheme> createState() => _MyTabBarThemeState();
+}
+
+class _MyTabBarThemeState extends State<MyTabBarTheme>
+    with TickerProviderStateMixin {
+  int pos = 0;
+
+  @override
+  void initState() {
+    MySharePreferences.getIsDarkTheme().then((value){
+      setState(() {
+        pos = value ?? false ? 1 : 0;
+      });
+    });
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        color: colorScheme(context).tertiary.withOpacity(0.6),
+        child: TabBar(
+            onTap: (value) async {
+              await Future.delayed(200.ms);
+              await MySharePreferences.setIsDarkTheme(value == 1);
+              if (value == 1) {
+                MyApp.themeNotifier.value = ThemeMode.dark;
+              } else {
+                MyApp.themeNotifier.value = ThemeMode.light;
+              }
+              setState(() {
+                pos = value;
+              });
+            },
+            labelColor: colorScheme(context).scrim,
+            padding: const EdgeInsets.all(4),
+            indicator: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: colorScheme(context).onPrimary),
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerHeight: 0,
+            controller:
+                TabController(length: 2, vsync: this, initialIndex: pos),
+            tabs: const [
+              Padding(
+                padding: EdgeInsets.all(6.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [Icon(Icons.light_mode), Text("Sáng")],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(6.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [Icon(Icons.dark_mode), Text("Tối")],
+                ),
+              ),
+            ]),
+      ),
+    );
+  }
+}

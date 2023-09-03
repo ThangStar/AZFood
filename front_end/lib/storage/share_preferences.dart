@@ -16,4 +16,16 @@ class MySharePreferences {
     final prefs = await SharedPreferences.getInstance();
     return await prefs.setString(key, value);
   }
+
+  static Future<bool> setIsDarkTheme(bool isDark) async {
+    String key = KeyStorages.theme;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(key, isDark);
+  }
+
+  static Future<bool?> getIsDarkTheme() async {
+    String key = KeyStorages.theme;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key);
+  }
 }

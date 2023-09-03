@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:restaurant_manager_app/courses/aspect_ratio.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/intro/splash_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 

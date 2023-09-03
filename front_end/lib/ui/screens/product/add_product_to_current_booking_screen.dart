@@ -80,7 +80,7 @@ class _AddProductToCurrentBookingScreenState
                   ),
                 )),
             appBar: AppBar(
-              bottom: PreferredSize(
+              bottom: const PreferredSize(
                   preferredSize: Size.zero,
                   child: Divider(
                     height: 1,

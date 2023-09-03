@@ -7,7 +7,7 @@ class AspectRatioScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Aspect ratio"),
+        title: const Text("Aspect ratio"),
       ),
       body: Center(
         child: Align(

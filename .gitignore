@@ -4,3 +4,4 @@ backend/package-lock.json
 .idea
 .history
 front_end/macos/Flutter
+backend/.env

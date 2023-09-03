@@ -25,13 +25,6 @@ class _InfoScreenState extends State<InfoScreen> {
   Scaffold build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.arrow_back,
-            color: colorScheme(context).scrim,
-          ),
-        ),
         title: Text(
           'Cá nhân',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 20, fontWeight: FontWeight.bold),

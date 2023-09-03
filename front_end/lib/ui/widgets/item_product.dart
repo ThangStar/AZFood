@@ -9,7 +9,7 @@ import 'package:restaurant_manager_app/utils/get_pos_by_key.dart';
 //("${NumberFormat.decimalPattern().format(product.money)} đ"),
 
 class ItemProduct extends StatefulWidget {
-  ItemProduct(
+  const ItemProduct(
       {super.key,
       required this.product,
       required this.subTitle,

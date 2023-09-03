@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
-import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 

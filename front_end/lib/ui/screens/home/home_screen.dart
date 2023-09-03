@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Model.Table(
         status: 0, sumPrice: 32234, tableName: "Bàn số 6", time: "2h32p")
   ];
-  GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   List<String> filterStatus = ["Tất cả", "Chờ", "Hoạt động", "bận"];
 
   int posFilterStatusSelected = 0;
@@ -274,7 +274,7 @@ class ToolbarHome extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   MyIconButtonBlur(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.menu,
                       color: Colors.white,
                     ),
@@ -290,7 +290,7 @@ class ToolbarHome extends StatelessWidget {
                   MyIconButtonBlur(
                     icon: Badge(
                       backgroundColor: Colors.redAccent,
-                      child: Icon(Icons.notifications,
+                      child: const Icon(Icons.notifications,
                               color: Colors.white)
                           .animate(
                             onPlay: (controller) => controller.repeat(),

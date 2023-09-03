@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_manager_app/main.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_tabbar_theme.dart';
 
@@ -18,11 +20,15 @@ class MyDrawer extends StatefulWidget {
   State<MyDrawer> createState() => _MyDrawerState();
 }
 
+enum TypeDrawer { home, profile, order, calendar, analytics, logout }
+
 class ItemDrawer {
   final String label;
   final IconData icon;
+  final TypeDrawer typeDrawer;
 
-  ItemDrawer({required this.label, required this.icon});
+  ItemDrawer(
+      {required this.label, required this.icon, required this.typeDrawer});
 }
 
 class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
@@ -33,15 +39,31 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
 
   final List<ItemDrawer> items = [
     ItemDrawer(
-      label: "Menu",
-      icon: Icons.menu,
-    ),
-    ItemDrawer(label: "Bàn", icon: Icons.table_restaurant),
-    ItemDrawer(label: "Khách hàng", icon: Icons.person),
-    ItemDrawer(label: "Hóa đơn", icon: Icons.book),
-    ItemDrawer(label: "Điểm danh", icon: Icons.free_cancellation_sharp),
-    ItemDrawer(label: "Lịch đi làm", icon: Icons.calendar_month),
-    ItemDrawer(label: "Thống kê", icon: Icons.analytics)
+        label: "Bàn",
+        icon: Icons.table_restaurant,
+        typeDrawer: TypeDrawer.home),
+    ItemDrawer(
+        label: "Hóa đơn", icon: Icons.book, typeDrawer: TypeDrawer.order),
+    ItemDrawer(
+        label: "Điểm danh",
+        icon: Icons.free_cancellation_sharp,
+        typeDrawer: TypeDrawer.home),
+    ItemDrawer(
+        label: "Lịch đi làm",
+        icon: Icons.calendar_month,
+        typeDrawer: TypeDrawer.calendar),
+    ItemDrawer(
+        label: "Thống kê",
+        icon: Icons.analytics,
+        typeDrawer: TypeDrawer.analytics),
+    ItemDrawer(
+        label: "Cá nhân",
+        icon: Icons.person,
+        typeDrawer: TypeDrawer.profile),
+    ItemDrawer(
+        label: "Đăng xuất",
+        icon: Icons.logout_outlined,
+        typeDrawer: TypeDrawer.logout)
   ];
 
   @override
@@ -96,7 +118,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                     const EdgeInsets.symmetric(vertical: 10),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
+                                      horizontal: 12),
                                   child: Text(
                                     "Quản lí",
                                     style: Theme.of(context)
@@ -122,8 +144,8 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                       .withOpacity(0.8),
                                 ),
                                 margin:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                    padding: EdgeInsets.symmetric(vertical: 8),
+                                    const EdgeInsets.symmetric(horizontal: 12),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
                                 child: Column(
                                   children: [
                                     ...items.asMap().entries.map((e) {
@@ -150,6 +172,79 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                             await Future.delayed(300.ms);
                                             // ignore: use_build_context_synchronously
                                             Navigator.pop(context);
+                                            final type = e.value.typeDrawer;
+                                            switch (type) {
+                                              case TypeDrawer.home:
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const HomeScreen();
+                                                  },
+                                                ));
+                                                break;
+
+                                              case TypeDrawer.calendar:
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const BillScreen();
+                                                  },
+                                                ));
+                                                break;
+
+                                              case TypeDrawer.analytics:
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const BillScreen();
+                                                  },
+                                                ));
+                                                break;
+
+                                              case TypeDrawer.order:
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const BillScreen();
+                                                  },
+                                                ));
+                                                break;
+
+                                              case TypeDrawer.profile:
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const InfoScreen();
+                                                  },
+                                                ));
+                                                break;
+
+                                              case TypeDrawer.logout:
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const BillScreen();
+                                                  },
+                                                ));
+                                                break;
+
+                                              default:
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return const BillScreen();
+                                                  },
+                                                ));
+                                                break;
+                                              // ignore: use_build_context_synchronously
+                                            }
+                                            // Navigator.pop(context);
                                           },
                                           leading: Icon(
                                             e.value.icon,

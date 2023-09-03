@@ -1,17 +1,11 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button_gradient.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 
 class CheckOutScreen extends StatefulWidget {
@@ -32,7 +26,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         appBar: AppBar(
           bottom: const PreferredSize(
               preferredSize: Size.fromHeight(1),
-              child: const Divider(
+              child: Divider(
                 height: 1,
               )),
           leading: IconButton(

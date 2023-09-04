@@ -5,3 +5,8 @@ backend/package-lock.json
 .history
 front_end/macos/Flutter
 backend/.env
+front_end/linux/flutter/generated_plugin_registrant.cc
+front_end/linux/flutter/generated_plugins.cmake
+front_end/macos/Flutter/GeneratedPluginRegistrant.swift
+front_end/windows/flutter/generated_plugin_registrant.cc
+front_end/windows/flutter/generated_plugins.cmake

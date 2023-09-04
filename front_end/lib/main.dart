@@ -6,13 +6,13 @@ import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
+import 'package:restaurant_manager_app/utils/io_client.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
-  // IoClient().socket;
   runApp(const MyApp());
 }
 
@@ -29,6 +29,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    io.on('event', (data) => null);
+
     MySharePreferences.getIsDarkTheme().then((value) {
       MyApp.themeNotifier.value =
           value ?? false ? ThemeMode.dark : ThemeMode.light;
@@ -65,7 +67,7 @@ class _MyAppState extends State<MyApp> {
                     textTheme: textTheme(context)),
                 darkTheme:
                     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: const HomeScreen(),
+                home: const LoginScreen(),
               ));
         });
   }

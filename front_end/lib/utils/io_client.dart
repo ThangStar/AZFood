@@ -7,14 +7,10 @@ class IoClient {
 
   IoClient() {
     io = IO.io(
-        Env.BASE_URL,
+        Env.SOCKET_URL,
         IO.OptionBuilder()
-            .disableAutoConnect()
             .setExtraHeaders({'token': token}).build());
     io.connect();
-    io.onConnect((data) {
-      print('connected socket');
-    });
   }
 }
 

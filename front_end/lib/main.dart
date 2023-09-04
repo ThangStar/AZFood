@@ -11,8 +11,21 @@ import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart';
 void main() async {
   await dotenv.load(fileName: ".env");
+
+   // Dart client
+  IO.Socket socket = IO.io('http://localhost:8080',
+  OptionBuilder()
+      .setTransports(['websocket']) // for Flutter or Dart VM
+      .setExtraHeaders({'foo': 'bar'}) // optional
+      .build());
+  socket.on('event', (data) => print(data));
+  socket.onDisconnect((_) => print('disconnect'));
+  socket.on('fromServer', (_) => print(_));
+
   runApp(const MyApp());
 }
 
@@ -29,8 +42,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    io.on('event', (data) => null);
-
+    // io;
     MySharePreferences.getIsDarkTheme().then((value) {
       MyApp.themeNotifier.value =
           value ?? false ? ThemeMode.dark : ThemeMode.light;

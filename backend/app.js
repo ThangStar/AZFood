@@ -43,12 +43,10 @@ require("./app/routes/statistics.route.js")(app);
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  console.log(`SOCKET is running on port ${PORT}.`);
 });
 require("./app/routes/members.route.js")(app);
-io.on('connection', (socket) => {
-  console.log('User connected to socket');
-  socket.on('disconnect', () => {
-    console.log('User disconnected from socket');
-  });
-});
+
+require('./socket/socket.init.js')(io);
+
+

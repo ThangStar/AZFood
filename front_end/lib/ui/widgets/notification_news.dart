@@ -11,7 +11,7 @@ class NotificationNews extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return Container(
-        width: double.infinity,
+      width: double.infinity,
         padding: const EdgeInsets.all(10),
         color: colorScheme(context).primary.withOpacity(0.1),
         child: ClipRRect(
@@ -29,14 +29,14 @@ class NotificationNews extends StatelessWidget {
                       text: 'Trứng sốt cà chua ',
                       style: TextStyle(color: Colors.redAccent)),
                   TextSpan(
-                      text: 'hiện đã hết vui lòng thông báo nếu có khách hàng yêu cầu',
+                      text: 'đã hết.',
                       style: TextStyle(color: Colors.white)),
                 ],
               ),
             )
                 .animate(onComplete: (controller) => controller.repeat(),)
                 .fade(duration: 600.ms)
-                .moveX(begin: width, duration: 10.seconds).then().moveX(end: -width, duration: 10.seconds),
+                .moveX(begin: width, duration: 5.seconds).then().moveX(end: -width, duration: 5.seconds),
           ),
         ));
   }

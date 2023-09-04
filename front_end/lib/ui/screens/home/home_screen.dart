@@ -8,6 +8,7 @@ import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
@@ -290,15 +291,19 @@ class ToolbarHome extends StatelessWidget {
                   MyIconButtonBlur(
                     icon: Badge(
                       backgroundColor: Colors.redAccent,
-                      child: const Icon(Icons.notifications,
-                              color: Colors.white)
-                          .animate(
-                            onPlay: (controller) => controller.repeat(),
-                          )
-                          .shake(delay: 1.seconds),
+                      child:
+                          const Icon(Icons.notifications, color: Colors.white)
+                              .animate(
+                                onPlay: (controller) => controller.repeat(),
+                              )
+                              .shake(delay: 1.seconds),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationScreen(),
+                          ));
                     },
                   )
                 ],
@@ -367,8 +372,7 @@ class ToolbarProfile extends StatelessWidget {
                       Text(
                         profile.email,
                         style: TextStyle(
-                          color:
-                              Colors.white.withOpacity(0.6),
+                          color: Colors.white.withOpacity(0.6),
                         ),
                       ),
                     ],

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
-// status: 0 -> watting, 1 -> online, 2 -> error
+// status: 1 -> online, 2 -> error, 3 -> watting,
 class ItemTable extends StatelessWidget {
   const ItemTable({super.key, required this.table, required this.onTap});
   final Model.Table table;
@@ -30,7 +30,7 @@ class ItemTable extends StatelessWidget {
                             horizontal: 10, vertical: 12),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            border: table.status != 0
+                            border: table.status != 3
                                 ? Border.all(
                                     color: table.status == 1
                                         ? const Color(0xFF049C6B)
@@ -43,7 +43,7 @@ class ItemTable extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              table.tableName,
+                              table.name ?? "NAME",
                               style: Theme.of(context)
                                   .textTheme
                                   .titleMedium
@@ -51,7 +51,7 @@ class ItemTable extends StatelessWidget {
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       color: table.status == 1
-                                              ? const Color(0xFF049C6B)
+                                          ? const Color(0xFF049C6B)
                                           : colorScheme(context)
                                               .scrim
                                               .withOpacity(0.8)),
@@ -59,15 +59,17 @@ class ItemTable extends StatelessWidget {
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                Icon(Icons.access_time_sharp, color: colorScheme(context)
-                                              .scrim
-                                              .withOpacity(0.6),size: 18),
+                                Icon(Icons.access_time_sharp,
+                                    color: colorScheme(context)
+                                        .scrim
+                                        .withOpacity(0.6),
+                                    size: 18),
                                 Text(
                                   " ${table.time}",
                                   style: TextStyle(
                                       color: colorScheme(context)
-                                              .scrim
-                                              .withOpacity(0.6)),
+                                          .scrim
+                                          .withOpacity(0.6)),
                                 )
                               ],
                             ),
@@ -77,17 +79,19 @@ class ItemTable extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                    "${NumberFormat.decimalPattern().format(table.sumPrice)} đ",
+                                    "${NumberFormat.decimalPattern().format(table.sumPrice ?? 0)} đ",
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyLarge
                                         ?.copyWith(
                                             fontWeight: FontWeight.bold,
-                                            color:  table.status != 0
-                                          ? table.status ==1? const Color(0xFF049C6B) : Colors.redAccent
-                                          : colorScheme(context)
-                                              .scrim
-                                              .withOpacity(0.8))),
+                                            color: table.status != 3
+                                                ? table.status == 1
+                                                    ? const Color(0xFF049C6B)
+                                                    : Colors.redAccent
+                                                : colorScheme(context)
+                                                    .scrim
+                                                    .withOpacity(0.8))),
                                 const Spacer(),
                                 table.status == 2
                                     ? const Icon(Icons.error, color: Colors.red)

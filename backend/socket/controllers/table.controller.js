@@ -16,6 +16,4 @@ exports.getList = async (socket, io) => {
         console.log("response", error);
         io.to(socket.id).emit('response',error)
     }
-
-
 }

@@ -6,26 +6,14 @@ import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
+import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:socket_io_client/socket_io_client.dart';
 void main() async {
   await dotenv.load(fileName: ".env");
-
-   // Dart client
-  IO.Socket socket = IO.io('http://localhost:8080',
-  OptionBuilder()
-      .setTransports(['websocket']) // for Flutter or Dart VM
-      .setExtraHeaders({'foo': 'bar'}) // optional
-      .build());
-  socket.on('event', (data) => print(data));
-  socket.onDisconnect((_) => print('disconnect'));
-  socket.on('fromServer', (_) => print(_));
-
   runApp(const MyApp());
 }
 
@@ -42,11 +30,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    // io;
     MySharePreferences.getIsDarkTheme().then((value) {
       MyApp.themeNotifier.value =
           value ?? false ? ThemeMode.dark : ThemeMode.light;
     });
+
     super.initState();
   }
 
@@ -59,6 +47,9 @@ class _MyAppState extends State<MyApp> {
               providers: [
                 BlocProvider(
                   create: (context) => OrderBloc(),
+                ),
+                BlocProvider(
+                  create: (context) => TableBloc(),
                 ),
                 BlocProvider(
                   create: (context) => InitialBloc(),
@@ -79,7 +70,7 @@ class _MyAppState extends State<MyApp> {
                     textTheme: textTheme(context)),
                 darkTheme:
                     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: const LoginScreen(),
+                home: const HomeScreen(),
               ));
         });
   }

@@ -9,8 +9,13 @@ class IoClient {
     io = IO.io(
         Env.SOCKET_URL,
         IO.OptionBuilder()
+            .setTransports(['websocket']) // for Flutter or Dart VM
+            .setExtraHeaders({'foo': 'bar'}) // optional
             .setExtraHeaders({'token': token}).build());
     io.connect();
+    io.onConnect((data){
+      print("socket connected");
+    });
   }
 }
 

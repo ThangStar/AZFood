@@ -7,6 +7,7 @@ import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -17,6 +18,7 @@ import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/notification_news.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
+import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,19 +28,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Model.Table> tables = [
-    Model.Table(
-        status: 1, sumPrice: 324234, tableName: "Bàn số 1", time: "2h30p"),
-    Model.Table(
-        status: 2, sumPrice: 3234, tableName: "Bàn số 2", time: "8h30p"),
-    Model.Table(
-        status: 2, sumPrice: 3234, tableName: "Bàn số 3", time: "20h30p"),
-    Model.Table(status: 0, sumPrice: 0, tableName: "Bàn số 4", time: "0h00p"),
-    Model.Table(
-        status: 1, sumPrice: 32434, tableName: "Bàn số 5", time: "12h30p"),
-    Model.Table(
-        status: 0, sumPrice: 32234, tableName: "Bàn số 6", time: "2h32p")
-  ];
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   List<String> filterStatus = ["Tất cả", "Chờ", "Hoạt động", "bận"];
 
@@ -52,6 +41,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    //init table
+    if (!io.hasListeners("response")) {
+      io.emit('table', {"name": "thang"});
+      io.on('response', (data) {
+        print("table change: $data");
+
+        final jsonResponse = data as List<dynamic>;
+        List<Model.Table> tables =
+            jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
+        context.read<TableBloc>().add(OnTableChange(tables: tables));
+      });
+    }
     super.initState();
     _fillData();
   }
@@ -194,38 +195,44 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ]),
                     ),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      primary: false,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisSpacing: 6,
-                              mainAxisSpacing: 6,
-                              mainAxisExtent: 160,
-                              crossAxisCount: 2),
-                      itemBuilder: (context, index) {
-                        Model.Table table = tables[index];
-                        return ItemTable(
-                          table: table,
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const CurrentBookingScreen(tableID: 1),
-                                ));
+                    BlocBuilder<TableBloc, TableState>(
+                      builder: (context, state) {
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          primary: false,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisSpacing: 6,
+                                  mainAxisSpacing: 6,
+                                  mainAxisExtent: 160,
+                                  crossAxisCount: 2),
+                          itemBuilder: (context, index) {
+                            Model.Table table = state.tables[index];
+                            return ItemTable(
+                              table: table,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CurrentBookingScreen(
+                                              tableID: 1),
+                                    ));
+                              },
+                            )
+                                .animate()
+                                .moveX(
+                                    begin: index % 2 != 0 ? -300 : -100,
+                                    duration:
+                                        Duration(milliseconds: 500 * index),
+                                    curve: Curves.fastEaseInToSlowEaseOut)
+                                .fade(duration: (500 * index).ms);
                           },
-                        )
-                            .animate()
-                            .moveX(
-                                begin: index % 2 != 0 ? -300 : -100,
-                                duration: Duration(milliseconds: 500 * index),
-                                curve: Curves.fastEaseInToSlowEaseOut)
-                            .fade(duration: (500 * index).ms);
+                          itemCount: state.tables.length,
+                        );
                       },
-                      itemCount: tables.length,
                     ),
                     const SizedBox(
                       height: 24,

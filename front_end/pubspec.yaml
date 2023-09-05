@@ -39,6 +39,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_svg: ^2.0.7
   google_fonts: ^5.1.0
+  google_mlkit_face_detection: ^0.8.0
   intl: ^0.18.1
   marquee: ^2.2.3
   shared_preferences: ^2.2.0

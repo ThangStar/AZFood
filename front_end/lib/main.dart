@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                     textTheme: textTheme(context)),
                 darkTheme:
                     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: FaceDetectorScreen(),
+                home: const FaceDetectorScreen(),
               ));
         });
   }

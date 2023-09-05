@@ -69,7 +69,6 @@ exports.updateStatusTable = async (req, res) => {
     }
 }
 exports.getList = async (req, res) => {
-
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
         const queryRaw = "SELECT t.id, t.name, t.status, s.name AS status_name FROM tables t JOIN statusTable s ON t.status = s.id;";

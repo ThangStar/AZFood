@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:restaurant_manager_app/courses/utils/painter_face.dart';
 import 'package:restaurant_manager_app/main.dart';
 import 'package:restaurant_manager_app/utils/camera_to_input_image.dart';
 
@@ -21,9 +22,14 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
         landmarks: {},
         contours: {}),
     Face(
-        boundingBox: Rect.fromLTRB(300, 200, 200, 300), landmarks: {}, contours: {})
+        boundingBox: Rect.fromLTRB(300, 200, 200, 300),
+        landmarks: {},
+        contours: {})
   ];
   late FaceDetector faceDetector;
+  CustomPaint? customPaint;
+  double scale = 0.5;
+
   @override
   void initState() {
     //init face detect
@@ -74,12 +80,20 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
     cameraController.startImageStream((CameraImage image) async {
       InputImage ipImg = await cameraImageToInputImage(image);
       faceDetector.processImage(ipImg).then((value) {
+        if (ipImg.metadata?.size != null && ipImg.metadata?.rotation != null) {
+          FaceDetectorPainter painter = FaceDetectorPainter(
+              faces, ipImg.metadata!.size, ipImg.metadata!.rotation);
           setState(() {
-            faces = value;
+            customPaint = CustomPaint(
+              painter: painter,
+            );
           });
-          print(
-              "phát hiện thấy ${faces.length} khuôn mặt, vị trí: ${faces.length}");
-        
+          // _customPaint = CustomPaint(painter: painter);
+          print("phát hiện thấy ${faces.length} khuôn mặt, vị trí:");
+        }
+        setState(() {
+          faces = value;
+        });
       });
     });
   }
@@ -87,6 +101,8 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
+    // double scale = sizeScreen.aspectRatio * cameraController.value.aspectRatio;
+    // if (scale < 1) scale = 1 / scale;
     if (!cameraController.value.isInitialized) {
       return Scaffold(
         body: Center(
@@ -96,26 +112,24 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
     } else {
       return Scaffold(
         body: Stack(
+          fit: StackFit.expand,
           children: [
-            CameraPreview(cameraController),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton(
-                        onPressed: _startDetect, child: Text("Start detect")),
-                    ElevatedButton(onPressed: _pause, child: Text("Pause")),
-                  ],
-                )),
-            Positioned(
-              top: 0,
-              left: 0,
-              child: Transform.scale(
-                scale: 1,
-                child: CustomPaint(
-                  painter: OpenPainter(faces: faces, sizeScreen: sizeScreen),
-                ),
+            Transform.scale(
+                scale: scale, child: CameraPreview(cameraController)),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                    onPressed: _startDetect, child: Text("Start detect")),
+                ElevatedButton(onPressed: _pause, child: Text("Pause")),
+              ],
+            ),
+            if (customPaint != null)
+              Transform.scale(scale: scale, child: customPaint!),
+            Transform.scale(
+              scale: scale,
+              child: CustomPaint(
+                painter: OpenPainter(faces: faces, sizeScreen: sizeScreen),
               ),
             ),
           ],
@@ -133,7 +147,7 @@ class OpenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var paint1 = Paint()
-      ..color = const Color.fromARGB(255, 255, 0, 0)
+      ..color = Color.fromARGB(255, 111, 0, 255)
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
@@ -145,5 +159,7 @@ class OpenPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
 }

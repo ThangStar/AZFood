@@ -1,5 +1,7 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:restaurant_manager_app/courses/face_detector.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
@@ -11,8 +13,19 @@ import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 
+late List<CameraDescription> cameras;
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  try {
+    cameras = await availableCameras().whenComplete((){
+      print("done! setup face detector");
+    });
+  } on CameraException catch (e) {
+   print(e.code);
+  }
+
   runApp(const MyApp());
 }
 
@@ -69,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                     textTheme: textTheme(context)),
                 darkTheme:
                     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: const HomeScreen(),
+                home: FaceDetectorScreen(),
               ));
         });
   }

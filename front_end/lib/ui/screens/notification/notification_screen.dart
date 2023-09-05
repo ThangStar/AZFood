@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_manager_app/model/notification.dart' as Noti;
 
 import '../../theme/color_schemes.dart';
 
@@ -10,33 +11,13 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  List<String> notifications = [
-    "Lorem Ipsum is simply dummy text...",
-    "Bia Larue đã hết",
-    "Món đậu phụ luộc đã hết",
-    "Món Tôm chiên giòn đã hết",
-    "Bia Tiger còn 1 thùng",
-    "Món Cơm chiên trứng đã hết",
-    "Bia Tiger còn 1 thùng",
-    "Món Cơm chiên trứng đã hết",
-    "Bia Tiger còn 1 thùng",
-    "Món Cơm chiên trứng đã hết",
+  List<Noti.Notification> notifications = [
+    Noti.Notification(
+        id: 0,
+        content: "content",
+        assetImage: "assets/images/avatar.jpg",
+        opened: false, date: '25-5-2002')
   ];
-
-  List<String> date = [
-    "12/6/2023",
-    "12/6/2023",
-    "12/6/2023",
-    "12/6/2023",
-    "10/6/2023",
-    "12/6/2023",
-    "12/6/2023",
-    "10/6/2023",
-    "12/6/2023",
-    "10/6/2023",
-  ];
-
-  List<bool> isRead = List.generate(10, (index) => false);
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +40,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child: TextButton(
               onPressed: () {
                 setState(() {
-                  isRead = List.generate(
-                      10, (index) => true);
+                  // isRead = List.generate(10, (index) => true);
                 });
               },
               child: Text(
                 'Đánh dấu tất cả',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
           ),
@@ -76,19 +56,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child: ListView.builder(
               itemCount: notifications.length,
               itemBuilder: (context, index) {
-                String notificationText = notifications[index];
-                if (notificationText.length > 80) {
-                  notificationText = '${notificationText.substring(0, 80)}...';
-                }
+                Noti.Notification notification = notifications[index];
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      isRead[index] = true;
+                      // isRead[index] = true;
                     });
                   },
                   child: Container(
                     width: double.infinity,
-                    color: isRead[index]
+                    color: notification.opened
                         ? colorScheme(context).onPrimary
                         : colorScheme(context).outline.withOpacity(0.2),
                     child: Padding(
@@ -113,7 +90,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  notificationText,
+                                  notification.content,
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleMedium
@@ -124,7 +101,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       ),
                                 ),
                                 Text(
-                                  date[index],
+                                  notification.date,
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyMedium
@@ -140,7 +117,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             flex: 1,
                             child: GestureDetector(
                               onTap: () {
-                                _showBottomSheet(context, index);
+                                _showBottomSheet(context);
                               },
                               child: const Icon(Icons.more_horiz),
                             ),
@@ -158,7 +135,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  void _showBottomSheet(BuildContext context, int index) {
+  void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -168,9 +145,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
               leading: const Icon(Icons.mark_email_read),
               title: const Text('Đánh dấu đã đọc'),
               onTap: () {
-                setState(() {
-                  isRead[index] = true;
-                });
                 Navigator.of(context).pop();
               },
             ),
@@ -179,9 +153,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
               title: const Text('Xóa thông báo này'),
               onTap: () {
                 setState(() {
-                  notifications.removeAt(index);
-                  date.removeAt(index);
-                  isRead.removeAt(index);
                 });
                 Navigator.of(context).pop();
               },

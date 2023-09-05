@@ -10,7 +10,6 @@ import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
-import 'package:restaurant_manager_app/utils/io_client.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");

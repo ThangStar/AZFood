@@ -10,6 +10,7 @@ module.exports = app => {
     router.post("/updateStatus",[jwt.checkJwt] , products.updateStatus );
     router.post("/delete",[jwt.checkJwt] , products.delete );
     router.get("/list" , [jwt.checkJwt] , products.getList);
+    router.get("/listAll" , [jwt.checkJwt] , products.getList);
     router.get("/category" , [jwt.checkJwt] , products.getListCategory);
     router.get("/details" , [jwt.checkJwt] , products.getDetails);
     router.get("/listStatus" , [jwt.checkJwt] , products.getListStatus);

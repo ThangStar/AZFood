@@ -1,6 +1,6 @@
 'use client'
 
-import { getJWTToken, getUserFullname, loginAsync } from '@/redux-store/login-reducer/loginSlice';
+import { getJWTToken, getUserFullname, getUserID, loginAsync } from '@/redux-store/login-reducer/loginSlice';
 import { AppDispatch, RootState } from '@/redux-store/store';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +12,8 @@ const Login = () => {
     const status = useSelector((state: RootState) => state.authenticationState.status);
     const jwtToken = useSelector(getJWTToken);
     const userFullname = useSelector(getUserFullname);
+    const userID: any = useSelector(getUserID);
+
     const dispatch: AppDispatch = useDispatch();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -22,8 +24,13 @@ const Login = () => {
     useEffect(() => {
         if (status === 'success') {
             if (jwtToken != null && jwtToken !== "") {
+                const user : any = {
+                    userFullname,
+                    userID
+                }
+                const userJSON = JSON.stringify(user);
                 localStorage.setItem("token", jwtToken);
-                localStorage.setItem("username", userFullname);
+                localStorage.setItem("user", userJSON);
                 showAlert("success", "Đăng nhập thành công");
                 window.location.reload();
             }

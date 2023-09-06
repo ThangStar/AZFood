@@ -57,9 +57,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
         icon: Icons.analytics,
         typeDrawer: TypeDrawer.analytics),
     ItemDrawer(
-        label: "Cá nhân",
-        icon: Icons.person,
-        typeDrawer: TypeDrawer.profile),
+        label: "Cá nhân", icon: Icons.person, typeDrawer: TypeDrawer.profile),
     ItemDrawer(
         label: "Đăng xuất",
         icon: Icons.logout_outlined,
@@ -145,7 +143,8 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                 ),
                                 margin:
                                     const EdgeInsets.symmetric(horizontal: 12),
-                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
                                 child: Column(
                                   children: [
                                     ...items.asMap().entries.map((e) {

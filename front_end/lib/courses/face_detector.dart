@@ -34,12 +34,13 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
   void initState() {
     //init face detect
     FaceDetectorOptions options = FaceDetectorOptions(
-      enableLandmarks: true,
-    );
+        enableLandmarks: true,
+        enableContours: true,
+        enableClassification: true);
     faceDetector = FaceDetector(options: options);
 
     cameraController = CameraController(
-      cameras[1],
+      cameras![1],
       ResolutionPreset.high,
     );
     cameraController.initialize().then((_) {
@@ -101,8 +102,6 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
-    // double scale = sizeScreen.aspectRatio * cameraController.value.aspectRatio;
-    // if (scale < 1) scale = 1 / scale;
     if (!cameraController.value.isInitialized) {
       return Scaffold(
         body: Center(
@@ -112,10 +111,9 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
     } else {
       return Scaffold(
         body: Stack(
-          fit: StackFit.expand,
+    
           children: [
-            Transform.scale(
-                scale: scale, child: CameraPreview(cameraController)),
+            CameraPreview(cameraController),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -126,11 +124,8 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
             ),
             if (customPaint != null)
               Transform.scale(scale: scale, child: customPaint!),
-            Transform.scale(
-              scale: scale,
-              child: CustomPaint(
-                painter: OpenPainter(faces: faces, sizeScreen: sizeScreen),
-              ),
+            CustomPaint(
+              painter: OpenPainter(faces: faces, sizeScreen: sizeScreen),
             ),
           ],
         ),

@@ -17,6 +17,8 @@ exports.createProduct = async (req, res) => {
     if (isAdmin) {
         console.log("id ", body.id);
         if (body.id) {
+        console.log("body ", body);
+
             if (req.file) {
                 console.log("  có file");
                 try {
@@ -47,7 +49,7 @@ exports.createProduct = async (req, res) => {
             else {
                 try {
                     console.log("Update");
-                    const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, status = CASE WHEN category = 1 THEN 1 ELSE ? END, dvtID=? WHERE id = ?";
+                    const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, status = CASE WHEN category = 1 THEN 1 ELSE null END, dvtID=? WHERE id = ?";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
@@ -77,11 +79,11 @@ exports.createProduct = async (req, res) => {
                     const imgUrl = await getDownloadURL(snapshot.ref);
 
                     // Tiếp tục xử lý và lưu dữ liệu vào MySQL
-                    const queryRaw = "INSERT INTO products (name, price, category, status, quantity, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ?, ?, ?);";
+                    const queryRaw = "INSERT INTO products (name, price, category, status, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END, ?, ?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity, body.dvtID, imgUrl],
+                        replacements: [body.name, body.price,  body.category, body.status, body.dvtID, imgUrl],
                         type: QueryTypes.INSERT
                     });
 
@@ -93,11 +95,11 @@ exports.createProduct = async (req, res) => {
             }
             else {
                 console.log("khong  có file");
-                const queryRaw = "INSERT INTO products (name, price, category, status, quantity , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE ? END, ? ,?);";
+                const queryRaw = "INSERT INTO products (name, price, category, status , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END ,?);";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.name, body.price, body.category, body.category, body.status, body.quantity, body.dvtID],
+                    replacements: [body.name, body.price, body.category, body.status, body.dvtID],
                     type: QueryTypes.INSERT
                 });
                 res.status(200).json({ message: 'products created successfully' });
@@ -134,7 +136,7 @@ exports.getList = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
         try {
-            const PAGE_SIZE = 10;
+            const PAGE_SIZE = 6;
             const currentPage = parseInt(req.query.page) || 1;
             const offset = (currentPage - 1) * PAGE_SIZE;
 
@@ -194,6 +196,49 @@ exports.getList = async (req, res) => {
     }
 };
 
+
+
+exports.getList = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
+        try {
+            const queryRaw = `SELECT
+            p.id,
+            p.name ,
+            p.price,
+            p.category,
+            p.status,
+            k.quantity,
+            p.dvtID,
+            p.imgUrl,
+            c.name AS category_name,
+            d.tenDVT AS dvt_name
+        FROM
+            products p
+        JOIN
+            category c ON p.category = c.id
+        JOIN
+            donViTinh d ON p.dvtID = d.id
+            LEFT JOIN
+            kho k ON p.id = k.productID`;
+
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+
+
+            res.status(200).json({data: resultRaw});
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+            console.log("error", error)
+        }
+    } else {
+        res.status(401).send('User is not admin');
+    }
+};
 exports.getListCategory = async (req, res) => {
 
     const checkAuth = Auth.checkAuth(req);
@@ -278,7 +323,10 @@ exports.getDetails = async (req, res) => {
 exports.delete = async (req, res) => {
     const isAdmin = await Auth.checkAdmin(req);
     const body = req.body;
+    console.log("isAdmin " ,isAdmin);
+
     if (isAdmin) {
+        console.log("body.id " ,body.id);
         const queryRaw = "DELETE FROM products WHERE id=? ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {

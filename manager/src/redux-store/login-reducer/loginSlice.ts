@@ -5,6 +5,7 @@ import axios from 'axios';
 export interface AuthenticationState {
   jwtToken: any;
   username: any;
+  userID: any;
   status: 'loading' | 'failed' | 'success';
   error : any
 }
@@ -12,6 +13,7 @@ export interface AuthenticationState {
 const initialState: AuthenticationState = {
     jwtToken: null,
     username: null,
+    userID: null,
     status: 'success',
     error : ""
 };
@@ -41,6 +43,7 @@ export const counterSlice = createSlice({
         state.status = 'success';
         state.jwtToken = action.payload.jwtToken;
         state.username = action.payload.username;
+        state.userID = action.payload.id;
       })
       .addCase(loginAsync.rejected, (state, error) => {
         state.status = 'failed';
@@ -51,5 +54,6 @@ export const counterSlice = createSlice({
 
 export const getJWTToken = (state: RootState) => state.authenticationState.jwtToken;
 export const getUserFullname = (state: RootState) => state.authenticationState.username;
+export const getUserID = (state: RootState) => state.authenticationState.userID;
 
 export default counterSlice.reducer;

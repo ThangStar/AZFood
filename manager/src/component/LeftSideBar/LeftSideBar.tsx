@@ -32,25 +32,19 @@ const AdminPage = () => {
                         <li className="nav-item" >
                             <div className="" >
                                 <i className="far fa-circle nav-icon "></i>
-                                <Link href="/pages/table" style={{ color: "black", fontWeight: "bold" }}>TABLE</Link>
+                                <Link href="/pages/table" style={{ color: "black", fontWeight: "bold" }}>Danh Sách Bàn</Link>
                             </div>
                         </li>
                         <li className="nav-item ">
                             <div className="">
                                 <i className="far fa-circle nav-icon "></i>
-                                <Link href="/pages/users" style={{ color: "black", fontWeight: "bold" }}>LIST USER</Link>
+                                <Link href="/pages/users" style={{ color: "black", fontWeight: "bold" }}>Danh Sách Nhân Viên</Link>
                             </div>
                         </li>
                         <li className="nav-item">
                             <div className=" ">
                                 <i className="far fa-circle nav-icon "></i>
-                                <Link href="/pages/menuItem" style={{ color: "black", fontWeight: "bold" }}>MENU ITEMS</Link>
-                            </div>
-                        </li>
-                        <li className="nav-item ">
-                            <div className="">
-                                <i className="far fa-circle nav-icon "></i>
-                                <Link href="/pages/users/admin/create-product" style={{ color: "black", fontWeight: "bold" }}>CREATE PRODUCT</Link>
+                                <Link href="/pages/menuItem" style={{ color: "black", fontWeight: "bold" }}>Danh Sách Món Ăn</Link>
                             </div>
                         </li>
                         <li className="nav-item ">

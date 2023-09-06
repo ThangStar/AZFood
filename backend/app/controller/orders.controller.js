@@ -100,17 +100,16 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-    console.log("Update Order");
+   
     try {
 
         const body = req.body;
         const isAuth = await Auth.checkAuth(req);
 
         if (isAuth) {
-
             const productID = body.productID;
             const quantity = body.quantity;
-            const id = body.id; //Hoặc là lấy id từ body.
+            const id = body.orderID; 
             const priceQuery = 'SELECT price FROM products WHERE id = ?';
             try {
                 const priceResult = await sequelize.query(priceQuery, {
@@ -166,7 +165,7 @@ exports.updateOrder = async (req, res) => {
 
 exports.deleteOrder = async (req, res) => {
     try {
-        const orderId = req.body.id; // Lấy orderId từ URL parameter
+        const orderId = req.body.id; 
         const isAuth = await Auth.checkAuth(req);
         console.log("orderId", orderId);
         if (isAuth) {
@@ -254,7 +253,8 @@ exports.getOrdersForTable = async (req, res) => {
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount, p.name AS productName, p.dvtID AS dvt , oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
+            SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID, p.name AS productName, p.dvtID AS dvt ,
+             oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id

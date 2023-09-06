@@ -13,6 +13,7 @@ import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
@@ -86,9 +87,9 @@ class _MyAppState extends State<MyApp> {
                     useMaterial3: true,
                     colorScheme: lightColorScheme,
                     textTheme: textTheme(context)),
-                // darkTheme:
-                //     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: const Zoom(),
+                darkTheme:
+                    ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+                home: const HomeMenuScreen(),
               ));
         });
   }

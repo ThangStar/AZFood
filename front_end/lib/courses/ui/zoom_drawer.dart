@@ -20,11 +20,14 @@ class _ZoomState extends State<Zoom> {
       showShadow: true,
       menuBackgroundColor: Colors.blue,
       mainScreen: const Body(),
-      angle: 0,
+      angle: -10,
       // moveMenuScreen: false,
       menuScreen: Scaffold(
         appBar: AppBar(
           title: Text("a"),
+          actions: [IconButton(onPressed: () {
+            z.close!();
+          }, icon: Icon(Icons.close))],
         ),
         body: Center(
           child: InkWell(

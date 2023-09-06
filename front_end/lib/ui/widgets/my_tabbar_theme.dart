@@ -56,17 +56,23 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 TabController(length: 2, vsync: this, initialIndex: pos),
             tabs: const [
               Padding(
-                padding: EdgeInsets.all(6.0),
+                padding: EdgeInsets.symmetric(vertical: 4),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Icon(Icons.light_mode), Text("Sáng")],
+                  children: [Icon(Icons.light_mode), Text("Sáng", style: TextStyle(
+                    fontSize: 10
+                  ),)],
                 ),
               ),
               Padding(
-                padding: EdgeInsets.all(6.0),
+                padding: EdgeInsets.symmetric(vertical: 4),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Icon(Icons.dark_mode), Text("Tối")],
+                  children: [Icon(Icons.dark_mode), Text("Tối", style: TextStyle(
+                    fontSize: 10
+                  ))],
                 ),
               ),
             ]),

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:restaurant_manager_app/courses/ui/zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
@@ -60,20 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-        builder: (context, state) {
-          return MyDrawer(
-              profile: state.profile ??
-                  Profile(
-                      id: 0,
-                      username: "username",
-                      password: "password",
-                      name: "name",
-                      role: "role",
-                      phoneNumber: "phoneNumber",
-                      email: "email"));
-        },
-      ),
       floatingActionButton: FloatingActionButton(
           backgroundColor: colorScheme(context).primary,
           onPressed: () {},
@@ -287,7 +275,7 @@ class ToolbarHome extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onTap: () {
-                      Scaffold.of(context).openDrawer();
+                      ZoomDrawer.of(context)!.open();
                     },
                   ),
                   Text("Xin chào, ${profile.name.split(' ').last}",

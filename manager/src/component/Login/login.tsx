@@ -4,7 +4,7 @@ import { getJWTToken, getUserFullname, getUserID, loginAsync } from '@/redux-sto
 import { AppDispatch, RootState } from '@/redux-store/store';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { showAlert } from '../alert/alert';
+import { showAlert } from '../utils/alert/alert';
 import { useRouter } from 'next/navigation';
 
 const Login = () => {
@@ -24,7 +24,7 @@ const Login = () => {
     useEffect(() => {
         if (status === 'success') {
             if (jwtToken != null && jwtToken !== "") {
-                const user : any = {
+                const user: any = {
                     userFullname,
                     userID
                 }
@@ -54,7 +54,7 @@ const Login = () => {
 
                         <div>
                             <div className="input-group mb-3">
-                            <input
+                                <input
                                     className="form-control"
                                     type="text"
                                     placeholder="username"
@@ -69,7 +69,7 @@ const Login = () => {
                                 </div>
                             </div>
                             <div className="input-group mb-3">
-                            <input
+                                <input
                                     className="form-control"
                                     type="password"
                                     placeholder="Password"

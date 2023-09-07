@@ -5,6 +5,12 @@ const Auth = require('./checkAuth.controller');
 const { Server } = require('socket.io');
 const io = new Server();
 
+const getInvoiceNumber = (min = 0, max = 500000) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+    return num.toString();
+};
 exports.createOrder = async (req, res) => {
     try {
         const body = req.body;
@@ -34,8 +40,8 @@ exports.createOrder = async (req, res) => {
                 const price = priceResult[0].price;
                 const _quantity = quantityResult[0].quantity;
                 const _status = priceResult[0].status;
-                console.log("_quantity " ,_quantity );
-                console.log("_status " , _status);
+                console.log("_quantity ", _quantity);
+                console.log("_status ", _status);
                 if (_quantity > 0 || _status === 1) {
                     const subTotal = quantity * price;
 
@@ -45,7 +51,7 @@ exports.createOrder = async (req, res) => {
                         orderDate: new Date(),
                         totalAmount: subTotal,
                     };
-    
+
                     const orderId = await sequelize.transaction(async transaction => {
                         const queryRaw = 'INSERT INTO orders (userID, tableID, orderDate, totalAmount) VALUES (?, ?, ?, ?)';
                         const resultRaw = await sequelize.query(queryRaw, {
@@ -60,9 +66,9 @@ exports.createOrder = async (req, res) => {
                             type: QueryTypes.INSERT,
                             transaction
                         });
-    
+
                         const orderId = resultRaw[0];
-    
+
                         const queryRaw2 = 'INSERT INTO orderItems (orderID, productID, quantity, subTotal) VALUES (?, ?, ?, ?)';
                         await sequelize.query(queryRaw2, {
                             raw: true,
@@ -83,7 +89,7 @@ exports.createOrder = async (req, res) => {
                         return orderId;
                     });
                     res.status(200).json({ message: 'Order created successfully', orderId });
-                }else {
+                } else {
                     res.status(404).json({ message: 'not found product', orderId });
                 }
             } catch (error) {
@@ -100,7 +106,7 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-   
+
     try {
 
         const body = req.body;
@@ -109,7 +115,7 @@ exports.updateOrder = async (req, res) => {
         if (isAuth) {
             const productID = body.productID;
             const quantity = body.quantity;
-            const id = body.orderID; 
+            const id = body.orderID;
             const priceQuery = 'SELECT price FROM products WHERE id = ?';
             try {
                 const priceResult = await sequelize.query(priceQuery, {
@@ -165,7 +171,7 @@ exports.updateOrder = async (req, res) => {
 
 exports.deleteOrder = async (req, res) => {
     try {
-        const orderId = req.body.id; 
+        const orderId = req.body.id;
         const isAuth = await Auth.checkAuth(req);
         console.log("orderId", orderId);
         if (isAuth) {
@@ -248,7 +254,7 @@ exports.deleteAllOrder = async (req, res) => {
 
 exports.getOrdersForTable = async (req, res) => {
     try {
-  
+
         const tableID = req.query.tableID;
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
@@ -279,7 +285,7 @@ exports.getOrdersForTable = async (req, res) => {
         console.error('Error getting orders:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
-}; 
+};
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
@@ -309,6 +315,8 @@ exports.payBill = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
         const tableID = req.body.id;
+
+
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
@@ -336,15 +344,16 @@ exports.payBill = async (req, res) => {
             }
 
             // Lưu thông tin hoá đơn vào bảng invoice
-            const createInvoiceQuery = `
-                INSERT INTO invoice (tableID,total, createAt, userName )
-                VALUES (?, ?, ? , ?)
-            `;
 
+            const createInvoiceQuery = `
+                INSERT INTO invoice (tableID,total, createAt, userName, invoiceNumber )
+                VALUES (?, ?, ? , ?,?)
+            `;
+            const invoiceNumber = getInvoiceNumber();
             const invoiceResult = await sequelize.query(createInvoiceQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName],
+                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, invoiceNumber],
                 type: QueryTypes.INSERT
             });
 

@@ -9,6 +9,7 @@ exports.getInvoiceDailyStats = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
         const body = req.body;
+        console.log("body.date ", body.date);
         const queryRaw = `SELECT DATE_FORMAT(createAt, '%Y-%m-%d') AS ngay, COUNT(id) AS so_hoa_don, SUM(total) AS tong_tien
         FROM invoice  
         WHERE DATE_FORMAT(createAt, '%Y-%m') = ?

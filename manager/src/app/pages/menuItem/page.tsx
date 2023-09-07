@@ -7,8 +7,9 @@ import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryL
 import { AppDispatch } from '@/redux-store/store';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { getDVTList, getDvtListAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
-import { showAlert } from '@/component/alert/alert';
+import { showAlert } from '@/component/utils/alert/alert';
 import axios from 'axios';
+import formatMoney from '@/component/utils/formatMoney';
 
 
 export default function MunuItems() {
@@ -184,8 +185,8 @@ export default function MunuItems() {
                                             <td>
                                                 <img alt="món ăn" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
                                             </td>
-                                            <td className="project_progress">
-                                                {item && item.price ? item.price : null}
+                                            <td className="project_progress" style={{}}>
+                                                {item && item.price ? `${formatMoney(item.price)} vnd` : null}
                                             </td>
                                             <td className="project_progress">
                                                 {item && item.category_name ? item.category_name : ""}
@@ -227,7 +228,7 @@ export default function MunuItems() {
                     </div>
 
                 </div>
-                
+
                 <Modal isOpen={modal} toggle={openModal}>
                     <ModalHeader toggle={openModal}>{"Thêm Món Mới"}</ModalHeader>
                     <ModalBody>
@@ -349,38 +350,38 @@ export default function MunuItems() {
 
             </div>
             <div className="d-flex justify-content-center align-items-center">
-                    <ul className="pagination">
-                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <ul className="pagination">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                            Previous
+                        </button>
+                    </li>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <li
+                            className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                            key={i + 1}
+                        >
                             <button
                                 className="page-link"
-                                onClick={() => handlePageChange(currentPage - 1)}
+                                onClick={() => handlePageChange(i + 1)}
                             >
-                                Previous
+                                {i + 1}
                             </button>
                         </li>
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <li
-                                className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                                key={i + 1}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => handlePageChange(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            </li>
-                        ))}
-                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(currentPage + 1)}
-                            >
-                                Next
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+                    ))}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                            Next
+                        </button>
+                    </li>
+                </ul>
+            </div>
         </>
     )
 }

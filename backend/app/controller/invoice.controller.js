@@ -6,7 +6,9 @@ const Auth = require('./checkAuth.controller')
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const queryRaw = "SELECT * FROM invoice";
+        const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
+        FROM invoice ic 
+        JOIN tables t ON t.id = ic.tableID`;
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -20,7 +22,7 @@ exports.getList = async (req, res) => {
             res.status(500);
             res.send(error)
         }
-            
+
     } else {
         res.status(403).json({ message: 'Unauthorized' });
     }
@@ -28,14 +30,15 @@ exports.getList = async (req, res) => {
 
 exports.getDetails = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
-    const body = req.body;
+    const invoiceID = req.query.invoiceID;
+
     if (isAuth) {
         const queryRaw = "SELECT * FROM invoiceDetails where invoiceID=?";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [body.invoiceID],
+                replacements: [invoiceID],
                 type: QueryTypes.SELECT
             });
             res.send({ resultRaw })
@@ -44,7 +47,7 @@ exports.getDetails = async (req, res) => {
             res.status(500);
             res.send(error)
         }
-            
+
     } else {
         res.status(403).json({ message: 'Unauthorized' });
     }
@@ -53,7 +56,7 @@ exports.getDetails = async (req, res) => {
 exports.searchByDate = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const startDate = req.body.startDate; 
+        const startDate = req.body.startDate;
         const endDate = req.body.endDate;
         const queryRaw = "SELECT * FROM invoice WHERE createAt >= :startDate AND createAt <= :endDate ";
         try {
@@ -72,7 +75,7 @@ exports.searchByDate = async (req, res) => {
             res.status(500);
             res.send(error)
         }
-            
+
     } else {
         res.status(403).json({ message: 'Unauthorized' });
     }

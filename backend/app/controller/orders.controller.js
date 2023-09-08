@@ -259,7 +259,7 @@ exports.getOrdersForTable = async (req, res) => {
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID, p.name AS productName, p.dvtID AS dvt ,
+            SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
              oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
@@ -398,7 +398,6 @@ exports.payBill = async (req, res) => {
                 type: QueryTypes.UPDATE
             });
             io.emit('tableStatusChanged', { tableID: tableID, newStatus: 1 });
-            console.log("idOder", idOder);
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
 

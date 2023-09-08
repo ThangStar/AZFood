@@ -45,6 +45,7 @@ export default function TableDetails() {
     const [idItemDelete, setIdDelete] = useState();
     const [nameUpdate, setNameUpdate] = useState("");
 
+
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (data: any = null) => {
         if (data != null && data.id) {

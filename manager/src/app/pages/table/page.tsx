@@ -29,7 +29,7 @@ export default function Table() {
         dispatch(getStatusTableAsync());
 
     }, [dispatch]);
-
+    console.log("order ", orderList);
     useEffect(() => {
         if (tableList && tableList.resultRaw) {
             setTables(tableList.resultRaw);

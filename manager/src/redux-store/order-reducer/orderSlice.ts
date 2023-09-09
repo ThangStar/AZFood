@@ -17,10 +17,10 @@ const initialState: TableState = {
 };
 export const createOrderAsync = createAsyncThunk(
   'order/create',
-  async (data : any) => {
-    const {userID, tableID, productID , quantity } = data;
+  async (data: any) => {
+    const { userID, tableID, productID, quantity } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/create', {userID, tableID, productID , quantity}, {
+    const response = await axios.post(serverUrl + '/api/orders/create', { userID, tableID, productID, quantity }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -32,12 +32,12 @@ export const createOrderAsync = createAsyncThunk(
 export const updateOrderAsync = createAsyncThunk(
   'order/update',
   async ({ data, orderID }: { data: any; orderID: any }) => {
-    const {userID, tableID, productID , quantity } = data;
-    console.log("data redux :",data );
-    console.log("orderID redux :",orderID );
-    
+    const { userID, tableID, productID, quantity } = data;
+    console.log("data redux :", data);
+    console.log("orderID redux :", orderID);
+
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/update', {orderID, userID, tableID, productID , quantity}, {
+    const response = await axios.post(serverUrl + '/api/orders/update', { orderID, userID, tableID, productID, quantity }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -61,9 +61,23 @@ export const getOrderListAsync = createAsyncThunk(
 );
 export const deleteOrderAsync = createAsyncThunk(
   'order/delete',
-  async (id : any) => {
+  async (id: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/delete',{id} , {
+    const response = await axios.post(serverUrl + '/api/orders/delete', { id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+
+export const payBillAsync = createAsyncThunk(
+  'order/payBill',
+  async (id: any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/orders/payBill', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -77,7 +91,6 @@ export const getOrderInTableListAsync = createAsyncThunk(
 
   async (tableID: any) => {
     try {
-      console.log(" tableID", tableID);
       const token = localStorage.getItem('token');
       const response = await axios.get(serverUrl + `/api/orders/getOrder`, {
         params: { tableID },
@@ -101,30 +114,34 @@ const OrderSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-    .addCase(updateOrderAsync.fulfilled, (state, action) => {
-      state.status = 'idle';
-      state.orderList = action.payload;
-    })
-    .addCase(deleteOrderAsync.pending, (state) => {
-      state.status = 'loading';
-    })
-    .addCase(deleteOrderAsync.fulfilled, (state, action) => {
-      state.status = 'idle';
-      state.orderList = action.payload;
-    })
-    .addCase(deleteOrderAsync.rejected, (state) => {
-      state.status = 'failed';
-    })
-    .addCase(createOrderAsync.pending, (state) => {
-      state.status = 'loading';
-    })
-    .addCase(createOrderAsync.fulfilled, (state, action) => {
-      state.status = 'idle';
-      state.orderList = action.payload;
-    })
-    .addCase(createOrderAsync.rejected, (state) => {
-      state.status = 'failed';
-    })
+      .addCase(payBillAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.orderList = action.payload;
+      })
+      .addCase(updateOrderAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.orderList = action.payload;
+      })
+      .addCase(deleteOrderAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteOrderAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.orderList = action.payload;
+      })
+      .addCase(deleteOrderAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(createOrderAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createOrderAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.orderList = action.payload;
+      })
+      .addCase(createOrderAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
       .addCase(getOrderListAsync.pending, (state) => {
         state.status = 'loading';
       })

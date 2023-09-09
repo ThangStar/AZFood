@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import formatMoney from '@/component/utils/formatMoney';
 
 export default function Table() {
     const dispatch: AppDispatch = useDispatch();
@@ -28,7 +29,7 @@ export default function Table() {
         dispatch(getStatusTableAsync());
 
     }, [dispatch]);
-
+    console.log("order ", orderList);
     useEffect(() => {
         if (tableList && tableList.resultRaw) {
             setTables(tableList.resultRaw);
@@ -39,19 +40,19 @@ export default function Table() {
         if (statusList && statusList.resultRaw) {
             setStatusTable(statusList.resultRaw);
         }
-    }, [tableList ,orderList , statusList]);
+    }, [tableList, orderList, statusList]);
 
     const calculateTotalForTable = (tableID: number) => {
         const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
-      
+
         const totalAmount = ordersForTable.reduce((acc: number, order: any) => {
-          return acc + order.totalAmount;
+            return acc + order.totalAmount;
         }, 0);
-      
+
         return totalAmount;
-      };
+    };
     const toggle = () => setModal(!modal);
-    const toggle1= () => setModal1(!modal1);
+    const toggle1 = () => setModal1(!modal1);
     const openModal = (data: any = null) => {
         if (data) {
             setStatus(data.status);
@@ -82,17 +83,17 @@ export default function Table() {
         }
 
     }
-const addTable = () => {
-    
-    try {
-        dispatch(createTableListAsync({name : tableName}));
-        dispatch(getTableListAsync());
-        openModal1();
-    } catch (error) {
-        console.log(" error : ", error);
-    }
+    const addTable = () => {
 
-}
+        try {
+            dispatch(createTableListAsync({ name: tableName }));
+            dispatch(getTableListAsync());
+            openModal1();
+        } catch (error) {
+            console.log(" error : ", error);
+        }
+
+    }
     const busy = "#DC3545";
     const trong = "#26A744";
     const cho = "yellow";
@@ -137,7 +138,7 @@ const addTable = () => {
                                     <div className="info-box-content">
 
                                         <Link href={`table/table-details?tableID=${item.id}`}>{item.name}</Link>
-                                        <span className="info-box-number">Tổng tiền : {calculateTotalForTable(item.id)} đ</span>
+                                        <span className="info-box-number">Tổng tiền : {formatMoney(calculateTotalForTable(item.id))} đ</span>
 
                                         <button onClick={() => { openModal(item) }} className="info-box-text"
                                             style={{ color: item.status === 2 ? busy : item.status === 1 ? cho : trong }}>
@@ -205,7 +206,7 @@ const addTable = () => {
                                             handleChangeDataForm1(e);
                                         }}
                                     />
-                                      
+
 
                                 </div>
                             </div>

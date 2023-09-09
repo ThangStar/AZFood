@@ -1,4 +1,5 @@
 "use client"
+import formatMoney from "@/component/utils/formatMoney";
 import { getDVTList, getDvtListAsync, getPhieuNhapList, getPhieuNhapListAsync, getProductList, getProductListAsync, nhapHangAsync } from "@/redux-store/kho-reducer/nhapHangSlice";
 import { AppDispatch } from "@/redux-store/store";
 import Link from "next/link";
@@ -46,15 +47,15 @@ export default function Kho() {
     }
     const handleUpdate = () => {
         const data = {
-            productID : productID,
-            soLuong : soLuong,
-            donGia:donGia,
-            dvtID : dvtID
+            productID: productID,
+            soLuong: soLuong,
+            donGia: donGia,
+            dvtID: dvtID
         }
         dispatch(nhapHangAsync(data));
         dispatch(getPhieuNhapListAsync());
     }
- 
+
 
     return (
         <>
@@ -132,7 +133,7 @@ export default function Kho() {
                                                 {item && item.soLuong ? item.soLuong : null}
                                             </td>
                                             <td className="project_progress">
-                                                {item && item.donGia ? item.donGia : ""}
+                                                {item && item.donGia ? formatMoney(item.donGia) : ""}
                                             </td>
                                             <td className="project_progress">
                                                 {item && item.tenDVT ? item.tenDVT : null}
@@ -161,18 +162,18 @@ export default function Kho() {
                             <label className="col-sm-4 col-form-label">Tên hàng </label>
                             <div className="col-sm-8">
 
-                                 <select
-                                        className="form-control"
-                                        id="productID"
-                                        value={productID}
-                                        onChange={(e) => {
-                                            setProductID(e.target.value);
-                                        }}
-                                    ><option value="">Chọn hàng nhập</option>
-                                        {products && products.length > 0 ? products.map((item: any, id: number) => (
-                                            <option key={item.id} value={item.id}>{item.name}</option>
-                                        )) : ""}
-                                    </select> 
+                                <select
+                                    className="form-control"
+                                    id="productID"
+                                    value={productID}
+                                    onChange={(e) => {
+                                        setProductID(e.target.value);
+                                    }}
+                                ><option value="">Chọn hàng nhập</option>
+                                    {products && products.length > 0 ? products.map((item: any, id: number) => (
+                                        <option key={item.id} value={item.id}>{item.name}</option>
+                                    )) : ""}
+                                </select>
 
                             </div>
                         </div>
@@ -186,7 +187,7 @@ export default function Kho() {
                                     value={soLuong}
                                     onChange={(e) => {
                                         setSoLuong(e.target.value);
-                                    }}/>
+                                    }} />
 
                             </div>
                         </div>
@@ -194,14 +195,14 @@ export default function Kho() {
                             <label className="col-sm-4 col-form-label">Đơn giá</label>
                             <div className="col-sm-8">
 
-                            <input
+                                <input
                                     type="text"
                                     className="form-control"
                                     id="donGia"
                                     value={donGia}
                                     onChange={(e) => {
                                         setDonGia(e.target.value);
-                                    }}/>
+                                    }} />
 
                             </div>
                         </div>
@@ -209,21 +210,21 @@ export default function Kho() {
                             <label className="col-sm-4 col-form-label">Đơn vị tính</label>
                             <div className="col-sm-8">
 
-                                 <select
-                                        className="form-control"
-                                        id="department"
-                                        value={dvtID}
-                                        onChange={(e) => {
-                                            setDvtID(e.target.value);
-                                        }}
-                                    >
-                                        <option value="">Chọn Đon vị tính</option>
-                                        {dvts && dvts.length > 0 ? dvts.map((item: any, id: number) => (
-                                            <option value={item.id}>{item.tenDVT}</option>
+                                <select
+                                    className="form-control"
+                                    id="department"
+                                    value={dvtID}
+                                    onChange={(e) => {
+                                        setDvtID(e.target.value);
+                                    }}
+                                >
+                                    <option value="">Chọn Đon vị tính</option>
+                                    {dvts && dvts.length > 0 ? dvts.map((item: any, id: number) => (
+                                        <option value={item.id}>{item.tenDVT}</option>
 
 
-                                        )) : ""}
-                                    </select> 
+                                    )) : ""}
+                                </select>
 
                             </div>
                         </div>

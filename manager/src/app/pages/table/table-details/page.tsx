@@ -1,9 +1,11 @@
 'use client'
 
-import { showAlert } from '@/component/alert/alert';
+import { showAlert } from '@/component/utils/alert/alert';
+import { formatDateTime } from '@/component/utils/formatDate';
+import formatMoney from '@/component/utils/formatMoney';
 import { getUserID } from '@/redux-store/login-reducer/loginSlice';
 import { getCategoryList, getCategoryListAsync, getItemtList, getMenuItemListAsync, getMenuItemtList, getMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
-import { createOrderAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
+import { createOrderAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { getTableList, getTableListAsync } from '@/redux-store/table-reducer/tableSlice';
 import Link from 'next/link';
@@ -19,6 +21,7 @@ export default function TableDetails() {
     const tableID = url ? url.split('tableID=')[1] : null;
     const [modal1, setModal1] = useState(false);
     const [modal, setModal] = useState(false);
+    const [modal2, setModal2] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
 
 
@@ -42,6 +45,7 @@ export default function TableDetails() {
     const [idItemDelete, setIdDelete] = useState();
     const [nameUpdate, setNameUpdate] = useState("");
 
+
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (data: any = null) => {
         if (data != null && data.id) {
@@ -62,6 +66,11 @@ export default function TableDetails() {
         }
         toggle();
     }
+    const toggle2 = () => setModal2(!modal2);
+    const openModal2 = () => {
+
+        toggle2();
+    }
     useEffect(() => {
         const userJSON = localStorage.getItem("user");
 
@@ -78,12 +87,12 @@ export default function TableDetails() {
     const filteredItems = itemMenus.filter((item) => {
 
         if (category !== null) {
-          return item.category === category;;
-        }else {
-            return 
+            return item.category === category;;
+        } else {
+            return
         }
-        
-      });
+
+    });
 
 
     useEffect(() => {
@@ -148,6 +157,12 @@ export default function TableDetails() {
 
     }
 
+    const handleThanhToan = () => {
+        dispatch(payBillAsync(tableID));
+        showAlert("success", "Thanh toán thành công");
+        dispatch(getOrderInTableListAsync(tableID));
+        toggle2();
+    }
     return (
         <div className="wrapper">
             <div className="content-wrapper">
@@ -161,11 +176,11 @@ export default function TableDetails() {
                         <div className="col-md-10 flex justify-content-between" >
                             <div className="invoice-from">
 
-                                <div className="m-t-5 m-b-5">
-                                    <h3>Thiên Thai Quán</h3> <br />
-                                    Địa chỉ: 200 Hà Huy Tập - P.Tân Lợi - TP.BMT<br />
-                                    SĐT: (123) 456-7890<br />
-                                    STK: 236-090-151 VpBank Hoang Quoc Huy<br />
+                                <div className=" m-b-5">
+                                    <h3>Thiên Thai Quán</h3>
+                                    <span style={{ fontWeight: "bold" }}>Địa chỉ: </span> 200 Hà Huy Tập - P.Tân Lợi - TP.BMT<br />
+                                    <span style={{ fontWeight: "bold" }}>SĐT: </span> (123) 456-7890<br />
+                                    <span style={{ fontWeight: "bold" }}>STK: </span> 236-090-151 VpBank Hoang Quoc Huy<br />
 
                                 </div>
                             </div>
@@ -173,11 +188,15 @@ export default function TableDetails() {
                             <div className="invoice-date">
                                 <small>Bill / Date</small>
                                 <div className="date text-inverse m-t-5">
-                                    {order && order.length > 0 ? order[0].orderDate : ""}
+                                    <span style={{ fontWeight: "bold" }}>Giờ Vào : </span>{order && order.length > 0 ? `${formatDateTime(order[0].orderDate)}` : ""}
                                 </div>
                                 <div className="invoice-detail">
-                                    Tên nhân viên : {order && order.length > 0 ? order[0].userName : ""}
+                                    <span style={{ fontWeight: "bold" }}>Tên nhân viên : </span> {order && order.length > 0 ? order[0].userName : ""}
                                 </div>
+                                <div className="invoice-detail" >
+                                    <span style={{ fontWeight: "bold" }}>Tông tiền : </span>  {formatMoney(caculatorTotal())} VND
+                                </div>
+
                             </div>
                         </div>
                         <div className="card">
@@ -187,12 +206,10 @@ export default function TableDetails() {
                                 }}>Thêm món</button>
 
                                 <div className="card-tools">
-                                    <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                        <i className="fas fa-minus"></i>
+                                    <button type="button" className="btn btn-warning" data-card-widget="collapse" title="Collapse" onClick={openModal2}>
+                                        Thanh toán
                                     </button>
-                                    <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                        <i className="fas fa-times"></i>
-                                    </button>
+
                                 </div>
                             </div>
                         </div>
@@ -216,10 +233,10 @@ export default function TableDetails() {
                                                 <td style={{ color: "green", fontSize: 20 }}>
                                                     {item.productName} <br />
                                                 </td>
-                                                <td className="text-center">{item.price}</td>
+                                                <td className="text-center">{formatMoney(item.price)}</td>
                                                 <td className="text-center">{item.dvt}</td>
                                                 <td className="text-center">{item.quantity}</td>
-                                                <td className="text-right">{(item.price * item.quantity)}</td>
+                                                <td className="text-right">{formatMoney((item.price * item.quantity))}</td>
                                                 <td className="project-actions text-right">
                                                     <div className="d-flex justify-content-between " >
 
@@ -281,7 +298,7 @@ export default function TableDetails() {
                                                         <p>{item.name}</p>
                                                     </div>
                                                     <div className="col-md-4">
-                                                        <p>{item.price}</p>
+                                                        <p>{formatMoney(item.price)}</p>
                                                     </div>
                                                     <div className="col-md-2">
                                                         <img src={item.imgUrl || ""} alt="món ăn" className="img-fluid" />
@@ -300,20 +317,7 @@ export default function TableDetails() {
                             </> : " "}
 
                         </div>
-                        <div className="invoice-price">
-                            <div className="invoice-price-left">
-                                <div className="invoice-price-row">
-                                    <div className="sub-price">
-                                        <small>Tông tiền : </small>
-                                        <span className="text-inverse">
-                                            {caculatorTotal()}
-                                        </span>
-                                    </div>
 
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
 
 
@@ -373,6 +377,26 @@ export default function TableDetails() {
                         Xóa
                     </Button>
                     <Button color="secondary" onClick={() => openModal()}>
+                        Hủy
+                    </Button>
+                </ModalFooter>
+            </Modal>
+
+            <Modal isOpen={modal2} toggle={openModal2}>
+                <ModalHeader toggle={openModal2}>{"Xác nhận Thanh toán! "}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <p>Nhấn OK để thanh toán</p>
+                        </div>
+
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={handleThanhToan}>
+                        OK
+                    </Button>
+                    <Button color="secondary" onClick={() => openModal2()}>
                         Hủy
                     </Button>
                 </ModalFooter>

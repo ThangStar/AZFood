@@ -26,10 +26,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       GetProductsEvent event, Emitter<ProductState> emit) async {
     Object result = await ProductApi.getProduct(event.page);
     if (result is Success) {
+         print("object");
+      print("Success ${result.response}");
       ProductResponse productResponse =
           ProductResponse.fromJson(jsonDecode(result.response.toString()));
       emit(state.copyWith(productResponse: productResponse));
-      // print("Success ${result.response}");
+   
     } else if (result is Failure) {
       print("failure ${result.response}");
     }
@@ -58,9 +60,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       emit(state.copyWith(
           productResponse: ProductResponse(
               data: jsonProducts.map((e) => Product.fromJson(e)).toList(),
-              currentPage: 1,
-              totalPages: 0,
-              totalItems: 0)));
+              // currentPage: 1,
+              // totalPages: 0,
+              // totalItems: 0
+              )));
     } else if (result is Failure) {}
   }
 }

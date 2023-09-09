@@ -3,9 +3,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:restaurant_manager_app/courses/ui/drag_drop.dart';
-import 'package:restaurant_manager_app/courses/face_detector.dart';
-import 'package:restaurant_manager_app/courses/ui/zoom_drawer.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
@@ -14,7 +11,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
@@ -90,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                     textTheme: textTheme(context)),
                 darkTheme:
                     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: const LoginScreen(),
+                home: const HomeScreen(),
               ));
         });
   }

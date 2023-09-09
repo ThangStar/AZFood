@@ -1,7 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:restaurant_manager_app/courses/utils/painter_face.dart';
 import 'package:restaurant_manager_app/main.dart';
@@ -18,11 +16,11 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
   late CameraController cameraController;
   List<Face> faces = [
     Face(
-        boundingBox: Rect.fromLTRB(100, 0, 0, 100),
+        boundingBox: const Rect.fromLTRB(100, 0, 0, 100),
         landmarks: {},
         contours: {}),
     Face(
-        boundingBox: Rect.fromLTRB(300, 200, 200, 300),
+        boundingBox: const Rect.fromLTRB(300, 200, 200, 300),
         landmarks: {},
         contours: {})
   ];
@@ -106,7 +104,7 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
       return Scaffold(
         body: Center(
             child:
-                ElevatedButton(onPressed: _onCamera, child: Text("On camera"))),
+                ElevatedButton(onPressed: _onCamera, child: const Text("On camera"))),
       );
     } else {
       return Scaffold(
@@ -118,8 +116,8 @@ class _FaceDetectorScreenState extends State<FaceDetectorScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ElevatedButton(
-                    onPressed: _startDetect, child: Text("Start detect")),
-                ElevatedButton(onPressed: _pause, child: Text("Pause")),
+                    onPressed: _startDetect, child: const Text("Start detect")),
+                ElevatedButton(onPressed: _pause, child: const Text("Pause")),
               ],
             ),
             if (customPaint != null)
@@ -142,7 +140,7 @@ class OpenPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var paint1 = Paint()
-      ..color = Color.fromARGB(255, 111, 0, 255)
+      ..color = const Color.fromARGB(255, 111, 0, 255)
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 

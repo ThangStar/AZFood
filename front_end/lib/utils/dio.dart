@@ -5,19 +5,6 @@ import 'package:restaurant_manager_app/routers/router.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 
-class AuthInterceptor extends Interceptor {
-  final String token;
-
-  AuthInterceptor(this.token);
-
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers['Authorization'] = 'Bearer $token';
-    options.headers['Access-Control-Allow-Origin'] = '*';
-    super.onRequest(options, handler);
-  }
-}
-
 class Http {
   late Dio dio;
   late String token;

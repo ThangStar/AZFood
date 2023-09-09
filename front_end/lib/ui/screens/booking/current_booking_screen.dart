@@ -1,10 +1,9 @@
-import 'dart:math';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
-import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -28,26 +27,14 @@ class CurrentBookingScreen extends StatefulWidget {
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   void initState() {
-    print("tableID change: ${widget.tableID}");
-    io.emit('listProductByIdTable', {"id": widget.tableID});
-    if (io.connected) {
-      io.on('responseOrder', (data) {
-        print("products change: $data");
-
-        final jsonResponse = data as List<dynamic>;
-        List<Product> currentProducts =
-            jsonResponse.map((e) => Product.fromJson(e)).toList();
-        context
-            .read<ProductBloc>()
-            .add(GetListProductByIdTable(currentProducts: currentProducts));
-        print("current: ${currentProducts.length}");
-      });
-    }
+    print("tableID change: ${widget.tableID} mounted $mounted");
+   
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
       bottomNavigationBar: const BottomActionBill(),
       body: SingleChildScrollView(
@@ -69,7 +56,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           color: colorScheme(context).onPrimary,
                         ),
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.of(context, rootNavigator: true).pop();
                         },
                       ),
                       trailling: [
@@ -206,7 +193,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                             },
                           );
                         }
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       },
                     )
                   ],

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 
 final ZoomDrawerController z = ZoomDrawerController();
@@ -20,14 +18,14 @@ class _ZoomState extends State<Zoom> {
       showShadow: true,
       menuBackgroundColor: Colors.blue,
       mainScreen: const Body(),
-      angle: -10,
+      angle: 10,
       // moveMenuScreen: false,
       menuScreen: Scaffold(
         appBar: AppBar(
-          title: Text("a"),
+          title: const Text("a"),
           actions: [IconButton(onPressed: () {
             z.close!();
-          }, icon: Icon(Icons.close))],
+          }, icon: const Icon(Icons.close))],
         ),
         body: Center(
           child: InkWell(
@@ -72,12 +70,12 @@ class _BodyState extends State<Body> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.read_more),
+          icon: const Icon(Icons.read_more),
           onPressed: () {
             z.open!();
           },
         ),
-        title: Text("MAIN"),
+        title: const Text("MAIN"),
       ),
     );
   }

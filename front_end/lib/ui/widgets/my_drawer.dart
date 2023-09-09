@@ -8,7 +8,6 @@ import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
-import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_tabbar_theme.dart';

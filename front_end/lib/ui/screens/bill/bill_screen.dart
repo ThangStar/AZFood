@@ -14,7 +14,7 @@ class _BillScreenState extends State<BillScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Chi tiết hoá đơn"),
+        title: const Text("Chi tiết hoá đơn"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),

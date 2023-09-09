@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:restaurant_manager_app/courses/ui/zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
+import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_drawer.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/notification_news.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     //init table
+
     if (!io.hasListeners("response")) {
       io.emit('table', {"name": "thang"});
       io.on('response', (data) {
@@ -201,6 +202,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             return ItemTable(
                               table: table,
                               onTap: () {
+                                io.emit(
+                                    'listProductByIdTable', {"id": table.id});
+                                if (!io.hasListeners("responseOrder")) {
+                                  io.on('responseOrder', (data) {
+                                    print("products change: $data");
+
+                                    final jsonResponse = data as List<dynamic>;
+                                    List<Product> currentProducts = jsonResponse
+                                        .map((e) => Product.fromJson(e))
+                                        .toList();
+                                    context.read<ProductBloc>().add(
+                                        GetListProductByIdTable(
+                                            currentProducts: currentProducts));
+                                    print("current: ${currentProducts.length}");
+                                  });
+                                }
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(

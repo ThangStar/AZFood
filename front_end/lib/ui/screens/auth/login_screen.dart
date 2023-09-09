@@ -5,7 +5,6 @@ import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
-import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/my_snack_bar.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';

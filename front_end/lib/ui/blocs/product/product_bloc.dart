@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restaurant_manager_app/apis/product/product.api.dart';
 import 'package:restaurant_manager_app/model/category_response.dart';
-import 'package:restaurant_manager_app/model/current_product.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/product_response.dart';
 import 'package:restaurant_manager_app/utils/response.dart';

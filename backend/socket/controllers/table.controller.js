@@ -7,16 +7,14 @@ exports.getList = async (socket, io) => {
     (
         SELECT o.orderDate FROM orders as o
         WHERE o.tableID = t.id 
-       
         ORDER BY o.orderDate LIMIT 1
     ) first_time
         FROM tables t 
         JOIN statusTable s 
         ON t.status = s.id
-        LEFT JOIN orders od
+        LEFT JOIN orders od 
         ON t.id = od.tableID
-        group by od.totalAmount, first_time,t.id
-       ;`;
+        group by od.totalAmount, first_time,t.id`;
     try {
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,

@@ -13,7 +13,7 @@ class Table {
   String? name;
   int? status;
   String? statusName;
-  String? time;
+  String? firstTime;
   int? sumPrice;
 
   Table(
@@ -21,7 +21,7 @@ class Table {
       this.name,
       this.status,
       this.statusName,
-      this.time,
+      this.firstTime,
       this.sumPrice});
 
   factory Table.fromJson(Map<String, dynamic> json) => Table(
@@ -29,7 +29,7 @@ class Table {
       name: json["name"],
       status: json["status"],
       statusName: json["status_name"],
-      time: json["time"],
+      firstTime: json["first_time"],
       sumPrice: json["sum_price"]);
 
   Map<String, dynamic> toJson() => {
@@ -37,7 +37,7 @@ class Table {
         "name": name,
         "status": status,
         "status_name": statusName,
-        "time": time,
+        "first_time": firstTime,
         "sum_price": sumPrice
       };
 }

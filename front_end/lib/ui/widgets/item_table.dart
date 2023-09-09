@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/utils/spacing_date_to_now.dart';
 
 // status: 1 -> online, 2 -> error, 3 -> watting,
 class ItemTable extends StatelessWidget {
@@ -65,7 +66,7 @@ class ItemTable extends StatelessWidget {
                                         .withOpacity(0.6),
                                     size: 18),
                                 Text(
-                                  " ${table.time}",
+                                 table.firstTime != null ? spacingDateToNow(DateTime.parse(table.firstTime!)): "no time",
                                   style: TextStyle(
                                       color: colorScheme(context)
                                           .scrim

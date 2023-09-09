@@ -13,6 +13,9 @@ class _BillScreenState extends State<BillScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Chi tiết hoá đơn"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(

@@ -66,7 +66,10 @@ class ItemTable extends StatelessWidget {
                                         .withOpacity(0.6),
                                     size: 18),
                                 Text(
-                                 table.firstTime != null ? spacingDateToNow(DateTime.parse(table.firstTime!)): "no time",
+                                  table.firstTime != null
+                                      ? spacingDateToNow(
+                                          DateTime.parse(table.firstTime!))
+                                      : "no time",
                                   style: TextStyle(
                                       color: colorScheme(context)
                                           .scrim

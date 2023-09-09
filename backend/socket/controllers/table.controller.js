@@ -3,7 +3,20 @@ const { sequelize } = require("../../app/models");
 
 exports.getList = async (socket, io) => {
 
-    const queryRaw = "SELECT t.id, t.name, t.status, s.name AS status_name FROM tables t JOIN statusTable s ON t.status = s.id;";
+    const queryRaw = `SELECT t.id, t.name, t.status, s.name AS status_name, SUM(od.totalAmount) total_amount,
+    (
+        SELECT o.orderDate FROM orders as o
+        WHERE o.tableID = t.id 
+       
+        ORDER BY o.orderDate LIMIT 1
+    ) first_time
+        FROM tables t 
+        JOIN statusTable s 
+        ON t.status = s.id
+        LEFT JOIN orders od
+        ON t.id = od.tableID
+        group by od.totalAmount, first_time,t.id
+       ;`;
     try {
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
@@ -12,8 +25,9 @@ exports.getList = async (socket, io) => {
             type: QueryTypes.SELECT
         });
         io.to(socket.id).emit('response', resultRaw)
+        console.log(resultRaw);
     } catch (error) {
         console.log("response", error);
-        io.to(socket.id).emit('response',error)
+        io.to(socket.id).emit('response', error)
     }
 }

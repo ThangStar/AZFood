@@ -30,7 +30,7 @@ class Table {
       status: json["status"],
       statusName: json["status_name"],
       firstTime: json["first_time"],
-      sumPrice: json["sum_price"]);
+      sumPrice: json["total_amount"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -38,6 +38,6 @@ class Table {
         "status": status,
         "status_name": statusName,
         "first_time": firstTime,
-        "sum_price": sumPrice
+        "total_amount": sumPrice
       };
 }

@@ -39,7 +39,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       GetOrderInTableEvent event, Emitter<OrderState> emit) async {
     Object result = await OrderApi.getOrderInTable(event.tableID);
     if (result is Success) {
-      print(result.response.data);
+      // print(result.response.data);
     } else if (result is Failure) {
       print(result.response);
     }

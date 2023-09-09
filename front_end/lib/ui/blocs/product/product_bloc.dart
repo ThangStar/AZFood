@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restaurant_manager_app/apis/product/product.api.dart';
 import 'package:restaurant_manager_app/model/category_response.dart';
+import 'package:restaurant_manager_app/model/current_product.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/product_response.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
@@ -20,18 +21,18 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<GetProductsEvent>(_getProductsEvent);
     on<GetCategoryEvent>(_getCategoryEvent);
     on<GetProductFilterEvent>(_getProductFilterEvent);
+    on<GetListProductByIdTable>(_getListProductByIdTable);
   }
 
   FutureOr<void> _getProductsEvent(
       GetProductsEvent event, Emitter<ProductState> emit) async {
     Object result = await ProductApi.getProduct(event.page);
     if (result is Success) {
-         print("object");
+      print("object");
       print("Success ${result.response}");
       ProductResponse productResponse =
           ProductResponse.fromJson(jsonDecode(result.response.toString()));
       emit(state.copyWith(productResponse: productResponse));
-   
     } else if (result is Failure) {
       print("failure ${result.response}");
     }
@@ -59,11 +60,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
           jsonDecode(result.response.toString())["resultRaw"] as List<dynamic>;
       emit(state.copyWith(
           productResponse: ProductResponse(
-              data: jsonProducts.map((e) => Product.fromJson(e)).toList(),
-              // currentPage: 1,
-              // totalPages: 0,
-              // totalItems: 0
-              )));
+        data: jsonProducts.map((e) => Product.fromJson(e)).toList(),
+        // currentPage: 1,
+        // totalPages: 0,
+        // totalItems: 0
+      )));
     } else if (result is Failure) {}
+  }
+
+  FutureOr<void> _getListProductByIdTable(
+      GetListProductByIdTable event, Emitter<ProductState> emit) {
+    emit(CurrentProductLoading());
+    emit(CurrentProductSuccess(currentProducts: event.currentProducts));
   }
 }

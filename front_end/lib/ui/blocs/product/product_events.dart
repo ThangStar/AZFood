@@ -16,11 +16,16 @@ class GetProductsEvent extends ProductEvent {
   List<Object> get props => [page];
 }
 
-class GetCategoryEvent extends ProductEvent {
-}
+class GetCategoryEvent extends ProductEvent {}
 
 class GetProductFilterEvent extends ProductEvent {
   final int idCategory;
 
   const GetProductFilterEvent({required this.idCategory});
+}
+
+class GetListProductByIdTable extends ProductEvent {
+  final List<Product>? currentProducts;
+
+  const GetListProductByIdTable({required this.currentProducts});
 }

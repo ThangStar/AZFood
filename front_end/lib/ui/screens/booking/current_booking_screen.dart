@@ -1,9 +1,11 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -13,6 +15,7 @@ import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
+import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen({super.key, required this.tableID});
@@ -23,16 +26,23 @@ class CurrentBookingScreen extends StatefulWidget {
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  List<Product> products = [
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-    Product(id: 0, name: "name", price: 1, category: 1, status: 1, quantity: 1),
-  ];
-
   @override
   void initState() {
-    context
-        .read<OrderBloc>()
-        .add(GetOrderInTableEvent(tableID: widget.tableID));
+    print("tableID change: ${widget.tableID}");
+    io.emit('listProductByIdTable', {"id": widget.tableID});
+    if (io.connected) {
+      io.on('responseOrder', (data) {
+        print("products change: $data");
+
+        final jsonResponse = data as List<dynamic>;
+        List<Product> currentProducts =
+            jsonResponse.map((e) => Product.fromJson(e)).toList();
+        context
+            .read<ProductBloc>()
+            .add(GetListProductByIdTable(currentProducts: currentProducts));
+        print("current: ${currentProducts.length}");
+      });
+    }
     super.initState();
   }
 
@@ -115,75 +125,88 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                         ),
                       ),
                     ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        Product product = products[index];
-                        return ItemProduct(
-                          product: product,
-                          subTitle: SubTitleItemCurrentBill(product: product),
-                          trailling: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: colorScheme(context)
-                                              .primary
-                                              .withOpacity(0.3)),
+                    BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        if (state.currentProducts != null) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: state.currentProducts!.length,
+                            itemBuilder: (context, index) {
+                              Product product = state.currentProducts![index];
+                              return ItemProduct(
+                                product: product,
+                                subTitle:
+                                    SubTitleItemCurrentBill(product: product),
+                                trailling: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                            border: Border.all(
+                                                color: colorScheme(context)
+                                                    .primary
+                                                    .withOpacity(0.3)),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Material(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(2),
+                                                    child: Icon(Icons.remove,
+                                                        color:
+                                                            colorScheme(context)
+                                                                .primary),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                " 10 ",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: colorScheme(context)
+                                                        .scrim
+                                                        .withOpacity(0.8)),
+                                              ),
+                                              Material(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(2),
+                                                    child: Icon(Icons.add,
+                                                        color:
+                                                            colorScheme(context)
+                                                                .primary),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
                                     ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Material(
-                                          color: Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                          child: InkWell(
-                                            onTap: () {},
-                                            child: Container(
-                                              padding: const EdgeInsets.all(2),
-                                              child: Icon(Icons.remove,
-                                                  color: colorScheme(context)
-                                                      .primary),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          " 10 ",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: colorScheme(context)
-                                                  .scrim
-                                                  .withOpacity(0.8)),
-                                        ),
-                                        Material(
-                                          color: Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                          child: InkWell(
-                                            onTap: () {},
-                                            child: Container(
-                                              padding: const EdgeInsets.all(2),
-                                              child: Icon(Icons.add,
-                                                  color: colorScheme(context)
-                                                      .primary),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    )),
-                              ),
-                            ],
-                          ),
-                        );
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+                        return CircularProgressIndicator();
                       },
                     )
                   ],

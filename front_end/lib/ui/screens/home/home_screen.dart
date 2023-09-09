@@ -205,8 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const CurrentBookingScreen(
-                                              tableID: 1),
+                                          CurrentBookingScreen(
+                                              tableID: table.id!),
                                     ));
                               },
                             )

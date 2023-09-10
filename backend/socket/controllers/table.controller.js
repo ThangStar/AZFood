@@ -22,7 +22,7 @@ exports.getList = async (socket, io) => {
             replacements: [],
             type: QueryTypes.SELECT
         });
-        socket.emit("response", resultRaw)
+        io.emit("response", resultRaw)
 
         // io.to(socket.id).emit('response', resultRaw)
         console.log(resultRaw);

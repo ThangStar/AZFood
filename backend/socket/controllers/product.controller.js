@@ -1,5 +1,6 @@
 const { QueryTypes } = require("sequelize");
 const { sequelize } = require("../../app/models");
+const { getList } = require("./table.controller");
 
 exports.getOrdersForTable = async (socket, io, data) => {
     try {
@@ -22,7 +23,8 @@ exports.getOrdersForTable = async (socket, io, data) => {
             type: QueryTypes.SELECT
         });
         console.log( JSON.stringify(orders));
-        io.to(socket.id).emit('responseOrder',orders)
+        io.emit('responseOrder',orders)
+        getList(socket, io)
 
     } catch (error) {
         console.error('Error getting orders:', error);

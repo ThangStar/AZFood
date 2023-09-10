@@ -216,7 +216,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
                                         .toList();
-                                    // currentProducts.
+                                    // print(
+                                    //     'test length a: ${currentProducts.length}');
+                                    //     List<Product> productFinal = [];
+                                    //     List<Product> new1 = List.from(currentProducts);
+                                    // for (var x = 0 ; x <= new1.length+1;x++){
+                                    //     for (var y = 0 ; y <= new1.length;y++) {
+                                    //       if(new1[x].name != new1[y].name){
+                                    //         productFinal.add(new1[x]);
+                                    //       }
+                                    //     }
+                                    // }
+                                    // currentProducts.forEach((element) {
+                                    //   bool a = currentProducts.indexOf(element);
+                                    //   // if(element.id == )
+                                    // });
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
@@ -228,7 +242,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           CurrentBookingScreen(
-                                              tableID: table.id!, tableName: table.name ?? ""),
+                                              tableID: table.id!,
+                                              tableName: table.name ?? ""),
                                     ));
                               },
                             )
@@ -256,6 +271,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+List splice(List list, int index, [num howMany = 0, dynamic elements]) {
+  var endIndex = index + howMany.truncate();
+  list.removeRange(index, endIndex >= list.length ? list.length : endIndex);
+  if (elements != null) {
+    list.insertAll(index, elements is List ? elements : <String>[elements]);
+  }
+  return list;
 }
 
 class ToolbarHome extends StatelessWidget {

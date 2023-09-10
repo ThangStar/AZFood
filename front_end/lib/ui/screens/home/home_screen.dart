@@ -228,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           CurrentBookingScreen(
-                                              tableID: table.id!),
+                                              tableID: table.id!, tableName: table.name ?? ""),
                                     ));
                               },
                             )

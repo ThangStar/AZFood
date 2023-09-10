@@ -17,8 +17,10 @@ import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
-  const CurrentBookingScreen({super.key, required this.tableID});
+  const CurrentBookingScreen(
+      {super.key, required this.tableID, required this.tableName});
   final int tableID;
+  final String tableName;
 
   @override
   State<CurrentBookingScreen> createState() => _CurrentBookingScreenState();
@@ -75,7 +77,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Bàn 1",
+                                  widget.tableName,
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
@@ -115,10 +117,40 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                     BlocBuilder<ProductBloc, ProductState>(
                       builder: (context, state) {
                         if (state.status == ProductStatus.loading) {
-                          return CircularProgressIndicator();
+                          return Container(
+                              padding: EdgeInsets.symmetric(vertical: 24),
+                              child: CircularProgressIndicator());
                         }
                         if (state.currentProducts != null &&
                             state.status == ProductStatus.success) {
+                          if (state.currentProducts!.isEmpty) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(vertical: 24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Icon(
+                                    Icons.no_food_outlined,
+                                    size: 64,
+                                    color: colorScheme(context)
+                                        .secondary
+                                        .withOpacity(0.6),
+                                  ),
+                                  SizedBox(
+                                    height: 24,
+                                  ),
+                                  Text(
+                                    "Hiện tại chưa có sản phẩm nào",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: colorScheme(context)
+                                            .secondary
+                                            .withOpacity(0.6)),
+                                  )
+                                ],
+                              ),
+                            );
+                          }
                           return ListView.builder(
                             shrinkWrap: true,
                             primary: false,

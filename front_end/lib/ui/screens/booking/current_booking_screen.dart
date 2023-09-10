@@ -28,13 +28,12 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   void initState() {
     print("tableID change: ${widget.tableID} mounted $mounted");
-   
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-   
     return Scaffold(
       bottomNavigationBar: const BottomActionBill(),
       body: SingleChildScrollView(
@@ -105,7 +104,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const AddProductToCurrentBookingScreen()));
+                                            AddProductToCurrentBookingScreen(
+                                                tableID: widget.tableID)));
                               },
                             )
                           ],
@@ -114,7 +114,11 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                     ),
                     BlocBuilder<ProductBloc, ProductState>(
                       builder: (context, state) {
-                        if (state.currentProducts != null) {
+                        if (state.status == ProductStatus.loading) {
+                          return CircularProgressIndicator();
+                        }
+                        if (state.currentProducts != null &&
+                            state.status == ProductStatus.success) {
                           return ListView.builder(
                             shrinkWrap: true,
                             primary: false,

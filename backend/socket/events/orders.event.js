@@ -1,4 +1,3 @@
-const {getOrdersForTable} = require('../controllers/product.controller')
 // [table]
 const listProductByIdTable = (socket, io) => {
     socket.on('listProductByIdTable', (data) => {
@@ -10,9 +9,7 @@ const listProductByIdTable = (socket, io) => {
             //check jwt
 
             //passed => send table
- 
-                getOrdersForTable(socket, io, data)
-          
+            getOrdersForTable(socket, io, data)
         
 
         // } else {

@@ -29,3 +29,8 @@ class GetListProductByIdTable extends ProductEvent {
 
   const GetListProductByIdTable({required this.currentProducts});
 }
+class GetListProductStatusEvent extends ProductEvent{
+  final ProductStatus status;
+
+  const GetListProductStatusEvent({required this.status});
+}

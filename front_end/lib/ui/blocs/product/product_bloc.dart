@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restaurant_manager_app/apis/product/product.api.dart';
@@ -21,6 +22,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<GetCategoryEvent>(_getCategoryEvent);
     on<GetProductFilterEvent>(_getProductFilterEvent);
     on<GetListProductByIdTable>(_getListProductByIdTable);
+    on<GetListProductStatusEvent>(_getListProductStatusEvent);
   }
 
   FutureOr<void> _getProductsEvent(
@@ -68,8 +70,15 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   FutureOr<void> _getListProductByIdTable(
-      GetListProductByIdTable event, Emitter<ProductState> emit) {
-    emit(CurrentProductLoading());
-    emit(CurrentProductSuccess(currentProducts: event.currentProducts));
+      GetListProductByIdTable event, Emitter<ProductState> emit) async {
+    await Future.delayed(600.ms);
+
+    emit(state.copyWith(
+        currentProducts: event.currentProducts, status: ProductStatus.success));
+  }
+
+  FutureOr<void> _getListProductStatusEvent(
+      GetListProductStatusEvent event, Emitter<ProductState> emit) async {
+    emit(state.copyWith(status: event.status));
   }
 }

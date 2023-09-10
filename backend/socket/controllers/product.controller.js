@@ -26,6 +26,6 @@ exports.getOrdersForTable = async (socket, io, data) => {
 
     } catch (error) {
         console.error('Error getting orders:', error);
-        io.to(socket.id).emit('responseOrder', orders)
+        io.to(socket.id).emit('responseOrder', "error")
     }
 };

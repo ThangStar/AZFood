@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
@@ -197,8 +196,12 @@ class BottomActionBill extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     text: "Xác nhận",
                     onTap: () {
-                      context.read<OrderBloc>().add(const CreateOrderEvent(
-                          productID: 16, quantity: 1, tableID: 1));
+                      // context.read<OrderBloc>().add(CreateOrderEvent(products: [
+                      //       ProductCheckOut(
+                      //           productID: 16, quantity: 1, tableID: 1),
+                      //       ProductCheckOut(
+                      //           productID: 17, quantity: 2, tableID: 1)
+                      //     ]));
                     },
                   ),
                 )

@@ -44,15 +44,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     //init table
-
+    io.emit('table', {"name": "thang"});
     if (!io.hasListeners("response")) {
-      io.emit('table', {"name": "thang"});
       io.on('response', (data) {
         print("table change: $data");
 
         final jsonResponse = data as List<dynamic>;
         List<Model.Table> tables =
             jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
+        //name is required having value
+        tables.sort((a, b) => a.name!.compareTo(b.name!));
         context.read<TableBloc>().add(OnTableChange(tables: tables));
       });
     }
@@ -202,6 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             return ItemTable(
                               table: table,
                               onTap: () {
+                                context.read<ProductBloc>().add(
+                                    const GetListProductStatusEvent(
+                                        status: ProductStatus.loading));
                                 io.emit(
                                     'listProductByIdTable', {"id": table.id});
                                 if (!io.hasListeners("responseOrder")) {
@@ -212,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
                                         .toList();
+                                    // currentProducts.
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));

@@ -14,7 +14,7 @@ exports.getList = async (socket, io) => {
         ON t.status = s.id
         LEFT JOIN orders od 
         ON t.id = od.tableID
-        group by od.totalAmount, first_time,t.id`;
+        group by t.name`;
     try {
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
@@ -22,7 +22,9 @@ exports.getList = async (socket, io) => {
             replacements: [],
             type: QueryTypes.SELECT
         });
-        io.to(socket.id).emit('response', resultRaw)
+        socket.emit("response", resultRaw)
+
+        // io.to(socket.id).emit('response', resultRaw)
         console.log(resultRaw);
     } catch (error) {
         console.log("response", error);

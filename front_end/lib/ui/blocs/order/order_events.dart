@@ -7,13 +7,19 @@ abstract class OrderEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class CreateOrderEvent extends OrderEvent {
+class ProductCheckOut {
   final int productID;
   final int quantity;
   final int tableID;
 
-  const CreateOrderEvent(
+  ProductCheckOut(
       {required this.productID, required this.quantity, required this.tableID});
+}
+
+class CreateOrderEvent extends OrderEvent {
+  final List<ProductCheckOut> products;
+
+  const CreateOrderEvent({required this.products});
 }
 
 class GetOrderInTableEvent extends OrderEvent {

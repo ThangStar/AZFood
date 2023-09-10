@@ -1,11 +1,8 @@
-const db = require("../models");
+const db = require("../../app/models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
-const Auth = require('./checkAuth.controller');
-const express = require('express');
-const app = express();
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const { Server } = require('socket.io');
+const io = new Server();
 
 const getInvoiceNumber = (min = 0, max = 500000) => {
     min = Math.ceil(min);
@@ -14,12 +11,8 @@ const getInvoiceNumber = (min = 0, max = 500000) => {
     return num.toString();
 };
 exports.createOrder = async (req, res) => {
-    console.log('create order');
-    // req.app.io.emit("listProductByIdTable", "ALO")
     try {
         const body = req.body;
-        console.log(body);
-
         const isAuth = await Auth.checkAuth(req);
 
         if (isAuth) {

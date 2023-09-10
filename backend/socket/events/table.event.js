@@ -7,12 +7,12 @@ const table = (socket, io) => {
 
         // const authorization = socket.handshake.headers['Authorization'];
         // if (authorization) {
-            // const bearerToken = authorization.split(' ')[1];
-            // console.log(bearerToken);
-            //check jwt
+        // const bearerToken = authorization.split(' ')[1];
+        // console.log(bearerToken);
+        //check jwt
 
-            //passed => send table
-            getList(socket, io);
+        //passed => send table
+        getList(socket, io);
 
         // } else {
         //     io.to(socket.id).emit('response', "Authorization failed!")

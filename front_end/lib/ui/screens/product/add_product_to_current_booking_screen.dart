@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
+import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/checkout/check_out_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -10,7 +11,8 @@ import 'package:restaurant_manager_app/ui/widgets/my_icon_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 
 class AddProductToCurrentBookingScreen extends StatefulWidget {
-  const AddProductToCurrentBookingScreen({super.key});
+  const AddProductToCurrentBookingScreen({super.key, required this.tableID});
+  final int tableID;
 
   @override
   State<AddProductToCurrentBookingScreen> createState() =>
@@ -156,28 +158,35 @@ class _AddProductToCurrentBookingScreenState
                                   cartKey: cartKey,
                                   product: product,
                                   onTap: () {
-                                    final index = productsSelected.indexWhere(
-                                      (element) => element.id == product.id,
-                                    );
-                                    if (index == -1) {
-                                      setState(() {
-                                        productsSelected = [
-                                          ...productsSelected,
-                                          product
-                                        ];
-                                      });
-                                    } else {
-                                      // List<Product>  newData = List.from(productsSelected);
-                                      // newData[index].quantity! = 1;
-                                      Product productUpdate =
-                                          productsSelected[index];
-                                      if (productUpdate.quantity != null) {
-                                        ++productUpdate.amountCart;
-                                      }
-                                      setState(() {
-                                        productsSelected[index] = productUpdate;
-                                      });
-                                    }
+                                    context.read<OrderBloc>().add(
+                                            CreateOrderEvent(products: [
+                                          ProductCheckOut(
+                                              productID: product.id,
+                                              quantity: 1,
+                                              tableID: widget.tableID)
+                                        ]));
+                                    // final index = productsSelected.indexWhere(
+                                    //   (element) => element.id == product.id,
+                                    // );
+                                    // if (index == -1) {
+                                    //   setState(() {
+                                    //     productsSelected = [
+                                    //       ...productsSelected,
+                                    //       product
+                                    //     ];
+                                    //   });
+                                    // } else {
+                                    //   // List<Product>  newData = List.from(productsSelected);
+                                    //   // newData[index].quantity! = 1;
+                                    //   Product productUpdate =
+                                    //       productsSelected[index];
+                                    //   if (productUpdate.quantity != null) {
+                                    //     ++productUpdate.amountCart;
+                                    //   }
+                                    //   setState(() {
+                                    //     productsSelected[index] = productUpdate;
+                                    //   });
+                                    // }
                                   },
                                   subTitle: SubTitleProduct(product: product),
                                   trailling: SubTitleItemCurrentBill(

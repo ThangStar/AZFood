@@ -78,7 +78,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                 width: width * 0.8,
                 height: double.infinity,
                 child: Container(
-                  color: colorScheme(context).tertiary.withOpacity(0.6),
+                  color: colorScheme(context).tertiary.withOpacity(0.2),
                   child: Column(
                     children: [
                       UserAccountsDrawerHeader(
@@ -141,8 +141,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                         color: colorScheme(context).tertiary),
                                     borderRadius: BorderRadius.circular(8),
                                     color: colorScheme(context)
-                                        .tertiary
-                                        .withOpacity(0.8),
+                                        .onPrimary,
                                   ),
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 12),

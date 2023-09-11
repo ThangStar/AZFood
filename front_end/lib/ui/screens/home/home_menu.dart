@@ -25,7 +25,7 @@ class _ZoomState extends State<HomeMenuScreen> {
         style: DrawerStyle.style3,
         slideWidth: sizeScreen.width*0.75,
         showShadow: true,
-        menuBackgroundColor: colorScheme(context).tertiary,
+        menuBackgroundColor: colorScheme(context).onPrimary.withOpacity(0.95),
         mainScreen: const HomeScreen(),
         angle: 0,
         menuScreen: BlocBuilder<AuthenticationBloc, AuthenticationState>(

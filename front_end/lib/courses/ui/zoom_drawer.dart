@@ -18,8 +18,8 @@ class _ZoomState extends State<Zoom> {
       showShadow: true,
       menuBackgroundColor: Colors.blue,
       mainScreen: const Body(),
-      angle: 10,
-      // moveMenuScreen: false,
+      angle: 0,
+      moveMenuScreen: true,
       menuScreen: Scaffold(
         appBar: AppBar(
           title: const Text("a"),

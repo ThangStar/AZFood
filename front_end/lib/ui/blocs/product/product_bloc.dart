@@ -79,14 +79,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   FutureOr<void> _getListProductStatusEvent(
       GetListProductStatusEvent event, Emitter<ProductState> emit) async {
-    emit(state.copyWith(status: event.status, currentProducts: [
-      Product(
-          id: 1,
-          name: "name",
-          price: 1,
-          category: 1,
-          status: 1,
-          quantity: 1)
-    ]));
+    emit(state.copyWith(status: event.status));
   }
 }

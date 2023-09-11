@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -26,7 +27,7 @@ class ItemTable extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: onTap,
-                    child: Container(
+                    child: AnimatedContainer(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 12),
                         decoration: BoxDecoration(
@@ -40,6 +41,7 @@ class ItemTable extends StatelessWidget {
                                 : Border.all(
                                     color: colorScheme(context).tertiary,
                                     width: 2)),
+                        duration: 400.ms,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

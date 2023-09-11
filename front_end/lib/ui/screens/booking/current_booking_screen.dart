@@ -37,10 +37,6 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        context.read<ProductBloc>().add(
-            const GetListProductStatusEvent(status: ProductStatus.loading));
-      }),
       bottomNavigationBar: const BottomActionBill(),
       body: SingleChildScrollView(
         child: Stack(

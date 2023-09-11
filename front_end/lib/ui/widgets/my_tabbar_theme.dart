@@ -31,7 +31,7 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        color: colorScheme(context).tertiary.withOpacity(0.6),
+        color: colorScheme(context).tertiary.withOpacity(0.3),
         child: TabBar(
             onTap: (value) async {
               await Future.delayed(200.ms);
@@ -47,6 +47,7 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
             },
             labelColor: colorScheme(context).scrim,
             padding: const EdgeInsets.all(4),
+            splashBorderRadius: BorderRadius.circular(8),
             indicator: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: colorScheme(context).onPrimary),

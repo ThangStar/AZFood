@@ -22,11 +22,12 @@ class _ZoomState extends State<HomeMenuScreen> {
     Size sizeScreen = MediaQuery.of(context).size;
     return ZoomDrawer(
         controller: z,
-        slideWidth: sizeScreen.width*0.8,
+        style: DrawerStyle.style3,
+        slideWidth: sizeScreen.width*0.75,
         showShadow: true,
         menuBackgroundColor: colorScheme(context).tertiary,
         mainScreen: const HomeScreen(),
-        angle: -5,
+        angle: 0,
         menuScreen: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
             return MyDrawer(

@@ -18,19 +18,20 @@ import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen(
-      {super.key, required this.tableID, required this.tableName});
+      {super.key, required this.tableID, required this.tableName, required this.currentProductsLength});
   final int tableID;
   final String tableName;
+  final int currentProductsLength;
 
   @override
   State<CurrentBookingScreen> createState() => _CurrentBookingScreenState();
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
+  int currentProductsLength = 0;
   @override
   void initState() {
     print("tableID change: ${widget.tableID} mounted $mounted");
-
     super.initState();
   }
 
@@ -82,20 +83,20 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(
-                                          fontSize: 20,
-                                          color:
-                                              colorScheme(context).onPrimary),
+                                      fontSize: 20,
+                                      color:
+                                      colorScheme(context).onPrimary),
                                 ),
                                 Text(
-                                  "Số lượng: 8",
+                                  "Số lượng ${widget.currentProductsLength}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(
-                                          fontSize: 12,
-                                          color: colorScheme(context)
-                                              .onPrimary
-                                              .withOpacity(0.6)),
+                                      fontSize: 12,
+                                      color: colorScheme(context)
+                                          .onPrimary
+                                          .withOpacity(0.6)),
                                 ),
                               ],
                             ),
@@ -118,14 +119,14 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                       builder: (context, state) {
                         if (state.status == ProductStatus.loading) {
                           return Container(
-                              padding: EdgeInsets.symmetric(vertical: 24),
-                              child: CircularProgressIndicator());
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              child: const CircularProgressIndicator());
                         }
                         if (state.currentProducts != null &&
                             state.status == ProductStatus.success) {
                           if (state.currentProducts!.isEmpty) {
                             return Container(
-                              padding: EdgeInsets.symmetric(vertical: 24),
+                              padding: const EdgeInsets.symmetric(vertical: 24),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
@@ -136,7 +137,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                         .secondary
                                         .withOpacity(0.6),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 24,
                                   ),
                                   Text(
@@ -160,7 +161,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               return ItemProduct(
                                 product: product,
                                 subTitle:
-                                    SubTitleItemCurrentBill(product: product),
+                                SubTitleItemCurrentBill(product: product),
                                 trailling: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -169,7 +170,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                       child: Container(
                                           decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(6),
+                                            BorderRadius.circular(6),
                                             border: Border.all(
                                                 color: colorScheme(context)
                                                     .primary
@@ -177,26 +178,26 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           ),
                                           child: Row(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                             children: [
                                               Material(
                                                 color: Colors.transparent,
                                                 borderRadius:
-                                                    BorderRadius.circular(6),
+                                                BorderRadius.circular(6),
                                                 child: InkWell(
                                                   onTap: () {},
                                                   child: Container(
                                                     padding:
-                                                        const EdgeInsets.all(2),
+                                                    const EdgeInsets.all(2),
                                                     child: Icon(Icons.remove,
                                                         color:
-                                                            colorScheme(context)
-                                                                .primary),
+                                                        colorScheme(context)
+                                                            .primary),
                                                   ),
                                                 ),
                                               ),
                                               Text(
-                                                " 10 ",
+                                                "${product.quantity}",
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
@@ -207,16 +208,16 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                               Material(
                                                 color: Colors.transparent,
                                                 borderRadius:
-                                                    BorderRadius.circular(6),
+                                                BorderRadius.circular(6),
                                                 child: InkWell(
                                                   onTap: () {},
                                                   child: Container(
                                                     padding:
-                                                        const EdgeInsets.all(2),
+                                                    const EdgeInsets.all(2),
                                                     child: Icon(Icons.add,
                                                         color:
-                                                            colorScheme(context)
-                                                                .primary),
+                                                        colorScheme(context)
+                                                            .primary),
                                                   ),
                                                 ),
                                               ),
@@ -278,7 +279,7 @@ class BottomActionBill extends StatelessWidget {
                     Text(
                       "920.000đ",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

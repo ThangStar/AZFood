@@ -9,6 +9,7 @@ exports.getList = async (req, res) => {
         const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
         FROM invoice ic 
         JOIN tables t ON t.id = ic.tableID`;
+
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -56,8 +57,8 @@ exports.getDetails = async (req, res) => {
 exports.searchByDate = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const startDate = req.body.startDate;
-        const endDate = req.body.endDate;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
         const queryRaw = "SELECT * FROM invoice WHERE createAt >= :startDate AND createAt <= :endDate ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {

@@ -21,11 +21,11 @@ const initialState: MenuItemState = {
 
 export const getMenuItemListAsync = createAsyncThunk(
   'menuItem/get-list',
-  async (page : number = 1) => {
+  async (page: number = 1) => {
     const token = localStorage.getItem('token');
     const response = await axios.get(serverUrl + '/api/products/list', {
       params: {
-        page, 
+        page,
       },
       headers: {
         'Content-Type': 'application/json',
@@ -36,12 +36,27 @@ export const getMenuItemListAsync = createAsyncThunk(
   }
 );
 
+export const getSearchMenuListAsync = createAsyncThunk(
+  'menuItem/search-list',
+  async (name: any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(serverUrl + '/api/products/searchProducts', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      params: { name }
+    });
+    return response.data;
+  }
+);
+
 export const createMenuItemAsync = createAsyncThunk(
   'product/create',
-  async (data : any) => {
-    const {id, name, price , category,status ,dvtID } = data;
+  async (data: any) => {
+    const { id, name, price, category, status, dvtID } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/products/create', {id, name , price , category ,status, dvtID},{
+    const response = await axios.post(serverUrl + '/api/products/create', { id, name, price, category, status, dvtID }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -65,9 +80,9 @@ export const getCategoryListAsync = createAsyncThunk(
 );
 export const deleteMenuItemAsync = createAsyncThunk(
   'product/delete',
-  async (id : any) => {
+  async (id: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/products/delete', {id} , {
+    const response = await axios.post(serverUrl + '/api/products/delete', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -86,7 +101,7 @@ export const getMenuListAsync = createAsyncThunk(
         'Authorization': 'Bearer ' + token,
       },
     });
-    
+
     return response.data;
   }
 );
@@ -97,10 +112,10 @@ const menuItemSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-    .addCase(getMenuListAsync.fulfilled, (state, action) => {
-      state.status = 'idle';
-      state.menuList = action.payload;
-    })
+      .addCase(getMenuListAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.menuList = action.payload;
+      })
       .addCase(getMenuItemListAsync.pending, (state) => {
         state.status = 'loading';
       })
@@ -136,6 +151,14 @@ const menuItemSlice = createSlice({
         state.menuItemList = action.payload;
       })
       .addCase(deleteMenuItemAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(getSearchMenuListAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.menuItemList = action.payload;
+        console.log(state.menuItemList);
+      })
+      .addCase(getSearchMenuListAsync.rejected, (state) => {
         state.status = 'failed';
       });
   },

@@ -33,6 +33,25 @@ export const getInvoiceListAsync = createAsyncThunk(
         return response.data;
     }
 );
+export const getSearchDateInvoiceListAsync = createAsyncThunk(
+    'invoice/search-date-list',
+    async (data: any) => {
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(serverUrl + '/api/invoice/search', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            params: {
+                'endDate': data.endDate,
+                'startDate': data.startDate
+            }
+        });
+
+        return response.data;
+    }
+);
 export const getDetailsInvoiceAsync = createAsyncThunk(
     'invoice/details',
     async (invoiceID: any) => {
@@ -74,6 +93,13 @@ const invoiceSlice = createSlice({
                 state.invoiceDetailsList = action.payload;
             })
             .addCase(getDetailsInvoiceAsync.rejected, (state) => {
+                state.status = 'failed';
+            })
+            .addCase(getSearchDateInvoiceListAsync.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.invoiceList = action.payload;
+            })
+            .addCase(getSearchDateInvoiceListAsync.rejected, (state) => {
                 state.status = 'failed';
             });
     },

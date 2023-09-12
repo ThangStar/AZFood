@@ -17,26 +17,29 @@ class NotificationNews extends StatelessWidget {
         child: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 1),
-            child: RichText(
-              softWrap: false,
-              text: const TextSpan(
-                text: "Thông báo: ",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Color(0xFF1573FE)),
-                children: <TextSpan>[
-                  TextSpan(text: 'Món ', style: TextStyle(color: Colors.white)),
-                  TextSpan(
-                      text: 'Trứng sốt cà chua ',
-                      style: TextStyle(color: Colors.redAccent)),
-                  TextSpan(
-                      text: 'đã hết.',
-                      style: TextStyle(color: Colors.white)),
-                ],
-              ),
-            )
-                .animate(onComplete: (controller) => controller.repeat(),)
-                .fade(duration: 600.ms)
-                .moveX(begin: width, duration: 5.seconds).then().moveX(end: -width, duration: 5.seconds),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: RichText(
+                softWrap: false,
+                text: const TextSpan(
+                  text: "Thông báo: ",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF1573FE)),
+                  children: <TextSpan>[
+                    TextSpan(text: 'Món ', style: TextStyle(color: Colors.white)),
+                    TextSpan(
+                        text: 'Trứng sốt cà chua ',
+                        style: TextStyle(color: Colors.redAccent)),
+                    TextSpan(
+                        text: 'đã hết vui lòng thông báo với khách hàng để đặt món mới.',
+                        style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              )
+                  .animate(onComplete: (controller) => controller.repeat(),)
+                  .fade(duration: 600.ms)
+                  .moveX(begin: width, duration: 5.seconds).then().moveX(end: -width, duration: 5.seconds),
+            ),
           ),
         ));
   }

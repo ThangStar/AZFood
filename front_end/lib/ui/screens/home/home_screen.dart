@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
+import 'package:restaurant_manager_app/model/current_product.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
@@ -216,6 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
                                         .toList();
+
                                     // print(
                                     //     'test length a: ${currentProducts.length}');
                                     //     List<Product> productFinal = [];
@@ -231,20 +233,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                     //   bool a = currentProducts.indexOf(element);
                                     //   // if(element.id == )
                                     // });
+
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
                                     print("current: ${currentProducts.length}");
+                                    int currentProductsLength = currentProducts.length;
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CurrentBookingScreen(
+                                                tableID: table.id!,
+                                                tableName: table.name ?? "",
+                                                currentProductsLength: currentProductsLength,
+                                              ),
+                                        ));
                                   });
                                 }
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          CurrentBookingScreen(
-                                              tableID: table.id!,
-                                              tableName: table.name ?? ""),
-                                    ));
+
                               },
                             )
                                 .animate()

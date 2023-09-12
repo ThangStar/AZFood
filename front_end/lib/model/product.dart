@@ -4,7 +4,7 @@ class Product {
   int price;
   int category;
   int? status;
-  int? quantity;
+  int quantity;
   String? imageUrl;
   int amountCart;
   String? dvtName;

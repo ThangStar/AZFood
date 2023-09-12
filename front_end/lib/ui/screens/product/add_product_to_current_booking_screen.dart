@@ -24,27 +24,15 @@ class _AddProductToCurrentBookingScreenState
     with TickerProviderStateMixin {
   List<Product> productsSelected = [];
 
-  late AnimationController moveCartController;
-
   GlobalKey cartKey = GlobalKey();
-  bool isExtended = false;
 
   @override
   void initState() {
     super.initState();
-    moveCartController = AnimationController(vsync: this, duration: 1.seconds);
-    moveCartController.addListener(() {
-      if (moveCartController.isCompleted) {
-        setState(() {
-          isExtended = true;
-        });
-      }
-    });
   }
 
   @override
   void dispose() {
-    moveCartController.dispose();
     super.dispose();
   }
 
@@ -60,43 +48,20 @@ class _AddProductToCurrentBookingScreenState
             await Future.delayed(5.seconds);
           },
           child: Scaffold(
-            floatingActionButton: SlideTransition(
-              position: moveCartController.drive(
-                  Tween<Offset>(begin: const Offset(2, 0), end: Offset.zero)),
-              child: FloatingActionButton.extended(
-                  heroTag: "check_out",
-                  key: cartKey,
-                  backgroundColor: colorScheme(context).primary,
-                  onPressed: () {
-                    setState(() {
-                      isExtended = !isExtended;
-                    });
-                  },
-                  label: AnimatedSwitcher(
-                    duration: const Duration(seconds: 1),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) =>
-                            FadeTransition(
-                      opacity: animation,
-                      child: SizeTransition(
-                        child: child,
-                        sizeFactor: animation,
-                        axis: Axis.horizontal,
-                      ),
-                    ),
-                    child: !isExtended
-                        ? const Icon(Icons.shopping_cart_rounded)
-                        : const Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4.0),
-                                child: Icon(Icons.add),
-                              ),
-                              Text("Đã thêm")
-                            ],
-                          ),
-                  )),
-            ),
+            floatingActionButton: FloatingActionButton.extended(
+                heroTag: "check_out",
+                key: cartKey,
+                backgroundColor: colorScheme(context).secondary,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                label:  Badge(
+                  label: Text("${productsSelected.length}"),
+                  child:  Icon(
+                    Icons.shopping_cart_rounded,
+                    color: colorScheme(context).onPrimary,
+                  ),
+                )),
             appBar: AppBar(
               bottom: const PreferredSize(
                   preferredSize: Size.zero,
@@ -174,7 +139,26 @@ class _AddProductToCurrentBookingScreenState
                                   cartKey: cartKey,
                                   product: product,
                                   onTap: () {
-                                    moveCartController.forward();
+                                    final index = productsSelected.indexWhere(
+                                      (element) => element.id == product.id,
+                                    );
+                                    if (index == -1) {
+                                      setState(() {
+                                        productsSelected.add(product);
+                                      });
+                                    }
+                                    //  else {
+                                    //   // List<Product>  newData = List.from(productsSelected);
+                                    //   // newData[index].quantity! = 1;
+                                    //   Product productUpdate =
+                                    //       productsSelected[index];
+                                    //   if (productUpdate.quantity != null) {
+                                    //     ++productUpdate.amountCart;
+                                    //   }
+                                    //   setState(() {
+                                    //     productsSelected[index] = productUpdate;
+                                    //   });
+                                    // }
                                     context.read<OrderBloc>().add(
                                             CreateOrderEvent(products: [
                                           ProductCheckOut(

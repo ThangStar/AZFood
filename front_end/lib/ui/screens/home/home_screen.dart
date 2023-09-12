@@ -238,20 +238,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
                                     print("current: ${currentProducts.length}");
-                                    int currentProductsLength = currentProducts.length;
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               CurrentBookingScreen(
-                                                tableID: table.id!,
-                                                tableName: table.name ?? "",
-                                                currentProductsLength: currentProductsLength,
-                                              ),
+                                            tableID: table.id!,
+                                            tableName: table.name ?? "",
+                                            amount: currentProducts.length,
+                                          ),
                                         ));
                                   });
                                 }
-
                               },
                             )
                                 .animate()

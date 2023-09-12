@@ -52,7 +52,6 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 borderRadius: BorderRadius.circular(8),
                 color: colorScheme(context).onPrimary),
             indicatorSize: TabBarIndicatorSize.tab,
-            dividerHeight: 0,
             controller:
                 TabController(length: 2, vsync: this, initialIndex: pos),
             tabs: const [

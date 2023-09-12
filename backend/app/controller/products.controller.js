@@ -364,8 +364,8 @@ exports.searchProduct = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
         try {
-            const name = req.body.name;
-
+            const name = req.query.name;
+            console.log(req.query.name);
             const queryRaw = `SELECT *FROM products where name LIKE :name`;
 
             const resultRaw = await sequelize.query(queryRaw, {

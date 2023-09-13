@@ -6,7 +6,7 @@ const Auth = require('./checkAuth.controller')
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
+        const queryRaw = `SELECT ic.id , ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
         FROM invoice ic 
         JOIN tables t ON t.id = ic.tableID`;
 

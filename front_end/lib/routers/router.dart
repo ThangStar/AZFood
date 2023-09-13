@@ -10,4 +10,7 @@ class Router {
   static String createOrder = '/api/orders/create';
   static String getOrderInTable = '/api/orders/getOrder';
 
+  //invoice
+  static String getAllInvoice = '/api/invoice/list';
+
 }

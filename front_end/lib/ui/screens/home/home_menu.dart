@@ -7,8 +7,11 @@ import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_drawer.dart';
 
+
+//global variable
 final ZoomDrawerController z = ZoomDrawerController();
 
+//main
 class HomeMenuScreen extends StatefulWidget {
   const HomeMenuScreen({Key? key}) : super(key: key);
 

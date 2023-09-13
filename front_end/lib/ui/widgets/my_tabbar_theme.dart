@@ -19,13 +19,14 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
 
   @override
   void initState() {
-    MySharePreferences.getIsDarkTheme().then((value){
+    MySharePreferences.getIsDarkTheme().then((value) {
       setState(() {
         pos = value ?? false ? 1 : 0;
       });
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -52,7 +53,6 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 borderRadius: BorderRadius.circular(8),
                 color: colorScheme(context).onPrimary),
             indicatorSize: TabBarIndicatorSize.tab,
-            dividerHeight: 0,
             controller:
                 TabController(length: 2, vsync: this, initialIndex: pos),
             tabs: const [
@@ -61,9 +61,13 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Icon(Icons.light_mode), Text("Sáng", style: TextStyle(
-                    fontSize: 10
-                  ),)],
+                  children: [
+                    Icon(Icons.light_mode),
+                    Text(
+                      "Sáng",
+                      style: TextStyle(fontSize: 10),
+                    )
+                  ],
                 ),
               ),
               Padding(
@@ -71,9 +75,10 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Icon(Icons.dark_mode), Text("Tối", style: TextStyle(
-                    fontSize: 10
-                  ))],
+                  children: [
+                    Icon(Icons.dark_mode),
+                    Text("Tối", style: TextStyle(fontSize: 10))
+                  ],
                 ),
               ),
             ]),

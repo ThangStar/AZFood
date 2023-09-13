@@ -1,22 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:restaurant_manager_app/apis/path.api.dart';
 import 'package:restaurant_manager_app/constants/env.dart';
-import 'package:restaurant_manager_app/routers/auth.router.dart';
-import 'package:restaurant_manager_app/utils/auth.dart';
+import 'package:restaurant_manager_app/model/login_response.dart';
+import 'package:restaurant_manager_app/routers/router.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
-
-class AuthInterceptor extends Interceptor {
-  final String token;
-
-  AuthInterceptor(this.token);
-
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers['Authorization'] = 'Bearer $token';
-    options.headers['Access-Control-Allow-Origin'] = '*';
-    super.onRequest(options, handler);
-  }
-}
 
 class Http {
   late Dio dio;
@@ -31,16 +18,13 @@ class Http {
       InterceptorsWrapper(
         onRequest:
             (RequestOptions options, RequestInterceptorHandler handler) async {
-          // Do something before request is sent.
-          // If you want to resolve the request with custom data,
-          // you can resolve a `Response` using `handler.resolve(response)`.
-          // If you want to reject the request with a error message,
-          // you can reject with a `DioException` using `handler.reject(dioError)`.
-          print("ALO");
+          LoginResponse? loginResult = await MySharePreferences.loadProfile();
+          // print("token ${loginResult?.jwtToken}");
+          if (loginResult != null) {
+            token = loginResult.jwtToken;
+            options.headers['Authorization'] = 'Bearer $token';
+          }
 
-          token = await Auth.getTokenFromStorage();
-
-          options.headers['Authorization'] = 'Bearer $token';
           options.headers['Access-Control-Allow-Origin'] = '*';
           return handler.next(options);
         },
@@ -64,7 +48,7 @@ class Http {
   void relogin() async {
     //login to twice -> failed -> navigate to login
     try {
-      var response = await dio.post(AuthRouter.login,
+      var response = await dio.post(Router.login,
           data: {"username": "trung1234", "password": "123123"});
       print("OK: $response");
     } catch (err) {
@@ -73,17 +57,18 @@ class Http {
   }
 
   Object handleRefreshToken() async {
-    Response response;
+    Response response = Response(requestOptions: RequestOptions());
     try {
       response = await dio.post('/url-refreshToken', data: {token: token});
       return response.statusCode == 200 || response.statusCode == 201
-          ? Success(data: response.data, statusCode: response.statusCode)
-          : Failure(dataErr: response.data, statusCode: response.statusCode);
+          ? Success(response: response, statusCode: response.statusCode)
+          : Failure(response: response, statusCode: response.statusCode);
     } catch (err) {
-      return Failure(dataErr: "response.data");
+      return Failure(response: response);
     }
   }
 }
+
 //how to use
 Dio http = Http().dio;
 //

@@ -7,11 +7,17 @@ const session = require('express-session');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+app.io = io
 app.use(bodyParser.urlencoded({
     limit: "50mb",
     extended: false
   }));
-  
+  app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+  });
   app.use(bodyParser.json({limit: "50mb"}));
   app.use(session({
     secret: process.env.SESSION_SECRET || 'LOGIN',
@@ -33,15 +39,15 @@ require("./app/routes/table.route.js")(app);
 require("./app/routes/orders.route.js")(app);
 require("./app/routes/donViTinh.route.js")(app);
 require("./app/routes/invoice.route.js")(app);
+require("./app/routes/nhapHang.route.js")(app);
+require("./app/routes/statistics.route.js")(app);
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  console.log(`SOCKET is running on port ${PORT}.`);
 });
 require("./app/routes/members.route.js")(app);
-io.on('connection', (socket) => {
-  console.log('User connected to socket');
-  socket.on('disconnect', () => {
-    console.log('User disconnected from socket');
-  });
-});
+
+require('./socket/socket.init.js')(io);
+
+

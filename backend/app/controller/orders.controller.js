@@ -2,12 +2,24 @@ const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller');
-const { Server } = require('socket.io');
-const io = new Server();
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
+const getInvoiceNumber = (min = 0, max = 500000) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+    return num.toString();
+};
 exports.createOrder = async (req, res) => {
+    console.log('create order');
+    // req.app.io.emit("listProductByIdTable", "ALO")
     try {
         const body = req.body;
+        console.log(body);
+
         const isAuth = await Auth.checkAuth(req);
 
         if (isAuth) {
@@ -16,7 +28,8 @@ exports.createOrder = async (req, res) => {
             const productID = body.productID;
             const quantity = body.quantity;
 
-            const priceQuery = 'SELECT price FROM products WHERE id = ?';
+            const priceQuery = 'SELECT price  , status FROM products WHERE id = ?';
+            const quantityQuery = 'SELECT SUM(quantity) AS quantity  FROM kho WHERE productID = ?';
             try {
                 const priceResult = await sequelize.query(priceQuery, {
                     raw: true,
@@ -24,56 +37,67 @@ exports.createOrder = async (req, res) => {
                     replacements: [productID],
                     type: QueryTypes.SELECT
                 });
-
-                const price = priceResult[0].price;
-
-                const subTotal = quantity * price;
-
-                const orderData = {
-                    userID: body.userID,
-                    tableID: body.tableID,
-                    orderDate: new Date(),
-                    totalAmount: subTotal,
-                };
-
-                const orderId = await sequelize.transaction(async transaction => {
-                    const queryRaw = 'INSERT INTO orders (userID, tableID, orderDate, totalAmount) VALUES (?, ?, ?, ?)';
-                    const resultRaw = await sequelize.query(queryRaw, {
-                        raw: true,
-                        logging: false,
-                        replacements: [
-                            orderData.userID,
-                            orderData.tableID,
-                            orderData.orderDate,
-                            orderData.totalAmount
-                        ],
-                        type: QueryTypes.INSERT,
-                        transaction
-                    });
-
-                    const orderId = resultRaw[0];
-
-                    const queryRaw2 = 'INSERT INTO orderItems (orderID, productID, quantity, subTotal) VALUES (?, ?, ?, ?)';
-                    await sequelize.query(queryRaw2, {
-                        raw: true,
-                        logging: false,
-                        replacements: [orderId, productID, quantity, subTotal],
-                        type: QueryTypes.INSERT,
-                        transaction
-                    });
-                    const updateTableStatusQuery = 'UPDATE tables SET status = ? WHERE id = ?';
-                    await sequelize.query(updateTableStatusQuery, {
-                        raw: true,
-                        logging: false,
-                        replacements: [2, orderData.tableID],
-                        type: QueryTypes.UPDATE,
-                        transaction
-                    });
-                    io.emit('tableStatusChanged', { tableID: orderData.tableID, status: 2 });
-                    return orderId;
+                const quantityResult = await sequelize.query(quantityQuery, {
+                    raw: true,
+                    logging: false,
+                    replacements: [productID],
+                    type: QueryTypes.SELECT
                 });
+                const price = priceResult[0].price;
+                const _quantity = quantityResult[0].quantity;
+                const _status = priceResult[0].status;
+                console.log("_quantity ", _quantity);
+                console.log("_status ", _status);
+                if (_quantity > 0 || _status === 1) {
+                    const subTotal = quantity * price;
 
-                res.status(200).json({ message: 'Order created successfully', orderId });
+                    const orderData = {
+                        userID: body.userID,
+                        tableID: body.tableID,
+                        orderDate: new Date(),
+                        totalAmount: subTotal,
+                    };
+
+                    const orderId = await sequelize.transaction(async transaction => {
+                        const queryRaw = 'INSERT INTO orders (userID, tableID, orderDate, totalAmount) VALUES (?, ?, ?, ?)';
+                        const resultRaw = await sequelize.query(queryRaw, {
+                            raw: true,
+                            logging: false,
+                            replacements: [
+                                orderData.userID,
+                                orderData.tableID,
+                                orderData.orderDate,
+                                orderData.totalAmount
+                            ],
+                            type: QueryTypes.INSERT,
+                            transaction
+                        });
+
+                        const orderId = resultRaw[0];
+
+                        const queryRaw2 = 'INSERT INTO orderItems (orderID, productID, quantity, subTotal) VALUES (?, ?, ?, ?)';
+                        await sequelize.query(queryRaw2, {
+                            raw: true,
+                            logging: false,
+                            replacements: [orderId, productID, quantity, subTotal],
+                            type: QueryTypes.INSERT,
+                            transaction
+                        });
+                        const updateTableStatusQuery = 'UPDATE tables SET status = ? WHERE id = ?';
+                        await sequelize.query(updateTableStatusQuery, {
+                            raw: true,
+                            logging: false,
+                            replacements: [1, orderData.tableID],
+                            type: QueryTypes.UPDATE,
+                            transaction
+                        });
+                        io.emit('tableStatusChanged', { tableID: orderData.tableID, status: 2 });
+                        return orderId;
+                    });
+                    res.status(200).json({ message: 'Order created successfully', orderId });
+                } else {
+                    res.status(404).json({ message: 'not found product', orderId });
+                }
             } catch (error) {
                 res.status(500).json({ message: 'Error creating order', error: error.message });
             }
@@ -88,17 +112,16 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-    console.log("Update Order");
+
     try {
 
         const body = req.body;
         const isAuth = await Auth.checkAuth(req);
 
         if (isAuth) {
-
             const productID = body.productID;
             const quantity = body.quantity;
-            const id = body.id; //Hoặc là lấy id từ body.
+            const id = body.orderID;
             const priceQuery = 'SELECT price FROM products WHERE id = ?';
             try {
                 const priceResult = await sequelize.query(priceQuery, {
@@ -154,7 +177,7 @@ exports.updateOrder = async (req, res) => {
 
 exports.deleteOrder = async (req, res) => {
     try {
-        const orderId = req.body.id; // Lấy orderId từ URL parameter
+        const orderId = req.body.id;
         const isAuth = await Auth.checkAuth(req);
         console.log("orderId", orderId);
         if (isAuth) {
@@ -181,7 +204,7 @@ exports.deleteOrder = async (req, res) => {
                     transaction
                 });
             });
-            
+
             res.status(200).json({ message: 'Order deleted successfully' });
         } else {
             res.status(403).json({ message: 'you are not logned in' });
@@ -195,34 +218,34 @@ exports.deleteOrder = async (req, res) => {
 
 exports.deleteAllOrder = async (req, res) => {
     try {
-        const tableID = req.body.id; 
+        const tableID = req.body.id;
         const isAuth = await Auth.checkAuth(req);
-        var idOrder = 0 ;
+        var idOrder = 0;
         if (isAuth) {
             console.log("Delete All Order in Table");
             // Lấy id của orderID từ bàn
             const deleteOrderItemsQuery = `SELECT * FROM orders WHERE tableID = ?;`;
-            const idOrders = await sequelize.query(deleteOrderItemsQuery, {raw: true,logging: false,replacements: [tableID],type: QueryTypes.SELECT});
-           
+            const idOrders = await sequelize.query(deleteOrderItemsQuery, { raw: true, logging: false, replacements: [tableID], type: QueryTypes.SELECT });
+
             for (const order of idOrders) {
                 idOrder = order.id
             }
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
 
-                await sequelize.query(deleteOrderItemsQuery, {raw: true,logging: false,replacements: [idOrder],type: QueryTypes.DELETE,transaction});
+                await sequelize.query(deleteOrderItemsQuery, { raw: true, logging: false, replacements: [idOrder], type: QueryTypes.DELETE, transaction });
                 const deleteOrderQuery = `DELETE FROM orders WHERE tableID = ?;`;
-                await sequelize.query(deleteOrderQuery, {raw: true,logging: false,replacements: [tableID],type: QueryTypes.DELETE,transaction});
+                await sequelize.query(deleteOrderQuery, { raw: true, logging: false, replacements: [tableID], type: QueryTypes.DELETE, transaction });
             });
             //chuyển trạng thái bàn về trôngs
             const updateTableStatusQuery = 'UPDATE tables SET status = ? WHERE id = ?';
-                    await sequelize.query(updateTableStatusQuery, {
-                        raw: true,
-                        logging: false,
-                        replacements: [3, tableID],
-                        type: QueryTypes.UPDATE,
-                        transaction
-                    });
+            await sequelize.query(updateTableStatusQuery, {
+                raw: true,
+                logging: false,
+                replacements: [3, tableID],
+                type: QueryTypes.UPDATE,
+                transaction
+            });
             io.emit('tableStatusChanged', { tableID: orderData.tableID, newStatus: 3 });
             res.status(200).json({ message: 'Order deleted successfully' });
         } else {
@@ -237,21 +260,24 @@ exports.deleteAllOrder = async (req, res) => {
 
 exports.getOrdersForTable = async (req, res) => {
     try {
-        const tableID = req.body.id;
+
+        const tableID = req.query.tableID;
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount, p.name AS productName, oi.quantity, oi.subTotal
+            SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
+             oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id
+            INNER JOIN users u ON o.userID = u.id
             WHERE o.tableID = ?
         `;
 
             const orders = await sequelize.query(getOrdersQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID],
+                replacements: [tableID || id],
                 type: QueryTypes.SELECT
             });
 
@@ -266,15 +292,41 @@ exports.getOrdersForTable = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+exports.getList = async (req, res) => {
+
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        const queryRaw = "SELECT * FROM orders";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (error) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(401).send('member is not admin');
+    }
+
+}
 
 exports.payBill = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
         const tableID = req.body.id;
+
+
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
-                SELECT p.name AS productName, oi.quantity, p.price, u.name AS userName, o.totalAmount , o.id
+                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, o.totalAmount , o.id
                 FROM orders o
                 INNER JOIN orderItems oi ON o.id = oi.orderID
                 INNER JOIN products p ON oi.productID = p.id
@@ -298,15 +350,16 @@ exports.payBill = async (req, res) => {
             }
 
             // Lưu thông tin hoá đơn vào bảng invoice
-            const createInvoiceQuery = `
-                INSERT INTO invoice (tableID,total, createAt, userName )
-                VALUES (?, ?, ? , ?)
-            `;
 
+            const createInvoiceQuery = `
+                INSERT INTO invoice (tableID,total, createAt, userName, invoiceNumber )
+                VALUES (?, ?, ? , ?,?)
+            `;
+            const invoiceNumber = getInvoiceNumber();
             const invoiceResult = await sequelize.query(createInvoiceQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID , totalInvoiceAmount, new Date(), billDetails[0].userName ],
+                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, invoiceNumber],
                 type: QueryTypes.INSERT
             });
 
@@ -325,6 +378,21 @@ exports.payBill = async (req, res) => {
                     replacements: [invoiceID, detail.productName, detail.quantity, detail.totalAmount],
                     type: QueryTypes.INSERT
                 });
+
+                // Trừ số lượng sản phẩm từ kho
+                const updateProductQuantityQuery = `
+                 UPDATE kho
+                 SET quantity = quantity - ?
+                 WHERE productID = ?
+             `;
+                console.log("detail.productID ", detail.productID);
+                await sequelize.query(updateProductQuantityQuery, {
+                    raw: true,
+                    logging: false,
+                    replacements: [detail.quantity, detail.productID], // Trừ số lượng sản phẩm theo quantity trong chi tiết hoá đơn
+                    type: QueryTypes.UPDATE
+                });
+
             }
 
             // Cập nhật trạng thái của bàn sau khi thanh toán
@@ -336,13 +404,12 @@ exports.payBill = async (req, res) => {
                 type: QueryTypes.UPDATE
             });
             io.emit('tableStatusChanged', { tableID: tableID, newStatus: 1 });
-            console.log("idOder" , idOder);
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
 
-                await sequelize.query(deleteOrderItemsQuery, {raw: true,logging: false,replacements: [idOder],type: QueryTypes.DELETE,transaction});
+                await sequelize.query(deleteOrderItemsQuery, { raw: true, logging: false, replacements: [idOder], type: QueryTypes.DELETE, transaction });
                 const deleteOrderQuery = `DELETE FROM orders WHERE tableID = ?;`;
-                await sequelize.query(deleteOrderQuery, {raw: true,logging: false,replacements: [tableID],type: QueryTypes.DELETE,transaction});
+                await sequelize.query(deleteOrderQuery, { raw: true, logging: false, replacements: [tableID], type: QueryTypes.DELETE, transaction });
             });
             res.status(200).json({ message: 'Bill paid successfully', invoiceID });
         } catch (error) {

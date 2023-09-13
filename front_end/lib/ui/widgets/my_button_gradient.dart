@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MyButtonGradient extends StatelessWidget {
-  MyButtonGradient(
+  const MyButtonGradient(
       {super.key,
       required this.text,
       required this.onTap,

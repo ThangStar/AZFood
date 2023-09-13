@@ -11,32 +11,35 @@ class NotificationNews extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     return Container(
-        width: double.infinity,
+      width: double.infinity,
         padding: const EdgeInsets.all(10),
         color: colorScheme(context).primary.withOpacity(0.1),
         child: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 1),
-            child: RichText(
-              softWrap: false,
-              text: const TextSpan(
-                text: "Thông báo: ",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Color(0xFF1573FE)),
-                children: <TextSpan>[
-                  TextSpan(text: 'Món ', style: TextStyle(color: Colors.white)),
-                  TextSpan(
-                      text: 'Trứng sốt cà chua ',
-                      style: TextStyle(color: Colors.redAccent)),
-                  TextSpan(
-                      text: 'hiện đã hết vui lòng thông báo nếu có khách hàng yêu cầu',
-                      style: TextStyle(color: Colors.white)),
-                ],
-              ),
-            )
-                .animate(onComplete: (controller) => controller.repeat(),)
-                .fade(duration: 600.ms)
-                .moveX(begin: width, duration: 10.seconds).then().moveX(end: -width, duration: 10.seconds),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: RichText(
+                softWrap: false,
+                text: const TextSpan(
+                  text: "Thông báo: ",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Color(0xFF1573FE)),
+                  children: <TextSpan>[
+                    TextSpan(text: 'Món ', style: TextStyle(color: Colors.white)),
+                    TextSpan(
+                        text: 'Trứng sốt cà chua ',
+                        style: TextStyle(color: Colors.redAccent)),
+                    TextSpan(
+                        text: 'đã hết vui lòng thông báo với khách hàng để đặt món mới.',
+                        style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              )
+                  .animate(onComplete: (controller) => controller.repeat(),)
+                  .fade(duration: 600.ms)
+                  .moveX(begin: width, duration: 5.seconds).then().moveX(end: -width, duration: 5.seconds),
+            ),
           ),
         ));
   }

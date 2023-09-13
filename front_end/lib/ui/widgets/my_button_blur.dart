@@ -20,7 +20,7 @@ class MyButtonBlur extends StatelessWidget {
                   color: Colors.white.withOpacity(0.1),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Text(text, style: TextStyle(
+                child: Text(text, style: const TextStyle(
                   color: Colors.white
                 ),))),
         ),

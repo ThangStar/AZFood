@@ -1,48 +1,43 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// To parse this JSON data, do
+//
+//     final table = tableFromJson(jsonString);
+
 import 'dart:convert';
 
-// status: 0 -> watting, 1 -> online, 2 -> error
+Table tableFromJson(String str) => Table.fromJson(json.decode(str));
+
+String tableToJson(Table data) => json.encode(data.toJson());
+
 class Table {
-  final String tableName;
-  final String? time;
-  final int? sumPrice;
-  final int status;
+  int? id;
+  String? name;
+  int? status;
+  String? statusName;
+  String? firstTime;
+  int? sumPrice;
 
-  Table({required this.tableName, required this.time, required this.sumPrice, required this.status});
+  Table(
+      {this.id,
+      this.name,
+      this.status,
+      this.statusName,
+      this.firstTime,
+      this.sumPrice});
 
-  Table copyWith({
-    String? tableName,
-    String? time,
-    int? sumPrice,
-    int? status,
-  }) {
-    return Table(
-      tableName: tableName ?? this.tableName,
-      time: time ?? this.time,
-      sumPrice: sumPrice ?? this.sumPrice,
-      status: status ?? this.status,
-    );
-  }
+  factory Table.fromJson(Map<String, dynamic> json) => Table(
+      id: json["id"],
+      name: json["name"],
+      status: json["status"],
+      statusName: json["status_name"],
+      firstTime: json["first_time"],
+      sumPrice: json["total_amount"]);
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'tableName': tableName,
-      'time': time,
-      'sumPrice': sumPrice,
-      'status': status,
-    };
-  }
-
-  factory Table.fromMap(Map<String, dynamic> map) {
-    return Table(
-      tableName: map['tableName'] as String,
-      time: map['time'] != null ? map['time'] as String : null,
-      sumPrice: map['sumPrice'] != null ? map['sumPrice'] as int : null,
-      status: map['status'] as int,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Table.fromJson(String source) => Table.fromMap(json.decode(source) as Map<String, dynamic>);
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "status": status,
+        "status_name": statusName,
+        "first_time": firstTime,
+        "total_amount": sumPrice
+      };
 }

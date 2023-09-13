@@ -2,7 +2,8 @@ part of 'authentication_bloc.dart';
 
 class AuthenticationState extends Equatable {
   final Object data;
-  const AuthenticationState({this.data = const []});
+  final Profile? profile;
+  const AuthenticationState( {this.data = const [], this.profile,});
   @override
   List<Object> get props => [data];
 }
@@ -14,7 +15,9 @@ class AuthLoginProgress extends AuthenticationState {
   //save token to local
 }
 
-class AuthLoginSuccess extends AuthenticationState {
-}
-class AuthLoginFailed extends AuthenticationState {
-}
+class AuthLoginSuccess extends AuthenticationState {}
+
+class AuthLoginFailed extends AuthenticationState {}
+
+class AuthLoginConnectionFailed extends AuthenticationState {}
+

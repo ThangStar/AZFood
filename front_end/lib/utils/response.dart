@@ -1,12 +1,14 @@
+import 'package:dio/dio.dart';
+
 class Success{
-  final String data;
+  final Response response;
   final int? statusCode;
-  Success({required this.data, this.statusCode = 201});
+  Success({required this.response, this.statusCode = 201});
 }
 
 class Failure{
-  final String dataErr;
+  final Response? response;
   final int? statusCode;
 
-  Failure({required this.dataErr, this.statusCode = 404});
+  Failure({required this.response, this.statusCode = 404});
 }

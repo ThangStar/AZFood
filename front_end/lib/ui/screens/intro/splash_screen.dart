@@ -29,10 +29,10 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset('assets/svg/logo.svg', width: 230),
+              SvgPicture.asset('assets/svgs/logo.svg', width: 230),
               const SizedBox(height: 80,),
               const SizedBox(
-                  width: 200,
+                  width: 180,
                   child: LinearProgressIndicator()),
               const SizedBox(height: 2,),
                Text("Đang tải..", style: Theme.of(context).textTheme.bodyLarge,)

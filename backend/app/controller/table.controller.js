@@ -48,12 +48,54 @@ exports.updateTable = async (req, res) => {
     }
 }
 
+exports.updateStatusTable = async (req, res) => {
+    try {
+        const body = req.body;
+        const isAuth = await Auth.checkAuth(req);
+        if (isAuth) {
+            console.log("id ", body.id);
+            const queryRaw = "UPDATE tables SET status = ? WHERE id = ?";
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.status, body.id],
+                type: QueryTypes.UPDATE
+            });
+            res.status(200).json({ message: 'tables updated successfully' });
+        }
 
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error', error });
+    }
+}
 exports.getList = async (req, res) => {
+    const isAuth = await Auth.checkAuth(req);
+    if (isAuth) {
+        const queryRaw = "SELECT t.id, t.name, t.status, s.name AS status_name FROM tables t JOIN statusTable s ON t.status = s.id;";
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (error) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(401).send('You are not logged in');
+    }
+
+}
+exports.getStatusList = async (req, res) => {
 
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const queryRaw = "SELECT * FROM tables";
+        const queryRaw = "SELECT * FROM statusTable";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,

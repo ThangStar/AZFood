@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
 class MyOutlineButton extends StatelessWidget {
-  const MyOutlineButton({super.key, required this.text, required this.onTap});
+  const MyOutlineButton(
+      {super.key,
+      required this.text,
+      required this.onTap,
+      this.padding = const EdgeInsets.symmetric(vertical: 14)});
   final String text;
   final Function() onTap;
+  final EdgeInsetsGeometry padding;
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -15,13 +20,13 @@ class MyOutlineButton extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              padding: padding,
               child: Text(
                 text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: colorScheme(context).primary,
-                     fontSize: 16),
+                  fontWeight: FontWeight.bold,
+                    color: colorScheme(context).primary, fontSize: 16),
               ),
             ),
           ),

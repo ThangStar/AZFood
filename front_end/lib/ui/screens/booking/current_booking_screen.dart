@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:restaurant_manager_app/model/product_booking.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_manager_app/model/product.dart';
+import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -12,81 +14,30 @@ import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
+import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
-  const CurrentBookingScreen({super.key});
+  const CurrentBookingScreen(
+      {super.key,
+      required this.tableID,
+      required this.tableName,
+      required this.amount});
+  final int tableID;
+  final String tableName;
+  final int amount;
 
   @override
   State<CurrentBookingScreen> createState() => _CurrentBookingScreenState();
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  List<ProductBooking> productBookings = [
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 0,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    ),
-    ProductBooking(
-      name: "name",
-      type: "type",
-      money: 2000,
-      amount: 20,
-      image:
-          "https://thumbs.dreamstime.com/b/hamberger-sauce-piece-big-hamburger-close-up-shot-snack-drink-background-144073056.jpg",
-    )
-  ];
+  int currentProductsLength = 0;
+  @override
+  void initState() {
+    print("tableID change: ${widget.tableID} mounted $mounted");
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,7 +61,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           color: colorScheme(context).onPrimary,
                         ),
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.of(context, rootNavigator: true).pop();
                         },
                       ),
                       trailling: [
@@ -130,7 +81,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Bàn 1",
+                                  widget.tableName,
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
@@ -140,7 +91,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                               colorScheme(context).onPrimary),
                                 ),
                                 Text(
-                                  "Số lượng: 8",
+                                  "Số lượng ${widget.amount}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
@@ -159,56 +110,130 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const AddProductToCurrentBookingScreen()));
+                                            AddProductToCurrentBookingScreen(
+                                                tableID: widget.tableID)));
                               },
                             )
                           ],
                         ),
                       ),
                     ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: productBookings.length,
-                      itemBuilder: (context, index) {
-                        ProductBooking productBooking = productBookings[index];
-                        return ItemProduct(
-                          productBooking: productBooking,
-                          subTitle: SubTitleItemCurrentBill(
-                              productBooking: productBooking),
-                          trailling: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Center(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                          color: colorScheme(context).primary),
-                                      color: colorScheme(context)
-                                          .primary
-                                          .withOpacity(0.1),
+                    BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        if (state.status == ProductStatus.loading) {
+                          return Container(
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              child: const CircularProgressIndicator());
+                        }
+                        if (state.currentProducts != null &&
+                            state.status == ProductStatus.success) {
+                          if (state.currentProducts!.isEmpty) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Icon(
+                                    Icons.no_food_outlined,
+                                    size: 64,
+                                    color: colorScheme(context)
+                                        .secondary
+                                        .withOpacity(0.6),
+                                  ),
+                                  const SizedBox(
+                                    height: 24,
+                                  ),
+                                  Text(
+                                    "Hiện tại chưa có sản phẩm nào",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: colorScheme(context)
+                                            .secondary
+                                            .withOpacity(0.6)),
+                                  )
+                                ],
+                              ),
+                            );
+                          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            itemCount: state.currentProducts!.length,
+                            itemBuilder: (context, index) {
+                              Product product = state.currentProducts![index];
+                              return ItemProduct(
+                                product: product,
+                                subTitle:
+                                    SubTitleItemCurrentBill(product: product),
+                                trailling: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Center(
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                            border: Border.all(
+                                                color: colorScheme(context)
+                                                    .primary
+                                                    .withOpacity(0.3)),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Material(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(2),
+                                                    child: Icon(Icons.remove,
+                                                        color:
+                                                            colorScheme(context)
+                                                                .primary),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                "${product.quantity}",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: colorScheme(context)
+                                                        .scrim
+                                                        .withOpacity(0.8)),
+                                              ),
+                                              Material(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(6),
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(2),
+                                                    child: Icon(Icons.add,
+                                                        color:
+                                                            colorScheme(context)
+                                                                .primary),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    child: Text(
-                                      "10",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
-                                          color: colorScheme(context).primary),
-                                    )),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.more_vert),
-                                onPressed: () {},
-                              ),
-                            ],
-                          ),
-                        );
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }
+                        return const CircularProgressIndicator();
                       },
                     )
                   ],
@@ -281,14 +306,14 @@ class BottomActionBill extends StatelessWidget {
                     "Hủy bàn",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontSize: 16,
-                        color: Color(0xFFE4295D),
+                        color: const Color(0xFFE4295D),
                         fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
             const SizedBox(
-              height: 12,
+              height: 6,
             ),
             Row(
               children: [

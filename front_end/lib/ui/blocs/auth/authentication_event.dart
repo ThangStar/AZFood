@@ -15,3 +15,4 @@ class LoginAutEvent extends AuthenticationEvent{
   // TODO: implement props
   List<Object?> get props => [username, password];
 }
+

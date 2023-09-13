@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -43,6 +42,8 @@ class MyIconButtonBlur extends StatelessWidget {
 }
 
 class FrostedDemo extends StatelessWidget {
+  const FrostedDemo({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

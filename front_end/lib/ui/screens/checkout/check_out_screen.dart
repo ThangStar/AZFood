@@ -34,7 +34,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               color: colorScheme(context).onPrimary,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              // Navigator.pop(context);
             },
           ),
           backgroundColor: colorScheme(context).surfaceTint,
@@ -185,7 +185,7 @@ class BottomActionBill extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   text: 'Quay lại',
                   onTap: () {
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
                   },
                 ),
                 const SizedBox(

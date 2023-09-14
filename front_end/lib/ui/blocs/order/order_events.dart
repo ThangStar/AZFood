@@ -17,9 +17,9 @@ class ProductCheckOut {
 }
 
 class CreateOrderEvent extends OrderEvent {
-  final List<ProductCheckOut> products;
+  final ProductCheckOut product;
 
-  const CreateOrderEvent({required this.products});
+  const CreateOrderEvent({required this.product});
 }
 
 class GetOrderInTableEvent extends OrderEvent {

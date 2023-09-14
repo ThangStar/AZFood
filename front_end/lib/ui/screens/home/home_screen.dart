@@ -235,18 +235,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              CurrentBookingScreen(
-                                            tableID: table.id!,
-                                            tableName: table.name ?? "",
-                                            amount: currentProducts.length,
-                                          ),
-                                        ));
                                   });
                                 }
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CurrentBookingScreen(
+                                        tableID: table.id!,
+                                        tableName: table.name ?? "dđ",
+                                      ),
+                                    ));
                               },
                             )
                                 .animate()
@@ -289,6 +288,7 @@ class ToolbarHome extends StatelessWidget {
     super.key,
     required this.profile,
   });
+
   final Profile profile;
 
   @override
@@ -372,6 +372,7 @@ class ToolbarHome extends StatelessWidget {
 
 class ToolbarProfile extends StatelessWidget {
   const ToolbarProfile({super.key, required this.profile});
+
   final Profile profile;
 
   @override

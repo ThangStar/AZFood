@@ -140,12 +140,12 @@ class _AddProductToCurrentBookingScreenState
                                   product: product,
                                   onTap: () {
                                        context.read<OrderBloc>().add(
-                                            CreateOrderEvent(products: [
+                                            CreateOrderEvent(product:
                                           ProductCheckOut(
                                               productID: product.id,
                                               quantity: 1,
                                               tableID: widget.tableID)
-                                        ]));
+                                        ));
                                     final index = productsSelected.indexWhere(
                                       (element) => element.id == product.id,
                                     );

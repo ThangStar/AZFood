@@ -18,20 +18,18 @@ import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen(
-      {super.key,
-      required this.tableID,
-      required this.tableName,
-      required this.amount});
+      {super.key, required this.tableID, required this.tableName});
 
   final int tableID;
   final String tableName;
-  final int amount;
 
   @override
   State<CurrentBookingScreen> createState() => _CurrentBookingScreenState();
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
+  int amount = 0;
+
   @override
   void initState() {
     print("tableID change: ${widget.tableID} mounted $mounted");
@@ -90,16 +88,21 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           color:
                                               colorScheme(context).onPrimary),
                                 ),
-                                Text(
-                                  "Số lượng ${widget.amount}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                          fontSize: 12,
-                                          color: colorScheme(context)
-                                              .onPrimary
-                                              .withOpacity(0.6)),
+                                BlocBuilder<ProductBloc, ProductState>(
+                                  builder: (context, state) {
+                                    return Text(
+                                      state.currentProducts != null ?
+                                      "Số lượng ${state.currentProducts!.length}" : "đang tải..",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                              fontSize: 12,
+                                              color: colorScheme(context)
+                                                  .onPrimary
+                                                  .withOpacity(0.6)),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -155,6 +158,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               ),
                             );
                           }
+
                           return ListView.builder(
                             shrinkWrap: true,
                             primary: false,

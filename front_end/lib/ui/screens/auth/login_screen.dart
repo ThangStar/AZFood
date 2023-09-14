@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController usernameController =
       TextEditingController(text: "");
   final TextEditingController passwordController =
-      TextEditingController(text: "");
+      TextEditingController(text: "123456 ");
 
   String messageErr = '';
   TypeAlert typeMessageErr = TypeAlert.error;

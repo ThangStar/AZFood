@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -21,6 +22,7 @@ class CurrentBookingScreen extends StatefulWidget {
       required this.tableID,
       required this.tableName,
       required this.amount});
+
   final int tableID;
   final String tableName;
   final int amount;
@@ -315,9 +317,11 @@ class BottomActionBill extends StatelessWidget {
             ),
             Row(
               children: [
-                MyOutlineButton(
-                  text: 'Quay lại',
-                  onTap: () {},
+                Expanded(
+                  child: MyOutlineButton(
+                    text: 'Quay lại',
+                    onTap: () {},
+                  ),
                 ),
                 const SizedBox(
                   width: 10,
@@ -325,7 +329,13 @@ class BottomActionBill extends StatelessWidget {
                 Expanded(
                   child: MyButtonGradient(
                     text: "Thanh toán",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PaySuccessScreen(),
+                          ));
+                    },
                   ),
                 )
               ],

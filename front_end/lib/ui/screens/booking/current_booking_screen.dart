@@ -14,7 +14,6 @@ import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
-import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen(
@@ -31,7 +30,6 @@ class CurrentBookingScreen extends StatefulWidget {
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  int currentProductsLength = 0;
   @override
   void initState() {
     print("tableID change: ${widget.tableID} mounted $mounted");

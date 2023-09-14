@@ -211,8 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'listProductByIdTable', {"id": table.id});
                                 if (!io.hasListeners("responseOrder")) {
                                   io.on('responseOrder', (data) {
-                                    print("products change: $data");
-
                                     final jsonResponse = data as List<dynamic>;
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
@@ -237,7 +235,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
-                                    print("current: ${currentProducts.length}");
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(

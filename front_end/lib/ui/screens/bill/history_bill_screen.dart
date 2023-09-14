@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+// ignore: library_prefixes
 import 'package:restaurant_manager_app/model/bill_history.dart' as Model;
-import 'dart:math' as math;
-
-const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
 class HistoryBillScreen extends StatefulWidget {
   const HistoryBillScreen({super.key});
 
@@ -25,12 +23,7 @@ class _HistoryBillScreenState extends State<HistoryBillScreen> with SingleTicker
     Model.BillHistory(id: "HD06748", table: 06, money: 912000, dateTime: DateTime(2023, 09, 02), status: "Đã hoàn thành"),
     Model.BillHistory(id: "HD06748", table: 06, money: 912000, dateTime: DateTime(2023, 09, 02), status: "Đã hoàn thành"),
     Model.BillHistory(id: "HD06748", table: 06, money: 912000, dateTime: DateTime(2023, 09, 02), status: "Đã hoàn thành"),
-    Model.BillHistory(id: "HD06748", table: 06, money: 912000, dateTime: DateTime(2023, 09, 02), status: "Đã hoàn thành"),
-
     ];
-
-  String dropdownValue = list.first;
-  
   DateTime? selectedDate;
    @override
    Scaffold build(BuildContext context) {
@@ -54,12 +47,8 @@ class _HistoryBillScreenState extends State<HistoryBillScreen> with SingleTicker
           ),
         ),
       ),
-      
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        decoration: BoxDecoration(
-          color: colorScheme(context).onSecondary,
-        ),
         child: Column(
           children: <Widget>[
             Row(
@@ -140,6 +129,7 @@ class _HistoryBillScreenState extends State<HistoryBillScreen> with SingleTicker
                         return Container(
                           padding: const EdgeInsets.all(5.0),
                           decoration: BoxDecoration(
+                            color: colorScheme(context).primaryContainer,
                             borderRadius: BorderRadius.circular(5.0),
                           ),
                           child: 

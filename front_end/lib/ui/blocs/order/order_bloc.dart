@@ -26,13 +26,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     if (loginResponse != null) {
       int userID = loginResponse.id;
-
       List<Object> result = await OrderApi.create(event.products, userID);
       for (var e in result) {
         if (e is Success) {
           print(e.response);
           io.emit("listProductByIdTable", {"id": event.products[0].tableID});
-   
         } else if (e is Failure) {
           print(e.response);
         }

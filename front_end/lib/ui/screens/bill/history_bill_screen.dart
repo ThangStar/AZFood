@@ -27,7 +27,6 @@ class _HistoryBillScreenState extends State<HistoryBillScreen> with SingleTicker
   DateTime? selectedDate;
    @override
    Scaffold build(BuildContext context) {
-    // Size sizeScreen = MediaQuery.of(context).size;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(40.0),
@@ -120,66 +119,85 @@ class _HistoryBillScreenState extends State<HistoryBillScreen> with SingleTicker
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: bills.length,
-                      separatorBuilder: (_, __) => const Divider(),
-                      itemBuilder: (context, int index) {
-                        return Container(
-                          padding: const EdgeInsets.all(5.0),
-                          decoration: BoxDecoration(
-                            color: colorScheme(context).primaryContainer,
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          child: 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${bills[index].id}',
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 15,fontWeight: FontWeight.bold, color: colorScheme(context).scrim),
-                                  ),
-                                  Text(
-                                    'BÀN: ${bills[index].table}',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12, color: colorScheme(context).outlineVariant),
-                                  ),
-                                  const SizedBox(height: 5.0,),
-                                  Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                    color: Colors.greenAccent.withOpacity(0.1),
-                                    child:  Text(
-                                      bills[index].status,
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green),
+                    if (bills.isNotEmpty) ...[
+                      ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: bills.length,
+                        separatorBuilder: (_, __) => const Divider(),
+                        itemBuilder: (context, int index) {
+                          return Container(
+                            padding: const EdgeInsets.all(5.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            child: 
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      bills[index].id,
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 15,fontWeight: FontWeight.bold, color: colorScheme(context).scrim),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                children: [
-                                  Text(
-                                    "${NumberFormat("#######.000", "en_US").format(bills[index].money*0.001)} đ",
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 15, fontWeight: FontWeight.bold, color: colorScheme(context).scrim),
-                                  ),
-                                  Text(
-                                    DateFormat("dd-MM-yyyy").format(bills[index].dateTime),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12, color: colorScheme(context).outlineVariant),
-                                  ),
-                                ],
-                              )
-                            ]
+                                    Text(
+                                      'BÀN: ${bills[index].table}',
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12, color: colorScheme(context).outlineVariant),
+                                    ),
+                                    const SizedBox(height: 5.0,),
+                                    Container(
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                      color: Colors.greenAccent.withOpacity(0.1),
+                                      child:  Text(
+                                        bills[index].status,
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      "${NumberFormat("#######.000", "en_US").format(bills[index].money*0.001)} đ",
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 15, fontWeight: FontWeight.bold, color: colorScheme(context).scrim),
+                                    ),
+                                    Text(
+                                      DateFormat("dd-MM-yyyy").format(bills[index].dateTime),
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 12, color: colorScheme(context).outlineVariant),
+                                    ),
+                                  ],
+                                )
+                              ]
+                            ),
+                          );
+                        },
+                      ),
+                    ] else ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 150),
+                        child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset('assets/svgs/icon_empty_bill.svg',
+                          width: 100,
+                          height: 100,
                           ),
-                        );
-                      },
-                    ),
+                          Text(
+                            "Hiện tại không có hóa đơn nào !",
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 15, color: colorScheme(context).outline),
+                          ),
+                        ]
+                      ),
+                      )
+                      
+                    ]
                   ],
                 ),
               ),

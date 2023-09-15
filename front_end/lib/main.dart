@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
                     textTheme: textTheme(context)),
                 darkTheme:
                     ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-                home: const HomeMenuScreen(),
+                home: const LoginScreen(),
               ));
         });
   }

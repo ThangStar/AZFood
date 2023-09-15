@@ -127,7 +127,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                           .titleMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 14,
+                                            fontSize: 18,
                                             color: colorScheme(context)
                                                 .scrim
                                                 .withOpacity(0.6),
@@ -274,7 +274,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                                 .scrim
                                                                 .withOpacity(
                                                                     0.8),
-                                                    fontSize: 12,
+                                                    fontSize: 14,
                                                   ),
                                             ),
                                           ),

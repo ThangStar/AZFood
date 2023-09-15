@@ -22,7 +22,6 @@ class _ZoomState extends State<Zoom> {
       moveMenuScreen: true,
       menuScreen: Scaffold(
         appBar: AppBar(
-          title: const Text("a"),
           actions: [IconButton(onPressed: () {
             z.close!();
           }, icon: const Icon(Icons.close))],
@@ -30,9 +29,6 @@ class _ZoomState extends State<Zoom> {
         body: Center(
           child: InkWell(
             onTap: () {
-              final navigator = Navigator.of(
-                context,
-              );
             },
             child: const Text(
               "Content Page",

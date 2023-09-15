@@ -14,18 +14,16 @@ class PaySuccessScreen extends StatelessWidget {
         actions: [
           Container(
             margin: EdgeInsets.only(right: 12),
+            padding: EdgeInsets.all(2),
             decoration: BoxDecoration(
                 border: Border.all(
-                  color: colorScheme(context).onPrimary,
+                  color: colorScheme(context).onPrimary.withOpacity(0.8),
                 ),
                 borderRadius: BorderRadius.circular(80)),
-            child: IconButton(
-              padding: const EdgeInsets.all(0),
-                onPressed: () {},
-                icon: Icon(
-                  Icons.question_mark_outlined,
-                  color: colorScheme(context).onPrimary,
-                )),
+            child: Icon(
+              Icons.question_mark_outlined,
+              color: colorScheme(context).onPrimary.withOpacity(0.8),
+            ),
           )
         ],
         leading: BackButton(
@@ -50,7 +48,7 @@ class PaySuccessScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(6.0),
                     child: Icon(
-                      Icons.done,
+                      Icons.done_outlined,
                       color: colorScheme(context).onPrimary,
                       size: 80,
                     ),

@@ -61,13 +61,10 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Icon(Icons.light_mode),
-                    Text(
-                      "Sáng",
-                      style: TextStyle(fontSize: 10),
-                    )
-                  ],
+
+                  children: [Icon(Icons.light_mode), Text("Sáng", style: TextStyle(
+                    fontSize: 14
+                  ),)],
                 ),
               ),
               Padding(
@@ -75,10 +72,9 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Icon(Icons.dark_mode),
-                    Text("Tối", style: TextStyle(fontSize: 10))
-                  ],
+                  children: [Icon(Icons.dark_mode), Text("Tối", style: TextStyle(
+                    fontSize: 14
+                  ))],
                 ),
               ),
             ]),

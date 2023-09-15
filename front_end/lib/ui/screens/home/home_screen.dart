@@ -32,7 +32,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> filterStatus = ["Tất cả", "Chờ", "Hoạt động", "bận"];
+  List<String> filterStatus = ["Tất cả", "Hoạt động", "bận", "Chờ"];
 
   int posFilterStatusSelected = 0;
   bool isShowFilter = false;
@@ -159,32 +159,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                     : Icons.filter_alt_outlined))
                           ],
                         )),
-                    AnimatedContainer(
-                      height: isShowFilter ? 60 : 0,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: const BoxDecoration(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      duration: 200.ms,
-                      child: Row(children: [
-                        Wrap(
-                          spacing: 8,
-                          children: filterStatus
-                              .asMap()
-                              .entries
-                              .map((e) => MyChipToggle(
-                                    isSelected:
-                                        posFilterStatusSelected == e.key,
-                                    label: e.value,
-                                    onTap: () {
-                                      setState(() {
-                                        posFilterStatusSelected = e.key;
-                                      });
-                                    },
-                                  ))
-                              .toList(),
-                        )
-                      ]),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: AnimatedContainer(
+                        height: isShowFilter ? 60 : 0,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        duration: 200.ms,
+                        child: Row(children: [
+                          Wrap(
+                            spacing: 8,
+                            children: filterStatus
+                                .asMap()
+                                .entries
+                                .map((e) => MyChipToggle(
+                                      isSelected:
+                                          posFilterStatusSelected == e.key,
+                                      label: e.value,
+                                      onTap: () {
+                                        setState(() {
+                                          posFilterStatusSelected = e.key;
+                                        });
+                                        context
+                                            .read<TableBloc>()
+                                            .add(OnFilterTable(status: e.key));
+                                      },
+                                    ))
+                                .toList(),
+                          )
+                        ]),
+                      ),
                     ),
                     BlocBuilder<TableBloc, TableState>(
                       builder: (context, state) {
@@ -200,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisExtent: 160,
                                   crossAxisCount: 2),
                           itemBuilder: (context, index) {
-                            Model.Table table = state.tables[index];
+                            Model.Table table = state.tablesFilter[index];
                             return ItemTable(
                               table: table,
                               onTap: () {
@@ -256,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     curve: Curves.fastEaseInToSlowEaseOut)
                                 .fade(duration: (500 * index).ms);
                           },
-                          itemCount: state.tables.length,
+                          itemCount: state.tablesFilter.length,
                         );
                       },
                     ),

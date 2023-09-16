@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
@@ -15,6 +16,8 @@ import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
+
+import '../../blocs/order/order_bloc.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen(
@@ -39,7 +42,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const BottomActionBill(),
+      bottomNavigationBar: BottomActionBill(tableId: widget.tableID),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -91,8 +94,9 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                 BlocBuilder<ProductBloc, ProductState>(
                                   builder: (context, state) {
                                     return Text(
-                                      state.currentProducts != null ?
-                                      "Số lượng ${state.currentProducts!.length}" : "đang tải..",
+                                      state.currentProducts != null
+                                          ? "Số lượng ${state.currentProducts!.length}"
+                                          : "đang tải..",
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge
@@ -252,7 +256,9 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
 }
 
 class BottomActionBill extends StatelessWidget {
-  const BottomActionBill({super.key});
+  const BottomActionBill({super.key, required this.tableId});
+
+  final int tableId;
 
   @override
   Widget build(BuildContext context) {
@@ -276,17 +282,25 @@ class BottomActionBill extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "Tạm tính",
                       style: TextStyle(fontSize: 14),
                     ),
-                    Text(
-                      "920.000đ",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        int price = 0;
+                        for (Product i in state.currentProducts ?? []) {
+                          price += i.price * i.amountCart;
+                        }
+                        return Text(
+                          "${NumberFormat.decimalPattern().format(price)} đ",
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -334,11 +348,16 @@ class BottomActionBill extends StatelessWidget {
                   child: MyButtonGradient(
                     text: "Thanh toán",
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PaySuccessScreen(),
-                          ));
+                      context.read<OrderBloc>().add(PayBillEvent(
+                          tableId: tableId,
+                          pushScreen: (payStatus, billData) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PaySuccessScreen(payStatus: payStatus, billData: billData),
+                                ));
+                          }));
                     },
                   ),
                 )

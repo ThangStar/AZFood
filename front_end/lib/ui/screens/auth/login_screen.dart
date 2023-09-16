@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:restaurant_manager_app/constants/env.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
@@ -24,8 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController usernameController =
       TextEditingController(text: "");
   final TextEditingController passwordController =
-      TextEditingController(text: "123456 ");
-
+      TextEditingController(text: "");
   String messageErr = '';
   TypeAlert typeMessageErr = TypeAlert.error;
 
@@ -49,9 +49,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _fillDataForm() async {
     LoginResponse? rs = await MySharePreferences.loadProfile();
-    print(rs);
+    print(rs?.toJson());
     if (rs != null) {
       usernameController.text = rs.username;
+      if (rs.password != "") {
+        if (!isValid) {
+          setState(() {
+            isValid = true;
+          });
+        }
+        passwordController.text = rs.password!;
+      } else {
+        if (isValid) {
+          setState(() {
+            isValid = false;
+          });
+        }
+      }
     }
   }
 
@@ -64,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     AuthenticationBloc authBloc = BlocProvider.of<AuthenticationBloc>(context);
+    TextEditingController controllerIpv4 = TextEditingController();
 
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
@@ -98,14 +113,46 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    FilledButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text("Nhập IPV4"),
+                              content: TextField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    controllerIpv4.text = value;
+                                  });
+                                },
+                                decoration: const InputDecoration(
+                                    hintStyle: TextStyle(fontSize: 16),
+                                    hintText: "192.168.1.10"),
+                                controller: controllerIpv4,
+                              ),
+                              actions: [
+                                FilledButton(
+                                    onPressed: () {
+                                      Env.BASE_URL = "http://${controllerIpv4.text}:8080";
+                                      Env.SOCKET_URL = "http://${controllerIpv4.text}:8080";
+                                      print(Env.BASE_URL);
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Đặt"))
+                              ],
+                            ),
+                          );
+                        },
+                        child: Text('enter ipv4')),
                     Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
-                          border: Border.all(color: colorScheme(context).tertiary),
+                          border:
+                              Border.all(color: colorScheme(context).tertiary),
                           color: colorScheme(context).onPrimary),
                       margin: const EdgeInsets.symmetric(horizontal: 12),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 32),
                       child: Form(
                         onChanged: () {
                           if (_keyForm.currentState != null) {
@@ -161,8 +208,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 MyTextField(
                                   validator: (p0) {
-                                    bool isEmail = RegExp(r"^[a-zA-Z0-9]{5,12}$")
-                                        .hasMatch(p0!);
+                                    bool isEmail =
+                                        RegExp(r"^[a-zA-Z0-9]{5,12}$")
+                                            .hasMatch(p0!);
                                     return isEmail
                                         ? null
                                         : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
@@ -185,8 +233,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 MyTextField(
                                   validator: (p0) {
-                                    bool isEmail = RegExp(r"^[a-zA-Z0-9]{5,12}$")
-                                        .hasMatch(p0!);
+                                    bool isEmail =
+                                        RegExp(r"^[a-zA-Z0-9]{5,12}$")
+                                            .hasMatch(p0!);
                                     return isEmail
                                         ? null
                                         : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
@@ -220,7 +269,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   children: [
                                     MyCheckBox(
                                       value: cbxSaveLogin,
-                                      onChanged: (p0) => _onChangeSaveLogin(p0!),
+                                      onChanged: (p0) =>
+                                          _onChangeSaveLogin(p0!),
                                     ),
                                     const Text('Ghi nhớ đăng nhập')
                                   ],

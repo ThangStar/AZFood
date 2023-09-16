@@ -59,7 +59,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                       leading: MyIconButtonBlur(
                         icon: Icon(
                           Icons.arrow_back,
-                          color: colorScheme(context).onPrimary,
+                          color: Colors.white.withOpacity(0.8),
                         ),
                         onTap: () {
                           Navigator.of(context, rootNavigator: true).pop();
@@ -68,7 +68,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                       trailling: [
                         MyIconButtonBlur(
                           icon: Icon(Icons.more_horiz_sharp,
-                              color: colorScheme(context).onPrimary),
+                              color: Colors.white.withOpacity(0.8)),
                           onTap: () {},
                         )
                       ],
@@ -87,9 +87,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(
-                                          fontSize: 20,
-                                          color:
-                                              colorScheme(context).onPrimary),
+                                          fontSize: 20, color: Colors.white),
                                 ),
                                 BlocBuilder<ProductBloc, ProductState>(
                                   builder: (context, state) {
@@ -102,8 +100,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           .bodyLarge
                                           ?.copyWith(
                                               fontSize: 12,
-                                              color: colorScheme(context)
-                                                  .onPrimary
+                                              color: Colors.white
                                                   .withOpacity(0.6)),
                                     );
                                   },
@@ -144,8 +141,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                     Icons.no_food_outlined,
                                     size: 64,
                                     color: colorScheme(context)
-                                        .secondary
-                                        .withOpacity(0.6),
+                                        .scrim
+                                        .withOpacity(0.3),
                                   ),
                                   const SizedBox(
                                     height: 24,
@@ -155,8 +152,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                     style: TextStyle(
                                         fontSize: 18,
                                         color: colorScheme(context)
-                                            .secondary
-                                            .withOpacity(0.6)),
+                                            .scrim
+                                            .withOpacity(0.3)),
                                   )
                                 ],
                               ),
@@ -263,14 +260,14 @@ class BottomActionBill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: colorScheme(context).background,
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
-              blurRadius: 2.0,
+              color: colorScheme(context).primary.withOpacity(0.6),
+              blurRadius: 6.0,
               spreadRadius: 0.0,
-              offset: Offset(0, 2.0), // shadow direction: bottom right
+              offset: Offset(0, 1.0), // shadow direction: bottom right
             )
           ],
         ),
@@ -354,8 +351,8 @@ class BottomActionBill extends StatelessWidget {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      PaySuccessScreen(payStatus: payStatus, billData: billData),
+                                  builder: (context) => PaySuccessScreen(
+                                      payStatus: payStatus, billData: billData),
                                 ));
                           }));
                     },

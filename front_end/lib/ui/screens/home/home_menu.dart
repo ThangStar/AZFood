@@ -7,7 +7,6 @@ import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_drawer.dart';
 
-
 //global variable
 final ZoomDrawerController z = ZoomDrawerController();
 
@@ -26,7 +25,7 @@ class _ZoomState extends State<HomeMenuScreen> {
     return ZoomDrawer(
         controller: z,
         style: DrawerStyle.style3,
-        slideWidth: sizeScreen.width*0.75,
+        menuScreenWidth: sizeScreen.width * 0.8,
         showShadow: true,
         menuBackgroundColor: colorScheme(context).onPrimary.withOpacity(0.95),
         mainScreen: const HomeScreen(),

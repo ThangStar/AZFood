@@ -22,6 +22,7 @@ class HomeMenuScreen extends StatefulWidget {
 }
 
 class _ZoomState extends State<HomeMenuScreen> {
+  int selectedNavRail = 0;
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
@@ -45,7 +46,8 @@ class _ZoomState extends State<HomeMenuScreen> {
                           backgroundColor:
                               colorScheme(context).tertiary.withOpacity(0.8),
                           indicatorColor:
-                              colorScheme(context).tertiary.withOpacity(0.5),
+                              colorScheme(context).scrim.withOpacity(0.6),
+                          selectedIconTheme: IconThemeData(color: colorScheme(context).onPrimary),
                           elevation: 10,
                           leading: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -77,7 +79,12 @@ class _ZoomState extends State<HomeMenuScreen> {
                             return NavigationRailDestination(
                                 icon: Icon(e.icon), label: Text(e.label));
                           }).toList(),
-                          selectedIndex: 0),
+                          onDestinationSelected: (value) {
+                            setState(() {
+                              selectedNavRail = value;
+                            });
+                          },
+                          selectedIndex: selectedNavRail),
                     ),
                   ),
                 SizedBox(

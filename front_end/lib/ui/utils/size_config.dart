@@ -1,5 +1,5 @@
 const mobileWidth = 640;
-const tabletWidth = 800;
+const tabletWidth = 1000;
 
 enum DeviceType { mobile, tablet, pc }
 

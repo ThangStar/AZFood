@@ -10,6 +10,7 @@ import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/my_snack_bar.dart';
+import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
@@ -118,179 +119,218 @@ class _LoginScreenState extends State<LoginScreen> {
                     ActionTest(
                       controllerIpv4: controllerIpv4,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          border:
-                              Border.all(color: colorScheme(context).tertiary),
-                          color: colorScheme(context).onPrimary),
-                      margin: const EdgeInsets.symmetric(horizontal: 12),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 32),
-                      child: Form(
-                        onChanged: () {
-                          if (_keyForm.currentState != null) {
-                            print(_keyForm.currentState!.validate());
-                            setState(() {
-                              isValid = _keyForm.currentState!.validate();
-                            });
-                          }
-                        },
-                        key: _keyForm,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                    LayoutBuilder(
+                      builder:
+                          (BuildContext context, BoxConstraints constraints) {
+                        return Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: colorScheme(context).tertiary),
+                                color: colorScheme(context).onPrimary),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: checkDevice(
+                                    constraints.maxWidth, 16.0, 18.0, 186.0)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                SvgPicture.asset(
-                                  'assets/svgs/logo.svg',
-                                  width: 40,
-                                ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  "ĐĂNG NHẬP",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 18,
-                            ),
-                            MyAlert(
-                              height: isShowAlert ? null : 0,
-                              icon: Icons.warning_rounded,
-                              title: "Thông báo",
-                              message: messageErr,
-                              typeAlert: typeMessageErr,
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(bottom: 4),
-                                  child: Text("Tên tài khoản"),
-                                ),
-                                MyTextField(
-                                  validator: (p0) {
-                                    bool isEmail =
-                                        RegExp(r"^[a-zA-Z0-9]{5,12}$")
-                                            .hasMatch(p0!);
-                                    return isEmail
-                                        ? null
-                                        : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
-                                  },
-                                  onChanged: (p0) {
-                                    if (isShowAlert) {
-                                      setState(() {
-                                        isShowAlert = false;
-                                      });
-                                    }
-                                  },
-                                  hintText: "Nhập tài khoản",
-                                  icon: const Icon(Icons.person),
-                                  label: "Tài khoản",
-                                  controller: usernameController,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.only(bottom: 4, top: 12),
-                                  child: Text("Mật khẩu"),
-                                ),
-                                MyTextField(
-                                  validator: (p0) {
-                                    bool isEmail =
-                                        RegExp(r"^[a-zA-Z0-9]{5,12}$")
-                                            .hasMatch(p0!);
-                                    return isEmail
-                                        ? null
-                                        : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
-                                  },
-                                  onChanged: (p0) {
-                                    if (isShowAlert) {
-                                      setState(() {
-                                        isShowAlert = false;
-                                      });
-                                    }
-                                  },
-                                  isShowPass: isShowPass,
-                                  label: "Mật khẩu",
-                                  controller: passwordController,
-                                  hintText: "Nhập mật khẩu",
-                                  icon: IconButton(
-                                      icon: Icon(isShowPass
-                                          ? Icons.visibility_off
-                                          : Icons.visibility),
-                                      onPressed: _onChangeShowPass),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    MyCheckBox(
-                                      value: cbxSaveLogin,
-                                      onChanged: (p0) =>
-                                          _onChangeSaveLogin(p0!),
+                                checkDevice(
+                                    constraints.maxWidth,
+                                    SizedBox.shrink(),
+                                    const Expanded(
+                                        child: LeadContentLogin(), flex: 1),
+                                    const Expanded(
+                                        child: LeadContentLogin(), flex: 1)),
+                                Expanded(
+                                  flex: 1,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 24),
+                                    child: Form(
+                                      onChanged: () {
+                                        if (_keyForm.currentState != null) {
+                                          print(_keyForm.currentState!
+                                              .validate());
+                                          setState(() {
+                                            isValid = _keyForm.currentState!
+                                                .validate();
+                                          });
+                                        }
+                                      },
+                                      key: _keyForm,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              SvgPicture.asset(
+                                                'assets/svgs/logo.svg',
+                                                width: 40,
+                                              ),
+                                              const SizedBox(
+                                                width: 15,
+                                              ),
+                                              Text(
+                                                "ĐĂNG NHẬP",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 18,
+                                          ),
+                                          MyAlert(
+                                            height: isShowAlert ? null : 0,
+                                            icon: Icons.warning_rounded,
+                                            title: "Thông báo",
+                                            message: messageErr,
+                                            typeAlert: typeMessageErr,
+                                          ),
+                                          const SizedBox(
+                                            height: 6,
+                                          ),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(bottom: 4),
+                                                child: Text("Tên tài khoản"),
+                                              ),
+                                              MyTextField(
+                                                validator: (p0) {
+                                                  bool isEmail = RegExp(
+                                                          r"^[a-zA-Z0-9]{5,12}$")
+                                                      .hasMatch(p0!);
+                                                  return isEmail
+                                                      ? null
+                                                      : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
+                                                },
+                                                onChanged: (p0) {
+                                                  if (isShowAlert) {
+                                                    setState(() {
+                                                      isShowAlert = false;
+                                                    });
+                                                  }
+                                                },
+                                                hintText: "Nhập tài khoản",
+                                                icon: const Icon(Icons.person),
+                                                label: "Tài khoản",
+                                                controller: usernameController,
+                                              ),
+                                              const Padding(
+                                                padding: EdgeInsets.only(
+                                                    bottom: 4, top: 12),
+                                                child: Text("Mật khẩu"),
+                                              ),
+                                              MyTextField(
+                                                validator: (p0) {
+                                                  bool isEmail = RegExp(
+                                                          r"^[a-zA-Z0-9]{5,12}$")
+                                                      .hasMatch(p0!);
+                                                  return isEmail
+                                                      ? null
+                                                      : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
+                                                },
+                                                onChanged: (p0) {
+                                                  if (isShowAlert) {
+                                                    setState(() {
+                                                      isShowAlert = false;
+                                                    });
+                                                  }
+                                                },
+                                                isShowPass: isShowPass,
+                                                label: "Mật khẩu",
+                                                controller: passwordController,
+                                                hintText: "Nhập mật khẩu",
+                                                icon: IconButton(
+                                                    icon: Icon(isShowPass
+                                                        ? Icons.visibility_off
+                                                        : Icons.visibility),
+                                                    onPressed:
+                                                        _onChangeShowPass),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  MyCheckBox(
+                                                    value: cbxSaveLogin,
+                                                    onChanged: (p0) =>
+                                                        _onChangeSaveLogin(p0!),
+                                                  ),
+                                                  const Text(
+                                                      'Ghi nhớ đăng nhập')
+                                                ],
+                                              ),
+                                              const Text(
+                                                'Quên mật khẩu',
+                                                style: TextStyle(
+                                                    color: Colors.blue),
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 18,
+                                          ),
+                                          Hero(
+                                              tag: "login_hero",
+                                              child: MyButton(
+                                                disable: !isValid,
+                                                value: "Đăng nhập",
+                                                onPressed: () {
+                                                  if (_keyForm.currentState!
+                                                      .validate()) {
+                                                    authBloc.add(LoginAutEvent(
+                                                        username:
+                                                            usernameController
+                                                                .text,
+                                                        password:
+                                                            passwordController
+                                                                .text));
+                                                  }
+                                                },
+                                              )),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          const Divider(),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          SizedBox(
+                                              width: double.infinity,
+                                              child: Text(
+                                                "Bloc App",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: colorScheme(context)
+                                                        .scrim
+                                                        .withOpacity(0.6)),
+                                              ))
+                                        ],
+                                      ),
                                     ),
-                                    const Text('Ghi nhớ đăng nhập')
-                                  ],
+                                  ),
                                 ),
-                                const Text(
-                                  'Quên mật khẩu',
-                                  style: TextStyle(color: Colors.blue),
-                                )
                               ],
-                            ),
-                            const SizedBox(
-                              height: 18,
-                            ),
-                            Hero(
-                                tag: "login_hero",
-                                child: MyButton(
-                                  disable: !isValid,
-                                  value: "Đăng nhập",
-                                  onPressed: () {
-                                    if (_keyForm.currentState!.validate()) {
-                                      authBloc.add(LoginAutEvent(
-                                          username: usernameController.text,
-                                          password: passwordController.text));
-                                    }
-                                  },
-                                )),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            const Divider(),
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  "Bloc App",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: colorScheme(context)
-                                          .scrim
-                                          .withOpacity(0.6)),
-                                ))
-                          ],
-                        ),
-                      ),
+                            ));
+                      },
                     ),
                   ],
                 ),
@@ -330,13 +370,13 @@ class _ActionTestState extends State<ActionTest> {
               print("show noti");
               await NotificationService.showNoti(1111, noti);
             },
-            child: Text("notification")),
+            child: const Text("notification")),
         FilledButton(
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text("Nhập IPV4"),
+                  title: const Text("Nhập IPV4"),
                   content: TextField(
                     onChanged: (value) {
                       setState(() {
@@ -358,13 +398,65 @@ class _ActionTestState extends State<ActionTest> {
                           print(Env.BASE_URL);
                           Navigator.pop(context);
                         },
-                        child: Text("Đặt"))
+                        child: const Text("Đặt"))
                   ],
                 ),
               );
             },
-            child: Text('enter ipv4')),
+            child: const Text('enter ipv4')),
       ],
+    );
+  }
+}
+
+class LeadContentLogin extends StatelessWidget {
+  const LeadContentLogin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.horizontal(left: Radius.circular(12)),
+        color: colorScheme(context).secondary.withOpacity(0.8),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          ClipOval(
+            child: SizedBox(
+              width: 80,
+              height: 80,
+              child: Image.asset("assets/images/chicken.png"),
+            ),
+          ),
+          SizedBox(
+            height: 4,
+          ),
+          Text(
+            "AZFOOD",
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme(context).scrim.withOpacity(0.6)),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Text(
+              "Là một hệ thống trao đổi tương tác một cách tự nhiên và a" +
+                  "n toàn. Hệ thống hoạt động theo nguyên tắc tự nguyện trao" +
+                  " đổi giữa các thành viên, cùng giúp nhau tăng tương tác, tăng " +
+                  "hiệu quả bán hàng, truyền thông#traodoisub , #tangsub, #tuongtaccheo," +
+                  " #tuongtacfb, #tangtheodoimienphi, #tanglikemienphi, #tanglike, #tangtheodoi," +
+                  " #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok" +
+                  " #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok" +
+                  " #tangcmt, #tangcamxuc, #ta",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

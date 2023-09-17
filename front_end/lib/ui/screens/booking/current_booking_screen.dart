@@ -163,9 +163,11 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           return ListView.builder(
                             shrinkWrap: true,
                             primary: false,
-                            itemCount: state.currentProducts!.length,
+                            itemCount: state.currentProducts!.toSet().length,
                             itemBuilder: (context, index) {
-                              Product product = state.currentProducts![index];
+                              Product product = state.currentProducts!
+                                  .toSet()
+                                  .elementAt(index);
                               return ItemProduct(
                                 product: product,
                                 subTitle:

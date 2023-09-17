@@ -221,23 +221,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
                                         .toList();
-
-                                    // print(
-                                    //     'test length a: ${currentProducts.length}');
-                                    //     List<Product> productFinal = [];
-                                    //     List<Product> new1 = List.from(currentProducts);
-                                    // for (var x = 0 ; x <= new1.length+1;x++){
-                                    //     for (var y = 0 ; y <= new1.length;y++) {
-                                    //       if(new1[x].name != new1[y].name){
-                                    //         productFinal.add(new1[x]);
-                                    //       }
-                                    //     }
-                                    // }
-                                    // currentProducts.forEach((element) {
-                                    //   bool a = currentProducts.indexOf(element);
-                                    //   // if(element.id == )
-                                    // });
-
+                                    for (var i in currentProducts) {
+                                      int length = currentProducts.where((j) => j.name == i.name).length;
+                                      i.quantity = length;
+                                    }
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));

@@ -1,9 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="restaurant_manager_app"
+        android:label="AZFood"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/chicken">
         <activity
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

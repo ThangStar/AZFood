@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_manager_app/constants/env.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
+import 'package:restaurant_manager_app/services/notification.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
@@ -58,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
             isValid = true;
           });
         }
-        passwordController.text = rs.password!;
+        passwordController.text = rs.password ?? "";
       } else {
         if (isValid) {
           setState(() {
@@ -113,37 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FilledButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("Nhập IPV4"),
-                              content: TextField(
-                                onChanged: (value) {
-                                  setState(() {
-                                    controllerIpv4.text = value;
-                                  });
-                                },
-                                decoration: const InputDecoration(
-                                    hintStyle: TextStyle(fontSize: 16),
-                                    hintText: "192.168.1.10"),
-                                controller: controllerIpv4,
-                              ),
-                              actions: [
-                                FilledButton(
-                                    onPressed: () {
-                                      Env.BASE_URL = "http://${controllerIpv4.text}:8080";
-                                      Env.SOCKET_URL = "http://${controllerIpv4.text}:8080";
-                                      print(Env.BASE_URL);
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text("Đặt"))
-                              ],
-                            ),
-                          );
-                        },
-                        child: Text('enter ipv4')),
+                    ActionTest(
+                      controllerIpv4: controllerIpv4,
+                    ),
                     Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(25),
@@ -325,6 +299,72 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ActionTest extends StatefulWidget {
+  const ActionTest({super.key, required this.controllerIpv4});
+
+  final TextEditingController controllerIpv4;
+
+  @override
+  State<ActionTest> createState() => _ActionTestState();
+}
+
+class _ActionTestState extends State<ActionTest> {
+  late FlutterLocalNotificationsPlugin noti;
+
+  @override
+  void initState() {
+    noti = FlutterLocalNotificationsPlugin();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        FilledButton(
+            onPressed: () async {
+              print("show noti");
+              await NotificationService.showNoti(1111, noti);
+            },
+            child: Text("notification")),
+        FilledButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("Nhập IPV4"),
+                  content: TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        widget.controllerIpv4.text = value;
+                      });
+                    },
+                    decoration: const InputDecoration(
+                        hintStyle: TextStyle(fontSize: 16),
+                        hintText: "192.168.1.10"),
+                    controller: widget.controllerIpv4,
+                  ),
+                  actions: [
+                    FilledButton(
+                        onPressed: () {
+                          Env.BASE_URL =
+                              "http://${widget.controllerIpv4.text}:8080";
+                          Env.SOCKET_URL =
+                              "http://${widget.controllerIpv4.text}:8080";
+                          print(Env.BASE_URL);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Đặt"))
+                  ],
+                ),
+              );
+            },
+            child: Text('enter ipv4')),
+      ],
     );
   }
 }

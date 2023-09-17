@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_manager_app/constants/env.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
-import 'package:restaurant_manager_app/services/notification.dart';
+import 'package:restaurant_manager_app/services/notification_mobile.dart';
+import 'package:restaurant_manager_app/services/notification_window.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
@@ -164,22 +167,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                         children: [
                                           Row(
                                             children: [
-                                              SvgPicture.asset(
-                                                'assets/svgs/logo.svg',
-                                                width: 40,
-                                              ),
-                                              const SizedBox(
-                                                width: 15,
-                                              ),
+                                              checkDevice(constraints.maxWidth,  Row(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/images/chicken.png',
+                                                    width: 40,
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                ],
+                                              ), SizedBox.shrink(), SizedBox.shrink()),
+
+
                                               Text(
                                                 "ĐĂNG NHẬP",
+                                                textAlign: TextAlign.center,
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .titleMedium
                                                     ?.copyWith(
                                                         fontWeight:
                                                             FontWeight.bold,
-                                                        fontSize: 18),
+                                                        fontSize: 20),
                                               ),
                                             ],
                                           ),
@@ -367,8 +377,11 @@ class _ActionTestState extends State<ActionTest> {
       children: [
         FilledButton(
             onPressed: () async {
-              print("show noti");
-              await NotificationService.showNoti(1111, noti);
+              if (Platform.isAndroid || Platform.isIOS) {
+                await NotificationMobileService.showNoti(1111, noti);
+              }else{
+                await showNotiWindow();
+              }
             },
             child: const Text("notification")),
         FilledButton(

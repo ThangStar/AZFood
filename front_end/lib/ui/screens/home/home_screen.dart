@@ -103,7 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 email: "email");
                         return ToolbarHome(
                           profile: profile,
-                          showDrawer: checkDevice(widget.constraints.maxWidth, true, false, false),
+                          showDrawer: checkDevice(widget.constraints.maxWidth,
+                              true, false, false),
                         );
                       },
                     ),
@@ -121,7 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
                           ).animate().moveY(),
                           const PageIndex(),
                         ],
@@ -186,9 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           posFilterStatusSelected = e.key;
                                         });
-                                        context
-                                            .read<TableBloc>()
-                                            .add(OnFilterTable(status: e.key));
+                                        context.read<TableBloc>().add(
+                                            OnFilterTable(status: e.key));
                                       },
                                     ))
                                 .toList(),
@@ -222,10 +223,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'listProductByIdTable', {"id": table.id});
                                 if (!io.hasListeners("responseOrder")) {
                                   io.on('responseOrder', (data) {
-                                    final jsonResponse = data as List<dynamic>;
-                                    List<Product> currentProducts = jsonResponse
-                                        .map((e) => Product.fromJson(e))
-                                        .toList();
+                                    final jsonResponse =
+                                        data as List<dynamic>;
+                                    List<Product> currentProducts =
+                                        jsonResponse
+                                            .map((e) => Product.fromJson(e))
+                                            .toList();
                                     for (var i in currentProducts) {
                                       int length = currentProducts
                                           .where((j) => j.name == i.name)
@@ -234,7 +237,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     }
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
-                                            currentProducts: currentProducts));
+                                            currentProducts:
+                                                currentProducts));
                                   });
                                 }
                                 Navigator.push(
@@ -319,15 +323,16 @@ class ToolbarHome extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if(showDrawer) MyIconButtonBlur(
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.white,
+                  if (showDrawer)
+                    MyIconButtonBlur(
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                      ),
+                      onTap: () {
+                        ZoomDrawer.of(context)!.open();
+                      },
                     ),
-                    onTap: () {
-                      ZoomDrawer.of(context)!.open();
-                    },
-                  ),
                   Text("Xin chào, ${profile.name.split(' ').last}",
                       style: Theme.of(context)
                           .textTheme

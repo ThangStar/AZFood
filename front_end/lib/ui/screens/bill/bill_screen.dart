@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
 import '../../../model/invoice.dart';
 import '../../blocs/invoice/invoice_bloc.dart';
 
 class BillScreen extends StatefulWidget {
-  const BillScreen({super.key});
+  const BillScreen({super.key, this.constraints});
+
+  final BoxConstraints? constraints;
 
   @override
   State<BillScreen> createState() => _BillScreenState();
@@ -26,13 +30,8 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: colorScheme(context).background,
       appBar: AppBar(
-        leading: BackButton(
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const HomeMenuScreen(),
-              )),
-        ),
+        automaticallyImplyLeading:
+            checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
         title: const Text("Hoá đơn"),
       ),
       body: Column(
@@ -40,7 +39,7 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
-              margin: EdgeInsets.symmetric(vertical: 12),
+              margin: const EdgeInsets.symmetric(vertical: 12),
               child: SearchBar(
                 textStyle: const MaterialStatePropertyAll(TextStyle(
                   fontSize: 16,
@@ -73,7 +72,11 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
             child: BlocBuilder<InvoiceBloc, InvoiceState>(
               builder: (context, state) {
                 if (state is InvoiceLoadingState) {
-                  return const SizedBox(child: CircularProgressIndicator());
+                  return const Padding(
+                    padding: EdgeInsets.all(40.0),
+                    child: AspectRatio(
+                        aspectRatio: 1, child: CircularProgressIndicator()),
+                  );
                 } else if (state.invoices.isNotEmpty) {
                   return ListView.separated(
                       shrinkWrap: true,
@@ -82,13 +85,18 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
                         Invoice invoice = state.invoices[index];
                         return ItemBill(
                           invoice: invoice,
-                        );
+                        ).animate().fade(duration: 1.seconds).moveY(
+                            duration: 1.seconds,
+                            begin: 50 * index!.toDouble() ?? 0.0,
+                            curve: Curves.fastOutSlowIn);
                       },
                       separatorBuilder: (context, index) {
                         return Divider(
                           height: 1,
                           color: colorScheme(context).tertiary,
-                        );
+                        ).animate().visibility(
+                              duration: 2.seconds,
+                            );
                       },
                       itemCount: state.invoices.length);
                 } else {
@@ -124,9 +132,9 @@ class ItemBill extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
+                  Text(
                     invoice.tableName ?? "tableName",
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   Text(
                     "HD00${invoice.id}" ?? "TB001",
@@ -138,9 +146,9 @@ class ItemBill extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                     color: Colors.pinkAccent.withOpacity(0.1),
-                    child:  Text(
+                    child: Text(
                       "B00${invoice.id}",
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.pink),
@@ -151,9 +159,10 @@ class ItemBill extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                   Text(
+                  Text(
                     "${NumberFormat.decimalPattern().format(invoice.total ?? 0)} đ",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                   Text(
                     "${invoice.createAt!.toLocal()}",

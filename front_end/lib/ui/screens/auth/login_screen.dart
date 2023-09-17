@@ -29,9 +29,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late bool isShowPass;
   final TextEditingController usernameController =
-      TextEditingController(text: "");
+  TextEditingController(text: "");
   final TextEditingController passwordController =
-      TextEditingController(text: "");
+  TextEditingController(text: "");
   String messageErr = '';
   TypeAlert typeMessageErr = TypeAlert.error;
 
@@ -163,11 +163,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                       key: _keyForm,
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
-                                              checkDevice(constraints.maxWidth,  Row(
+                                              checkDevice(
+                                                  constraints.maxWidth, Row(
                                                 children: [
                                                   Image.asset(
                                                     'assets/images/chicken.png',
@@ -177,19 +178,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     width: 8,
                                                   ),
                                                 ],
-                                              ), SizedBox.shrink(), SizedBox.shrink()),
+                                              ), SizedBox.shrink(),
+                                                  SizedBox.shrink()),
 
 
                                               Text(
                                                 "ĐĂNG NHẬP",
                                                 textAlign: TextAlign.center,
-                                                style: Theme.of(context)
+                                                style: Theme
+                                                    .of(context)
                                                     .textTheme
                                                     .titleMedium
                                                     ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 20),
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                    fontSize: 20),
                                               ),
                                             ],
                                           ),
@@ -208,17 +211,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
                                               const Padding(
                                                 padding:
-                                                    EdgeInsets.only(bottom: 4),
+                                                EdgeInsets.only(bottom: 4),
                                                 child: Text("Tên tài khoản"),
                                               ),
                                               MyTextField(
                                                 validator: (p0) {
                                                   bool isEmail = RegExp(
-                                                          r"^[a-zA-Z0-9]{5,12}$")
+                                                      r"^[a-zA-Z0-9]{5,12}$")
                                                       .hasMatch(p0!);
                                                   return isEmail
                                                       ? null
@@ -244,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               MyTextField(
                                                 validator: (p0) {
                                                   bool isEmail = RegExp(
-                                                          r"^[a-zA-Z0-9]{5,12}$")
+                                                      r"^[a-zA-Z0-9]{5,12}$")
                                                       .hasMatch(p0!);
                                                   return isEmail
                                                       ? null
@@ -266,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                         ? Icons.visibility_off
                                                         : Icons.visibility),
                                                     onPressed:
-                                                        _onChangeShowPass),
+                                                    _onChangeShowPass),
                                               ),
                                             ],
                                           ),
@@ -275,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
                                                 children: [
@@ -308,11 +311,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       .validate()) {
                                                     authBloc.add(LoginAutEvent(
                                                         username:
-                                                            usernameController
-                                                                .text,
+                                                        usernameController
+                                                            .text,
                                                         password:
-                                                            passwordController
-                                                                .text));
+                                                        passwordController
+                                                            .text));
                                                   }
                                                 },
                                               )),
@@ -379,7 +382,7 @@ class _ActionTestState extends State<ActionTest> {
             onPressed: () async {
               if (Platform.isAndroid || Platform.isIOS) {
                 await NotificationMobileService.showNoti(1111, noti);
-              }else{
+              } else {
                 await showNotiWindow();
               }
             },
@@ -388,32 +391,33 @@ class _ActionTestState extends State<ActionTest> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Nhập IPV4"),
-                  content: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        widget.controllerIpv4.text = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                        hintStyle: TextStyle(fontSize: 16),
-                        hintText: "192.168.1.10"),
-                    controller: widget.controllerIpv4,
-                  ),
-                  actions: [
-                    FilledButton(
-                        onPressed: () {
-                          Env.BASE_URL =
-                              "http://${widget.controllerIpv4.text}:8080";
-                          Env.SOCKET_URL =
-                              "http://${widget.controllerIpv4.text}:8080";
-                          print(Env.BASE_URL);
-                          Navigator.pop(context);
+                builder: (context) =>
+                    AlertDialog(
+                      title: const Text("Nhập IPV4"),
+                      content: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            widget.controllerIpv4.text = value;
+                          });
                         },
-                        child: const Text("Đặt"))
-                  ],
-                ),
+                        decoration: const InputDecoration(
+                            hintStyle: TextStyle(fontSize: 16),
+                            hintText: "192.168.1.10"),
+                        controller: widget.controllerIpv4,
+                      ),
+                      actions: [
+                        FilledButton(
+                            onPressed: () {
+                              Env.BASE_URL =
+                              "http://${widget.controllerIpv4.text}:8080";
+                              Env.SOCKET_URL =
+                              "http://${widget.controllerIpv4.text}:8080";
+                              print(Env.BASE_URL);
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Đặt"))
+                      ],
+                    ),
               );
             },
             child: const Text('enter ipv4')),
@@ -449,7 +453,11 @@ class LeadContentLogin extends StatelessWidget {
           ),
           Text(
             "AZFOOD",
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme(context).scrim.withOpacity(0.6)),
           ),
@@ -465,7 +473,10 @@ class LeadContentLogin extends StatelessWidget {
                   " #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok" +
                   " #tangcmt, #tangcamxuc, #ta",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyLarge,
             ),
           )
         ],

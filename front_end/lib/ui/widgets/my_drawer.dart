@@ -31,6 +31,32 @@ class ItemDrawer {
   ItemDrawer(
       {required this.label, required this.icon, required this.typeDrawer});
 }
+final List<ItemDrawer> itemsDrawer = [
+  ItemDrawer(
+      label: "Bàn",
+      icon: Icons.table_restaurant,
+      typeDrawer: TypeDrawer.home),
+  ItemDrawer(
+      label: "Hóa đơn", icon: Icons.book, typeDrawer: TypeDrawer.order),
+  ItemDrawer(
+      label: "Điểm danh",
+      icon: Icons.free_cancellation_sharp,
+      typeDrawer: TypeDrawer.home),
+  ItemDrawer(
+      label: "Lịch đi làm",
+      icon: Icons.calendar_month,
+      typeDrawer: TypeDrawer.calendar),
+  ItemDrawer(
+      label: "Thống kê",
+      icon: Icons.analytics,
+      typeDrawer: TypeDrawer.analytics),
+  ItemDrawer(
+      label: "Cá nhân", icon: Icons.person, typeDrawer: TypeDrawer.profile),
+  ItemDrawer(
+      label: "Đăng xuất",
+      icon: Icons.logout_outlined,
+      typeDrawer: TypeDrawer.logout)
+];
 
 class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
   @override
@@ -38,32 +64,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
     super.initState();
   }
 
-  final List<ItemDrawer> items = [
-    ItemDrawer(
-        label: "Bàn",
-        icon: Icons.table_restaurant,
-        typeDrawer: TypeDrawer.home),
-    ItemDrawer(
-        label: "Hóa đơn", icon: Icons.book, typeDrawer: TypeDrawer.order),
-    ItemDrawer(
-        label: "Điểm danh",
-        icon: Icons.free_cancellation_sharp,
-        typeDrawer: TypeDrawer.home),
-    ItemDrawer(
-        label: "Lịch đi làm",
-        icon: Icons.calendar_month,
-        typeDrawer: TypeDrawer.calendar),
-    ItemDrawer(
-        label: "Thống kê",
-        icon: Icons.analytics,
-        typeDrawer: TypeDrawer.analytics),
-    ItemDrawer(
-        label: "Cá nhân", icon: Icons.person, typeDrawer: TypeDrawer.profile),
-    ItemDrawer(
-        label: "Đăng xuất",
-        icon: Icons.logout_outlined,
-        typeDrawer: TypeDrawer.logout)
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage("assets/images/background.jpg"),
+                            image: AssetImage("assets/images/bg_app_bar.jpg"),
                           ),
                         ),
                         currentAccountPicture: const CircleAvatar(
@@ -149,7 +150,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                       const EdgeInsets.symmetric(vertical: 8),
                                   child: Column(
                                     children: [
-                                      ...items.asMap().entries.map((e) {
+                                      ...itemsDrawer.asMap().entries.map((e) {
                                         return AnimatedContainer(
                                           onEnd: () {},
                                           decoration: BoxDecoration(

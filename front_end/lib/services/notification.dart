@@ -8,9 +8,8 @@ class NotificationService {
     int id,
     FlutterLocalNotificationsPlugin fln,
   ) async {
-
-    final LinuxInitializationSettings initializationSettingsLinux =
-        const LinuxInitializationSettings(
+    const LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(
             defaultActionName: 'Open notification');
     var androidInit = const AndroidInitializationSettings("mipmap/chicken");
     var darwinInitialization = const DarwinInitializationSettings();
@@ -48,7 +47,9 @@ class NotificationService {
     await fln.show(id, "Em yêu ❤", "Anh đang làm gì thế?", noti);
   }
 }
-void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
+
+void onDidReceiveNotificationResponse(
+    NotificationResponse notificationResponse) async {
   final String? payload = notificationResponse.payload;
   if (notificationResponse.payload != null) {
     debugPrint('notification payload: ${payload.toString()}');

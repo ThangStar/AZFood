@@ -31,13 +31,11 @@ class ItemDrawer {
   ItemDrawer(
       {required this.label, required this.icon, required this.typeDrawer});
 }
+
 final List<ItemDrawer> itemsDrawer = [
   ItemDrawer(
-      label: "Bàn",
-      icon: Icons.table_restaurant,
-      typeDrawer: TypeDrawer.home),
-  ItemDrawer(
-      label: "Hóa đơn", icon: Icons.book, typeDrawer: TypeDrawer.order),
+      label: "Bàn", icon: Icons.table_restaurant, typeDrawer: TypeDrawer.home),
+  ItemDrawer(label: "Hóa đơn", icon: Icons.book, typeDrawer: TypeDrawer.order),
   ItemDrawer(
       label: "Điểm danh",
       icon: Icons.free_cancellation_sharp,
@@ -55,7 +53,7 @@ final List<ItemDrawer> itemsDrawer = [
   ItemDrawer(
       label: "Đăng xuất",
       icon: Icons.logout_outlined,
-      typeDrawer: TypeDrawer.logout)
+      typeDrawer: TypeDrawer.logout),
 ];
 
 class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
@@ -63,8 +61,6 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
   void initState() {
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -141,8 +137,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                     border: Border.all(
                                         color: colorScheme(context).tertiary),
                                     borderRadius: BorderRadius.circular(8),
-                                    color: colorScheme(context)
-                                        .onPrimary,
+                                    color: colorScheme(context).onPrimary,
                                   ),
                                   margin: const EdgeInsets.symmetric(
                                       horizontal: 12),
@@ -235,7 +230,6 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                     },
                                                   ));
                                                   break;
-
                                                 default:
                                                   Navigator.push(context,
                                                       MaterialPageRoute(

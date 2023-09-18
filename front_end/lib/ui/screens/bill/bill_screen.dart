@@ -78,27 +78,22 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
                         aspectRatio: 1, child: CircularProgressIndicator()),
                   );
                 } else if (state.invoices.isNotEmpty) {
-                  return ListView.separated(
-                      shrinkWrap: true,
-                      primary: false,
-                      itemBuilder: (context, index) {
-                        Invoice invoice = state.invoices[index];
-                        return ItemBill(
-                          invoice: invoice,
-                        ).animate().fade(duration: 1.seconds).moveY(
-                            duration: 1.seconds,
-                            begin: 50 * index!.toDouble() ?? 0.0,
-                            curve: Curves.fastOutSlowIn);
-                      },
-                      separatorBuilder: (context, index) {
-                        return Divider(
-                          height: 1,
-                          color: colorScheme(context).tertiary,
-                        ).animate().visibility(
-                              duration: 2.seconds,
-                            );
-                      },
-                      itemCount: state.invoices.length);
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemBuilder: (context, index) {
+                      Invoice invoice = state.invoices[index];
+                      return ItemBill(
+                        invoice: invoice,
+                      ).animate().fade(duration: 1.seconds).moveY(
+                          duration: 1.seconds,
+                          begin: 50 * index!.toDouble() ?? 0.0,
+                          curve: Curves.fastOutSlowIn);
+                    },
+                    itemCount: state.invoices.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: checkDevice(widget.constraints?.maxWidth ?? 0, 1, 2, 3), mainAxisExtent: 95),
+                  );
                 } else {
                   return const Column(
                     children: [Text("Không tìm thấy hoá đơn nào")],
@@ -121,6 +116,7 @@ class ItemBill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      shape: Border.all(color: colorScheme(context).tertiary.withOpacity(0.6)),
       child: InkWell(
         onTap: () {},
         child: Padding(

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
@@ -11,6 +12,9 @@ import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_drawer.dart';
+
+import '../../../main.dart';
+import '../../../storage/share_preferences.dart';
 
 //global variable
 final ZoomDrawerController z = ZoomDrawerController();
@@ -34,12 +38,22 @@ class _ZoomState extends State<HomeMenuScreen> {
     PageNavRail.calendar,
     PageNavRail.rank,
     PageNavRail.profile,
-    PageNavRail.logout
+    PageNavRail.logout,
   ];
-
+  bool isDarkTheme = false;
+  @override
+  void initState() {
+    MySharePreferences.getIsDarkTheme().then((value) {
+      setState(() {
+        isDarkTheme = value ?? false ? true : false;
+      });
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return ZoomDrawer(
@@ -90,10 +104,28 @@ class _ZoomState extends State<HomeMenuScreen> {
                             ),
                           ),
                           labelType: NavigationRailLabelType.all,
-                          destinations: itemsDrawer.map((e) {
-                            return NavigationRailDestination(
-                                icon: Icon(e.icon), label: Text(e.label));
-                          }).toList(),
+                          destinations: [
+                            ...itemsDrawer.map((e) {
+                              return NavigationRailDestination(
+                                  icon: Icon(e.icon), label: Text(e.label));
+                            }).toList(),
+                            NavigationRailDestination(
+                                icon: Switch(
+                                  value: isDarkTheme,
+                                  onChanged: (value) async {
+                                    await MySharePreferences.setIsDarkTheme(value);
+                                    if (value) {
+                                      MyApp.themeNotifier.value = ThemeMode.dark;
+                                    } else {
+                                      MyApp.themeNotifier.value = ThemeMode.light;
+                                    }
+                                    setState(() {
+                                      isDarkTheme = value;
+                                    });
+                                  },
+                                ),
+                                label: Text("Chế độ tối"))
+                          ],
                           onDestinationSelected: (value) {
                             setState(() {
                               selectedNavRail = value;

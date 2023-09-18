@@ -48,6 +48,7 @@ dependencies:
   video_player: ^2.7.1
   flutter_local_notifications: ^15.1.1
   local_notifier: ^0.1.5
+  elegant_notification: ^1.11.1
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -36,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
   TypeAlert typeMessageErr = TypeAlert.error;
 
   bool cbxSaveLogin = false;
-  bool isShowAlert = false;
   bool isValid = false;
   final _keyForm = GlobalKey<FormState>();
 
@@ -89,24 +89,32 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthLoginSuccess) {
-          showMySnackBar(context, "Đăng nhập thành công", TypeSnackBar.success);
+          ElegantNotification.success(
+              title:  Text("Thông báo"),
+              description:  Text("Đăng nhập thành công")
+          ).show(context);
+
+          // showMySnackBar(context, "Đăng nhập thành công", TypeSnackBar.success);
           Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const HomeMenuScreen(),
               ));
         } else if (state is AuthLoginFailed) {
-          setState(() {
-            isShowAlert = true;
-            messageErr = "Tài khoản hoặc mật khẩu không chính xác";
-            typeMessageErr = TypeAlert.error;
-          });
+          ElegantNotification.error(
+              title:  Text("Thông báo"),
+              description:  Text("Tài khoản hoặc mật khẩu không chính xác")
+          ).show(context);
+          // setState(() {
+          //   isShowAlert = true;
+          //   messageErr = "Tài khoản hoặc mật khẩu không chính xác";
+          //   typeMessageErr = TypeAlert.error;
+          // });
         } else if (state is AuthLoginConnectionFailed) {
-          setState(() {
-            isShowAlert = true;
-            messageErr = "Mất kết nối đến máy chủ";
-            typeMessageErr = TypeAlert.warming;
-          });
+          ElegantNotification.error(
+              title:  Text("Thông báo"),
+              description:  Text("Mất kết nối máy chủ")
+          ).show(context);
         }
       },
       child: Scaffold(
@@ -199,13 +207,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                           const SizedBox(
                                             height: 18,
                                           ),
-                                          MyAlert(
-                                            height: isShowAlert ? null : 0,
-                                            icon: Icons.warning_rounded,
-                                            title: "Thông báo",
-                                            message: messageErr,
-                                            typeAlert: typeMessageErr,
-                                          ),
                                           const SizedBox(
                                             height: 6,
                                           ),
@@ -227,13 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       ? null
                                                       : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
                                                 },
-                                                onChanged: (p0) {
-                                                  if (isShowAlert) {
-                                                    setState(() {
-                                                      isShowAlert = false;
-                                                    });
-                                                  }
-                                                },
+
                                                 hintText: "Nhập tài khoản",
                                                 icon: const Icon(Icons.person),
                                                 label: "Tài khoản",
@@ -253,13 +248,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       ? null
                                                       : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
                                                 },
-                                                onChanged: (p0) {
-                                                  if (isShowAlert) {
-                                                    setState(() {
-                                                      isShowAlert = false;
-                                                    });
-                                                  }
-                                                },
+
                                                 isShowPass: isShowPass,
                                                 label: "Mật khẩu",
                                                 controller: passwordController,

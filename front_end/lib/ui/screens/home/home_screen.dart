@@ -15,6 +15,7 @@ import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
@@ -24,7 +25,9 @@ import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.constraints});
+
+  final BoxConstraints constraints;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -100,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 email: "email");
                         return ToolbarHome(
                           profile: profile,
+                          showDrawer: checkDevice(widget.constraints.maxWidth, true, false, false),
                         );
                       },
                     ),
@@ -200,11 +204,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           primary: false,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                              SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisSpacing: 6,
                                   mainAxisSpacing: 6,
                                   mainAxisExtent: 160,
-                                  crossAxisCount: 2),
+                                  crossAxisCount: checkDevice(
+                                      widget.constraints.maxWidth, 2, 3, 4)),
                           itemBuilder: (context, index) {
                             Model.Table table = state.tablesFilter[index];
                             return ItemTable(
@@ -221,23 +226,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
                                         .toList();
-
-                                    // print(
-                                    //     'test length a: ${currentProducts.length}');
-                                    //     List<Product> productFinal = [];
-                                    //     List<Product> new1 = List.from(currentProducts);
-                                    // for (var x = 0 ; x <= new1.length+1;x++){
-                                    //     for (var y = 0 ; y <= new1.length;y++) {
-                                    //       if(new1[x].name != new1[y].name){
-                                    //         productFinal.add(new1[x]);
-                                    //       }
-                                    //     }
-                                    // }
-                                    // currentProducts.forEach((element) {
-                                    //   bool a = currentProducts.indexOf(element);
-                                    //   // if(element.id == )
-                                    // });
-
+                                    for (var i in currentProducts) {
+                                      int length = currentProducts
+                                          .where((j) => j.name == i.name)
+                                          .length;
+                                      i.quantity = length;
+                                    }
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
@@ -293,9 +287,11 @@ class ToolbarHome extends StatelessWidget {
   const ToolbarHome({
     super.key,
     required this.profile,
+    this.showDrawer = true,
   });
 
   final Profile profile;
+  final bool showDrawer;
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +299,7 @@ class ToolbarHome extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage('assets/images/background.jpg')),
+            image: AssetImage('assets/images/bg_app_bar.jpg')),
       ),
       child: Container(
         padding: const EdgeInsets.only(top: 40),
@@ -323,7 +319,7 @@ class ToolbarHome extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  MyIconButtonBlur(
+                  if(showDrawer) MyIconButtonBlur(
                     icon: const Icon(
                       Icons.menu,
                       color: Colors.white,

@@ -34,11 +34,29 @@ class OrderApi {
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
       } else {
-        print("failure login ${response.data}");
+        print("failure  ${response.data}");
         return Failure(response: response, statusCode: response.statusCode);
       }
     } on DioException catch (err) {
-      print("error login ${err.response}");
+      print("error  ${err.response}");
+      return Failure(response: err.response);
+    }
+  }
+
+  static Future<Object> payBill(tableID) async {
+    try {
+      Response<dynamic> response =
+      await http.post(Router.payBill, data: {
+        "id": tableID,
+      });
+      if (response.statusCode == 200) {
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure  ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error  ${err.response}");
       return Failure(response: err.response);
     }
   }

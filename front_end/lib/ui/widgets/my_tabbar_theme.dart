@@ -62,9 +62,11 @@ class _MyTabBarThemeState extends State<MyTabBarTheme>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
-                  children: [Icon(Icons.light_mode), Text("Sáng", style: TextStyle(
-                    fontSize: 14
-                  ),)],
+                  children: [Icon(Icons.light_mode), Flexible(
+                    child: Text("Sáng", style: TextStyle(
+                      fontSize: 14
+                    ),),
+                  )],
                 ),
               ),
               Padding(

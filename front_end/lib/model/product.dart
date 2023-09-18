@@ -40,4 +40,30 @@ class Product {
         "quantity": quantity,
         "imgUrl": imageUrl
       };
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is Product &&
+            runtimeType == other.runtimeType &&
+            name == other.name &&
+            price == other.price &&
+            category == other.category &&
+            status == other.status &&
+            quantity == other.quantity &&
+            imageUrl == other.imageUrl &&
+            amountCart == other.amountCart &&
+            dvtName == other.dvtName;
+  }
+
+  @override
+  int get hashCode =>
+      name.hashCode ^
+      price.hashCode ^
+      category.hashCode ^
+      status.hashCode ^
+      quantity.hashCode ^
+      imageUrl.hashCode ^
+      amountCart.hashCode ^
+      dvtName.hashCode;
 }

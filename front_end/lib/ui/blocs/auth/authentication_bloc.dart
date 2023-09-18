@@ -26,19 +26,12 @@ class AuthenticationBloc
     Object result = await AuthApi.login(event.username, event.password);
     if (result is Success) {
       emit(AuthLoginSuccess());
-      LoginResponse loginResult =
-          LoginResponse.fromJson(result.response.toString());
-      // emit(ProfileState(status: status))
-      // print("jsonDecode(response.data): ${jsonDecode(response.data)}");
-      // LoginResult loginResult = LoginResult.fromJson(jsonEncode(response.data));
-      // print("loginResult: ${loginResult.username}");
-      // final a  = response.data as dynamic;
-
-      //save result to storage
+      LoginResponse loginResult = LoginResponse.fromJson(result.response.toString());
+      //transform data
+      loginResult.password = event.password;
       try {
-        await MySharePreferences.saveProfile(result.response.toString());
-      await _loadProfile(loginResult.id, loginResult.jwtToken, emit);
-
+        await MySharePreferences.saveProfile(loginResult.toJson());
+        await _loadProfile(loginResult.id, loginResult.jwtToken, emit);
       } catch (err) {
         print("err: $err");
       }

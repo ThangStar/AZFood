@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
@@ -29,18 +30,23 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   try {
-    if (Platform.isAndroid || Platform.isIOS) {
-      cameras = await availableCameras();
-    } else {
-      await localNotifier.setup(
-        appName: 'AZFood',
-        // The parameter shortcutPolicy only works on Windows
-        shortcutPolicy: ShortcutPolicy.requireCreate,
-      );
+    if (!kIsWeb) {
+      if (Platform.isAndroid || Platform.isIOS) {
+        print("object1");
+        cameras = await availableCameras();
+      } else if (Platform.isWindows) {
+        print("object2");
+        await localNotifier.setup(
+          appName: 'AZFood',
+          // The parameter shortcutPolicy only works on Windows
+          shortcutPolicy: ShortcutPolicy.requireCreate,
+        );
+      }
     }
+    print("object3");
     runApp(const MyApp());
-  } on CameraException catch (e) {
-    print(e.code);
+  } catch (e) {
+    print(e);
   }
 }
 

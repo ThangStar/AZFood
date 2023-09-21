@@ -41,6 +41,7 @@ class _ZoomState extends State<HomeMenuScreen> {
     PageNavRail.logout,
   ];
   bool isDarkTheme = false;
+
   @override
   void initState() {
     MySharePreferences.getIsDarkTheme().then((value) {
@@ -50,6 +51,7 @@ class _ZoomState extends State<HomeMenuScreen> {
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
@@ -69,69 +71,81 @@ class _ZoomState extends State<HomeMenuScreen> {
                 if (constraints.maxWidth > mobileWidth)
                   Row(
                     children: [
-                      NavigationRail(
-                          trailing: const Text("AZFood.vn"),
-                          backgroundColor:
-                              colorScheme(context).tertiary.withOpacity(0.8),
-                          indicatorColor:
-                              colorScheme(context).scrim.withOpacity(0.6),
-                          selectedIconTheme: IconThemeData(
-                              color: colorScheme(context).onPrimary),
-                          elevation: 10,
-                          leading: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                ClipOval(
-                                  child: SizedBox(
-                                      width: 60,
-                                      height: 60,
-                                      child: Image.asset(
-                                        "assets/images/chicken.png",
-                                        fit: BoxFit.cover,
-                                      )),
+                      SingleChildScrollView(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                              minHeight: MediaQuery.of(context).size.height),
+                          child: IntrinsicHeight(
+                            child: NavigationRail(
+                                trailing: const Text("AZFood.vn"),
+                                backgroundColor: colorScheme(context)
+                                    .tertiary
+                                    .withOpacity(0.8),
+                                indicatorColor:
+                                    colorScheme(context).scrim.withOpacity(0.6),
+                                selectedIconTheme: IconThemeData(
+                                    color: colorScheme(context).onPrimary),
+                                elevation: 10,
+                                leading: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    children: [
+                                      ClipOval(
+                                        child: SizedBox(
+                                            width: 60,
+                                            height: 60,
+                                            child: Image.asset(
+                                              "assets/images/chicken.png",
+                                              fit: BoxFit.cover,
+                                            )),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      const Text(
+                                        'AZFood',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(
-                                  height: 4,
-                                ),
-                                const Text(
-                                  'AZFood',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
+                                labelType: NavigationRailLabelType.all,
+                                destinations: [
+                                  ...itemsDrawer.map((e) {
+                                    return NavigationRailDestination(
+                                        icon: Icon(e.icon), label: Text(e.label));
+                                  }).toList(),
+                                  NavigationRailDestination(
+                                      icon: Switch(
+                                        value: isDarkTheme,
+                                        onChanged: (value) async {
+                                          await MySharePreferences.setIsDarkTheme(
+                                              value);
+                                          if (value) {
+                                            MyApp.themeNotifier.value =
+                                                ThemeMode.dark;
+                                          } else {
+                                            MyApp.themeNotifier.value =
+                                                ThemeMode.light;
+                                          }
+                                          setState(() {
+                                            isDarkTheme = value;
+                                          });
+                                        },
+                                      ),
+                                      label: Text("Chế độ tối"))
+                                ],
+                                onDestinationSelected: (value) {
+                                  setState(() {
+                                    selectedNavRail = value;
+                                  });
+                                },
+                                selectedIndex: selectedNavRail),
                           ),
-                          labelType: NavigationRailLabelType.all,
-                          destinations: [
-                            ...itemsDrawer.map((e) {
-                              return NavigationRailDestination(
-                                  icon: Icon(e.icon), label: Text(e.label));
-                            }).toList(),
-                            NavigationRailDestination(
-                                icon: Switch(
-                                  value: isDarkTheme,
-                                  onChanged: (value) async {
-                                    await MySharePreferences.setIsDarkTheme(value);
-                                    if (value) {
-                                      MyApp.themeNotifier.value = ThemeMode.dark;
-                                    } else {
-                                      MyApp.themeNotifier.value = ThemeMode.light;
-                                    }
-                                    setState(() {
-                                      isDarkTheme = value;
-                                    });
-                                  },
-                                ),
-                                label: Text("Chế độ tối"))
-                          ],
-                          onDestinationSelected: (value) {
-                            setState(() {
-                              selectedNavRail = value;
-                            });
-                          },
-                          selectedIndex: selectedNavRail),
+                        ),
+                      ),
                       const VerticalDivider(width: 1),
                     ],
                   ),

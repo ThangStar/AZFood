@@ -16,6 +16,7 @@ import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/chat/chat_view.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 
@@ -99,7 +100,7 @@ class _MyAppState extends State<MyApp> {
                       textTheme: textTheme(context)),
                   darkTheme: ThemeData(
                       useMaterial3: true, colorScheme: darkColorScheme),
-                  home: ChatScreen()));
+                  home: const LoginScreen()));
         });
   }
 }

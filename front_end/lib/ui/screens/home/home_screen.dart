@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +25,8 @@ import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
+import '../chat/chat_view.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.constraints});
 
@@ -39,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int posFilterStatusSelected = 0;
   bool isShowFilter = false;
+  bool chatVisible = false;
 
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
@@ -102,9 +106,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 phoneNumber: "0123",
                                 email: "email");
                         return ToolbarHome(
+                          openChat: widget.constraints.maxWidth > mobileWidth
+                              ? () {
+                                    setState(() {
+                                      chatVisible = !chatVisible;
+                                    });
+                                }
+                              : () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const ChatScreen()));
+                                },
                           profile: profile,
-                          showDrawer: checkDevice(widget.constraints.maxWidth,
-                              true, false, false),
+                          showDrawer: checkDevice(
+                              widget.constraints.maxWidth, true, false, false),
                         );
                       },
                     ),
@@ -122,8 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
+                                    fontWeight: FontWeight.bold, fontSize: 20),
                           ).animate().moveY(),
                           const PageIndex(),
                         ],
@@ -188,8 +203,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         setState(() {
                                           posFilterStatusSelected = e.key;
                                         });
-                                        context.read<TableBloc>().add(
-                                            OnFilterTable(status: e.key));
+                                        context
+                                            .read<TableBloc>()
+                                            .add(OnFilterTable(status: e.key));
                                       },
                                     ))
                                 .toList(),
@@ -223,12 +239,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'listProductByIdTable', {"id": table.id});
                                 if (!io.hasListeners("responseOrder")) {
                                   io.on('responseOrder', (data) {
-                                    final jsonResponse =
-                                        data as List<dynamic>;
-                                    List<Product> currentProducts =
-                                        jsonResponse
-                                            .map((e) => Product.fromJson(e))
-                                            .toList();
+                                    final jsonResponse = data as List<dynamic>;
+                                    List<Product> currentProducts = jsonResponse
+                                        .map((e) => Product.fromJson(e))
+                                        .toList();
                                     for (var i in currentProducts) {
                                       int length = currentProducts
                                           .where((j) => j.name == i.name)
@@ -237,8 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     }
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
-                                            currentProducts:
-                                                currentProducts));
+                                            currentProducts: currentProducts));
                                   });
                                 }
                                 Navigator.push(
@@ -272,19 +285,33 @@ class _HomeScreenState extends State<HomeScreen> {
               )),
             ),
           ),
+          chatVisible
+              ? Positioned(
+                  bottom: 15,
+                  right: 90,
+                  child: Container(
+                      width: 380,
+                      height: 500,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border:
+                              Border.all(color: colorScheme(context).tertiary)),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: ChatScreen(
+                            onClose: () {
+                              if (chatVisible) {
+                                setState(() {
+                                  chatVisible = false;
+                                });
+                              }
+                            },
+                          ))))
+              : SizedBox.shrink(),
         ],
       ),
     );
   }
-}
-
-List splice(List list, int index, [num howMany = 0, dynamic elements]) {
-  var endIndex = index + howMany.truncate();
-  list.removeRange(index, endIndex >= list.length ? list.length : endIndex);
-  if (elements != null) {
-    list.insertAll(index, elements is List ? elements : <String>[elements]);
-  }
-  return list;
 }
 
 class ToolbarHome extends StatelessWidget {
@@ -292,10 +319,12 @@ class ToolbarHome extends StatelessWidget {
     super.key,
     required this.profile,
     this.showDrawer = true,
+    this.openChat,
   });
 
   final Profile profile;
   final bool showDrawer;
+  final VoidCallBack? openChat;
 
   @override
   Widget build(BuildContext context) {
@@ -338,23 +367,43 @@ class ToolbarHome extends StatelessWidget {
                           .textTheme
                           .bodyLarge
                           ?.copyWith(color: Colors.white)),
-                  MyIconButtonBlur(
-                    icon: Badge(
-                      backgroundColor: Colors.redAccent,
-                      child:
-                          const Icon(Icons.notifications, color: Colors.white)
+                  Row(
+                    children: [
+                      MyIconButtonBlur(
+                        icon: Badge(
+                          label: Text("9+"),
+                          backgroundColor: Colors.redAccent,
+                          child: const Icon(Icons.chat, color: Colors.white)
                               .animate(
                                 onPlay: (controller) => controller.repeat(),
                               )
                               .shake(delay: 1.seconds),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const NotificationScreen(),
-                          ));
-                    },
+                        ),
+                        onTap: openChat ?? () {},
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      MyIconButtonBlur(
+                        icon: Badge(
+                          backgroundColor: Colors.redAccent,
+                          child: const Icon(Icons.notifications,
+                                  color: Colors.white)
+                              .animate(
+                                onPlay: (controller) => controller.repeat(),
+                              )
+                              .shake(delay: 1.seconds),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const NotificationScreen(),
+                              ));
+                        },
+                      ),
+                    ],
                   )
                 ],
               ),

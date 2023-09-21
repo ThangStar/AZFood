@@ -2,6 +2,7 @@ import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
+import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
 class AppTheme {
   final Color? appBarColor;
@@ -165,56 +166,56 @@ class DarkTheme extends AppTheme {
     Color waveColor = Colors.white,
     Color replyMicIconColor = Colors.white,
   }) : super(
-    closeIconColor: closeIconColor,
-    verticalBarColor: verticalBarColor,
-    textFieldBackgroundColor: textFieldBackgroundColor,
-    replyTitleColor: replyTitleColor,
-    replyDialogColor: replyDialogColor,
-    backgroundColor: backgroundColor,
-    appBarColor: appBarColor,
-    appBarTitleTextStyle: appBarTitleTextStyle,
-    backArrowColor: backArrowColor,
-    chatHeaderColor: chatHeaderColor,
-    inComingChatBubbleColor: inComingChatBubbleColor,
-    inComingChatBubbleTextColor: inComingChatBubbleTextColor,
-    messageReactionBackGroundColor: messageReactionBackGroundColor,
-    messageReactionBorderColor: messageReactionBorderColor,
-    outgoingChatBubbleColor: outgoingChatBubbleColor,
-    repliedMessageColor: repliedMessageColor,
-    replyMessageColor: replyMessageColor,
-    sendButtonColor: sendButtonColor,
-    shareIconBackgroundColor: shareIconBackgroundColor,
-    themeIconColor: themeIconColor,
-    shareIconColor: shareIconColor,
-    elevation: elevation,
-    messageTimeIconColor: messageTimeIconColor,
-    messageTimeTextColor: messageTimeTextColor,
-    textFieldTextColor: textFieldTextColor,
-    repliedTitleTextColor: repliedTitleTextColor,
-    swipeToReplyIconColor: swipeToReplyIconColor,
-    reactionPopupColor: reactionPopupColor,
-    replyPopupColor: replyPopupColor,
-    replyPopupButtonColor: replyPopupButtonColor,
-    replyPopupTopBorderColor: replyPopupTopBorderColor,
-    reactionPopupTitleColor: reactionPopupTitleColor,
-    linkPreviewOutgoingChatColor: linkPreviewOutgoingChatColor,
-    linkPreviewIncomingChatColor: linkPreviewIncomingChatColor,
-    linkPreviewIncomingTitleStyle: linkPreviewIncomingTitleStyle,
-    linkPreviewOutgoingTitleStyle: linkPreviewOutgoingTitleStyle,
-    incomingChatLinkBodyStyle: incomingChatLinkBodyStyle,
-    incomingChatLinkTitleStyle: incomingChatLinkTitleStyle,
-    outgoingChatLinkBodyStyle: outgoingChatLinkBodyStyle,
-    outgoingChatLinkTitleStyle: outgoingChatLinkTitleStyle,
-    flashingCircleDarkColor: flashingCircleDarkColor,
-    flashingCircleBrightColor: flashingCircleBrightColor,
-    galleryIconColor: galleryIconColor,
-    cameraIconColor: cameraIconColor,
-    recordIconColor: recorderIconColor,
-    stopIconColor: stopIconColor,
-    waveformBackgroundColor: waveformBackgroundColor,
-    waveColor: waveColor,
-    replyMicIconColor: replyMicIconColor,
-  );
+          closeIconColor: closeIconColor,
+          verticalBarColor: verticalBarColor,
+          textFieldBackgroundColor: textFieldBackgroundColor,
+          replyTitleColor: replyTitleColor,
+          replyDialogColor: replyDialogColor,
+          backgroundColor: backgroundColor,
+          appBarColor: appBarColor,
+          appBarTitleTextStyle: appBarTitleTextStyle,
+          backArrowColor: backArrowColor,
+          chatHeaderColor: chatHeaderColor,
+          inComingChatBubbleColor: inComingChatBubbleColor,
+          inComingChatBubbleTextColor: inComingChatBubbleTextColor,
+          messageReactionBackGroundColor: messageReactionBackGroundColor,
+          messageReactionBorderColor: messageReactionBorderColor,
+          outgoingChatBubbleColor: outgoingChatBubbleColor,
+          repliedMessageColor: repliedMessageColor,
+          replyMessageColor: replyMessageColor,
+          sendButtonColor: sendButtonColor,
+          shareIconBackgroundColor: shareIconBackgroundColor,
+          themeIconColor: themeIconColor,
+          shareIconColor: shareIconColor,
+          elevation: elevation,
+          messageTimeIconColor: messageTimeIconColor,
+          messageTimeTextColor: messageTimeTextColor,
+          textFieldTextColor: textFieldTextColor,
+          repliedTitleTextColor: repliedTitleTextColor,
+          swipeToReplyIconColor: swipeToReplyIconColor,
+          reactionPopupColor: reactionPopupColor,
+          replyPopupColor: replyPopupColor,
+          replyPopupButtonColor: replyPopupButtonColor,
+          replyPopupTopBorderColor: replyPopupTopBorderColor,
+          reactionPopupTitleColor: reactionPopupTitleColor,
+          linkPreviewOutgoingChatColor: linkPreviewOutgoingChatColor,
+          linkPreviewIncomingChatColor: linkPreviewIncomingChatColor,
+          linkPreviewIncomingTitleStyle: linkPreviewIncomingTitleStyle,
+          linkPreviewOutgoingTitleStyle: linkPreviewOutgoingTitleStyle,
+          incomingChatLinkBodyStyle: incomingChatLinkBodyStyle,
+          incomingChatLinkTitleStyle: incomingChatLinkTitleStyle,
+          outgoingChatLinkBodyStyle: outgoingChatLinkBodyStyle,
+          outgoingChatLinkTitleStyle: outgoingChatLinkTitleStyle,
+          flashingCircleDarkColor: flashingCircleDarkColor,
+          flashingCircleBrightColor: flashingCircleBrightColor,
+          galleryIconColor: galleryIconColor,
+          cameraIconColor: cameraIconColor,
+          recordIconColor: recorderIconColor,
+          stopIconColor: stopIconColor,
+          waveformBackgroundColor: waveformBackgroundColor,
+          waveColor: waveColor,
+          replyMicIconColor: replyMicIconColor,
+        );
 }
 
 class LightTheme extends AppTheme {
@@ -269,60 +270,61 @@ class LightTheme extends AppTheme {
     Color waveColor = Colors.black,
     Color replyMicIconColor = Colors.black,
   }) : super(
-    reactionPopupColor: reactionPopupColor,
-    closeIconColor: closeIconColor,
-    verticalBarColor: verticalBarColor,
-    textFieldBackgroundColor: textFieldBackgroundColor,
-    replyTitleColor: replyTitleColor,
-    replyDialogColor: replyDialogColor,
-    backgroundColor: backgroundColor,
-    appBarColor: appBarColor,
-    appBarTitleTextStyle: appBarTitleTextStyle,
-    backArrowColor: backArrowColor,
-    chatHeaderColor: chatHeaderColor,
-    inComingChatBubbleColor: inComingChatBubbleColor,
-    inComingChatBubbleTextColor: inComingChatBubbleTextColor,
-    messageReactionBackGroundColor: messageReactionBackGroundColor,
-    messageReactionBorderColor: messageReactionBorderColor,
-    outgoingChatBubbleColor: outgoingChatBubbleColor,
-    repliedMessageColor: repliedMessageColor,
-    replyMessageColor: replyMessageColor,
-    sendButtonColor: sendButtonColor,
-    shareIconBackgroundColor: shareIconBackgroundColor,
-    themeIconColor: themeIconColor,
-    shareIconColor: shareIconColor,
-    elevation: elevation,
-    messageTimeIconColor: messageTimeIconColor,
-    messageTimeTextColor: messageTimeTextColor,
-    textFieldTextColor: textFieldTextColor,
-    repliedTitleTextColor: repliedTitleTextColor,
-    swipeToReplyIconColor: swipeToReplyIconColor,
-    replyPopupColor: replyPopupColor,
-    replyPopupButtonColor: replyPopupButtonColor,
-    replyPopupTopBorderColor: replyPopupTopBorderColor,
-    reactionPopupTitleColor: reactionPopupTitleColor,
-    linkPreviewOutgoingChatColor: linkPreviewOutgoingChatColor,
-    linkPreviewIncomingChatColor: linkPreviewIncomingChatColor,
-    linkPreviewIncomingTitleStyle: linkPreviewIncomingTitleStyle,
-    linkPreviewOutgoingTitleStyle: linkPreviewOutgoingTitleStyle,
-    incomingChatLinkBodyStyle: incomingChatLinkBodyStyle,
-    incomingChatLinkTitleStyle: incomingChatLinkTitleStyle,
-    outgoingChatLinkBodyStyle: outgoingChatLinkBodyStyle,
-    outgoingChatLinkTitleStyle: outgoingChatLinkTitleStyle,
-    flashingCircleDarkColor: flashingCircleDarkColor,
-    flashingCircleBrightColor: flashingCircleBrightColor,
-    galleryIconColor: galleryIconColor,
-    cameraIconColor: cameraIconColor,
-    stopIconColor: stopIconColor,
-    recordIconColor: recorderIconColor,
-    waveformBackgroundColor: waveformBackgroundColor,
-    waveColor: waveColor,
-    replyMicIconColor: replyMicIconColor,
-  );
+          reactionPopupColor: reactionPopupColor,
+          closeIconColor: closeIconColor,
+          verticalBarColor: verticalBarColor,
+          textFieldBackgroundColor: textFieldBackgroundColor,
+          replyTitleColor: replyTitleColor,
+          replyDialogColor: replyDialogColor,
+          backgroundColor: backgroundColor,
+          appBarColor: appBarColor,
+          appBarTitleTextStyle: appBarTitleTextStyle,
+          backArrowColor: backArrowColor,
+          chatHeaderColor: chatHeaderColor,
+          inComingChatBubbleColor: inComingChatBubbleColor,
+          inComingChatBubbleTextColor: inComingChatBubbleTextColor,
+          messageReactionBackGroundColor: messageReactionBackGroundColor,
+          messageReactionBorderColor: messageReactionBorderColor,
+          outgoingChatBubbleColor: outgoingChatBubbleColor,
+          repliedMessageColor: repliedMessageColor,
+          replyMessageColor: replyMessageColor,
+          sendButtonColor: sendButtonColor,
+          shareIconBackgroundColor: shareIconBackgroundColor,
+          themeIconColor: themeIconColor,
+          shareIconColor: shareIconColor,
+          elevation: elevation,
+          messageTimeIconColor: messageTimeIconColor,
+          messageTimeTextColor: messageTimeTextColor,
+          textFieldTextColor: textFieldTextColor,
+          repliedTitleTextColor: repliedTitleTextColor,
+          swipeToReplyIconColor: swipeToReplyIconColor,
+          replyPopupColor: replyPopupColor,
+          replyPopupButtonColor: replyPopupButtonColor,
+          replyPopupTopBorderColor: replyPopupTopBorderColor,
+          reactionPopupTitleColor: reactionPopupTitleColor,
+          linkPreviewOutgoingChatColor: linkPreviewOutgoingChatColor,
+          linkPreviewIncomingChatColor: linkPreviewIncomingChatColor,
+          linkPreviewIncomingTitleStyle: linkPreviewIncomingTitleStyle,
+          linkPreviewOutgoingTitleStyle: linkPreviewOutgoingTitleStyle,
+          incomingChatLinkBodyStyle: incomingChatLinkBodyStyle,
+          incomingChatLinkTitleStyle: incomingChatLinkTitleStyle,
+          outgoingChatLinkBodyStyle: outgoingChatLinkBodyStyle,
+          outgoingChatLinkTitleStyle: outgoingChatLinkTitleStyle,
+          flashingCircleDarkColor: flashingCircleDarkColor,
+          flashingCircleBrightColor: flashingCircleBrightColor,
+          galleryIconColor: galleryIconColor,
+          cameraIconColor: cameraIconColor,
+          stopIconColor: stopIconColor,
+          recordIconColor: recorderIconColor,
+          waveformBackgroundColor: waveformBackgroundColor,
+          waveColor: waveColor,
+          replyMicIconColor: replyMicIconColor,
+        );
 }
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({Key? key, this.onClose}) : super(key: key);
+  final VoidCallBack? onClose;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -369,9 +371,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: ChatView(
-
         currentUser: currentUser,
         chatController: _chatController,
         onSendTap: _onSendTap,
@@ -391,6 +393,8 @@ class _ChatScreenState extends State<ChatScreen> {
           flashingCircleDarkColor: theme.flashingCircleDarkColor,
         ),
         appBar: ChatViewAppBar(
+          leading: checkDevice(size.width, null, SizedBox.shrink(), SizedBox.shrink()) ,
+          padding: EdgeInsets.only(left: 8, top: 4, bottom: 4),
           elevation: theme.elevation,
           backGroundColor: theme.appBarColor,
           profilePicture: Data.profileImage,
@@ -419,6 +423,13 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: _showHideTypingIndicator,
               icon: Icon(
                 Icons.keyboard,
+                color: theme.themeIconColor,
+              ),
+            ),
+            if(size.width > mobileWidth) IconButton(
+              onPressed: widget.onClose,
+              icon: Icon(
+                Icons.close,
                 color: theme.themeIconColor,
               ),
             ),
@@ -473,7 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
               titleStyle: theme.outgoingChatLinkTitleStyle,
             ),
             receiptsWidgetConfig:
-            const ReceiptsWidgetConfig(showReceiptsIn: ShowReceiptsIn.all),
+                const ReceiptsWidgetConfig(showReceiptsIn: ShowReceiptsIn.all),
             color: theme.outgoingChatBubbleColor,
           ),
           inComingChatBubbleConfig: ChatBubble(
@@ -492,7 +503,7 @@ class _ChatScreenState extends State<ChatScreen> {
               debugPrint('Message Read');
             },
             senderNameTextStyle:
-            TextStyle(color: theme.inComingChatBubbleTextColor),
+                TextStyle(color: theme.inComingChatBubbleTextColor),
             color: theme.inComingChatBubbleColor,
           ),
         ),
@@ -513,9 +524,9 @@ class _ChatScreenState extends State<ChatScreen> {
             backgroundColor: theme.messageReactionBackGroundColor,
             borderColor: theme.messageReactionBackGroundColor,
             reactedUserCountTextStyle:
-            TextStyle(color: theme.inComingChatBubbleTextColor),
+                TextStyle(color: theme.inComingChatBubbleTextColor),
             reactionCountTextStyle:
-            TextStyle(color: theme.inComingChatBubbleTextColor),
+                TextStyle(color: theme.inComingChatBubbleTextColor),
             reactionsBottomSheetConfig: ReactionsBottomSheetConfiguration(
               backgroundColor: theme.backgroundColor,
               reactedUserTextStyle: TextStyle(
@@ -568,10 +579,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _onSendTap(
-      String message,
-      ReplyMessage replyMessage,
-      MessageType messageType,
-      ) {
+    String message,
+    ReplyMessage replyMessage,
+    MessageType messageType,
+  ) {
     final id = int.parse(Data.messageList.last.id) + 1;
     _chatController.addMessage(
       Message(
@@ -613,7 +624,8 @@ class Data {
       id: '1',
       message: "Hi!",
       createdAt: DateTime.now(),
-      sendBy: '1', // userId of who sends the message
+      sendBy: '1',
+      // userId of who sends the message
       status: MessageStatus.read,
     ),
     Message(

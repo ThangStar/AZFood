@@ -137,7 +137,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                   ),
                 SizedBox(
                     width: constraints.maxWidth > mobileWidth
-                        ? constraints.maxWidth - 120
+                        ? constraints.maxWidth - 110
                         : constraints.maxWidth,
                     height: constraints.maxHeight,
                     child: (() {

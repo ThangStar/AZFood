@@ -2,7 +2,11 @@ import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_manager_app/routers/socket.event.dart';
+import 'package:restaurant_manager_app/ui/blocs/message/message_bloc.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
+import 'package:restaurant_manager_app/utils/io_client.dart';
 
 class AppTheme {
   final Color? appBarColor;
@@ -333,6 +337,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   AppTheme theme = LightTheme();
   bool isDarkTheme = false;
+  // MessageBloc msgBloc = BlocProvider.of<MessageBloc>(context);
   final currentUser = ChatUser(
     id: '1',
     name: 'Flutter',
@@ -365,10 +370,18 @@ class _ChatScreenState extends State<ChatScreen> {
     ],
   );
 
+
   void _showHideTypingIndicator() {
     _chatController.setTypingIndicator = !_chatController.showTypingIndicator;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if(!io.hasListeners(SocketEvent.onMsgTextGroup)){
+
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

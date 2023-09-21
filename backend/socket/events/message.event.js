@@ -1,7 +1,7 @@
 const { getMessagesForUser, insertMessage } = require('../controllers/message.controller')
 
 const listenForUserMessages = (socket, io) => {
-    socket.on('requestMessagesForUser', (data) => {
+    socket.on('messageFromClient', (data) => {
         console.log('data messages', data);
         getMessagesForUser(socket, io, data);
     });

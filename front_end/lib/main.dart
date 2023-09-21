@@ -10,6 +10,7 @@ import 'package:restaurant_manager_app/courses/my_custom_painter.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/message/message_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -96,6 +97,9 @@ class _MyAppState extends State<MyApp> {
                 BlocProvider(
                   create: (context) => InvoiceBloc(),
                 ),
+                BlocProvider(
+                  create: (context) => MessageBloc(),
+                ),
               ],
               child: MaterialApp(
                   themeMode: currentMode,
@@ -106,7 +110,7 @@ class _MyAppState extends State<MyApp> {
                       textTheme: textTheme(context)),
                   darkTheme: ThemeData(
                       useMaterial3: true, colorScheme: darkColorScheme),
-                  home: const LoginScreen()));
+                  home: const HomeMenuScreen()));
         });
   }
 }

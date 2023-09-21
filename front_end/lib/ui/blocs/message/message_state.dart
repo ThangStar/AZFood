@@ -1,6 +1,6 @@
 part of 'message_bloc.dart';
 
-enum MessageStatus { initial, loading, success, failure }
+enum MessageStt { initial, loading, success, failure }
 
 class MessageState extends Equatable {
   const MessageState({
@@ -9,7 +9,7 @@ class MessageState extends Equatable {
     this.msgs = const []
   });
 
-  final MessageStatus status;
+  final MessageStt status;
   final String? error;
   final List<Message> msgs;
 
@@ -17,7 +17,7 @@ class MessageState extends Equatable {
   List<Object?> get props => [status, error, msgs];
 
   MessageState copyWith({
-    MessageStatus? status,
+    MessageStt? status,
     String? error,
     List<Message>? msgs,
   }) {

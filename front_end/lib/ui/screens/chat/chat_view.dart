@@ -1,8 +1,7 @@
 import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
-import 'package:chatview/chatview.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/routers/socket.event.dart';
 import 'package:restaurant_manager_app/ui/blocs/message/message_bloc.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -337,14 +336,23 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   AppTheme theme = LightTheme();
   bool isDarkTheme = false;
-  // MessageBloc msgBloc = BlocProvider.of<MessageBloc>(context);
+  late MessageBloc msgBloc;
+
   final currentUser = ChatUser(
     id: '1',
     name: 'Flutter',
     profilePhoto: Data.profileImage,
   );
   final _chatController = ChatController(
-    initialMessageList: Data.messageList,
+    initialMessageList: [
+      Message(
+        id: '3',
+        message: "We can meet?I am free",
+        createdAt: DateTime.now(),
+        sendBy: '1',
+        status: MessageStatus.read,
+      ),
+    ],
     scrollController: ScrollController(),
     chatUsers: [
       ChatUser(
@@ -352,24 +360,8 @@ class _ChatScreenState extends State<ChatScreen> {
         name: 'Simform',
         profilePhoto: Data.profileImage,
       ),
-      ChatUser(
-        id: '3',
-        name: 'Jhon',
-        profilePhoto: Data.profileImage,
-      ),
-      ChatUser(
-        id: '4',
-        name: 'Mike',
-        profilePhoto: Data.profileImage,
-      ),
-      ChatUser(
-        id: '5',
-        name: 'Rich',
-        profilePhoto: Data.profileImage,
-      ),
     ],
   );
-
 
   void _showHideTypingIndicator() {
     _chatController.setTypingIndicator = !_chatController.showTypingIndicator;
@@ -378,10 +370,26 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    if(!io.hasListeners(SocketEvent.onMsgTextGroup)){
-
+    msgBloc = BlocProvider.of<MessageBloc>(context);
+    io.emit(SocketEvent.initialMessage, {"id": '123'});
+    _chatController.initialMessageList = msgBloc.state.msgs;
+    if (!io.hasListeners(SocketEvent.onInitialMessage)) {
+      io.on(SocketEvent.onInitialMessage, (data) {
+        print("data init ${data}");
+        //transform data
+        final rs = data as List<dynamic>;
+        rs.forEach((e) {
+          e["status"] = "MessageStatus.read";
+          e["createdAt"] = DateTime.now().toIso8601String();
+          print(e);
+          // msgs.add(e);
+        });
+        List<Message> msgs = rs.map((e) => Message.fromJson(e)).toList();
+        msgBloc.add(InitMessageEvent(msgs: msgs));
+      });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -406,7 +414,8 @@ class _ChatScreenState extends State<ChatScreen> {
           flashingCircleDarkColor: theme.flashingCircleDarkColor,
         ),
         appBar: ChatViewAppBar(
-          leading: checkDevice(size.width, null, SizedBox.shrink(), SizedBox.shrink()) ,
+          leading: checkDevice(
+              size.width, null, SizedBox.shrink(), SizedBox.shrink()),
           padding: EdgeInsets.only(left: 8, top: 4, bottom: 4),
           elevation: theme.elevation,
           backGroundColor: theme.appBarColor,
@@ -439,13 +448,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 color: theme.themeIconColor,
               ),
             ),
-            if(size.width > mobileWidth) IconButton(
-              onPressed: widget.onClose,
-              icon: Icon(
-                Icons.close,
-                color: theme.themeIconColor,
+            if (size.width > mobileWidth)
+              IconButton(
+                onPressed: widget.onClose,
+                icon: Icon(
+                  Icons.close,
+                  color: theme.themeIconColor,
+                ),
               ),
-            ),
           ],
         ),
         chatBackgroundConfig: ChatBackgroundConfiguration(

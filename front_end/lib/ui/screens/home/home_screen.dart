@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int posFilterStatusSelected = 0;
   bool isShowFilter = false;
   bool chatVisible = false;
-
+  late TableBloc tbBloc;
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
     // usernameController.text = ;
@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    tbBloc = BlocProvider.of<TableBloc>(context);
     //init table
     io.emit('table', {"name": "thang"});
     if (!io.hasListeners("response")) {
@@ -62,7 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
             jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
         //name is required having value
         tables.sort((a, b) => a.name!.compareTo(b.name!));
-        context.read<TableBloc>().add(OnTableChange(tables: tables));
+        print("mounted $mounted");
+        tbBloc.add(OnTableChange(tables: tables));
       });
     }
     super.initState();

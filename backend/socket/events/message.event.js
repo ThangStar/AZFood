@@ -1,6 +1,25 @@
 // const { getMessagesForUser, insertMessage } = require('../controllers/message.controller')
 
 const messageGroup = (socket, io) => {
+
+    socket.on('client-msg-init-group', (data) => {
+        console.log(data);
+        io.to(socket.id).emit('sever-msg-init-group', [
+            {
+                id: 's3',
+                message: "This is chat",
+                createdAt: Date.now().toLocaleString,
+                sendBy: '2',
+            },
+            {
+                id: 's3',
+                message: "kawaii",
+                createdAt: Date.now(),
+                sendBy: '2',
+            },
+        ])
+    })
+
     socket.on('client-msg-text-group', (data) => {
         if (data.body) data = data.body
         console.log('data messages', data.message);

@@ -6,3 +6,9 @@ abstract class MessageEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class InitMessageEvent extends MessageEvent {
+  final List<Message> msgs;
+
+  InitMessageEvent({required this.msgs});
+}

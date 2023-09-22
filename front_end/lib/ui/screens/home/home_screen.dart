@@ -14,6 +14,7 @@ import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/chat/chat_view.dart';
 import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -25,7 +26,7 @@ import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
-import '../chat/chat_view.dart';
+import '../chat/chat_view3.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.constraints});
@@ -44,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isShowFilter = false;
   bool chatVisible = false;
   late TableBloc tbBloc;
+
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
     // usernameController.text = ;
@@ -110,15 +112,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ToolbarHome(
                           openChat: widget.constraints.maxWidth > mobileWidth
                               ? () {
-                                    setState(() {
-                                      chatVisible = !chatVisible;
-                                    });
+                                  setState(() {
+                                    chatVisible = !chatVisible;
+                                  });
                                 }
                               : () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => const ChatScreen()));
+                                          builder: (context) =>
+                                              const ChatScreen()));
                                 },
                           profile: profile,
                           showDrawer: checkDevice(
@@ -291,24 +294,46 @@ class _HomeScreenState extends State<HomeScreen> {
               ? Positioned(
                   bottom: 15,
                   right: 90,
-                  child: Container(
-                      width: 380,
-                      height: 500,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border:
-                              Border.all(color: colorScheme(context).tertiary)),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: ChatScreen(
-                            onClose: () {
-                              if (chatVisible) {
-                                setState(() {
-                                  chatVisible = false;
-                                });
-                              }
-                            },
-                          ))))
+                  child: Row(
+                    children: [
+                      Container(
+                          width: 380,
+                          height: 500,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: colorScheme(context).tertiary)),
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: ChatViewScreen(
+                                onClose: () {
+                                  if (chatVisible) {
+                                    setState(() {
+                                      chatVisible = false;
+                                    });
+                                  }
+                                },
+                              ))),
+                      Container(
+                          width: 380,
+                          height: 500,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: colorScheme(context).tertiary)),
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: ChatScreen(
+                                onClose: () {
+                                  if (chatVisible) {
+                                    setState(() {
+                                      chatVisible = false;
+                                    });
+                                  }
+                                },
+                              ))),
+                    ],
+                  ))
               : SizedBox.shrink(),
         ],
       ),

@@ -3,8 +3,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -15,21 +17,22 @@ import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_toolbar.dart';
 
+import '../../blocs/order/order_bloc.dart';
+
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen(
-      {super.key,
-      required this.tableID,
-      required this.tableName,
-      required this.amount});
+      {super.key, required this.tableID, required this.tableName});
+
   final int tableID;
   final String tableName;
-  final int amount;
 
   @override
   State<CurrentBookingScreen> createState() => _CurrentBookingScreenState();
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
+  int amount = 0;
+
   @override
   void initState() {
     print("tableID change: ${widget.tableID} mounted $mounted");
@@ -39,7 +42,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const BottomActionBill(),
+      bottomNavigationBar: BottomActionBill(tableId: widget.tableID),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -56,7 +59,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                       leading: MyIconButtonBlur(
                         icon: Icon(
                           Icons.arrow_back,
-                          color: colorScheme(context).onPrimary,
+                          color: Colors.white.withOpacity(0.8),
                         ),
                         onTap: () {
                           Navigator.of(context, rootNavigator: true).pop();
@@ -65,7 +68,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                       trailling: [
                         MyIconButtonBlur(
                           icon: Icon(Icons.more_horiz_sharp,
-                              color: colorScheme(context).onPrimary),
+                              color: Colors.white.withOpacity(0.8)),
                           onTap: () {},
                         )
                       ],
@@ -84,20 +87,23 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(
-                                          fontSize: 20,
-                                          color:
-                                              colorScheme(context).onPrimary),
+                                          fontSize: 20, color: Colors.white),
                                 ),
-                                Text(
-                                  "Số lượng ${widget.amount}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                          fontSize: 12,
-                                          color: colorScheme(context)
-                                              .onPrimary
-                                              .withOpacity(0.6)),
+                                BlocBuilder<ProductBloc, ProductState>(
+                                  builder: (context, state) {
+                                    return Text(
+                                      state.currentProducts != null
+                                          ? "Số lượng ${state.currentProducts!.length}"
+                                          : "đang tải..",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                              fontSize: 12,
+                                              color: Colors.white
+                                                  .withOpacity(0.6)),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
@@ -135,8 +141,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                     Icons.no_food_outlined,
                                     size: 64,
                                     color: colorScheme(context)
-                                        .secondary
-                                        .withOpacity(0.6),
+                                        .scrim
+                                        .withOpacity(0.3),
                                   ),
                                   const SizedBox(
                                     height: 24,
@@ -146,19 +152,22 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                     style: TextStyle(
                                         fontSize: 18,
                                         color: colorScheme(context)
-                                            .secondary
-                                            .withOpacity(0.6)),
+                                            .scrim
+                                            .withOpacity(0.3)),
                                   )
                                 ],
                               ),
                             );
                           }
+
                           return ListView.builder(
                             shrinkWrap: true,
                             primary: false,
-                            itemCount: state.currentProducts!.length,
+                            itemCount: state.currentProducts!.toSet().length,
                             itemBuilder: (context, index) {
-                              Product product = state.currentProducts![index];
+                              Product product = state.currentProducts!
+                                  .toSet()
+                                  .elementAt(index);
                               return ItemProduct(
                                 product: product,
                                 subTitle:
@@ -246,19 +255,21 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
 }
 
 class BottomActionBill extends StatelessWidget {
-  const BottomActionBill({super.key});
+  const BottomActionBill({super.key, required this.tableId});
+
+  final int tableId;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: colorScheme(context).background,
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
-              blurRadius: 2.0,
+              color: colorScheme(context).primary.withOpacity(0.6),
+              blurRadius: 6.0,
               spreadRadius: 0.0,
-              offset: Offset(0, 2.0), // shadow direction: bottom right
+              offset: Offset(0, 1.0), // shadow direction: bottom right
             )
           ],
         ),
@@ -270,17 +281,25 @@ class BottomActionBill extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "Tạm tính",
                       style: TextStyle(fontSize: 14),
                     ),
-                    Text(
-                      "920.000đ",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        int price = 0;
+                        for (Product i in state.currentProducts ?? []) {
+                          price += i.price * i.amountCart;
+                        }
+                        return Text(
+                          "${NumberFormat.decimalPattern().format(price)} đ",
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -315,9 +334,11 @@ class BottomActionBill extends StatelessWidget {
             ),
             Row(
               children: [
-                MyOutlineButton(
-                  text: 'Quay lại',
-                  onTap: () {},
+                Expanded(
+                  child: MyOutlineButton(
+                    text: 'Quay lại',
+                    onTap: () {},
+                  ),
                 ),
                 const SizedBox(
                   width: 10,
@@ -325,7 +346,18 @@ class BottomActionBill extends StatelessWidget {
                 Expanded(
                   child: MyButtonGradient(
                     text: "Thanh toán",
-                    onTap: () {},
+                    onTap: () {
+                      context.read<OrderBloc>().add(PayBillEvent(
+                          tableId: tableId,
+                          pushScreen: (payStatus, billData) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PaySuccessScreen(
+                                      payStatus: payStatus, billData: billData),
+                                ));
+                          }));
+                    },
                   ),
                 )
               ],

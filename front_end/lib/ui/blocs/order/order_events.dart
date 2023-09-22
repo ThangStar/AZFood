@@ -17,13 +17,20 @@ class ProductCheckOut {
 }
 
 class CreateOrderEvent extends OrderEvent {
-  final List<ProductCheckOut> products;
+  final ProductCheckOut product;
 
-  const CreateOrderEvent({required this.products});
+  const CreateOrderEvent({required this.product});
 }
 
 class GetOrderInTableEvent extends OrderEvent {
   final int tableID;
 
   const GetOrderInTableEvent({required this.tableID});
+}
+
+class PayBillEvent extends OrderEvent {
+  final int tableId;
+  final Function(PayStatus, BillData?) pushScreen;
+
+  PayBillEvent({required this.tableId, required this.pushScreen});
 }

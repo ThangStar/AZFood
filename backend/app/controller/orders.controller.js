@@ -403,7 +403,7 @@ exports.payBill = async (req, res) => {
                 replacements: [1, tableID],
                 type: QueryTypes.UPDATE
             });
-            io.emit('tableStatusChanged', { tableID: tableID, newStatus: 1 });
+            io.emit('tableStatusChanged');
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
 

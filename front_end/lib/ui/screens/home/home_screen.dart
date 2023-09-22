@@ -120,8 +120,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ChatScreen()));
+                                          builder: (context) => ChatViewScreen(
+                                                onClose: () {
+                                                  setState(() {
+                                                    chatVisible = !chatVisible;
+                                                  });
+                                                },
+                                              )));
                                 },
                           profile: profile,
                           showDrawer: checkDevice(
@@ -306,24 +311,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: ChatViewScreen(
-                                onClose: () {
-                                  if (chatVisible) {
-                                    setState(() {
-                                      chatVisible = false;
-                                    });
-                                  }
-                                },
-                              ))),
-                      Container(
-                          width: 380,
-                          height: 500,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: colorScheme(context).tertiary)),
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: ChatScreen(
                                 onClose: () {
                                   if (chatVisible) {
                                     setState(() {

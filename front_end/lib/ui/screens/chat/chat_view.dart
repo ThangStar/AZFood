@@ -1,5 +1,6 @@
 import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -52,15 +53,21 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
         shadowColor: colorScheme(context).tertiary,
         surfaceTintColor: colorScheme(context).onPrimary,
         elevation: 3,
-        leading: Image.asset("assets/images/avatar.jpg"),
-        title: const Column(
+        leadingWidth: 50,
+        leading: Container(
+            margin: EdgeInsets.all(4),
+            child: CircleAvatar(
+                backgroundImage: AssetImage("assets/images/chicken.png"))),
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Văn Thắng",
+            Text("Nhóm AZFood",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Text(
-              "Văn Thắng",
-              style: TextStyle(fontSize: 12),
+              "Đang hoạt động",
+              style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme(context).scrim.withOpacity(0.6)),
             ),
           ],
         ),
@@ -68,14 +75,14 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
           IconButton(
             onPressed: () {},
             icon: Icon(
-              Icons.close,
+              Icons.dark_mode_outlined,
               color: colorScheme(context).scrim.withOpacity(0.8),
             ),
           ),
           IconButton(
             onPressed: () {},
             icon: Icon(
-              Icons.close,
+              Icons.keyboard,
               color: colorScheme(context).scrim.withOpacity(0.8),
             ),
           ),
@@ -89,9 +96,9 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
             ),
         ],
       ),
-      body: Stack(
+      body: const Stack(
         children: [
-          Text("data"),
+          ItemMsg(),
           Align(alignment: Alignment.bottomCenter, child: BottomActionChat()),
         ],
       ),
@@ -108,11 +115,12 @@ class BottomActionChat extends StatefulWidget {
 
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
           color: colorScheme(context).onPrimary,
           borderRadius: BorderRadius.circular(30)),
@@ -120,28 +128,94 @@ class _BottomActionChatState extends State<BottomActionChat> {
       child: TextField(
         controller: controllerMsg,
         textAlignVertical: TextAlignVertical.center,
+        onChanged: (value) {
+          setState(() {
+            controllerMsg.text = value;
+          });
+        },
         decoration: InputDecoration(
+            isDense: true,
+            alignLabelWithHint: true,
+            hintText: "Nhập tin nhắn",
+            hintStyle: const TextStyle(fontSize: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            border: InputBorder.none,
+            suffixIcon: AnimatedSize(
+              duration: 100.ms,
+              child: controllerMsg.text == ""
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.camera_alt_outlined,
+                              size: 24,
+                            )),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.image, size: 24)),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.keyboard_voice, size: 24)),
+                        const SizedBox(
+                          width: 6,
+                        )
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            color: Colors.red,
+                            onPressed: () {},
+                            icon: const Icon(Icons.send,
+                                color: Colors.pink, size: 24)),
+                        const SizedBox(
+                          width: 6,
+                        )
+                      ],
+                    ),
+            )),
+      ),
+    );
+  }
+}
 
-          isDense: true,
-          alignLabelWithHint: true,
-          hintText: "Nhập tin nhắn",
-          hintStyle: TextStyle(
-            fontSize: 16
+enum TypeMessage { text, message, voice }
+
+class ItemMsg extends StatelessWidget {
+  const ItemMsg({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const CircleAvatar(
+              backgroundImage: AssetImage("assets/images/avatar.jpg")),
+          const SizedBox(
+            width: 4,
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          border: InputBorder.none,
-          suffixIcon: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                  onPressed: () {}, icon: Icon(Icons.camera_alt_outlined, size: 24,)),
-              IconButton(onPressed: () {}, icon: Icon(Icons.image, size: 24)),
-              IconButton(onPressed: () {}, icon: Icon(Icons.keyboard_voice, size: 24)),
-              SizedBox(width: 6,)
-            ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: const BoxDecoration(
+                color: Colors.pink,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(6),
+                    bottomLeft: Radius.circular(6),
+                    topRight: Radius.circular(6))),
+            child: Text(
+              "My message",
+              style: TextStyle(color: colorScheme(context).onPrimary),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

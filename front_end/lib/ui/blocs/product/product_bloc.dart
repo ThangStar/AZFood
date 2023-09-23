@@ -11,6 +11,7 @@ import 'package:restaurant_manager_app/model/product_response.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
 
 part 'product_events.dart';
+
 part 'product_state.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
@@ -29,7 +30,6 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       GetProductsEvent event, Emitter<ProductState> emit) async {
     Object result = await ProductApi.getProduct(event.page);
     if (result is Success) {
-      print("object");
       print("Success ${result.response}");
       ProductResponse productResponse =
           ProductResponse.fromJson(jsonDecode(result.response.toString()));

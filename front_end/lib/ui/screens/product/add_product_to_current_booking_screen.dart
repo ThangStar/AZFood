@@ -55,9 +55,9 @@ class _AddProductToCurrentBookingScreenState
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                label:  Badge(
+                label: Badge(
                   label: Text("${productsSelected.length}"),
-                  child:  Icon(
+                  child: Icon(
                     Icons.shopping_cart_rounded,
                     color: colorScheme(context).onPrimary,
                   ),
@@ -139,6 +139,13 @@ class _AddProductToCurrentBookingScreenState
                                   cartKey: cartKey,
                                   product: product,
                                   onTap: () {
+                                       context.read<OrderBloc>().add(
+                                            CreateOrderEvent(product:
+                                          ProductCheckOut(
+                                              productID: product.id,
+                                              quantity: 1,
+                                              tableID: widget.tableID)
+                                        ));
                                     final index = productsSelected.indexWhere(
                                       (element) => element.id == product.id,
                                     );
@@ -159,13 +166,7 @@ class _AddProductToCurrentBookingScreenState
                                     //     productsSelected[index] = productUpdate;
                                     //   });
                                     // }
-                                    context.read<OrderBloc>().add(
-                                            CreateOrderEvent(products: [
-                                          ProductCheckOut(
-                                              productID: product.id,
-                                              quantity: 1,
-                                              tableID: widget.tableID)
-                                        ]));
+                                 
                                     // final index = productsSelected.indexWhere(
                                     //   (element) => element.id == product.id,
                                     // );

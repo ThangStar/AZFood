@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,8 +14,10 @@ import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/chat/chat_view.dart';
 import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button_blur.dart';
@@ -23,8 +26,12 @@ import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
+import '../chat/chat_view3.dart';
+
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.constraints});
+
+  final BoxConstraints constraints;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -32,10 +39,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> filterStatus = ["Tất cả", "Chờ", "Hoạt động", "bận"];
+  List<String> filterStatus = ["Tất cả", "Hoạt động", "bận", "Chờ"];
 
   int posFilterStatusSelected = 0;
   bool isShowFilter = false;
+  bool chatVisible = false;
+  late TableBloc tbBloc;
 
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
@@ -44,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    tbBloc = BlocProvider.of<TableBloc>(context);
     //init table
     io.emit('table', {"name": "thang"});
     if (!io.hasListeners("response")) {
@@ -55,7 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
             jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
         //name is required having value
         tables.sort((a, b) => a.name!.compareTo(b.name!));
-        context.read<TableBloc>().add(OnTableChange(tables: tables));
+        print("mounted $mounted");
+        tbBloc.add(OnTableChange(tables: tables));
       });
     }
     super.initState();
@@ -99,7 +110,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 phoneNumber: "0123",
                                 email: "email");
                         return ToolbarHome(
+                          openChat: widget.constraints.maxWidth > mobileWidth
+                              ? () {
+                                  setState(() {
+                                    chatVisible = !chatVisible;
+                                  });
+                                }
+                              : () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatViewScreen(
+                                                onClose: () {
+                                                  setState(() {
+                                                    chatVisible = !chatVisible;
+                                                  });
+                                                },
+                                              )));
+                                },
                           profile: profile,
+                          showDrawer: checkDevice(
+                              widget.constraints.maxWidth, true, false, false),
                         );
                       },
                     ),
@@ -159,32 +190,38 @@ class _HomeScreenState extends State<HomeScreen> {
                                     : Icons.filter_alt_outlined))
                           ],
                         )),
-                    AnimatedContainer(
-                      height: isShowFilter ? 60 : 0,
-                      clipBehavior: Clip.antiAlias,
-                      decoration: const BoxDecoration(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      duration: 200.ms,
-                      child: Row(children: [
-                        Wrap(
-                          spacing: 8,
-                          children: filterStatus
-                              .asMap()
-                              .entries
-                              .map((e) => MyChipToggle(
-                                    isSelected:
-                                        posFilterStatusSelected == e.key,
-                                    label: e.value,
-                                    onTap: () {
-                                      setState(() {
-                                        posFilterStatusSelected = e.key;
-                                      });
-                                    },
-                                  ))
-                              .toList(),
-                        )
-                      ]),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: AnimatedContainer(
+                        height: isShowFilter ? 60 : 0,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        duration: 200.ms,
+                        child: Row(children: [
+                          Wrap(
+                            spacing: 8,
+                            children: filterStatus
+                                .asMap()
+                                .entries
+                                .map((e) => MyChipToggle(
+                                      isSelected:
+                                          posFilterStatusSelected == e.key,
+                                      label: e.value,
+                                      onTap: () {
+                                        setState(() {
+                                          posFilterStatusSelected = e.key;
+                                        });
+                                        context
+                                            .read<TableBloc>()
+                                            .add(OnFilterTable(status: e.key));
+                                      },
+                                    ))
+                                .toList(),
+                          )
+                        ]),
+                      ),
                     ),
                     BlocBuilder<TableBloc, TableState>(
                       builder: (context, state) {
@@ -194,13 +231,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           primary: false,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
+                              SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisSpacing: 6,
                                   mainAxisSpacing: 6,
                                   mainAxisExtent: 160,
-                                  crossAxisCount: 2),
+                                  crossAxisCount: checkDevice(
+                                      widget.constraints.maxWidth, 2, 3, 4)),
                           itemBuilder: (context, index) {
-                            Model.Table table = state.tables[index];
+                            Model.Table table = state.tablesFilter[index];
                             return ItemTable(
                               table: table,
                               onTap: () {
@@ -211,45 +249,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'listProductByIdTable', {"id": table.id});
                                 if (!io.hasListeners("responseOrder")) {
                                   io.on('responseOrder', (data) {
-                                    print("products change: $data");
-
                                     final jsonResponse = data as List<dynamic>;
                                     List<Product> currentProducts = jsonResponse
                                         .map((e) => Product.fromJson(e))
                                         .toList();
-
-                                    // print(
-                                    //     'test length a: ${currentProducts.length}');
-                                    //     List<Product> productFinal = [];
-                                    //     List<Product> new1 = List.from(currentProducts);
-                                    // for (var x = 0 ; x <= new1.length+1;x++){
-                                    //     for (var y = 0 ; y <= new1.length;y++) {
-                                    //       if(new1[x].name != new1[y].name){
-                                    //         productFinal.add(new1[x]);
-                                    //       }
-                                    //     }
-                                    // }
-                                    // currentProducts.forEach((element) {
-                                    //   bool a = currentProducts.indexOf(element);
-                                    //   // if(element.id == )
-                                    // });
-
+                                    for (var i in currentProducts) {
+                                      int length = currentProducts
+                                          .where((j) => j.name == i.name)
+                                          .length;
+                                      i.quantity = length;
+                                    }
                                     context.read<ProductBloc>().add(
                                         GetListProductByIdTable(
                                             currentProducts: currentProducts));
-                                    print("current: ${currentProducts.length}");
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              CurrentBookingScreen(
-                                            tableID: table.id!,
-                                            tableName: table.name ?? "",
-                                            amount: currentProducts.length,
-                                          ),
-                                        ));
                                   });
                                 }
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CurrentBookingScreen(
+                                        tableID: table.id!,
+                                        tableName: table.name ?? "dđ",
+                                      ),
+                                    ));
                               },
                             )
                                 .animate()
@@ -260,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     curve: Curves.fastEaseInToSlowEaseOut)
                                 .fade(duration: (500 * index).ms);
                           },
-                          itemCount: state.tables.length,
+                          itemCount: state.tablesFilter.length,
                         );
                       },
                     ),
@@ -272,27 +295,50 @@ class _HomeScreenState extends State<HomeScreen> {
               )),
             ),
           ),
+          chatVisible
+              ? Positioned(
+                  bottom: 15,
+                  right: 90,
+                  child: Row(
+                    children: [
+                      Container(
+                          width: 380,
+                          height: 500,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: colorScheme(context).tertiary)),
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: ChatViewScreen(
+                                onClose: () {
+                                  if (chatVisible) {
+                                    setState(() {
+                                      chatVisible = false;
+                                    });
+                                  }
+                                },
+                              ))),
+                    ],
+                  ))
+              : SizedBox.shrink(),
         ],
       ),
     );
   }
 }
 
-List splice(List list, int index, [num howMany = 0, dynamic elements]) {
-  var endIndex = index + howMany.truncate();
-  list.removeRange(index, endIndex >= list.length ? list.length : endIndex);
-  if (elements != null) {
-    list.insertAll(index, elements is List ? elements : <String>[elements]);
-  }
-  return list;
-}
-
 class ToolbarHome extends StatelessWidget {
   const ToolbarHome({
     super.key,
     required this.profile,
+    this.showDrawer = true,
+    this.openChat,
   });
+
   final Profile profile;
+  final bool showDrawer;
+  final VoidCallBack? openChat;
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +346,7 @@ class ToolbarHome extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage('assets/images/background.jpg')),
+            image: AssetImage('assets/images/bg_app_bar.jpg')),
       ),
       child: Container(
         padding: const EdgeInsets.only(top: 40),
@@ -320,37 +366,58 @@ class ToolbarHome extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  MyIconButtonBlur(
-                    icon: const Icon(
-                      Icons.menu,
-                      color: Colors.white,
+                  if (showDrawer)
+                    MyIconButtonBlur(
+                      icon: const Icon(
+                        Icons.menu,
+                        color: Colors.white,
+                      ),
+                      onTap: () {
+                        ZoomDrawer.of(context)!.open();
+                      },
                     ),
-                    onTap: () {
-                      ZoomDrawer.of(context)!.open();
-                    },
-                  ),
                   Text("Xin chào, ${profile.name.split(' ').last}",
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
                           ?.copyWith(color: Colors.white)),
-                  MyIconButtonBlur(
-                    icon: Badge(
-                      backgroundColor: Colors.redAccent,
-                      child:
-                          const Icon(Icons.notifications, color: Colors.white)
+                  Row(
+                    children: [
+                      MyIconButtonBlur(
+                        icon: Badge(
+                          label: Text("9+"),
+                          backgroundColor: Colors.redAccent,
+                          child: const Icon(Icons.chat, color: Colors.white)
                               .animate(
                                 onPlay: (controller) => controller.repeat(),
                               )
                               .shake(delay: 1.seconds),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const NotificationScreen(),
-                          ));
-                    },
+                        ),
+                        onTap: openChat ?? () {},
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      MyIconButtonBlur(
+                        icon: Badge(
+                          backgroundColor: Colors.redAccent,
+                          child: const Icon(Icons.notifications,
+                                  color: Colors.white)
+                              .animate(
+                                onPlay: (controller) => controller.repeat(),
+                              )
+                              .shake(delay: 1.seconds),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const NotificationScreen(),
+                              ));
+                        },
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -375,6 +442,7 @@ class ToolbarHome extends StatelessWidget {
 
 class ToolbarProfile extends StatelessWidget {
   const ToolbarProfile({super.key, required this.profile});
+
   final Profile profile;
 
   @override

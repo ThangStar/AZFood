@@ -1,5 +1,6 @@
 const table = require('./events/table.event')
-const listProductByIdTable = require('./events/product.event')
+const listProductByIdTable = require('./events/product.event');
+const messageGroup = require('./events/message.event');
 const socketInit = (io) => {
     init(io)
 }
@@ -12,12 +13,7 @@ init = (io) => {
 
         table(socket, io)
         listProductByIdTable(socket, io)
-
-        socket.on('a', () => {
-            io.emit('response', "HELLO")
-        });
-
-        // orders(socket, io)
+        messageGroup(socket, io)
 
         socket.on('disconnect', () => {
             connections.splice(connections.indexOf(socket), 1);

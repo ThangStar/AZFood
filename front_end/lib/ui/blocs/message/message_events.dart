@@ -8,7 +8,13 @@ abstract class MessageEvent extends Equatable {
 }
 
 class InitMessageEvent extends MessageEvent {
-  final List<Message> msgs;
+  final List<Message>? msgs;
 
-  InitMessageEvent({required this.msgs});
+  InitMessageEvent({this.msgs});
+}
+
+class ActionSendMessage extends MessageEvent{
+  final Message msg;
+
+  const ActionSendMessage({required this.msg});
 }

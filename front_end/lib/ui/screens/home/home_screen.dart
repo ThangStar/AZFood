@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -338,7 +337,7 @@ class ToolbarHome extends StatelessWidget {
 
   final Profile profile;
   final bool showDrawer;
-  final VoidCallBack? openChat;
+  final VoidCallback? openChat;
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,10 @@
 // const { getMessagesForUser, insertMessage } = require('../controllers/message.controller')
 
+//ROLE:
+// Type 
+// 1: Text
+// 2: Image
+// 3: Voice
 const messageGroup = (socket, io) => {
 
     socket.on('client-msg-init-group', (data) => {
@@ -20,16 +25,10 @@ const messageGroup = (socket, io) => {
         ])
     })
 
-    socket.on('client-msg-text-group', (data) => {
+    socket.on('client-msg-group', (data) => {
         if (data.body) data = data.body
         console.log('data messages', data.message);
-        io.emit('sever-msg-text-group', data.message);
-    });
-
-    socket.on('client-msg-voice-group', (data) => {
-        console.log('inserting message', data);
-        if (data.body) data = data.body
-        io.emit('sever-msg-voice-group', data.sound);
+        io.emit('sever-msg-group', data.message);
     });
 
     socket.on('client-msg-typing-group', (data) => {

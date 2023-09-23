@@ -3,48 +3,33 @@ const { sequelize } = require("../../app/models");
 
 exports.getMessagesForUser = async (socket, io, data) => {
     try {
-        const userId = 2;
-
-        const getMessagesQuery = `
-            SELECT id, content
-            FROM messages
-            WHERE userId = ?
-        `;
-
-        const messages = await sequelize.query(getMessagesQuery, {
+        const queryRaw = `SELECT * FROM MESSAGE`;
+        const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
             logging: false,
-            replacements: [userId],
+            replacements: [],
             type: QueryTypes.SELECT
         });
-
-        io.emit('responseMessages', messages);
-        
+        io.emit('client-msg-init-group', resultRaw);
     } catch (error) {
         console.error('Error getting messages:', error);
-        io.to(socket.id).emit('responseMessages', "error")
+        io.to(socket.id).emit('client-msg-init-group', "error")
     }
 };
 
 exports.insertMessage = async (socket, io, data) => {
+    const { type, message, raw, imageUrl, sendBy } = data
     try {
-        const { userId, content } = data;
-
-        const insertQuery = `
-            INSERT INTO messages (userId, content)
-            VALUES (?, ?)
-        `;
-
-        await sequelize.query(insertQuery, {
-            replacements: [userId, content],
-            type: QueryTypes.INSERT
+        const queryRaw = `INSERT INTO MESSAGE(type, message, raw, imageUrl, sendBy) VALUES(?,?,?,?,?)`;
+        const resultRaw = await sequelize.query(queryRaw, {
+            raw: true,
+            logging: false,
+            replacements: [type, message, raw, imageUrl, sendBy],
+            type: QueryTypes.SELECT
         });
-
-        // Emit sự kiện cho client biết đã chèn thành công
-        io.emit('messageInserted', { success: true });
-
+        io.emit('sever-msg-group', resultRaw);
     } catch (error) {
-        console.error('Error inserting message:', error);
-        io.to(socket.id).emit('messageError', "Error inserting message");
+        console.error('Error getting messages:', error);
+        io.to(socket.id).emit('sever-msg-group', "error")
     }
 };

@@ -32,7 +32,11 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         automaticallyImplyLeading:
             checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
-        title: const Text("Hoá đơn"),
+        title: Text("Hoá đơn", style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
       ),
       body: Column(
         children: [
@@ -72,10 +76,13 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
             child: BlocBuilder<InvoiceBloc, InvoiceState>(
               builder: (context, state) {
                 if (state is InvoiceLoadingState) {
-                  return const Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: AspectRatio(
-                        aspectRatio: 1, child: CircularProgressIndicator()),
+                  return const Center(
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: AspectRatio(
+                          aspectRatio: 1, child: CircularProgressIndicator()),
+                    ),
                   );
                 } else if (state.invoices.isNotEmpty) {
                   return GridView.builder(

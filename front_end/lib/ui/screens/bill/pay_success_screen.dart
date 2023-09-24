@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 
 enum PayStatus { success, failed }
 
@@ -168,7 +167,7 @@ class BodyBillSuccess extends StatelessWidget {
                         ),
                         Flexible(
                           child: Text(
-                            "${billData?.username ?? "username"}",
+                            billData?.username ?? "username",
                             style: const TextStyle(fontSize: 18),
                           ),
                         ),
@@ -188,7 +187,7 @@ class BodyBillSuccess extends StatelessWidget {
                         ),
                         Flexible(
                           child: Text(
-                            "${billData?.time ?? ""}",
+                            billData?.time ?? "",
                             style: const TextStyle(fontSize: 18),
                           ),
                         ),

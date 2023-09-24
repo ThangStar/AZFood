@@ -4,7 +4,6 @@ import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_manager_app/constants/env.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/services/notification_mobile.dart';
@@ -13,7 +12,6 @@ import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
-import 'package:restaurant_manager_app/ui/utils/my_snack_bar.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
@@ -90,8 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         if (state is AuthLoginSuccess) {
           ElegantNotification.success(
-              title:  Text("Thông báo"),
-              description:  Text("Đăng nhập thành công")
+              title:  const Text("Thông báo"),
+              description:  const Text("Đăng nhập thành công")
           ).show(context);
 
           // showMySnackBar(context, "Đăng nhập thành công", TypeSnackBar.success);
@@ -102,8 +100,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ));
         } else if (state is AuthLoginFailed) {
           ElegantNotification.error(
-              title:  Text("Thông báo"),
-              description:  Text("Tài khoản hoặc mật khẩu không chính xác")
+              title:  const Text("Thông báo"),
+              description:  const Text("Tài khoản hoặc mật khẩu không chính xác")
           ).show(context);
           // setState(() {
           //   isShowAlert = true;
@@ -112,8 +110,8 @@ class _LoginScreenState extends State<LoginScreen> {
           // });
         } else if (state is AuthLoginConnectionFailed) {
           ElegantNotification.error(
-              title:  Text("Thông báo"),
-              description:  Text("Mất kết nối máy chủ")
+              title:  const Text("Thông báo"),
+              description:  const Text("Mất kết nối máy chủ")
           ).show(context);
         }
       },
@@ -147,11 +145,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 checkDevice(
                                     constraints.maxWidth,
-                                    SizedBox.shrink(),
+                                    const SizedBox.shrink(),
                                     const Expanded(
-                                        child: LeadContentLogin(), flex: 1),
+                                        flex: 1,
+                                        child: LeadContentLogin()),
                                     const Expanded(
-                                        child: LeadContentLogin(), flex: 1)),
+                                        flex: 1,
+                                        child: LeadContentLogin())),
                                 Expanded(
                                   flex: 1,
                                   child: Padding(
@@ -186,8 +186,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     width: 8,
                                                   ),
                                                 ],
-                                              ), SizedBox.shrink(),
-                                                  SizedBox.shrink()),
+                                              ), const SizedBox.shrink(),
+                                                  const SizedBox.shrink()),
 
 
                                               Text(
@@ -422,10 +422,10 @@ class LeadContentLogin extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.horizontal(left: Radius.circular(12)),
+        borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
         color: colorScheme(context).secondary.withOpacity(0.8),
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -437,7 +437,7 @@ class LeadContentLogin extends StatelessWidget {
               child: Image.asset("assets/images/chicken.png"),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(
@@ -453,14 +453,7 @@ class LeadContentLogin extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Text(
-              "Là một hệ thống trao đổi tương tác một cách tự nhiên và a" +
-                  "n toàn. Hệ thống hoạt động theo nguyên tắc tự nguyện trao" +
-                  " đổi giữa các thành viên, cùng giúp nhau tăng tương tác, tăng " +
-                  "hiệu quả bán hàng, truyền thông#traodoisub , #tangsub, #tuongtaccheo," +
-                  " #tuongtacfb, #tangtheodoimienphi, #tanglikemienphi, #tanglike, #tangtheodoi," +
-                  " #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok" +
-                  " #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok" +
-                  " #tangcmt, #tangcamxuc, #ta",
+              "Là một hệ thống trao đổi tương tác một cách tự nhiên và an toàn. Hệ thống hoạt động theo nguyên tắc tự nguyện trao đổi giữa các thành viên, cùng giúp nhau tăng tương tác, tăng hiệu quả bán hàng, truyền thông#traodoisub , #tangsub, #tuongtaccheo, #tuongtacfb, #tangtheodoimienphi, #tanglikemienphi, #tanglike, #tangtheodoi, #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok #tangcmt, #tangcamxuc, #ta",
               textAlign: TextAlign.center,
               style: Theme
                   .of(context)

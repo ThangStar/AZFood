@@ -3,10 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:local_notifier/local_notifier.dart';
-import 'package:restaurant_manager_app/courses/face_detector/camera_screen.dart';
-import 'package:restaurant_manager_app/courses/my_custom_painter.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
@@ -16,14 +13,10 @@ import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/chat/chat_view3.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 
-import 'courses/face_detector/camera_view.dart';
-import 'courses/face_detector/face_main.dart';
 
 late List<CameraDescription> cameras;
 

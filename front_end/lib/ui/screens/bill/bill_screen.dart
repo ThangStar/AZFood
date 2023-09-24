@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -94,7 +93,7 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
                         invoice: invoice,
                       ).animate().fade(duration: 1.seconds).moveY(
                           duration: 1.seconds,
-                          begin: 50 * index!.toDouble() ?? 0.0,
+                          begin: 50 * index.toDouble() ?? 0.0,
                           curve: Curves.fastOutSlowIn);
                     },
                     itemCount: state.invoices.length,

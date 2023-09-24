@@ -4,7 +4,9 @@ import 'package:restaurant_manager_app/model/notification.dart' as Noti;
 import '../../theme/color_schemes.dart';
 
 class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+  const NotificationScreen({super.key, required this.onClose});
+
+  final VoidCallback onClose;
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -16,7 +18,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
         id: 0,
         content: "content",
         assetImage: "assets/images/avatar.jpg",
-        opened: false, date: '25-5-2002')
+        opened: false,
+        date: '25-5-2002')
   ];
 
   @override
@@ -115,12 +118,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                           Expanded(
                             flex: 1,
-                            child: GestureDetector(
-                              onTap: () {
-                                _showBottomSheet(context);
-                              },
-                              child: const Icon(Icons.more_horiz),
-                            ),
+                            child: _buildPopupMenuButton(),
                           ),
                         ],
                       ),
@@ -135,30 +133,39 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.mark_email_read),
-              title: const Text('Đánh dấu đã đọc'),
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Xóa thông báo này'),
-              onTap: () {
-                setState(() {
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
+  Widget _buildPopupMenuButton() {
+    return PopupMenuButton<int>(
+      icon: const Icon(Icons.more_horiz),
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 1,
+          child: Row(
+            children: [
+              Icon(Icons.mark_email_read),
+              SizedBox(width: 8),
+              Text('Đánh dấu đã đọc'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: 2,
+          child: Row(
+            children: [
+              Icon(Icons.delete),
+              SizedBox(width: 8),
+              Text('Xóa thông báo này'),
+            ],
+          ),
+        ),
+      ],
+      onSelected: (value) {
+        if (value == 1) {
+          // Handle "Đánh dấu đã đọc"
+        } else if (value == 2) {
+          setState(() {
+            // Handle "Xóa thông báo này"
+          });
+        }
       },
     );
   }

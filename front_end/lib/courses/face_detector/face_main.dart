@@ -16,6 +16,7 @@ class _FaceMainState extends State<FaceMain> {
   FaceDetector(options: FaceDetectorOptions(enableLandmarks: true));
 
   List<Face> faces = [];
+  @override
   Widget build(BuildContext context) {
     return CameraView(
       customPaint: CustomPaint(
@@ -27,7 +28,7 @@ class _FaceMainState extends State<FaceMain> {
             faces = value;
           });
           print(value.length);
-          if (value.length > 0) {
+          if (value.isNotEmpty) {
             print(value[0].boundingBox);
           }
         });

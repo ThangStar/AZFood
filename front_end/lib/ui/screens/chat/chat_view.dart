@@ -1,10 +1,9 @@
-import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_manager_app/model/message.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
 
 import '../../../routers/socket.event.dart';
 import '../../../utils/io_client.dart';
@@ -13,7 +12,7 @@ import '../../blocs/message/message_bloc.dart';
 class ChatViewScreen extends StatefulWidget {
   const ChatViewScreen({super.key, required this.onClose});
 
-  final VoidCallBack onClose;
+  final VoidCallback onClose;
 
   @override
   State<ChatViewScreen> createState() => _ChatViewScreenState();
@@ -21,11 +20,12 @@ class ChatViewScreen extends StatefulWidget {
 
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
+  ScrollController controllerMsg = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    // msgBloc = BlocProvider.of<MessageBloc>(context);
+    msgBloc = BlocProvider.of<MessageBloc>(context);
     // io.emit(SocketEvent.initialMessage, {"id": '123'});
     // if (!io.hasListeners(SocketEvent.onInitialMessage)) {
     //   io.on(SocketEvent.onInitialMessage, (data) {
@@ -39,9 +39,18 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
     //       // msgs.add(e);
     //     });
     //     List<Message> msgs = rs.map((e) => Message.fromJson(e)).toList();
-    //     msgBloc.add(InitMessageEvent(msgs: msgs));
+    msgBloc.add(const InitMessageEvent());
     //   });
     // }
+    _listenMessage();
+  }
+
+  _listenMessage() {
+    if (!io.hasListeners(SocketEvent.onMsgGroup)) {
+      io.on(SocketEvent.onMsgGroup, (data){
+        print("data from sever: $data");
+      });
+    }
   }
 
   @override
@@ -53,15 +62,20 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
         shadowColor: colorScheme(context).tertiary,
         surfaceTintColor: colorScheme(context).onPrimary,
         elevation: 3,
-        leadingWidth: 50,
-        leading: Container(
-            margin: EdgeInsets.all(4),
-            child: CircleAvatar(
-                backgroundImage: AssetImage("assets/images/chicken.png"))),
+        leadingWidth: size.width > mobileWidth ? null : 90,
+        leading: Row(
+          children: [
+            if (!(size.width > mobileWidth)) const BackButton(),
+            Container(
+                margin: const EdgeInsets.all(4),
+                child: const CircleAvatar(
+                    backgroundImage: AssetImage("assets/images/chicken.png"))),
+          ],
+        ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Nhóm AZFood",
+            const Text("Nhóm AZFood",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             Text(
               "Đang hoạt động",
@@ -96,10 +110,22 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
             ),
         ],
       ),
-      body: const Stack(
+      body: Stack(
         children: [
-          ItemMsg(),
-          Align(alignment: Alignment.bottomCenter, child: BottomActionChat()),
+          BlocBuilder<MessageBloc, MessageState>(
+            builder: (context, state) {
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                controller: controllerMsg,
+                itemCount: state.msgs.length,
+                itemBuilder: (context, index) {
+                  return ItemMsg(msg: state.msgs[index]);
+                },
+              );
+            },
+          ),
+          const Align(
+              alignment: Alignment.bottomCenter, child: BottomActionChat()),
         ],
       ),
     );
@@ -171,7 +197,13 @@ class _BottomActionChatState extends State<BottomActionChat> {
                       children: [
                         IconButton(
                             color: Colors.red,
-                            onPressed: () {},
+                            onPressed: () => context.read<MessageBloc>().add(
+                                ActionSendMessage(
+                                    msg: Message(
+                                        id: 1,
+                                        sendBy: 1,
+                                        message: controllerMsg.text,
+                                        type: 1))),
                             icon: const Icon(Icons.send,
                                 color: Colors.pink, size: 24)),
                         const SizedBox(
@@ -185,38 +217,58 @@ class _BottomActionChatState extends State<BottomActionChat> {
   }
 }
 
-enum TypeMessage { text, message, voice }
-
 class ItemMsg extends StatelessWidget {
-  const ItemMsg({super.key});
+  const ItemMsg({super.key, required this.msg});
+
+  final Message msg;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const CircleAvatar(
-              backgroundImage: AssetImage("assets/images/avatar.jpg")),
-          const SizedBox(
-            width: 4,
+    Size size = MediaQuery.of(context).size;
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            textDirection:
+                msg.sendBy == 1 ? TextDirection.rtl : TextDirection.ltr,
+            children: [
+              const CircleAvatar(
+                  backgroundImage: AssetImage("assets/images/avatar.jpg")),
+              const SizedBox(
+                width: 8,
+              ),
+              Container(
+                constraints:
+                    BoxConstraints(maxWidth: constraints.maxWidth * 0.6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                    color: msg.sendBy == 1
+                        ? Colors.pink
+                        : colorScheme(context).onPrimary,
+                    borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(18),
+                        topRight: const Radius.circular(18),
+                        bottomLeft: msg.sendBy == 1
+                            ? const Radius.circular(18)
+                            : const Radius.circular(0),
+                        bottomRight: msg.sendBy != 1
+                            ? const Radius.circular(18)
+                            : const Radius.circular(0))),
+                child: Text(
+                  msg.message ?? "",
+                  style: TextStyle(
+                      color: msg.sendBy != 1
+                          ? colorScheme(context).scrim
+                          : colorScheme(context).onPrimary),
+                ),
+              ),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: const BoxDecoration(
-                color: Colors.pink,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(6),
-                    bottomLeft: Radius.circular(6),
-                    topRight: Radius.circular(6))),
-            child: Text(
-              "My message",
-              style: TextStyle(color: colorScheme(context).onPrimary),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

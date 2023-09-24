@@ -10,7 +10,11 @@ abstract class MessageEvent extends Equatable {
 class InitMessageEvent extends MessageEvent {
   final List<Message>? msgs;
 
+<<<<<<< Updated upstream
   InitMessageEvent({this.msgs});
+=======
+  const InitMessageEvent({required this.msgs});
+>>>>>>> Stashed changes
 }
 
 class ActionSendMessage extends MessageEvent{

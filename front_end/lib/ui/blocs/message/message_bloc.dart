@@ -24,6 +24,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> _initMessageEvent(
       InitMessageEvent event, Emitter<MessageState> emit) {
+<<<<<<< Updated upstream
     // final a = event.msgs as List<Message>;
     // emit(state.copyWith(msgs: a));
     List<Message> msgs = [
@@ -48,5 +49,9 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
 
   FutureOr<void> _actionSendMessage(ActionSendMessage event, Emitter<MessageState> emit) {
     io.emit(SocketEvent.sendMsgToGroup, event.msg.toMap());
+=======
+    final a = event.msgs;
+    emit(state.copyWith(msgs: a));
+>>>>>>> Stashed changes
   }
 }

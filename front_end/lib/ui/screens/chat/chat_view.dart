@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+<<<<<<< Updated upstream
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/message.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
+=======
+>>>>>>> Stashed changes
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
 
-import '../../../routers/socket.event.dart';
-import '../../../utils/io_client.dart';
 import '../../blocs/message/message_bloc.dart';
 
 class ChatViewScreen extends StatefulWidget {
@@ -64,6 +64,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
         shadowColor: colorScheme(context).tertiary,
         surfaceTintColor: colorScheme(context).onPrimary,
         elevation: 3,
+<<<<<<< Updated upstream
         leadingWidth: size.width > mobileWidth ? null : 90,
         leading: Row(
           children: [
@@ -74,6 +75,13 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                     backgroundImage: AssetImage("assets/images/chicken.png"))),
           ],
         ),
+=======
+        leadingWidth: 50,
+        leading: Container(
+            margin: const EdgeInsets.all(4),
+            child: const CircleAvatar(
+                backgroundImage: AssetImage("assets/images/chicken.png"))),
+>>>>>>> Stashed changes
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

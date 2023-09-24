@@ -9,14 +9,14 @@ class MyCustomPainter extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text("This is title"),
+        title: const Text("This is title"),
       ),
       body: SizedBox(
         width: size.width,
         height: size.height,
         child: CustomPaint(
           painter: CanvasDraw(faces: []),
-          child: Text("Hello"),
+          child: const Text("Hello"),
         ),
       ),
     );

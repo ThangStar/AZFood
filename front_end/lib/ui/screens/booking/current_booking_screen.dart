@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -293,7 +292,7 @@ class BottomActionBill extends StatelessWidget {
               color: colorScheme(context).primary.withOpacity(0.6),
               blurRadius: 6.0,
               spreadRadius: 0.0,
-              offset: Offset(0, 1.0), // shadow direction: bottom right
+              offset: const Offset(0, 1.0), // shadow direction: bottom right
             )
           ],
         ),
@@ -388,7 +387,7 @@ class BottomActionBill extends StatelessWidget {
               ]
                   : [
                 const Spacer(),
-                Container(
+                SizedBox(
                   width: 200,
                   child: MyOutlineButton(
                     text: 'Quay lại',
@@ -398,7 +397,7 @@ class BottomActionBill extends StatelessWidget {
                 const SizedBox(
                   width: 10,
                 ),
-                Container(
+                SizedBox(
                   width: 200,
                   child: MyButtonGradient(
                     text: "Thanh toán",

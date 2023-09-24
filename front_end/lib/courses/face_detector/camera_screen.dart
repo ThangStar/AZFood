@@ -60,7 +60,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     if (!controller.value.isInitialized) {
-      return Text("NONE");
+      return const Text("NONE");
     }
     return Scaffold(
         body: Transform.flip(flipX: true, child: CameraPreview(controller)));

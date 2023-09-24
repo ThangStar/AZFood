@@ -1,7 +1,5 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
@@ -135,7 +133,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                                           });
                                         },
                                       ),
-                                      label: Text("Chế độ tối"))
+                                      label: const Text("Chế độ tối"))
                                 ],
                                 onDestinationSelected: (value) {
                                   setState(() {
@@ -161,7 +159,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                         case PageNavRail.bill:
                           return BillScreen(constraints: constraints);
                         case PageNavRail.profile:
-                          return InfoScreen();
+                          return const InfoScreen();
                         case PageNavRail.logout:
                           return HomeScreen(constraints: constraints);
                         default:

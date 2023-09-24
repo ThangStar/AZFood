@@ -3,7 +3,6 @@
 // import 'package:quick_notify/quick_notify.dart';
 
 import 'package:local_notifier/local_notifier.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';
 
 Future<void> showNotiWindow() async {
   LocalNotification notification = LocalNotification(
@@ -36,9 +35,9 @@ Future<void> showNotiWindow() async {
   notification.onClick = () {
     print('onClick ${notification.identifier}');
   };
-  notification?.onClickAction = (actionIndex) {
+  notification.onClickAction = (actionIndex) {
     //actionIndex is pos noti :)
-    print('onClickAction ${notification?.identifier} - $actionIndex');
+    print('onClickAction ${notification.identifier} - $actionIndex');
   };
 
   notification.show();

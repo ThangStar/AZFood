@@ -9,41 +9,45 @@ Profile profileFromJson(String str) => Profile.fromJson(json.decode(str));
 String profileToJson(Profile data) => json.encode(data.toJson());
 
 class Profile {
-    int id;
-    String username;
-    String password;
-    String name;
-    String role;
-    String phoneNumber;
-    String email;
+  int id;
+  String? username;
+  String? password;
+  String? name;
+  String? role;
+  String? phoneNumber;
+  String? email;
 
-    Profile({
-        required this.id,
-        required this.username,
-        required this.password,
-        required this.name,
-        required this.role,
-        required this.phoneNumber,
-        required this.email,
-    });
+  Profile({
+    required this.id,
+    this.username,
+    this.password,
+    this.name,
+    this.role,
+    this.phoneNumber,
+    this.email,
+  });
 
-    factory Profile.fromJson(Map<String, dynamic> json) => Profile(
-        id: json["id"],
-        username: json["username"],
-        password: json["password"],
-        name: json["name"],
-        role: json["role"],
-        phoneNumber: json["phoneNumber"],
-        email: json["email"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "username": username,
-        "password": password,
-        "name": name,
-        "role": role,
-        "phoneNumber": phoneNumber,
-        "email": email,
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'password': password,
+      'name': name,
+      'role': role,
+      'phoneNumber': phoneNumber,
+      'email': email,
     };
+  }
+
+  factory Profile.fromJson(Map<String, dynamic> map) {
+    return Profile(
+      id: map['id'] as int,
+      username: map['username'] as String?,
+      password: map['password'] as String?,
+      name: map['name'] as String?,
+      role: map['role'] as String?,
+      phoneNumber: map['phoneNumber'] as String?,
+      email: map['email'] as String?,
+    );
+  }
 }

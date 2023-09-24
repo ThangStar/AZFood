@@ -432,7 +432,7 @@ class ToolbarHome extends StatelessWidget {
                         ZoomDrawer.of(context)!.open();
                       },
                     ),
-                  Text("Xin chào, ${profile.name.split(' ').last}",
+                  Text("Xin chào, ${profile.name??"".split(' ').last}",
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge
@@ -528,12 +528,12 @@ class ToolbarProfile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profile.name,
+                        profile.name ?? "",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ).animate().shimmer(),
                       Text(
-                        profile.email,
+                        profile.email ?? "",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                         ),

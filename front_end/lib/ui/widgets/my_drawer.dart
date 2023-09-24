@@ -97,9 +97,9 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                             icon: const Icon(Icons.cancel),
                           )
                         ],
-                        accountName: Text(widget.profile.name),
+                        accountName: Text(widget.profile.name ?? ""),
                         accountEmail: Text(
-                          widget.profile.email,
+                          widget.profile.email ?? "",
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.6),
                           ),

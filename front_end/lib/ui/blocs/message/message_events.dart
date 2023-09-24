@@ -13,8 +13,8 @@ class InitMessageEvent extends MessageEvent {
   const InitMessageEvent({this.msgs});
 }
 
-class ActionSendMessage extends MessageEvent{
-  final Message msg;
+class ActionSendMessage extends MessageEvent {
+  Message msg;
 
-  const ActionSendMessage({required this.msg});
+  ActionSendMessage({required this.msg});
 }

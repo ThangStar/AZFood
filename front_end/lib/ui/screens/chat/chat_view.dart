@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/message.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -21,33 +22,42 @@ class ChatViewScreen extends StatefulWidget {
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
   ScrollController controllerMsg = ScrollController();
+  late int id;
 
   @override
   void initState() {
     super.initState();
-    msgBloc = BlocProvider.of<MessageBloc>(context);
-    // io.emit(SocketEvent.initialMessage, {"id": '123'});
-    // if (!io.hasListeners(SocketEvent.onInitialMessage)) {
-    //   io.on(SocketEvent.onInitialMessage, (data) {
-    //     print("data init ${data}");
-    //     //transform data
-    //     final rs = data as List<dynamic>;
-    //     rs.forEach((e) {
-    //       e["status"] = "MessageStatus.read";
-    //       e["createdAt"] = DateTime.now().toIso8601String();
-    //       print(e);
-    //       // msgs.add(e);
-    //     });
-    //     List<Message> msgs = rs.map((e) => Message.fromJson(e)).toList();
-    msgBloc.add(const InitMessageEvent());
-    //   });
-    // }
+    _initProfile();
+    _initMessage();
     _listenMessage();
+  }
+  _initProfile(){
+    MySharePreferences.loadProfile().then((value) {
+      setState(() {
+        id = value?.id ?? 1;
+      });
+    });
+  }
+  _initMessage() {
+    msgBloc = BlocProvider.of<MessageBloc>(context);
+    io.emit(SocketEvent.initialMessage, {"id": '123'});
+    if (!io.hasListeners(SocketEvent.onInitialMessage)) {
+      io.on(SocketEvent.onInitialMessage, (data) {
+        print("data init ${data}");
+        //transform data
+        final rs = data as List<dynamic>;
+        List<Message> msgs = rs.map((e) {
+          return Message.fromMap(e);
+        }).toList();
+        print(msgs[0].profile?.name ?? "");
+        msgBloc.add(InitMessageEvent(msgs: msgs));
+      });
+    }
   }
 
   _listenMessage() {
     if (!io.hasListeners(SocketEvent.onMsgGroup)) {
-      io.on(SocketEvent.onMsgGroup, (data){
+      io.on(SocketEvent.onMsgGroup, (data) {
         print("data from sever: $data");
       });
     }
@@ -119,13 +129,21 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                 controller: controllerMsg,
                 itemCount: state.msgs.length,
                 itemBuilder: (context, index) {
-                  return ItemMsg(msg: state.msgs[index]);
+                  return ItemMsg(
+                      msg: state.msgs[index],
+                      isMine: state.msgs[index].sendBy == id);
                 },
               );
             },
           ),
-          const Align(
-              alignment: Alignment.bottomCenter, child: BottomActionChat()),
+          Align(
+              alignment: Alignment.bottomCenter,
+              child: BottomActionChat(
+                onSubmit: (text) {
+                  context.read<MessageBloc>().add(ActionSendMessage(
+                      msg: Message(id: 1, sendBy: 1, message: text, type: 1)));
+                },
+              )),
         ],
       ),
     );
@@ -133,7 +151,9 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 }
 
 class BottomActionChat extends StatefulWidget {
-  const BottomActionChat({super.key});
+  const BottomActionChat({super.key, required this.onSubmit});
+
+  final Function(String) onSubmit;
 
   @override
   State<BottomActionChat> createState() => _BottomActionChatState();
@@ -141,6 +161,7 @@ class BottomActionChat extends StatefulWidget {
 
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
+  FocusNode myFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +173,14 @@ class _BottomActionChatState extends State<BottomActionChat> {
           borderRadius: BorderRadius.circular(30)),
       width: size.width,
       child: TextField(
+        focusNode: myFocusNode,
+        onSubmitted: (value) {
+          myFocusNode.requestFocus();
+          setState(() {
+            controllerMsg.text = '';
+          });
+          widget.onSubmit(value);
+        },
         controller: controllerMsg,
         textAlignVertical: TextAlignVertical.center,
         onChanged: (value) {
@@ -197,13 +226,17 @@ class _BottomActionChatState extends State<BottomActionChat> {
                       children: [
                         IconButton(
                             color: Colors.red,
-                            onPressed: () => context.read<MessageBloc>().add(
-                                ActionSendMessage(
-                                    msg: Message(
-                                        id: 1,
-                                        sendBy: 1,
-                                        message: controllerMsg.text,
-                                        type: 1))),
+                            onPressed: () {
+                              context.read<MessageBloc>().add(ActionSendMessage(
+                                  msg: Message(
+                                      id: 1,
+                                      sendBy: 1,
+                                      message: controllerMsg.text,
+                                      type: 1)));
+                              setState(() {
+                                controllerMsg.text = '';
+                              });
+                            },
                             icon: const Icon(Icons.send,
                                 color: Colors.pink, size: 24)),
                         const SizedBox(
@@ -218,8 +251,9 @@ class _BottomActionChatState extends State<BottomActionChat> {
 }
 
 class ItemMsg extends StatelessWidget {
-  const ItemMsg({super.key, required this.msg});
+  const ItemMsg({super.key, required this.msg, this.isMine = false});
 
+  final bool isMine;
   final Message msg;
 
   @override
@@ -228,11 +262,10 @@ class ItemMsg extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Container(
-          margin: const EdgeInsets.symmetric(vertical: 6),
+          margin: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
-            textDirection:
-                msg.sendBy == 1 ? TextDirection.rtl : TextDirection.ltr,
+            textDirection: isMine ? TextDirection.rtl : TextDirection.ltr,
             children: [
               const CircleAvatar(
                   backgroundImage: AssetImage("assets/images/avatar.jpg")),
@@ -245,22 +278,21 @@ class ItemMsg extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                    color: msg.sendBy == 1
-                        ? Colors.pink
-                        : colorScheme(context).onPrimary,
+                    color:
+                        isMine ? Colors.pink : colorScheme(context).onPrimary,
                     borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(18),
                         topRight: const Radius.circular(18),
-                        bottomLeft: msg.sendBy == 1
+                        bottomLeft: isMine
                             ? const Radius.circular(18)
                             : const Radius.circular(0),
-                        bottomRight: msg.sendBy != 1
+                        bottomRight: !isMine
                             ? const Radius.circular(18)
                             : const Radius.circular(0))),
                 child: Text(
                   msg.message ?? "",
                   style: TextStyle(
-                      color: msg.sendBy != 1
+                      color: !isMine
                           ? colorScheme(context).scrim
                           : colorScheme(context).onPrimary),
                 ),

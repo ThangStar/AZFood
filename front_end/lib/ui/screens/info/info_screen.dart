@@ -23,10 +23,11 @@ class _InfoScreenState extends State<InfoScreen> {
 
   @override
   Scaffold build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading:
-            checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
+            checkDevice(size.width, true, false, false),
         title: Text(
           'Cá nhân',
           style: Theme.of(context)

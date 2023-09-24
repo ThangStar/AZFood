@@ -46,8 +46,6 @@ exports.createOrder = async (req, res) => {
                 const price = priceResult[0].price;
                 const _quantity = quantityResult[0].quantity;
                 const _status = priceResult[0].status;
-                console.log("_quantity ", _quantity);
-                console.log("_status ", _status);
                 if (_quantity > 0 || _status === 1) {
                     const subTotal = quantity * price;
 
@@ -87,13 +85,14 @@ exports.createOrder = async (req, res) => {
                         await sequelize.query(updateTableStatusQuery, {
                             raw: true,
                             logging: false,
-                            replacements: [1, orderData.tableID],
+                            replacements: [2, orderData.tableID],
                             type: QueryTypes.UPDATE,
                             transaction
                         });
                         io.emit('tableStatusChanged', { tableID: orderData.tableID, status: 2 });
                         return orderId;
                     });
+
                     res.status(200).json({ message: 'Order created successfully', orderId });
                 } else {
                     res.status(404).json({ message: 'not found product', orderId });

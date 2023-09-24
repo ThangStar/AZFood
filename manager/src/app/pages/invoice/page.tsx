@@ -21,14 +21,17 @@ const ListInvoice = () => {
     const [invoiceID, setInvoiceID] = useState<number | null>(null);
     const [invoiceNumber, setInvoiceNumber] = useState<number | null>(null);
     const [selectedInvoice, setSelectedInvoice] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const totalPages = invoiceList.totalPages || 1;
 
     useEffect(() => {
-        const fetchData = async () => {
-            await dispatch(getInvoiceListAsync());
-        };
-
-        fetchData();
+        handlePageChange(currentPage);
     }, []);
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        dispatch(getInvoiceListAsync(page));
+    };
     useEffect(() => {
         if (invoiceID !== null) {
             dispatch(getDetailsInvoiceAsync(invoiceID));
@@ -42,6 +45,7 @@ const ListInvoice = () => {
             setInvoiceDetailsStateList(invoiceDetails.resultRaw);
         }
     }, [invoiceList, invoiceDetails]);
+    console.log("invoiceList ", invoiceList);
 
     const active = () => {
         return `background-color: #f5f5f5`;
@@ -158,6 +162,39 @@ const ListInvoice = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="d-flex justify-content-center align-items-center">
+                <ul className="pagination">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                        >
+                            {"<="}
+                        </button>
+                    </li>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <li
+                            className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                            key={i + 1}
+                        >
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        </li>
+                    ))}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button
+                            className="page-link"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                        >
+                            {"=>"}
+                        </button>
+                    </li>
+                </ul>
             </div>
         </div>
 

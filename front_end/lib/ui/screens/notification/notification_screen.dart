@@ -138,23 +138,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return PopupMenuButton<int>(
       icon: const Icon(Icons.more_horiz),
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 1,
           child: Row(
             children: [
-              Icon(Icons.mark_email_read),
-              SizedBox(width: 8),
-              Text('Đánh dấu đã đọc'),
+              const Icon(Icons.mark_email_read),
+              const SizedBox(width: 8),
+              const Text('Đánh dấu đã đọc'),
             ],
           ),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: 2,
           child: Row(
             children: [
-              Icon(Icons.delete),
-              SizedBox(width: 8),
-              Text('Xóa thông báo này'),
+              const Icon(Icons.delete),
+              const SizedBox(width: 8),
+              const Text('Xóa thông báo này'),
             ],
           ),
         ),

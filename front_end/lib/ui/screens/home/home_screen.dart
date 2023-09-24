@@ -1,11 +1,9 @@
 import 'dart:ui';
 
-import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
-import 'package:restaurant_manager_app/model/current_product.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
@@ -26,7 +24,6 @@ import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
 
-import '../chat/chat_view3.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.constraints});
@@ -349,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ))
 
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
             notificationVisible
                 ? Positioned(
                 top: 85,
@@ -377,7 +374,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ))
 
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ],
         ),
       ),
@@ -396,8 +393,8 @@ class ToolbarHome extends StatelessWidget {
 
   final Profile profile;
   final bool showDrawer;
-  final VoidCallBack? openChat;
-  final VoidCallBack? openNotification;
+  final VoidCallback? openChat;
+  final VoidCallback? openNotification;
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +441,7 @@ class ToolbarHome extends StatelessWidget {
                     children: [
                       MyIconButtonBlur(
                         icon: Badge(
-                          label: Text("9+"),
+                          label: const Text("9+"),
                           backgroundColor: Colors.redAccent,
                           child: const Icon(Icons.chat, color: Colors.white)
                               .animate(

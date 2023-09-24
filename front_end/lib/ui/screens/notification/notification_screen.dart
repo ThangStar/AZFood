@@ -1,4 +1,3 @@
-import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 import 'package:restaurant_manager_app/model/notification.dart' as Noti;
 
@@ -7,7 +6,7 @@ import '../../theme/color_schemes.dart';
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key, required this.onClose});
 
-  final VoidCallBack onClose;
+  final VoidCallback onClose;
 
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
@@ -138,23 +137,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return PopupMenuButton<int>(
       icon: const Icon(Icons.more_horiz),
       itemBuilder: (context) => [
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 1,
           child: Row(
             children: [
-              const Icon(Icons.mark_email_read),
-              const SizedBox(width: 8),
-              const Text('Đánh dấu đã đọc'),
+              Icon(Icons.mark_email_read),
+              SizedBox(width: 8),
+              Text('Đánh dấu đã đọc'),
             ],
           ),
         ),
-        PopupMenuItem(
+        const PopupMenuItem(
           value: 2,
           child: Row(
             children: [
-              const Icon(Icons.delete),
-              const SizedBox(width: 8),
-              const Text('Xóa thông báo này'),
+              Icon(Icons.delete),
+              SizedBox(width: 8),
+              Text('Xóa thông báo này'),
             ],
           ),
         ),

@@ -18,11 +18,11 @@ class Message {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': this.id,
-      'sendBy': this.sendBy,
-      'type': this.type,
-      'profile': this.profile,
-      'message': this.message,
+      'id': id,
+      'sendBy': sendBy,
+      'type': type,
+      'profile': profile,
+      'message': message,
     };
   }
 

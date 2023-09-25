@@ -21,6 +21,8 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         )) {
     on<InitMessageEvent>(_initMessageEvent);
     on<ActionSendMessage>(_actionSendMessage);
+    on<TypingMessageEvent>(_typingMessageEvent);
+    on<TypedMessageEvent>(_typedMessageEvent);
   }
 
   FutureOr<void> _initMessageEvent(
@@ -29,14 +31,38 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   }
 
   FutureOr<void> _actionSendMessage(
-      ActionSendMessage event, Emitter<MessageState> emit) async{
+      ActionSendMessage event, Emitter<MessageState> emit) async {
     LoginResponse? prf = await MySharePreferences.loadProfile();
-    if(prf != null){
+    if (prf != null) {
       event.msg.sendBy = prf.id;
       io.emit(SocketEvent.sendMsgToGroup, event.msg.toMap());
-      emit(state.copyWith(
-        msgs: [...state.msgs, event.msg]
-      ));
+      emit(state.copyWith(msgs: [...state.msgs, event.msg]));
     }
+  }
+
+  FutureOr<void> _typingMessageEvent(
+      TypingMessageEvent event, Emitter<MessageState> emit) {
+    emit(state.copyWith(msgs: [
+      ...state.msgs,
+      Message(
+          id: 0,
+          sendBy: 1,
+          type: 1,
+          imageUrl: event.data['imgUrl'],
+          statusMessage: StatusMessage.typing,
+          profile: Profile(
+            id: 0,
+            name: event.data['name'],
+          ))
+    ]));
+  }
+
+  FutureOr<void> _typedMessageEvent(
+      TypedMessageEvent event, Emitter<MessageState> emit) {
+    List<Message> msg = state.msgs
+        .where(
+            (e) => e.id != event.id && e.statusMessage != StatusMessage.typing)
+        .toList();
+    emit(state.copyWith(msgs: msg));
   }
 }

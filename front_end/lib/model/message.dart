@@ -1,7 +1,7 @@
 import 'package:restaurant_manager_app/model/profile.dart';
 
 enum TypeMessage { text, message, voice }
-
+enum StatusMessage {typing, none}
 class Message {
   final int id;
   int sendBy;
@@ -11,6 +11,7 @@ class Message {
   final String? raw;
   final String? imageUrl;
   final String? dateTime;
+  StatusMessage statusMessage;
 
   Message({
     required this.id,
@@ -20,6 +21,7 @@ class Message {
     this.profile,
     this.raw,
     this.imageUrl,
+    this.statusMessage = StatusMessage.none,
     // this.profile,
     this.dateTime,
   });

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/message.dart';
+import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -22,22 +25,26 @@ class ChatViewScreen extends StatefulWidget {
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
   ScrollController controllerMsg = ScrollController();
-  late int id;
+  late LoginResponse profile;
 
   @override
   void initState() {
     super.initState();
     _initProfile();
     _initMessage();
-    _listenMessage();
+    _listenEvent();
   }
-  _initProfile(){
+
+  _initProfile() {
     MySharePreferences.loadProfile().then((value) {
       setState(() {
-        id = value?.id ?? 1;
+        profile = value ??
+            LoginResponse(
+                connexion: false, jwtToken: "", id: 0, username: "username");
       });
     });
   }
+
   _initMessage() {
     msgBloc = BlocProvider.of<MessageBloc>(context);
     io.emit(SocketEvent.initialMessage, {"id": '123'});
@@ -55,10 +62,27 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
     }
   }
 
-  _listenMessage() {
+  _listenEvent() {
     if (!io.hasListeners(SocketEvent.onMsgGroup)) {
       io.on(SocketEvent.onMsgGroup, (data) {
         print("data from sever: $data");
+      });
+    }
+
+    if (!io.hasListeners(SocketEvent.onMsgTypingGroup)) {
+      io.on(SocketEvent.onMsgTypingGroup, (data) {
+        if (data['id'] != profile.id) {
+          context.read<MessageBloc>().add(TypingMessageEvent(data: data));
+        }
+      });
+    }
+
+    if (!io.hasListeners(SocketEvent.onMsgTypedGroup)) {
+      io.on(SocketEvent.onMsgTypedGroup, (data) {
+        print(data);
+        if (data != profile.id) {
+          context.read<MessageBloc>().add(TypedMessageEvent(id: data));
+        }
       });
     }
   }
@@ -131,7 +155,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                 itemBuilder: (context, index) {
                   return ItemMsg(
                       msg: state.msgs[index],
-                      isMine: state.msgs[index].sendBy == id);
+                      isMine: state.msgs[index].sendBy == profile.id);
                 },
               );
             },
@@ -139,6 +163,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
           Align(
               alignment: Alignment.bottomCenter,
               child: BottomActionChat(
+                profile: profile,
                 onSubmit: (text) {
                   context.read<MessageBloc>().add(ActionSendMessage(
                       msg: Message(id: 1, sendBy: 1, message: text, type: 1)));
@@ -151,9 +176,11 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 }
 
 class BottomActionChat extends StatefulWidget {
-  const BottomActionChat({super.key, required this.onSubmit});
+  const BottomActionChat(
+      {super.key, required this.onSubmit, required this.profile});
 
   final Function(String) onSubmit;
+  final LoginResponse profile;
 
   @override
   State<BottomActionChat> createState() => _BottomActionChatState();
@@ -162,6 +189,19 @@ class BottomActionChat extends StatefulWidget {
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
   FocusNode myFocusNode = FocusNode();
+
+  _typing() {
+    print("typing");
+    io.emit(SocketEvent.typingGroup, widget.profile.toMap());
+    // context.read<MessageBloc>().add(TypingMessageEvent(fullname: "thangdeeptry"));
+  }
+
+  _typed(PointerDownEvent event) {
+    print("typed");
+    io.emit(SocketEvent.typedGroup, {
+      "id": widget.profile.id
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +213,8 @@ class _BottomActionChatState extends State<BottomActionChat> {
           borderRadius: BorderRadius.circular(30)),
       width: size.width,
       child: TextField(
+        onTapOutside: (event) => _typed(event),
+        onTap: _typing,
         focusNode: myFocusNode,
         onSubmitted: (value) {
           myFocusNode.requestFocus();
@@ -258,7 +300,6 @@ class ItemMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return Container(
@@ -272,31 +313,49 @@ class ItemMsg extends StatelessWidget {
               const SizedBox(
                 width: 8,
               ),
-              Container(
-                constraints:
-                    BoxConstraints(maxWidth: constraints.maxWidth * 0.6),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                    color:
-                        isMine ? Colors.pink : colorScheme(context).onPrimary,
-                    borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(18),
-                        topRight: const Radius.circular(18),
-                        bottomLeft: isMine
-                            ? const Radius.circular(18)
-                            : const Radius.circular(0),
-                        bottomRight: !isMine
-                            ? const Radius.circular(18)
-                            : const Radius.circular(0))),
-                child: Text(
-                  msg.message ?? "",
-                  style: TextStyle(
-                      color: !isMine
-                          ? colorScheme(context).scrim
-                          : colorScheme(context).onPrimary),
-                ),
-              ),
+              msg.statusMessage == StatusMessage.none
+                  ? Container(
+                      constraints:
+                          BoxConstraints(maxWidth: constraints.maxWidth * 0.6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          color: isMine
+                              ? Colors.pink
+                              : colorScheme(context).onPrimary,
+                          borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(18),
+                              topRight: const Radius.circular(18),
+                              bottomLeft: isMine
+                                  ? const Radius.circular(18)
+                                  : const Radius.circular(0),
+                              bottomRight: !isMine
+                                  ? const Radius.circular(18)
+                                  : const Radius.circular(0))),
+                      child: Text(
+                        msg.message ?? "",
+                        style: TextStyle(
+                            color: !isMine
+                                ? colorScheme(context).scrim
+                                : colorScheme(context).onPrimary),
+                      ))
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("${msg.profile?.name} đang nhập.."),
+                        Container(
+                            constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth * 0.6),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: isMine
+                                    ? Colors.pink
+                                    : colorScheme(context).onPrimary),
+                            child: Lottie.asset("assets/raws/typing.json",
+                                width: 40, fit: BoxFit.cover)),
+                      ],
+                    ),
             ],
           ),
         );

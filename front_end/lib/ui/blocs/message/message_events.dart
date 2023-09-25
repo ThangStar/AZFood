@@ -18,3 +18,15 @@ class ActionSendMessage extends MessageEvent {
 
   ActionSendMessage({required this.msg});
 }
+
+class TypingMessageEvent extends MessageEvent {
+  final dynamic data;
+
+  TypingMessageEvent({required this.data});
+}
+
+class TypedMessageEvent extends MessageEvent {
+  final int id;
+
+  TypedMessageEvent({required this.id});
+}

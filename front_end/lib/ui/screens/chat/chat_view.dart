@@ -25,14 +25,22 @@ class ChatViewScreen extends StatefulWidget {
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
   ScrollController controllerMsg = ScrollController();
-  late LoginResponse profile;
+  LoginResponse profile = LoginResponse(
+      connexion: false, jwtToken: "jwtToken", id: 0, username: "username");
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    controllerMsg.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
-    super.initState();
     _initProfile();
     _initMessage();
     _listenEvent();
+    super.initState();
   }
 
   _initProfile() {
@@ -50,13 +58,11 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
     io.emit(SocketEvent.initialMessage, {"id": '123'});
     if (!io.hasListeners(SocketEvent.onInitialMessage)) {
       io.on(SocketEvent.onInitialMessage, (data) {
-        print("data init ${data}");
         //transform data
         final rs = data as List<dynamic>;
         List<Message> msgs = rs.map((e) {
           return Message.fromMap(e);
         }).toList();
-        print(msgs[0].profile?.name ?? "");
         msgBloc.add(InitMessageEvent(msgs: msgs));
       });
     }
@@ -71,20 +77,33 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 
     if (!io.hasListeners(SocketEvent.onMsgTypingGroup)) {
       io.on(SocketEvent.onMsgTypingGroup, (data) {
-        if (data['id'] != profile.id) {
-          context.read<MessageBloc>().add(TypingMessageEvent(data: data));
-        }
+        // if (data['id'] != profile.id) {
+        msgBloc.add(TypingMessageEvent(data: data));
+        _scrollToEnd(true);
+        // }
       });
     }
 
     if (!io.hasListeners(SocketEvent.onMsgTypedGroup)) {
       io.on(SocketEvent.onMsgTypedGroup, (data) {
         print(data);
-        if (data != profile.id) {
-          context.read<MessageBloc>().add(TypedMessageEvent(id: data));
-        }
+        // if (data != profile.id) {
+        _scrollToEnd(true);
+        msgBloc.add(TypedMessageEvent(id: data));
+        // }
       });
     }
+  }
+
+  _scrollToEnd(bool animate) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (controllerMsg.hasClients) {
+        animate
+            ? controllerMsg.animateTo(controllerMsg.position.maxScrollExtent,
+                duration: 500.ms, curve: Curves.fastOutSlowIn)
+            : controllerMsg.jumpTo(controllerMsg.position.maxScrollExtent);
+      }
+    });
   }
 
   @override
@@ -144,31 +163,50 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
             ),
         ],
       ),
-      body: Stack(
+      body: Column(
         children: [
-          BlocBuilder<MessageBloc, MessageState>(
-            builder: (context, state) {
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                controller: controllerMsg,
-                itemCount: state.msgs.length,
-                itemBuilder: (context, index) {
-                  return ItemMsg(
-                      msg: state.msgs[index],
-                      isMine: state.msgs[index].sendBy == profile.id);
-                },
-              );
+          BlocListener<MessageBloc, MessageState>(
+            listener: (context, state) {
+              if (state is AnimateToEndState) {
+                print("animate to end");
+                _scrollToEnd(true);
+              }
+            },
+            child: BlocBuilder<MessageBloc, MessageState>(
+              builder: (context, state) {
+                return Expanded(
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      scrollbars: false,
+                    ),
+                    child: Scrollbar(
+                      controller: controllerMsg,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        primary: false,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        controller: controllerMsg,
+                        itemCount: state.msgs.length,
+                        itemBuilder: (context, index) {
+                          return ItemMsg(
+                              msg: state.msgs[index],
+                              isMine: state.msgs[index].sendBy == profile.id);
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          BottomActionChat(
+            profile: profile,
+            onSubmit: (text) {
+              context.read<MessageBloc>().add(ActionSendMessage(
+                  msg: Message(id: 1, sendBy: 1, message: text, type: 1)));
             },
           ),
-          Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomActionChat(
-                profile: profile,
-                onSubmit: (text) {
-                  context.read<MessageBloc>().add(ActionSendMessage(
-                      msg: Message(id: 1, sendBy: 1, message: text, type: 1)));
-                },
-              )),
         ],
       ),
     );
@@ -197,17 +235,16 @@ class _BottomActionChatState extends State<BottomActionChat> {
   }
 
   _typed(PointerDownEvent event) {
-    print("typed");
-    io.emit(SocketEvent.typedGroup, {
-      "id": widget.profile.id
-    });
+    if (myFocusNode.hasFocus) {
+      io.emit(SocketEvent.typedGroup, {"id": widget.profile.id});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      margin: const EdgeInsets.only(left: 8, right: 8, bottom: 12),
       decoration: BoxDecoration(
           color: colorScheme(context).onPrimary,
           borderRadius: BorderRadius.circular(30)),

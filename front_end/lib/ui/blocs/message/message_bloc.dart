@@ -18,6 +18,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   MessageBloc()
       : super(const MessageState(
           status: MessageStt.initial,
+          msgs: [],
         )) {
     on<InitMessageEvent>(_initMessageEvent);
     on<ActionSendMessage>(_actionSendMessage);
@@ -28,6 +29,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   FutureOr<void> _initMessageEvent(
       InitMessageEvent event, Emitter<MessageState> emit) {
     emit(state.copyWith(msgs: event.msgs));
+    emit(AnimateToEndState(status: MessageStt.initial, msgs: state.msgs));
   }
 
   FutureOr<void> _actionSendMessage(

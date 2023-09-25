@@ -4,9 +4,13 @@ const { sequelize } = require("../../app/models");
 exports.getMessages = async (socket, io, data) => {
     console.log("OK! refresh msg");
     try {
-        const queryRaw = `SELECT message.*, JSON_OBJECT('id', users.id, 'name', users.name) as profile
-        FROM message
-        JOIN users ON message.sendBy = users.id;`;
+        const queryRaw =
+            `SELECT message.*, 
+            JSON_OBJECT('id', users.id, 'name', users.name) as profile
+            FROM message
+            JOIN users 
+            ON message.sendBy = users.id 
+            order by dateTime ;`;
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
             logging: false,

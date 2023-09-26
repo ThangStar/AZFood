@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +27,7 @@ class ChatViewScreen extends StatefulWidget {
 
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
-  late ScrollController _controllerMsg;
+  final ScrollController _controllerMsg = ScrollController();
   LoginResponse profile = LoginResponse(
       connexion: false, jwtToken: "jwtToken", id: 0, username: "username");
 
@@ -36,7 +39,6 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 
   @override
   void initState() {
-    _controllerMsg = ScrollController();
     _initProfile();
     _initMessage();
     _listenEvent();
@@ -79,15 +81,14 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
       io.on(SocketEvent.onMsgTypingGroup, (data) {
         debugPrint("[sever] typing has client ${_controllerMsg.hasClients}");
         // if (data['id'] != profile.id) {
+        msgBloc.add(InitMessageEvent(msgs: msgBloc.state.msgs));
         msgBloc.add(TypingMessageEvent(data: data));
-        _scrollToEnd(true);
         // }
       });
     }
 
     if (!io.hasListeners(SocketEvent.onMsgTypedGroup)) {
       io.on(SocketEvent.onMsgTypedGroup, (data) {
-        print(data);
         // if (data != profile.id) {
         _scrollToEnd(true);
         msgBloc.add(TypedMessageEvent(id: data));
@@ -98,7 +99,6 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 
   _scrollToEnd(bool animate) async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("has client ${_controllerMsg.hasClients}");
       if (_controllerMsg.hasClients) {
         animate
             ? _controllerMsg.animateTo(_controllerMsg.position.maxScrollExtent,
@@ -170,7 +170,6 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
           BlocListener<MessageBloc, MessageState>(
               listener: (context, state) {
                 if (state is AnimateToEndState) {
-                  print("animate to end");
                   _scrollToEnd(true);
                 }
               },
@@ -181,18 +180,21 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                   ),
                   child: BlocBuilder<MessageBloc, MessageState>(
                     builder: (context, state) {
-                      return ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        shrinkWrap: true,
-                        primary: false,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      return CupertinoScrollbar(
                         controller: _controllerMsg,
-                        itemCount: state.msgs.length,
-                        itemBuilder: (context, index) {
-                          return ItemMsg(
-                              msg: state.msgs[index],
-                              isMine: state.msgs[index].sendBy == profile.id);
-                        },
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          primary: false,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          controller: _controllerMsg,
+                          itemCount: state.msgs.length,
+                          itemBuilder: (context, index) {
+                            return ItemMsg(
+                                msg: state.msgs[index],
+                                isMine: state.msgs[index].sendBy == profile.id);
+                          },
+                        ),
                       );
                     },
                   ),
@@ -225,22 +227,50 @@ class BottomActionChat extends StatefulWidget {
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
   FocusNode myFocusNode = FocusNode(canRequestFocus: true);
+  bool typing = false;
+  bool canDelayer = true;
 
   _typing() {
-    print("typing");
-    print("focus,${myFocusNode.hasFocus}");
-    if (!myFocusNode.hasFocus) {
-      io.emit(SocketEvent.typingGroup, widget.profile.toMap());
-      // context.read<MessageBloc>().add(TypingMessageEvent(fullname: "thangdeeptry"));
+    print("candelayer $canDelayer");
+    print("typing $typing");
+    Timer t = Timer(50.ms, () { });
+    if (canDelayer) {
+      setState(() {
+        canDelayer = false;
+      });
+      t = Timer(Duration(seconds: 2), () {
+        if (canDelayer) {
+          setState(() {
+            typing = false;
+          });
+        }else{
+          _typed(const PointerDownEvent());
+        }
+        setState(() {
+          canDelayer = true;
+        });
+      });
+    }else{
+      t.cancel();
     }
+
+    if (!typing) {
+      io.emit(SocketEvent.typingGroup, widget.profile.toMap());
+    }
+    setState(() {
+      typing = true;
+    });
   }
 
   _typed(PointerDownEvent event) {
-    myFocusNode.unfocus();
+    setState(() {
+      typing = false;
+    });
     if (myFocusNode.hasFocus) {
       io.emit(SocketEvent.typedGroup, {"id": widget.profile.id});
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -256,11 +286,12 @@ class _BottomActionChatState extends State<BottomActionChat> {
           borderRadius: BorderRadius.circular(30)),
       width: size.width,
       child: GestureDetector(
-        onPanDown: (details) {
-          _typing();
-        },
+        onPanDown: (details) {},
         child: TextField(
-          onTapOutside: (event) => _typed(event),
+          onTapOutside: (event) {
+            myFocusNode.unfocus();
+            _typed(event);
+          },
           // onTap: _typing,
           focusNode: myFocusNode,
           onSubmitted: (value) {
@@ -273,6 +304,7 @@ class _BottomActionChatState extends State<BottomActionChat> {
           controller: controllerMsg,
           textAlignVertical: TextAlignVertical.center,
           onChanged: (value) {
+            _typing();
             setState(() {
               controllerMsg.text = value;
             });
@@ -316,12 +348,13 @@ class _BottomActionChatState extends State<BottomActionChat> {
                           IconButton(
                               color: Colors.red,
                               onPressed: () {
-                                context.read<MessageBloc>().add(ActionSendMessage(
-                                    msg: Message(
-                                        id: 1,
-                                        sendBy: 1,
-                                        message: controllerMsg.text,
-                                        type: 1)));
+                                context.read<MessageBloc>().add(
+                                    ActionSendMessage(
+                                        msg: Message(
+                                            id: 1,
+                                            sendBy: 1,
+                                            message: controllerMsg.text,
+                                            type: 1)));
                                 setState(() {
                                   controllerMsg.text = '';
                                 });

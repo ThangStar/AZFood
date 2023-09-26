@@ -24,19 +24,19 @@ class ChatViewScreen extends StatefulWidget {
 
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
-  ScrollController controllerMsg = ScrollController();
+  late ScrollController _controllerMsg;
   LoginResponse profile = LoginResponse(
       connexion: false, jwtToken: "jwtToken", id: 0, username: "username");
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    controllerMsg.dispose();
     super.dispose();
+    _controllerMsg.dispose();
   }
 
   @override
   void initState() {
+    _controllerMsg = ScrollController();
     _initProfile();
     _initMessage();
     _listenEvent();
@@ -71,12 +71,13 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
   _listenEvent() {
     if (!io.hasListeners(SocketEvent.onMsgGroup)) {
       io.on(SocketEvent.onMsgGroup, (data) {
-        print("data from sever: $data");
+        print("[sever] data: $data");
       });
     }
 
     if (!io.hasListeners(SocketEvent.onMsgTypingGroup)) {
       io.on(SocketEvent.onMsgTypingGroup, (data) {
+        debugPrint("[sever] typing has client ${_controllerMsg.hasClients}");
         // if (data['id'] != profile.id) {
         msgBloc.add(TypingMessageEvent(data: data));
         _scrollToEnd(true);
@@ -97,11 +98,12 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 
   _scrollToEnd(bool animate) async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (controllerMsg.hasClients) {
+      print("has client ${_controllerMsg.hasClients}");
+      if (_controllerMsg.hasClients) {
         animate
-            ? controllerMsg.animateTo(controllerMsg.position.maxScrollExtent,
+            ? _controllerMsg.animateTo(_controllerMsg.position.maxScrollExtent,
                 duration: 500.ms, curve: Curves.fastOutSlowIn)
-            : controllerMsg.jumpTo(controllerMsg.position.maxScrollExtent);
+            : _controllerMsg.jumpTo(_controllerMsg.position.maxScrollExtent);
       }
     });
   }
@@ -166,40 +168,36 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
       body: Column(
         children: [
           BlocListener<MessageBloc, MessageState>(
-            listener: (context, state) {
-              if (state is AnimateToEndState) {
-                print("animate to end");
-                _scrollToEnd(true);
-              }
-            },
-            child: BlocBuilder<MessageBloc, MessageState>(
-              builder: (context, state) {
-                return Expanded(
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(
-                      scrollbars: false,
-                    ),
-                    child: Scrollbar(
-                      controller: controllerMsg,
-                      child: ListView.builder(
+              listener: (context, state) {
+                if (state is AnimateToEndState) {
+                  print("animate to end");
+                  _scrollToEnd(true);
+                }
+              },
+              child: Expanded(
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    scrollbars: false,
+                  ),
+                  child: BlocBuilder<MessageBloc, MessageState>(
+                    builder: (context, state) {
+                      return ListView.builder(
                         physics: const BouncingScrollPhysics(),
                         shrinkWrap: true,
                         primary: false,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
-                        controller: controllerMsg,
+                        controller: _controllerMsg,
                         itemCount: state.msgs.length,
                         itemBuilder: (context, index) {
                           return ItemMsg(
                               msg: state.msgs[index],
                               isMine: state.msgs[index].sendBy == profile.id);
                         },
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+              )),
           BottomActionChat(
             profile: profile,
             onSubmit: (text) {
@@ -226,18 +224,26 @@ class BottomActionChat extends StatefulWidget {
 
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
-  FocusNode myFocusNode = FocusNode();
+  FocusNode myFocusNode = FocusNode(canRequestFocus: true);
 
   _typing() {
     print("typing");
-    io.emit(SocketEvent.typingGroup, widget.profile.toMap());
-    // context.read<MessageBloc>().add(TypingMessageEvent(fullname: "thangdeeptry"));
+    print("focus,${myFocusNode.hasFocus}");
+    if (!myFocusNode.hasFocus) {
+      io.emit(SocketEvent.typingGroup, widget.profile.toMap());
+      // context.read<MessageBloc>().add(TypingMessageEvent(fullname: "thangdeeptry"));
+    }
   }
 
   _typed(PointerDownEvent event) {
+    myFocusNode.unfocus();
     if (myFocusNode.hasFocus) {
       io.emit(SocketEvent.typedGroup, {"id": widget.profile.id});
     }
+  }
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -249,81 +255,86 @@ class _BottomActionChatState extends State<BottomActionChat> {
           color: colorScheme(context).onPrimary,
           borderRadius: BorderRadius.circular(30)),
       width: size.width,
-      child: TextField(
-        onTapOutside: (event) => _typed(event),
-        onTap: _typing,
-        focusNode: myFocusNode,
-        onSubmitted: (value) {
-          myFocusNode.requestFocus();
-          setState(() {
-            controllerMsg.text = '';
-          });
-          widget.onSubmit(value);
+      child: GestureDetector(
+        onPanDown: (details) {
+          _typing();
         },
-        controller: controllerMsg,
-        textAlignVertical: TextAlignVertical.center,
-        onChanged: (value) {
-          setState(() {
-            controllerMsg.text = value;
-          });
-        },
-        decoration: InputDecoration(
-            isDense: true,
-            alignLabelWithHint: true,
-            hintText: "Nhập tin nhắn",
-            hintStyle: const TextStyle(fontSize: 16),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            border: InputBorder.none,
-            suffixIcon: AnimatedSize(
-              duration: 100.ms,
-              child: controllerMsg.text == ""
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.camera_alt_outlined,
-                              size: 24,
-                            )),
-                        IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.image, size: 24)),
-                        IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.keyboard_voice, size: 24)),
-                        const SizedBox(
-                          width: 6,
-                        )
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                            color: Colors.red,
-                            onPressed: () {
-                              context.read<MessageBloc>().add(ActionSendMessage(
-                                  msg: Message(
-                                      id: 1,
-                                      sendBy: 1,
-                                      message: controllerMsg.text,
-                                      type: 1)));
-                              setState(() {
-                                controllerMsg.text = '';
-                              });
-                            },
-                            icon: const Icon(Icons.send,
-                                color: Colors.pink, size: 24)),
-                        const SizedBox(
-                          width: 6,
-                        )
-                      ],
-                    ),
-            )),
+        child: TextField(
+          onTapOutside: (event) => _typed(event),
+          // onTap: _typing,
+          focusNode: myFocusNode,
+          onSubmitted: (value) {
+            myFocusNode.requestFocus();
+            setState(() {
+              controllerMsg.text = '';
+            });
+            widget.onSubmit(value);
+          },
+          controller: controllerMsg,
+          textAlignVertical: TextAlignVertical.center,
+          onChanged: (value) {
+            setState(() {
+              controllerMsg.text = value;
+            });
+          },
+          decoration: InputDecoration(
+              isDense: true,
+              alignLabelWithHint: true,
+              hintText: "Nhập tin nhắn",
+              hintStyle: const TextStyle(fontSize: 16),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              border: InputBorder.none,
+              suffixIcon: AnimatedSize(
+                duration: 100.ms,
+                child: controllerMsg.text == ""
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.camera_alt_outlined,
+                                size: 24,
+                              )),
+                          IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.image, size: 24)),
+                          IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.keyboard_voice, size: 24)),
+                          const SizedBox(
+                            width: 6,
+                          )
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                              color: Colors.red,
+                              onPressed: () {
+                                context.read<MessageBloc>().add(ActionSendMessage(
+                                    msg: Message(
+                                        id: 1,
+                                        sendBy: 1,
+                                        message: controllerMsg.text,
+                                        type: 1)));
+                                setState(() {
+                                  controllerMsg.text = '';
+                                });
+                              },
+                              icon: const Icon(Icons.send,
+                                  color: Colors.pink, size: 24)),
+                          const SizedBox(
+                            width: 6,
+                          )
+                        ],
+                      ),
+              )),
+        ),
       ),
     );
   }

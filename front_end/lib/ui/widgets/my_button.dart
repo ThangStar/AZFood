@@ -7,7 +7,7 @@ class MyButton extends StatelessWidget {
       required this.onPressed,
       this.value,
       this.isOutline = false,
-       this.disable = false});
+      this.disable = false});
 
   final Function() onPressed;
   final String? value;
@@ -26,12 +26,12 @@ class MyButton extends StatelessWidget {
           ? colorScheme(context).background
           : disable
               ? colorScheme(context).scrim.withOpacity(0.3)
-              : colorScheme(context).secondary,
+              : colorScheme(context).primary,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: disable ? null : onPressed,
         child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
+            padding: const EdgeInsets.symmetric(vertical: 14),
             width: double.infinity,
             child: Text(
               textAlign: TextAlign.center,

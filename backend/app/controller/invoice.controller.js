@@ -6,6 +6,7 @@ const Auth = require('./checkAuth.controller')
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
+
         const PAGE_SIZE = 8;
         const currentPage = parseInt(req.query.page) || 1;
         const offset = (currentPage - 1) * PAGE_SIZE;
@@ -22,6 +23,7 @@ exports.getList = async (req, res) => {
         FROM invoice ic 
         JOIN tables t ON t.id = ic.tableID 
         LIMIT :limit OFFSET :offset;`;
+
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -78,8 +80,8 @@ exports.getDetails = async (req, res) => {
 exports.searchByDate = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const startDate = req.body.startDate;
-        const endDate = req.body.endDate;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
         const queryRaw = "SELECT * FROM invoice WHERE createAt >= :startDate AND createAt <= :endDate ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {

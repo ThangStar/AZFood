@@ -12,22 +12,24 @@ class MyOutlineButton extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Material(
-          color: colorScheme(context).primary.withOpacity(0.2),
-          child: InkWell(
-            onTap: onTap,
-            child: Container(
-              padding: padding,
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                    color: colorScheme(context).primary, fontSize: 16),
-              ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Material(
+        color: colorScheme(context).onPrimary,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: colorScheme(context).tertiary),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: padding,
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                  color: colorScheme(context).primary, fontSize: 16),
             ),
           ),
         ),

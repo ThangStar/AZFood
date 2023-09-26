@@ -21,20 +21,20 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
   String? get _errorTextEmail {
     final text = _controllerEmail.value.text;
     if (text.isEmpty) {
-      return 'Email không được để trống';
+      return 'Email không được để trống.';
     }
     if (!RegExp(r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(text)) {
-      return 'Email không đúng định dạng, vui lòng nhập lại';
+      return 'Email không đúng định dạng, vui lòng nhập lại.';
     }
     return null;
   }
   String? get _errorTextPhone {
     final text = _controllerPhone.value.text;
     if (text.isEmpty) {
-      return 'Số điện thoại không được để trống';
+      return 'Số điện thoại không được để trống.';
     }
     if (!RegExp(r'(^0\d{9}$)').hasMatch(text)) {
-      return 'Số điện thoại không đúng định dạng, vui lòng nhập lại';
+      return 'Số điện thoại không đúng định dạng, vui lòng nhập lại.';
     }
     return null;
   }
@@ -71,7 +71,9 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
      return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
           icon: Icon(
             Icons.arrow_back,
             color: colorScheme(context).scrim,
@@ -83,13 +85,14 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
         ),
         shape: Border(
           bottom: BorderSide(
-            color: colorScheme(context).outline,
-            width: 2
+            color: colorScheme(context).outlineVariant,
+            width: 1,
           )
         ),
       ),
       body: Container(
-        color: colorScheme(context).background,
+        color: colorScheme(context).onSecondary,
+
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
@@ -99,18 +102,18 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
               Column(
                 children: [
                   Stack(
-                    alignment: const Alignment(1.3, 1.3),
+                    alignment: const Alignment(1.1, 1.1),
                     children: [
                       ClipOval(
                         child: SizedBox.fromSize(
                           size: const Size.fromRadius(50), // Image radius
-                          child: Image.asset('assets/images/avatar.jpg', fit: BoxFit.cover,),
+                          child: Image.asset('assets/images/avatar.jpg', fit: BoxFit.cover),
                         ),
                       ),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
                           backgroundColor: colorScheme(context).background,
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 15),
                           minimumSize: Size.zero,
                           side: BorderSide(width: 1.0, color: colorScheme(context).onSurfaceVariant),
                           shape: RoundedRectangleBorder(

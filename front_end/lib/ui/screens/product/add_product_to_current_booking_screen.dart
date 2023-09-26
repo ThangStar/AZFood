@@ -4,14 +4,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/checkout/check_out_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 
+import '../../utils/size_config.dart';
+
 class AddProductToCurrentBookingScreen extends StatefulWidget {
   const AddProductToCurrentBookingScreen({super.key, required this.tableID});
+
   final int tableID;
 
   @override
@@ -24,29 +26,13 @@ class _AddProductToCurrentBookingScreenState
     with TickerProviderStateMixin {
   List<Product> productsSelected = [];
 
-  late AnimationController moveCartController;
-
   GlobalKey cartKey = GlobalKey();
-  bool isExtended = false;
 
   @override
   void initState() {
     super.initState();
-    moveCartController = AnimationController(vsync: this, duration: 1.seconds);
-    moveCartController.addListener(() {
-      if (moveCartController.isCompleted) {
-        setState(() {
-          isExtended = true;
-        });
-      }
-    });
   }
 
-  @override
-  void dispose() {
-    moveCartController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,43 +46,20 @@ class _AddProductToCurrentBookingScreenState
             await Future.delayed(5.seconds);
           },
           child: Scaffold(
-            floatingActionButton: SlideTransition(
-              position: moveCartController.drive(
-                  Tween<Offset>(begin: const Offset(2, 0), end: Offset.zero)),
-              child: FloatingActionButton.extended(
-                  heroTag: "check_out",
-                  key: cartKey,
-                  backgroundColor: colorScheme(context).primary,
-                  onPressed: () {
-                    setState(() {
-                      isExtended = !isExtended;
-                    });
-                  },
-                  label: AnimatedSwitcher(
-                    duration: const Duration(seconds: 1),
-                    transitionBuilder:
-                        (Widget child, Animation<double> animation) =>
-                            FadeTransition(
-                      opacity: animation,
-                      child: SizeTransition(
-                        child: child,
-                        sizeFactor: animation,
-                        axis: Axis.horizontal,
-                      ),
-                    ),
-                    child: !isExtended
-                        ? const Icon(Icons.shopping_cart_rounded)
-                        : const Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4.0),
-                                child: Icon(Icons.add),
-                              ),
-                              Text("Đã thêm")
-                            ],
-                          ),
-                  )),
-            ),
+            floatingActionButton: FloatingActionButton.extended(
+                heroTag: "check_out",
+                key: cartKey,
+                backgroundColor: colorScheme(context).secondary,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                label: Badge(
+                  label: Text("${productsSelected.length}"),
+                  child: Icon(
+                    Icons.shopping_cart_rounded,
+                    color: colorScheme(context).onPrimary,
+                  ),
+                )),
             appBar: AppBar(
               bottom: const PreferredSize(
                   preferredSize: Size.zero,
@@ -159,60 +122,97 @@ class _AddProductToCurrentBookingScreenState
                       return const Text("Không tìm thấy danh mục nào");
                     },
                   ),
-                  BlocBuilder<ProductBloc, ProductState>(
-                    builder: (context, state) {
-                      if (state.productResponse != null) {
-                        return ListView.builder(
-                            itemCount: state.productResponse!.data.length,
-                            shrinkWrap: true,
-                            primary: false,
-                            itemBuilder: (context, index) {
-                              Product product =
-                                  state.productResponse!.data[index];
-                              return ItemProduct(
-                                  isAddCart: true,
-                                  cartKey: cartKey,
-                                  product: product,
-                                  onTap: () {
-                                    moveCartController.forward();
-                                    context.read<OrderBloc>().add(
-                                            CreateOrderEvent(products: [
-                                          ProductCheckOut(
-                                              productID: product.id,
-                                              quantity: 1,
-                                              tableID: widget.tableID)
-                                        ]));
-                                    // final index = productsSelected.indexWhere(
-                                    //   (element) => element.id == product.id,
-                                    // );
-                                    // if (index == -1) {
-                                    //   setState(() {
-                                    //     productsSelected = [
-                                    //       ...productsSelected,
-                                    //       product
-                                    //     ];
-                                    //   });
-                                    // } else {
-                                    //   // List<Product>  newData = List.from(productsSelected);
-                                    //   // newData[index].quantity! = 1;
-                                    //   Product productUpdate =
-                                    //       productsSelected[index];
-                                    //   if (productUpdate.quantity != null) {
-                                    //     ++productUpdate.amountCart;
-                                    //   }
-                                    //   setState(() {
-                                    //     productsSelected[index] = productUpdate;
-                                    //   });
-                                    // }
-                                  },
-                                  subTitle: SubTitleProduct(product: product),
-                                  trailling: SubTitleItemCurrentBill(
-                                      product: product));
-                            });
-                      }
-                      return const Text("Xảy ra lỗi khi lấy dữ liệu");
-                    },
-                  ),
+                  LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
+                        double maxWidth = constraints.maxWidth;
+                        int columns;
+                        if (maxWidth > mobileWidth) {
+                          if (maxWidth > tabletWidth) {
+                            columns = 3; // PC
+                          } else {
+                            columns = 2; // Tablet
+                          }
+                        } else {
+                          columns = 1; // Mobile
+                        }
+                    return BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        if (state.productResponse != null) {
+                          return GridView.builder(
+                              itemCount: state.productResponse!.data.length,
+                              shrinkWrap: true,
+                              primary: false,
+                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: columns,
+                                childAspectRatio: (maxWidth / columns) / 80, // Tùy chỉnh giá trị này
+                              ),
+                              itemBuilder: (context, index) {
+                                Product product =
+                                    state.productResponse!.data[index];
+                                return ItemProduct(
+                                    isAddCart: true,
+                                    cartKey: cartKey,
+                                    product: product,
+                                    onTap: () {
+                                      context.read<OrderBloc>().add(
+                                          CreateOrderEvent(
+                                              product: ProductCheckOut(
+                                                  productID: product.id,
+                                                  quantity: 1,
+                                                  tableID: widget.tableID)));
+                                      final index = productsSelected.indexWhere(
+                                        (element) => element.id == product.id,
+                                      );
+                                      if (index == -1) {
+                                        setState(() {
+                                          productsSelected.add(product);
+                                        });
+                                      }
+                                      //  else {
+                                      //   // List<Product>  newData = List.from(productsSelected);
+                                      //   // newData[index].quantity! = 1;
+                                      //   Product productUpdate =
+                                      //       productsSelected[index];
+                                      //   if (productUpdate.quantity != null) {
+                                      //     ++productUpdate.amountCart;
+                                      //   }
+                                      //   setState(() {
+                                      //     productsSelected[index] = productUpdate;
+                                      //   });
+                                      // }
+
+                                      // final index = productsSelected.indexWhere(
+                                      //   (element) => element.id == product.id,
+                                      // );
+                                      // if (index == -1) {
+                                      //   setState(() {
+                                      //     productsSelected = [
+                                      //       ...productsSelected,
+                                      //       product
+                                      //     ];
+                                      //   });
+                                      // } else {
+                                      //   // List<Product>  newData = List.from(productsSelected);
+                                      //   // newData[index].quantity! = 1;
+                                      //   Product productUpdate =
+                                      //       productsSelected[index];
+                                      //   if (productUpdate.quantity != null) {
+                                      //     ++productUpdate.amountCart;
+                                      //   }
+                                      //   setState(() {
+                                      //     productsSelected[index] = productUpdate;
+                                      //   });
+                                      // }
+                                    },
+                                    subTitle: SubTitleProduct(product: product),
+                                    trailling: SubTitleItemCurrentBill(
+                                        product: product));
+                              });
+                        }
+                        return const Text("Xảy ra lỗi khi lấy dữ liệu");
+                      },
+                    );
+                  }),
                 ])),
               ],
             ),
@@ -223,7 +223,9 @@ class _AddProductToCurrentBookingScreenState
 
 class SubTitleProduct extends StatelessWidget {
   const SubTitleProduct({super.key, required this.product});
+
   final Product product;
+
   @override
   Widget build(BuildContext context) {
     int quantity = product.quantity ?? 0;

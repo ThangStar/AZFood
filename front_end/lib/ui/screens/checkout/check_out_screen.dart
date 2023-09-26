@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
-import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button_gradient.dart';
@@ -34,7 +32,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               color: colorScheme(context).onPrimary,
             ),
             onPressed: () {
-              Navigator.pop(context);
+              // Navigator.pop(context);
             },
           ),
           backgroundColor: colorScheme(context).surfaceTint,
@@ -185,7 +183,7 @@ class BottomActionBill extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   text: 'Quay lại',
                   onTap: () {
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
                   },
                 ),
                 const SizedBox(

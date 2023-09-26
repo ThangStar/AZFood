@@ -3,12 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLayoutEffect } from 'react';
 import Link from "next/link";
-import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getMenuItemListAsync, getMenuItemtList } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { getDVTList, getDvtListAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
 import { showAlert } from '@/component/utils/alert/alert';
-import axios from 'axios';
 import formatMoney from '@/component/utils/formatMoney';
 
 
@@ -31,11 +30,11 @@ export default function MunuItems() {
     const [listCategory, setListCategory] = useState<string[]>([]);
     const [listDvt, setListDvt] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchName, setSearchName] = useState("")
 
     const totalPages = menuItemList.totalPages || 1;
 
     useEffect(() => {
-
         handlePageChange(currentPage);
         dispatch(getCategoryListAsync());
         dispatch(getDvtListAsync());
@@ -68,7 +67,6 @@ export default function MunuItems() {
             setItemCategory(data.category);
             setItemDVT(data.dvtID);
         }
-
         toggle();
     }
     const toggle1 = () => setModal1(!modal1);
@@ -76,6 +74,7 @@ export default function MunuItems() {
         setIdItemDelete(id);
         toggle1();
     }
+
     const addMenuItem = () => {
         const data = {
             name: itemName,
@@ -90,8 +89,8 @@ export default function MunuItems() {
         showAlert("success", " Thêm món thành công");
         toggle();
     }
-    const deleteItem = (id: number) => {
 
+    const deleteItem = (id: number) => {
         if (id) {
             dispatch(deleteMenuItemAsync(id));
             showAlert("success", " Xóa món ăn thành công");
@@ -102,7 +101,10 @@ export default function MunuItems() {
         }
     };
 
-
+    const onSearchChange = (searchName: any) => {
+        setSearchName(searchName);
+        dispatch(getSearchMenuListAsync(searchName));
+    }
 
     return (
         <>
@@ -129,9 +131,19 @@ export default function MunuItems() {
                         <div className="card-header">
                             <button className="btn btn-success" onClick={() => {
                                 openModal()
-                            }}>Thêm món</button>
+                            }}><i className="fas fa-plus-circle mr-2"></i>Thêm món</button>
 
-                            <div className="card-tools">
+                            <div className="card-tools flex items-center">
+                                <form role="search">
+                                    <input
+                                        type="text"
+                                        value={searchName}
+                                        onChange={(e)=>onSearchChange(e.target.value)}
+                                        placeholder="Tìm kiếm món ăn..."
+                                        className='form-control'
+                                    />
+                                </form>
+
                                 <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
                                     <i className="fas fa-minus"></i>
                                 </button>
@@ -166,7 +178,7 @@ export default function MunuItems() {
                                             Trạng thái / Số lượng
                                         </th>
                                         <th style={{ width: "15%" }} className="text-center">
-                                            actions
+                                            Actions
                                         </th>
 
                                     </tr>
@@ -201,20 +213,17 @@ export default function MunuItems() {
                                             <td className="project-actions text-right">
                                                 <div className="d-flex justify-content-between " >
                                                     <a className="btn btn-primary btn-sm" href="#">
-                                                        <i className="fas fa-folder">
-                                                        </i>
-                                                        View
+                                                        <i className="fas fa-folder mr-1"></i> View
                                                     </a>
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal(item)
                                                     }}>
-                                                        <i className="fas fa-pencil-alt"></i>
-                                                        Sưả món
+                                                        <i className="fas fa-pencil-alt mr-1"></i> Sửa
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" onClick={() => {
+                                                    <button className="btn btn-danger btn-sm " onClick={() => {
                                                         openModal1(item.id)
                                                     }}>
-                                                        <i className="fas fa-trash"></i> Xóa
+                                                        <i className="fas fa-trash  mr-1"></i> Xóa
                                                     </button>
                                                 </div>
 

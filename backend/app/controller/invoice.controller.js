@@ -6,19 +6,40 @@ const Auth = require('./checkAuth.controller')
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const queryRaw = `SELECT ic.id , ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
-        FROM invoice ic 
-        JOIN tables t ON t.id = ic.tableID`;
+        const PAGE_SIZE = 8;
+        const currentPage = parseInt(req.query.page) || 1;
+        const offset = (currentPage - 1) * PAGE_SIZE;
 
+        const totalCountQuery = `SELECT COUNT(*) AS total FROM invoice`;
+        const totalCountResult = await sequelize.query(totalCountQuery, {
+            raw: true,
+            logging: false,
+            type: QueryTypes.SELECT
+        });
+
+
+        const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
+        FROM invoice ic 
+        JOIN tables t ON t.id = ic.tableID 
+        LIMIT :limit OFFSET :offset;`;
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [],
+                replacements: {
+                    limit: PAGE_SIZE,
+                    offset: offset
+                },
                 type: QueryTypes.SELECT
             });
-            res.send({ resultRaw })
-            res.status(200);
+            const totalPages = Math.ceil(totalCountResult[0].total / PAGE_SIZE);
+
+            res.status(200).json({
+                resultRaw: resultRaw,
+                currentPage: currentPage,
+                totalPages: totalPages,
+                totalItems: totalCountResult[0].total
+            });
         } catch (error) {
             res.status(500);
             res.send(error)
@@ -57,8 +78,8 @@ exports.getDetails = async (req, res) => {
 exports.searchByDate = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const startDate = req.query.startDate;
-        const endDate = req.query.endDate;
+        const startDate = req.body.startDate;
+        const endDate = req.body.endDate;
         const queryRaw = "SELECT * FROM invoice WHERE createAt >= :startDate AND createAt <= :endDate ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {

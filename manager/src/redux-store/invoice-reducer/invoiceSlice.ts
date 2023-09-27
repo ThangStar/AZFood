@@ -20,10 +20,13 @@ const initialState: InvoiceSate = {
 
 export const getInvoiceListAsync = createAsyncThunk(
     'invoice/get-list',
-    async () => {
+    async (page: number = 1) => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(serverUrl + '/api/invoice/list', {
+            params: {
+                page,
+            },
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,

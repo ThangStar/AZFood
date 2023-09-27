@@ -49,6 +49,7 @@ dependencies:
   flutter_local_notifications: ^15.1.1
   local_notifier: ^0.1.5
   elegant_notification: ^1.11.1
+  lottie: ^2.6.0
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
@@ -67,6 +68,7 @@ flutter:
   assets:
     - assets/images/
     - assets/svgs/
+    - assets/raws/
     - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

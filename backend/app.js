@@ -2,8 +2,6 @@ const express = require('express');
 const bodyParser = require("body-parser");
 require('dotenv').config();
 const session = require('express-session');
-
-
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);

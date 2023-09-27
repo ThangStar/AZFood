@@ -1,13 +1,11 @@
 'use client'
 
-import { showAlert } from "@/component/utils/alert/alert";
 import { formatDate } from "@/component/utils/formatDate";
 import formatMoney from "@/component/utils/formatMoney";
 import { useAppDispatch, useAppSelector } from "@/redux-store/hooks";
-import { getDetailsInvoiceAsync, getInvoiceDetaiil, getInvoiceList, getInvoiceListAsync, getSearchDateInvoiceListAsync } from "@/redux-store/invoice-reducer/invoiceSlice";
+import { getDetailsInvoiceAsync, getInvoiceDetaiil, getInvoiceList, getInvoiceListAsync } from "@/redux-store/invoice-reducer/invoiceSlice";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
 
 const ListInvoice = () => {
@@ -23,6 +21,7 @@ const ListInvoice = () => {
     const [invoiceID, setInvoiceID] = useState<number | null>(null);
     const [invoiceNumber, setInvoiceNumber] = useState<number | null>(null);
     const [selectedInvoice, setSelectedInvoice] = useState<number | null>(null);
+
 
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -68,6 +67,7 @@ const ListInvoice = () => {
 
 
     const totalPages = invoiceList.totalPages || 1;
+
 
     useEffect(() => {
         handlePageChange(currentPage);
@@ -118,19 +118,6 @@ const ListInvoice = () => {
                         <div className="card">
                             <div className="card-header">
                                 <h3 className="card-title">Danh sách hóa đơn</h3>
-
-                                <div className="card-tools flex items-center">
-                                    {contentSeach != '' &&
-                                        <div className="mr-2">
-                                            {contentSeach}
-                                            <button type="button" className="btn btn-tool" onClick={() => onCancelSearch()}>
-                                                <i className="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    }
-
-                                    <button className="btn btn-success" onClick={() => openModal()}> Tìm kiểm theo ngày</button>
-                                </div>
                             </div>
                             <div className="invoice-content row d-flex" style={{ marginTop: 20 }}>
                                 <div className="table-responsive" style={{ width: showDetails ? "65%" : "100%" }}>
@@ -254,6 +241,7 @@ const ListInvoice = () => {
                 </ul>
             </div>
 
+
             <Modal isOpen={modal} toggle={openModal} backdrop={'static'}>
                 <ModalHeader toggle={openModal}>{"Tìm kiếm theo ngày "}</ModalHeader>
                 <ModalBody>
@@ -299,10 +287,9 @@ const ListInvoice = () => {
                     </Button>
                 </ModalFooter>
             </Modal>
+
         </div>
 
     )
 }
-
-
 export default ListInvoice;

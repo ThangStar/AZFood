@@ -25,7 +25,7 @@ exports.getList = async (socket, io) => {
         io.emit("response", resultRaw)
 
         // io.to(socket.id).emit('response', resultRaw)
-        console.log(resultRaw);
+        console.log("OK! refresh tables");
     } catch (error) {
         console.log("response", error);
         io.to(socket.id).emit('response', error)

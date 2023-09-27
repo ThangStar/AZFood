@@ -22,7 +22,7 @@ exports.getOrdersForTable = async (socket, io, data) => {
             replacements: [tableID || id],
             type: QueryTypes.SELECT
         });
-        console.log( JSON.stringify(orders));
+        console.log("OK! refresh orders");
         io.emit('responseOrder',orders)
         getList(socket, io)
 

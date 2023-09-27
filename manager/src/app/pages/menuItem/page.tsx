@@ -39,6 +39,7 @@ export default function MunuItems() {
         dispatch(getCategoryListAsync());
         dispatch(getDvtListAsync());
     }, [dispatch, currentPage]);
+
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
         dispatch(getMenuItemListAsync(page));

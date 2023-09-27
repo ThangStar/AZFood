@@ -6,7 +6,7 @@ class MessageState extends Equatable {
   const MessageState({
     required this.status,
     this.error,
-    this.msgs = const []
+    required this.msgs
   });
 
   final MessageStt status;
@@ -27,4 +27,11 @@ class MessageState extends Equatable {
       msgs: msgs ?? this.msgs,
     );
   }
+}
+
+class AnimateToEndState extends MessageState{
+  const AnimateToEndState({required super.status, required super.msgs});
+}
+class JumpToEndState extends MessageState{
+  const JumpToEndState({required super.status, required super.msgs});
 }

@@ -18,6 +18,8 @@ import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
 
+import 'foget_pass_screen.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -280,11 +282,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       'Ghi nhớ đăng nhập')
                                                 ],
                                               ),
-                                              const Text(
-                                                'Quên mật khẩu',
-                                                style: TextStyle(
-                                                    color: Colors.blue),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (context) => const FogetPasswordScreen()),
+                                                  );
+                                                },
+                                                child: const Text(
+                                                  'Quên mật khẩu',
+                                                  style: TextStyle(color: Colors.blue),
+                                                ),
                                               )
+
                                             ],
                                           ),
                                           const SizedBox(

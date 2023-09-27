@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -222,17 +224,32 @@ class BottomActionChat extends StatefulWidget {
 
   @override
   State<BottomActionChat> createState() => _BottomActionChatState();
+
 }
 
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
   FocusNode myFocusNode = FocusNode();
+  Timer? typingTimer;
+  bool isTyping = false;
+
+  void startOrResetTypingTimer() {
+    typingTimer?.cancel();
+    typingTimer = Timer(const Duration(seconds: 3), () {
+      isTyping = false;
+      io.emit(SocketEvent.typedGroup, {"id": widget.profile.id});
+    });
+  }
+
 
   _typing() {
-    print("typing");
-    io.emit(SocketEvent.typingGroup, widget.profile.toMap());
-    // context.read<MessageBloc>().add(TypingMessageEvent(fullname: "thangdeeptry"));
+    if (!isTyping) {
+      isTyping = true;
+      io.emit(SocketEvent.typingGroup, widget.profile.toMap());
+    }
+    startOrResetTypingTimer();
   }
+
 
   _typed(PointerDownEvent event) {
     if (myFocusNode.hasFocus) {
@@ -263,6 +280,7 @@ class _BottomActionChatState extends State<BottomActionChat> {
         controller: controllerMsg,
         textAlignVertical: TextAlignVertical.center,
         onChanged: (value) {
+          _typing();
           setState(() {
             controllerMsg.text = value;
           });
@@ -327,6 +345,12 @@ class _BottomActionChatState extends State<BottomActionChat> {
       ),
     );
   }
+  @override
+  void dispose() {
+    typingTimer?.cancel();
+    super.dispose();
+  }
+
 }
 
 class ItemMsg extends StatelessWidget {

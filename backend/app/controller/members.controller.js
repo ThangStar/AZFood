@@ -1,15 +1,17 @@
-
+'use strict';
 const sha1 = require('sha1');
 const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller')
+const Jwt = require("../config/checkJwt");
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, getDownloadURL, uploadBytes } = require('firebase/storage');
 const config = require('../../fireStoreConfig/config');
 initializeApp(config.firebaseConfig);
 
-// Create and Save a new member
+
+
 exports.createMember = async (req, res) => {
     const storage = getStorage();
     try {
@@ -28,11 +30,11 @@ exports.createMember = async (req, res) => {
                 };
                 const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
                 const imgUrl = await getDownloadURL(snapshot.ref);
-                const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?, email = ? ,address =? ,imgUrl =? WHERE id = ?;";
+                const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?, email = ?, address = ?, imgUrl = ?, birtDay = ? WHERE id = ?";
                 const resultRaw = await sequelize.query(queryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, imgUrl, body.id],
+                    replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, imgUrl, body.birtDay, body.id],
                     type: QueryTypes.UPDATE
                 });
                 res.status(200).json({ message: 'Member updated successfully' });
@@ -47,14 +49,18 @@ exports.createMember = async (req, res) => {
                     };
                     const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
                     const imgUrl = await getDownloadURL(snapshot.ref);
-                    const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber, email ,address , imgUrl ) VALUES (?, ?, ?, ?, ?, ? ,? ,?);";
+                    const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber, email, address, imgUrl, createAt, birtDay) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, imgUrl],
+                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, imgUrl, new Date(), body.birthDay],
                         type: QueryTypes.INSERT
                     });
+                    console.log("resultRaw ", resultRaw);
                     res.status(200).json({ message: 'Member created successfully' });
+
+
+
                 } else {
                     console.log("Chưa có file ảnh");
                 }
@@ -70,6 +76,62 @@ exports.createMember = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 
+};
+// exports.updateUser = async (req, res) => {
+//     const storage = getStorage();
+
+//     try {
+//         const body = req.body;
+//         body.password = sha1(body.password);
+
+//         const user = Jwt.getCurrentLogin(req);
+//         const userID = user.userId;
+
+//         if (userID) {
+//             const userInDb = await getUserById(userID);
+//             if (userInDb.password === sha1(body.oldPassword)) {
+
+//                 const image = req.file;
+//                 const imageFileName = `${Date.now()}_${image.originalname}`;
+
+//                 const storageRef = ref(storage, `files/usersss/${imageFileName}`);
+//                 const metadata = {
+//                     contentType: req.file.mimetype,
+//                 };
+//                 const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+//                 const imgUrl = await getDownloadURL(snapshot.ref);
+//                 const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, phoneNumber = ?, email = ?, address = ?, imgUrl = ?, birtDay = ? WHERE id = ?";
+//                 const resultRaw = await sequelize.query(queryRaw, {
+//                     raw: true,
+//                     logging: false,
+//                     replacements: [body.username, body.password, body.name, body.phoneNumber, body.email, body.address, imgUrl, body.birtDay, userID],
+//                     type: QueryTypes.UPDATE
+//                 });
+//                 res.status(200).json({ message: 'Password updated successfully' });
+//             } else {
+//                 res.status(400).json({ message: 'Old password is incorrect' });
+//             }
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// };
+const getUserById = async (id) => {
+    try {
+        const query = "SELECT * FROM users WHERE id = :id;";
+        const replacements = { id };
+
+        const user = await sequelize.query(query, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+
+        return user[0];
+    } catch (error) {
+        console.error('Error getting user by ID:', error);
+        throw new Error('Could not retrieve user by ID');
+    }
 };
 exports.getList = async (req, res) => {
 
@@ -157,3 +219,4 @@ exports.delete = async (req, res) => {
     }
 
 }
+

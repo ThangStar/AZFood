@@ -17,7 +17,7 @@ exports.checkAuth = async (req, res) => {
     const checkMember = resultUserRaw && resultUserRaw.length && resultUserRaw.length > 0 ? resultUserRaw[0] : null;
 
     if (checkMember) {
-      
+
       return checkMember;
     } else {
       return false;
@@ -45,7 +45,7 @@ exports.checkAdmin = async (req) => {
     return false;
   }
 };
-exports.getUserLogin = async (req ,res) => {
+exports.getUserLogin = async (req, res) => {
 
   const curentLogin = Jwt.getCurrentLogin(req);
   try {
@@ -53,7 +53,7 @@ exports.getUserLogin = async (req ,res) => {
     const resultUserRaw = await sequelize.query(queryUserRaw, { raw: true, logging: false, replacements: [curentLogin.userId], type: QueryTypes.SELECT, });
     const checkMember = resultUserRaw && resultUserRaw.length && resultUserRaw.length > 0 ? resultUserRaw[0] : null;
 
-    if(checkMember) {
+    if (checkMember) {
       res.send({ checkMember });
 
     }

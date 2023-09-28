@@ -466,14 +466,16 @@ CREATE TABLE `users` (
   `password` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `role` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `phoneNumber` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `phoneNumber` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `address` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `imgUrl` varchar(500) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `createAt` datetime DEFAULT NULL,
+  `birtDay` varchar(15) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -482,7 +484,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (3,'huyhuy123','7c4a8d09ca3762af61e59520943dc26494f8941b','Hoàng Huy','user','1234567890','huy123@gmail.com',NULL,NULL),(4,'huy123','7c4a8d09ca3762af61e59520943dc26494f8941b','Hoàng Quốc Huy','admin','1234567890','huy123@gmail.com',NULL,NULL),(6,'huy12345','7c4a8d09ca3762af61e59520943dc26494f8941b','Hoàng Quốc Huy','admin','1234567890','huy123@gmail.com',NULL,NULL),(7,'trung123','7c4a8d09ca3762af61e59520943dc26494f8941b','Tấn Trung','user','1234567890','trung@gmail.com','hà huy tập','https://firebasestorage.googleapis.com/v0/b/restaurant-manager-b9f86.appspot.com/o/files%2Fusersss%2F1693224688545_headphone2.jpeg?alt=media&token=69e73bc2-3af5-4877-879a-e0655c4237fc');
+INSERT INTO `users` VALUES (3,'huyhuy123','7c4a8d09ca3762af61e59520943dc26494f8941b','Hoàng Huy','user','huy123@gmail.com','1234567890',NULL,NULL,NULL,NULL),(4,'huy123','7c4a8d09ca3762af61e59520943dc26494f8941b','Hoàng Quốc Huy','admin','huy123@gmail.com','1234567890',NULL,NULL,NULL,NULL),(6,'huy12345','7c4a8d09ca3762af61e59520943dc26494f8941b','Hoàng Quốc Huy','admin','huy123@gmail.com','1234567890',NULL,NULL,NULL,NULL),(7,'trung123','7c4a8d09ca3762af61e59520943dc26494f8941b','Tấn Trung','user','trung@gmail.com','1234567890','hà huy tập','https://firebasestorage.googleapis.com/v0/b/restaurant-manager-b9f86.appspot.com/o/files%2Fusersss%2F1693224688545_headphone2.jpeg?alt=media&token=69e73bc2-3af5-4877-879a-e0655c4237fc',NULL,NULL),(8,'trung1234','7c4a8d09ca3762af61e59520943dc26494f8941b','Tấn Trung','user','HAI@gmail.com','1234567890','hà huy tập','https://firebasestorage.googleapis.com/v0/b/restaurant-manager-b9f86.appspot.com/o/files%2Fusersss%2F1695893870509_headphone2.jpeg?alt=media&token=5c041df1-0b63-47b4-b26e-ed76e16b0651','2023-09-28 16:37:52',NULL),(9,'trung123456','7c4a8d09ca3762af61e59520943dc26494f8941b','Tấn Trung','user','HAI@gmail.com','1234567890','hà huy tập','https://firebasestorage.googleapis.com/v0/b/restaurant-manager-b9f86.appspot.com/o/files%2Fusersss%2F1695894074484_headphone2.jpeg?alt=media&token=c948845c-ffbc-4f0d-a2ed-a86fc89e3d71','2023-09-28 16:41:16','12/02/2000');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -495,4 +497,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-28 15:24:32
+-- Dump completed on 2023-09-28 17:04:11

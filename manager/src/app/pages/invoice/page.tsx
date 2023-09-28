@@ -21,9 +21,53 @@ const ListInvoice = () => {
     const [invoiceID, setInvoiceID] = useState<number | null>(null);
     const [invoiceNumber, setInvoiceNumber] = useState<number | null>(null);
     const [selectedInvoice, setSelectedInvoice] = useState<number | null>(null);
+
+
     const [currentPage, setCurrentPage] = useState(1);
 
+    const [modal, setModal] = useState(false);
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+    const [contentSeach, setContentSeach] = useState('');
+
+    const toggle = () => setModal(!modal);
+    const openModal = (data: any = null) => {
+        if (data) {
+            setStartDate(data.startDate);
+            setEndDate(data.endDate);
+        }
+        toggle();
+    }
+
+    const search = () => {
+        if (endDate == '' || startDate == '') {
+            showAlert("error", " Không được để trống");
+            return
+        }
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        if (start.getTime() > end.getTime()) {
+            showAlert("error", " Ngày end nhỏ hơn ngày start");
+        } else {
+            if (start.getTime() == end.getTime())
+                setContentSeach(`Tìm kiếm trong ngày ${startDate}`)
+            else
+                setContentSeach(`Tìm kiếm từ ngày ${startDate} đến hết ngày ${endDate}`)
+            end.setDate(end.getDate() + 1);
+            dispatch(getSearchDateInvoiceListAsync({ 'startDate': start, 'endDate': end }));
+            toggle()
+        }
+    }
+
+    const onCancelSearch = () => {
+        handlePageChange(currentPage);
+        setContentSeach('')
+    }
+
+
     const totalPages = invoiceList.totalPages || 1;
+
 
     useEffect(() => {
         handlePageChange(currentPage);
@@ -196,6 +240,54 @@ const ListInvoice = () => {
                     </li>
                 </ul>
             </div>
+
+
+            <Modal isOpen={modal} toggle={openModal} backdrop={'static'}>
+                <ModalHeader toggle={openModal}>{"Tìm kiếm theo ngày "}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label" htmlFor="start-date">Từ ngày: </label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="start-date"
+                                        type="date"
+                                        value={startDate ? startDate : ''}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label" htmlFor="end-date">Đến hết ngày </label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="end-date"
+                                        type="date"
+                                        value={endDate ? endDate : ''}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={() => {
+                        search();
+                    }}>
+                        Tìm
+                    </Button>
+                    <Button color="secondary" onClick={() => openModal()}>
+                        Hủy
+                    </Button>
+                </ModalFooter>
+            </Modal>
+
         </div>
 
     )

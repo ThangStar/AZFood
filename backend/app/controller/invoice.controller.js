@@ -6,6 +6,7 @@ const Auth = require('./checkAuth.controller')
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
+
         const PAGE_SIZE = 8;
         const currentPage = parseInt(req.query.page) || 1;
         const offset = (currentPage - 1) * PAGE_SIZE;
@@ -16,7 +17,6 @@ exports.getList = async (req, res) => {
             logging: false,
             type: QueryTypes.SELECT
         });
-
 
         const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
         FROM invoice ic 

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const constant = require("../config/constant");
-const sha1 = require('sh1');
+const sha1 = require('sha1');
 const db = require("../models");
 const Jwt = require('../config/checkJwt')
 const { QueryTypes } = require('sequelize');

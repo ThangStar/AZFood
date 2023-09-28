@@ -399,7 +399,7 @@ exports.payBill = async (req, res) => {
             await sequelize.query(updateTableStatusQuery, {
                 raw: true,
                 logging: false,
-                replacements: [1, tableID],
+                replacements: [3, tableID],
                 type: QueryTypes.UPDATE
             });
             io.emit('tableStatusChanged');

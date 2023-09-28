@@ -107,7 +107,7 @@ class InformationView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    profile.name,
+                    profile.name ?? "",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -198,7 +198,7 @@ class InformationView extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          profile.phoneNumber,
+                          profile.phoneNumber ?? "",
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     fontSize: 14,
@@ -218,7 +218,7 @@ class InformationView extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          profile.email,
+                          profile.email ?? "",
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     fontSize: 14,

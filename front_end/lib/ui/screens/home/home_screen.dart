@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:elegant_notification/elegant_notification.dart';
+import 'package:elegant_notification/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +25,6 @@ import 'package:restaurant_manager_app/ui/widgets/notification_news.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.constraints});
@@ -126,35 +127,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => ChatViewScreen(
+                                            builder: (context) =>
+                                                ChatViewScreen(
                                                   onClose: () {
                                                     setState(() {
-                                                      chatVisible = !chatVisible;
+                                                      chatVisible =
+                                                          !chatVisible;
                                                     });
                                                   },
                                                 )));
                                   },
-                            openNotification: widget.constraints.maxWidth > mobileWidth
-                                ? () {
-                              setState(() {
-                                notificationVisible = !notificationVisible;
-                              });
-                            }
-                                : () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => NotificationScreen(
-                                        onClose: () {
-                                          setState(() {
-                                            notificationVisible = !notificationVisible;
-                                          });
-                                        },
-                                      )));
-                            },
+                            openNotification:
+                                widget.constraints.maxWidth > mobileWidth
+                                    ? () {
+                                        setState(() {
+                                          notificationVisible =
+                                              !notificationVisible;
+                                        });
+                                      }
+                                    : () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    NotificationScreen(
+                                                      onClose: () {
+                                                        setState(() {
+                                                          notificationVisible =
+                                                              !notificationVisible;
+                                                        });
+                                                      },
+                                                    )));
+                                      },
                             profile: profile,
-                            showDrawer: checkDevice(
-                                widget.constraints.maxWidth, true, false, false),
+                            showDrawer: checkDevice(widget.constraints.maxWidth,
+                                true, false, false),
                           );
                         },
                       ),
@@ -172,7 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .textTheme
                                   .titleMedium
                                   ?.copyWith(
-                                      fontWeight: FontWeight.bold, fontSize: 20),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
                             ).animate().moveY(),
                             const PageIndex(),
                           ],
@@ -237,9 +245,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           setState(() {
                                             posFilterStatusSelected = e.key;
                                           });
-                                          context
-                                              .read<TableBloc>()
-                                              .add(OnFilterTable(status: e.key));
+                                          context.read<TableBloc>().add(
+                                              OnFilterTable(status: e.key));
                                         },
                                       ))
                                   .toList(),
@@ -266,37 +273,44 @@ class _HomeScreenState extends State<HomeScreen> {
                               return ItemTable(
                                 table: table,
                                 onTap: () {
-                                  context.read<ProductBloc>().add(
-                                      const GetListProductStatusEvent(
-                                          status: ProductStatus.loading));
-                                  io.emit(
-                                      'listProductByIdTable', {"id": table.id});
-                                  if (!io.hasListeners("responseOrder")) {
-                                    io.on('responseOrder', (data) {
-                                      final jsonResponse = data as List<dynamic>;
-                                      List<Product> currentProducts = jsonResponse
-                                          .map((e) => Product.fromJson(e))
-                                          .toList();
-                                      for (var i in currentProducts) {
-                                        int length = currentProducts
-                                            .where((j) => j.name == i.name)
-                                            .length;
-                                        i.quantity = length;
-                                      }
-                                      context.read<ProductBloc>().add(
-                                          GetListProductByIdTable(
-                                              currentProducts: currentProducts));
-                                    });
+                                  if (table.status == 2) {
+                                    //
+                                  } else {
+                                    context.read<ProductBloc>().add(
+                                        const GetListProductStatusEvent(
+                                            status: ProductStatus.loading));
+                                    io.emit('listProductByIdTable',
+                                        {"id": table.id});
+                                    if (!io.hasListeners("responseOrder")) {
+                                      io.on('responseOrder', (data) {
+                                        final jsonResponse =
+                                            data as List<dynamic>;
+                                        List<Product> currentProducts =
+                                            jsonResponse
+                                                .map((e) => Product.fromJson(e))
+                                                .toList();
+                                        for (var i in currentProducts) {
+                                          int length = currentProducts
+                                              .where((j) => j.name == i.name)
+                                              .length;
+                                          i.quantity = length;
+                                        }
+                                        context.read<ProductBloc>().add(
+                                            GetListProductByIdTable(
+                                                currentProducts:
+                                                    currentProducts));
+                                      });
+                                    }
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              CurrentBookingScreen(
+                                            tableID: table.id!,
+                                            tableName: table.name ?? "dđ",
+                                          ),
+                                        ));
                                   }
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            CurrentBookingScreen(
-                                          tableID: table.id!,
-                                          tableName: table.name ?? "dđ",
-                                        ),
-                                      ));
                                 },
                               )
                                   .animate()
@@ -345,35 +359,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ))),
                       ],
                     ))
-
                 : const SizedBox.shrink(),
             notificationVisible
                 ? Positioned(
-                top: 85,
-                right: 10,
-                child: Row(
-                  children: [
-                    Container(
-                        width: 400,
-                        height: 700,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                                color: colorScheme(context).tertiary.withOpacity(0.5))),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: NotificationScreen(
-                              onClose: () {
-                                if (notificationVisible) {
-                                  setState(() {
-                                    notificationVisible = false;
-                                  });
-                                }
-                              },
-                            ))),
-                  ],
-                ))
-
+                    top: 85,
+                    right: 10,
+                    child: Row(
+                      children: [
+                        Container(
+                            width: 400,
+                            height: 700,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: colorScheme(context)
+                                        .tertiary
+                                        .withOpacity(0.5))),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: NotificationScreen(
+                                  onClose: () {
+                                    if (notificationVisible) {
+                                      setState(() {
+                                        notificationVisible = false;
+                                      });
+                                    }
+                                  },
+                                ))),
+                      ],
+                    ))
                 : const SizedBox.shrink(),
           ],
         ),
@@ -432,7 +446,7 @@ class ToolbarHome extends StatelessWidget {
                         ZoomDrawer.of(context)!.open();
                       },
                     ),
-                  Text("Xin chào, ${profile.name??"".split(' ').last}",
+                  Text("Xin chào, ${profile.name ?? "".split(' ').last}",
                       style: Theme.of(context)
                           .textTheme
                           .bodyLarge

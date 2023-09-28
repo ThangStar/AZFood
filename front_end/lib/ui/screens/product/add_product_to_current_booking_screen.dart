@@ -33,7 +33,6 @@ class _AddProductToCurrentBookingScreenState
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     ProductBloc productBloc = BlocProvider.of(context);
@@ -80,10 +79,10 @@ class _AddProductToCurrentBookingScreenState
                 ),
               ],
             ),
-            body: Column(
-              children: [
-                SingleChildScrollView(
-                    child: Column(children: [
+            body: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: PageIndex(),
@@ -124,97 +123,56 @@ class _AddProductToCurrentBookingScreenState
                   ),
                   LayoutBuilder(builder:
                       (BuildContext context, BoxConstraints constraints) {
-                        double maxWidth = constraints.maxWidth;
-                        int columns;
-                        if (maxWidth > mobileWidth) {
-                          if (maxWidth > tabletWidth) {
-                            columns = 3; // PC
-                          } else {
-                            columns = 2; // Tablet
-                          }
-                        } else {
-                          columns = 1; // Mobile
-                        }
                     return BlocBuilder<ProductBloc, ProductState>(
                       builder: (context, state) {
                         if (state.productResponse != null) {
-                          return GridView.builder(
-                              itemCount: state.productResponse!.data.length,
-                              shrinkWrap: true,
-                              primary: false,
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: columns,
-                                childAspectRatio: (maxWidth / columns) / 80, // Tùy chỉnh giá trị này
-                              ),
-                              itemBuilder: (context, index) {
-                                Product product =
-                                    state.productResponse!.data[index];
-                                return ItemProduct(
-                                    isAddCart: true,
-                                    cartKey: cartKey,
-                                    product: product,
-                                    onTap: () {
-                                      context.read<OrderBloc>().add(
-                                          CreateOrderEvent(
-                                              product: ProductCheckOut(
-                                                  productID: product.id,
-                                                  quantity: 1,
-                                                  tableID: widget.tableID)));
-                                      final index = productsSelected.indexWhere(
-                                        (element) => element.id == product.id,
-                                      );
-                                      if (index == -1) {
-                                        setState(() {
-                                          productsSelected.add(product);
-                                        });
-                                      }
-                                      //  else {
-                                      //   // List<Product>  newData = List.from(productsSelected);
-                                      //   // newData[index].quantity! = 1;
-                                      //   Product productUpdate =
-                                      //       productsSelected[index];
-                                      //   if (productUpdate.quantity != null) {
-                                      //     ++productUpdate.amountCart;
-                                      //   }
-                                      //   setState(() {
-                                      //     productsSelected[index] = productUpdate;
-                                      //   });
-                                      // }
-
-                                      // final index = productsSelected.indexWhere(
-                                      //   (element) => element.id == product.id,
-                                      // );
-                                      // if (index == -1) {
-                                      //   setState(() {
-                                      //     productsSelected = [
-                                      //       ...productsSelected,
-                                      //       product
-                                      //     ];
-                                      //   });
-                                      // } else {
-                                      //   // List<Product>  newData = List.from(productsSelected);
-                                      //   // newData[index].quantity! = 1;
-                                      //   Product productUpdate =
-                                      //       productsSelected[index];
-                                      //   if (productUpdate.quantity != null) {
-                                      //     ++productUpdate.amountCart;
-                                      //   }
-                                      //   setState(() {
-                                      //     productsSelected[index] = productUpdate;
-                                      //   });
-                                      // }
-                                    },
-                                    subTitle: SubTitleProduct(product: product),
-                                    trailling: SubTitleItemCurrentBill(
-                                        product: product));
-                              });
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            child: GridView.builder(
+                                itemCount: state.productResponse?.data.length,
+                                shrinkWrap: true,
+                                primary: false,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount:
+                                      checkDevice(constraints.maxWidth, 1, 2, 3),
+                                      mainAxisExtent: 70
+                                ),
+                                itemBuilder: (context, index) {
+                                  Product product =
+                                      state.productResponse!.data[index];
+                                  return ItemProduct(
+                                      isAddCart: true,
+                                      cartKey: cartKey,
+                                      product: product,
+                                      onTap: () {
+                                        context.read<OrderBloc>().add(
+                                            CreateOrderEvent(
+                                                product: ProductCheckOut(
+                                                    productID: product.id,
+                                                    quantity: 1,
+                                                    tableID: widget.tableID)));
+                                        final index = productsSelected.indexWhere(
+                                          (element) => element.id == product.id,
+                                        );
+                                        if (index == -1) {
+                                          setState(() {
+                                            productsSelected.add(product);
+                                          });
+                                        }
+                                      },
+                                      subTitle: SubTitleProduct(product: product),
+                                      trailling: SubTitleItemCurrentBill(
+                                          product: product));
+                                }),
+                          );
                         }
                         return const Text("Xảy ra lỗi khi lấy dữ liệu");
                       },
                     );
                   }),
-                ])),
-              ],
+                ],
+              ),
             ),
           )),
     );

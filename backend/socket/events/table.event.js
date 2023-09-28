@@ -3,8 +3,7 @@ const { getList } = require("../controllers/table.controller");
 // [table]
 const table = (socket, io) => {
     socket.on('table', (data) => {
-        console.log(data);
-
+        console.log("table changed");
         // const authorization = socket.handshake.headers['Authorization'];
         // if (authorization) {
         // const bearerToken = authorization.split(' ')[1];

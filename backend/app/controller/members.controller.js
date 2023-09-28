@@ -1,15 +1,17 @@
-
+'use strict';
 const sha1 = require('sha1');
 const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller')
+
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, getDownloadURL, uploadBytes } = require('firebase/storage');
 const config = require('../../fireStoreConfig/config');
 initializeApp(config.firebaseConfig);
 
-// Create and Save a new member
+
+
 exports.createMember = async (req, res) => {
     const storage = getStorage();
     try {
@@ -157,3 +159,4 @@ exports.delete = async (req, res) => {
     }
 
 }
+

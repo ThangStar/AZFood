@@ -9,7 +9,7 @@ module.exports = app => {
   // Login
   router.post("/login", login.login);
   router.post("/create", [jwt.checkJwt, upload.single('file')], member.createMember);
-  router.post("/update", [jwt.checkJwt, upload.single('file')], member.updateUser);
+  // router.post("/update", [jwt.checkJwt, upload.single('file')], member.updateUser);
   router.post("/delete", [jwt.checkJwt], member.delete);
   router.get("/list", [jwt.checkJwt], member.getList);
   router.get("/details", [jwt.checkJwt], member.getDetails);

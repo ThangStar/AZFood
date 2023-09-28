@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/utils/spacing_date_to_now.dart';
@@ -51,6 +52,7 @@ class ItemTable extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // AnimatedTe
                                 Text(
                                   table.name ?? "NAME",
                                   style: Theme.of(context)
@@ -109,17 +111,18 @@ class ItemTable extends StatelessWidget {
                                                     .withOpacity(0.8))),
                                 const Spacer(),
                                 table.status == 2
-                                    ? IconButton(
-                                        style: const ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStatePropertyAll(
-                                                    Colors.green)),
-                                        color: Colors.white,
-                                        onPressed: () {},
-                                        icon: SvgPicture.asset(
-                                          "assets/svgs/clean.svg",
-                                          color: Colors.white,
-                                        ))
+                                    ? InkWell(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        splashColor: Colors.blue.withOpacity(0.4),
+                                        hoverColor: Colors.blue.withOpacity(0.2),
+                                        onTap: () {},
+                                        child: Icon(
+                                          Ionicons.flash,
+                                          size: 38,
+                                          color: Colors.blue,
+                                        ),
+                                      )
                                     : const SizedBox.shrink()
                               ],
                             )

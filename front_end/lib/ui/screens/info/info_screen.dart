@@ -42,28 +42,29 @@ class _InfoScreenState extends State<InfoScreen> {
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Center(
-              child: Column(
-                children: <Widget>[
-                  BlocBuilder<AuthenticationBloc, AuthenticationState>(
+              child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
                     builder: (context, state) {
                       Profile profile = state.profile ??
                           Profile(
                               id: 0,
-                              username: "ABC",
-                              password: "pass",
-                              name: "ABC",
+                              username: "nhuy123",
+                              password: "123456",
+                              name: "Đặng Đình Thiên Như Ý",
                               role: "admin",
-                              phoneNumber: "0123",
+                              phoneNumber: "9876543210",
                               email: "email");
-                      return InformationView(profile: profile);
+                      return Column(
+                children: <Widget>[
+                  InformationView(profile: profile, size: size),
+                  const SizedBox(height: 20),
+                  UtilitiesView(profile: profile ),
+                ]
+                      );
                     },
                   ),
-                  const SizedBox(height: 20),
-                  const UtilitiesView(),
-                ],
-              ),
+                  
             ),
           ),
         ),
@@ -76,15 +77,17 @@ class InformationView extends StatelessWidget {
   const InformationView({
     super.key,
     required this.profile,
+    required this.size,
   });
 
   final Profile profile;
+  final Size size;
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 750),
+          constraints: const BoxConstraints(maxWidth: 800),
           child: Container(
             padding: const EdgeInsets.all(15.0),
             decoration: BoxDecoration(
@@ -94,7 +97,7 @@ class InformationView extends StatelessWidget {
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               ClipOval(
                 child: SizedBox.fromSize(
-                  size: const Size.fromRadius(50),
+                  size: Size.fromRadius(50.0 * checkDevice(size.width, 1, 1.5, 1.6)),
                   child: Image.asset(
                     'assets/images/avatar.jpg',
                     fit: BoxFit.cover,
@@ -136,7 +139,7 @@ class InformationView extends StatelessWidget {
             ),
             const SizedBox(height: 5),
             ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 750, maxHeight: 175),
+              constraints: const BoxConstraints(maxWidth: 800, maxHeight: 175),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 16.0, vertical: 12.0),
@@ -259,13 +262,13 @@ class InformationView extends StatelessWidget {
 
 class UtilitiesView extends StatelessWidget {
   const UtilitiesView({
-    super.key,
+    super.key, required this.profile,
   });
-
+  final Profile profile;
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 750),
+      constraints: const BoxConstraints(maxWidth: 800),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -327,7 +330,7 @@ class UtilitiesView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const UpdateInfoScreen()),
+                            builder: (context) => UpdateInfoScreen(name: profile.name, phoneNumer: profile.phoneNumber, email: profile.email)),
                       );
                     }),
               ),

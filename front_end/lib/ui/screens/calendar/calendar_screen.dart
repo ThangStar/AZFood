@@ -36,7 +36,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         appBar: AppBar(
           automaticallyImplyLeading:
               checkDevice(widget.constraints.maxWidth, true, false, false),
-          title: Text("Lịch"),
+          title: Text(
+            "Lịch",
+            style: TextStyle(fontSize: 30),
+          ),
         ),
         body: Stack(
           children: [
@@ -89,28 +92,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     return "Không xác định";
                 }
               },
-              dateStringBuilder: (date, {secondaryDate}) => "aaaaaas",
               // to provide custom UI for month cells.
               cellBuilder: (date, events, isToday, isInMonth) {
                 // Return your widget to display as month cell.
                 return Container(
-                  color: isInMonth ? Colors.white : null,
+                  color: isToday
+                      ? Colors.purple
+                      : isInMonth
+                          ? Colors.white
+                          : null,
                   child: Column(
                     children: [
                       Text(
                         "${date.day}",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: date.weekday == DateTime.sunday ? Colors.red : isToday
+                              ? Colors.white
+                              : null
                         ),
                       ),
-                      Icon(Ionicons.checkmark),
+                      events[0].date == date ? Text(events[0].event!) : Container()
+
                     ],
                   ),
                 );
               },
               minMonth: DateTime(2023),
               maxMonth: DateTime(2050),
-              initialMonth: DateTime(2023),
+              initialMonth: DateTime.now(),
               cellAspectRatio: 1,
               onPageChange: (date, pageIndex) => print("$date, $pageIndex"),
               onCellTap: (events, date) {
@@ -123,7 +134,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
               onEventTap: (event, date) => print(event),
               onDateLongPress: (date) => print(date),
             ),
-
           ],
         ));
   }

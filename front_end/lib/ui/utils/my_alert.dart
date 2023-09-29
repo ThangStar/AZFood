@@ -11,6 +11,8 @@ ElegantNotification myAlert(BuildContext context, DeviceType deviceType,
   switch (alertType) {
     case AlertType.error:
       return ElegantNotification.error(
+          background: colorScheme(context).background,
+          progressIndicatorBackground: Colors.red[100]!,
           title: Text(
             title,
             style: TextStyle(
@@ -28,6 +30,8 @@ ElegantNotification myAlert(BuildContext context, DeviceType deviceType,
       break;
     case AlertType.info:
       return ElegantNotification.info(
+        background: colorScheme(context).background,
+          progressIndicatorBackground: Colors.blue[100]!,
           title: Text(
             title,
             style: TextStyle(
@@ -45,6 +49,8 @@ ElegantNotification myAlert(BuildContext context, DeviceType deviceType,
       break;
     default:
       return ElegantNotification.success(
+          background: colorScheme(context).background,
+          progressIndicatorBackground: Colors.green[100]!,
           title: Text(
             title,
             style: TextStyle(

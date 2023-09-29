@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:calendar_view/calendar_view.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -95,16 +96,19 @@ class _MyAppState extends State<MyApp> {
                   create: (context) => MessageBloc(),
                 ),
               ],
-              child: MaterialApp(
-                  themeMode: currentMode,
-                  debugShowCheckedModeBanner: false,
-                  theme: ThemeData(
-                      useMaterial3: true,
-                      colorScheme: lightColorScheme,
-                      textTheme: textTheme(context)),
-                  darkTheme: ThemeData(
-                      useMaterial3: true, colorScheme: darkColorScheme),
-                  home: const LoginScreen()));
+              child: CalendarControllerProvider(
+                controller: EventController(),
+                child: MaterialApp(
+                    themeMode: currentMode,
+                    debugShowCheckedModeBanner: false,
+                    theme: ThemeData(
+                        useMaterial3: true,
+                        colorScheme: lightColorScheme,
+                        textTheme: textTheme(context)),
+                    darkTheme: ThemeData(
+                        useMaterial3: true, colorScheme: darkColorScheme),
+                    home: const LoginScreen()),
+              ));
         });
   }
 }

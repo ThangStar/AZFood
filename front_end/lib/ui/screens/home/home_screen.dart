@@ -17,6 +17,7 @@ import 'package:restaurant_manager_app/ui/screens/booking/current_booking_screen
 import 'package:restaurant_manager_app/ui/screens/chat/chat_view.dart';
 import 'package:restaurant_manager_app/ui/screens/notification/notification_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_table.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_chip_toogle.dart';
@@ -275,6 +276,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 onTap: () {
                                   if (table.status == 2) {
                                     //
+                                    myAlert(
+                                            context,
+                                            checkDeviceType(
+                                                widget.constraints.maxWidth),
+                                            AlertType.error,
+                                            "Cảnh báo",
+                                            "Không thể order bàn đang bận")
+                                        .show(context);
                                   } else {
                                     context.read<ProductBloc>().add(
                                         const GetListProductStatusEvent(

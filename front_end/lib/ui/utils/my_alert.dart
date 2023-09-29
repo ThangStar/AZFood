@@ -1,32 +1,63 @@
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
-ElegantNotification myAlert(
-    BuildContext context, DeviceType type, title, content) {
-  switch (type) {
-    case DeviceType.mobile:
+enum AlertType { success, error, info }
+
+ElegantNotification myAlert(BuildContext context, DeviceType deviceType,
+    AlertType alertType, title, content) {
+  switch (alertType) {
+    case AlertType.error:
       return ElegantNotification.error(
-          title: Text("Cảnh báo"),
-          height: 100,
-          description: Text("Không thể order bàn đang bận"));
+          title: Text(
+            title,
+            style: TextStyle(
+                fontSize: deviceType == DeviceType.mobile ? 14 : 18,
+                color: Colors.red),
+          ),
+          height: deviceType == DeviceType.mobile ? 70 : 90,
+          iconSize: deviceType == DeviceType.mobile ? 18 : 24,
+          description: Text(
+            content,
+            style: TextStyle(
+                fontSize: deviceType == DeviceType.mobile ? 12 : 14,
+                color: colorScheme(context).scrim.withOpacity(0.6)),
+          ));
       break;
-    case DeviceType.tablet:
-      return ElegantNotification.error(
-          title: Text("Cảnh báo"),
-          height: 100,
-          description: Text("Không thể order bàn đang bận"));
-      break;
-    case DeviceType.pc:
-      return ElegantNotification.error(
-          title: Text("Cảnh báo"),
-          height: 100,
-          description: Text("Không thể order bàn đang bận"));
+    case AlertType.info:
+      return ElegantNotification.info(
+          title: Text(
+            title,
+            style: TextStyle(
+                fontSize: deviceType == DeviceType.mobile ? 14 : 18,
+                color: Colors.blue),
+          ),
+          height: deviceType == DeviceType.mobile ? 70 : 90,
+          iconSize: deviceType == DeviceType.mobile ? 18 : 24,
+          description: Text(
+            content,
+            style: TextStyle(
+                fontSize: deviceType == DeviceType.mobile ? 12 : 14,
+                color: colorScheme(context).scrim.withOpacity(0.6)),
+          ));
       break;
     default:
-      return ElegantNotification.error(
-          title: Text("Cảnh báo"),
-          height: 100,
-          description: Text("Không thể order bàn đang bận"));
+      return ElegantNotification.success(
+          title: Text(
+            title,
+            style: TextStyle(
+                fontSize: deviceType == DeviceType.mobile ? 14 : 18,
+                color: Colors.green),
+          ),
+          height: deviceType == DeviceType.mobile ? 70 : 90,
+          iconSize: deviceType == DeviceType.mobile ? 18 : 24,
+          description: Text(
+            content,
+            style: TextStyle(
+                fontSize: deviceType == DeviceType.mobile ? 12 : 14,
+                color: colorScheme(context).scrim.withOpacity(0.6)),
+          ));
   }
 }

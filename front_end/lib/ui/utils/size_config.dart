@@ -12,3 +12,13 @@ dynamic checkDevice(double maxWidth, mobile, tablet, pc) {
   }
   return mobile;
 }
+
+DeviceType checkDeviceType(double maxWidth) {
+  if (maxWidth > mobileWidth) {
+    if (maxWidth > tabletWidth) {
+      return DeviceType.pc;
+    }
+    return DeviceType.tablet;
+  }
+  return DeviceType.mobile;
+}

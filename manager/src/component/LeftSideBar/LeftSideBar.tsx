@@ -59,6 +59,14 @@ const AdminPage = () => {
                                 <Link href="/pages/invoice" style={{ color: "black", fontWeight: "bold" }}>Danh sách hóa đơn</Link>
                             </div>
                         </li>
+                        <li className="nav-item ">
+                            <div className="">
+                                <i className="far fa-circle nav-icon "></i>
+                                <Link href="/pages/checkin-history" style={{ color: "black", fontWeight: "bold" }}>
+                                    Bảng chấm côngg
+                                </Link>
+                            </div>
+                        </li>
                     </ul>
                 </nav>
 

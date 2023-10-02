@@ -52,7 +52,9 @@ exports.getListAttendance = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
     if (isAdmin) {
-        const queryRaw = "SELECT * FROM attendance";
+        const queryRaw = `SELECT d.id, d.date, d.status, u.name, u.imgUrl 
+        FROM attendance AS d
+        INNER JOIN users AS u ON u.id = d.userID; `;
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,

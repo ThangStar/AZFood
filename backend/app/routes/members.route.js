@@ -8,6 +8,7 @@ module.exports = app => {
     var router = require("express").Router();
     // Login
     router.post("/login", login.login);
+    router.post("/checkAndSendOtpToEmail", member.checkAndSendOtpToEmail );
     router.post("/create",[jwt.checkJwt ,upload.single('file')] , member.createMember );
     router.post("/delete",[jwt.checkJwt] , member.delete );
     router.get("/list", [jwt.checkJwt],member.getList);

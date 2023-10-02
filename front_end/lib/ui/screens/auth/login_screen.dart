@@ -18,7 +18,7 @@ import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
 
-import 'foget_pass_screen.dart';
+import '../forgot_pass/forgot_pass_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -286,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 onTap: () {
                                                   Navigator.push(
                                                     context,
-                                                    MaterialPageRoute(builder: (context) => const FogetPasswordScreen()),
+                                                    MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
                                                   );
                                                 },
                                                 child: const Text(

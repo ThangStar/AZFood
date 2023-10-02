@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/blocs/forgot_pass/forgot_password_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/message/message_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/forgot_pass/forgot_pass_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
@@ -94,6 +96,9 @@ class _MyAppState extends State<MyApp> {
                 BlocProvider(
                   create: (context) => MessageBloc(),
                 ),
+                BlocProvider(
+                  create: (context) => ForgotPasswordBloc(),
+                ),
               ],
               child: MaterialApp(
                   themeMode: currentMode,
@@ -104,7 +109,7 @@ class _MyAppState extends State<MyApp> {
                       textTheme: textTheme(context)),
                   darkTheme: ThemeData(
                       useMaterial3: true, colorScheme: darkColorScheme),
-                  home: const LoginScreen()));
+                  home: const ForgotPasswordScreen()));
         });
   }
 }

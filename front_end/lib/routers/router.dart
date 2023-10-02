@@ -17,4 +17,6 @@ class Router {
   //invoice
   static String getAllInvoice = '/api/invoice/list';
 
+  //forgot_pass
+  static String sendEmail = '/api/user/checkAndSendOtpToEmail';
 }

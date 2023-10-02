@@ -91,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {},
             child: Icon(
               Icons.arrow_forward_sharp,
-              color: colorScheme(context).onPrimary,
+              color: Colors.white,
             )),
         body: Stack(
           fit: StackFit.expand,

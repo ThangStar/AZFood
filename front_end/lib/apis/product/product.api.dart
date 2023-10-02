@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:restaurant_manager_app/routers/router.dart';
 import 'package:restaurant_manager_app/utils/dio.dart';
@@ -51,6 +50,24 @@ class ProductApi {
       }
     } on DioException catch (err) {
       print("error  ${err.response}");
+      return Failure(response: err.response);
+    }
+  }
+
+  static Future<Object> search(String query) async {
+    try {
+      Response<dynamic> response = await http.get(
+        Router.searchProduct,
+        queryParameters: {"name": query},
+      );
+      if (response.statusCode == 200) {
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure search ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error search ${err.response}");
       return Failure(response: err.response);
     }
   }

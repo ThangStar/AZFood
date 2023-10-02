@@ -18,7 +18,7 @@ class MyToolbar extends StatelessWidget {
       decoration: const BoxDecoration(
         image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage('assets/images/background.jpg')),
+            image: AssetImage('assets/images/bg_app_bar.jpg')),
       ),
       child: Container(
         padding: const EdgeInsets.only(top: 40),

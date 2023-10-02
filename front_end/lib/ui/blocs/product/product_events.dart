@@ -11,6 +11,7 @@ class GetProductsEvent extends ProductEvent {
   final int page;
 
   const GetProductsEvent({this.page = 1});
+
   @override
   // TODO: implement props
   List<Object> get props => [page];
@@ -29,8 +30,15 @@ class GetListProductByIdTable extends ProductEvent {
 
   const GetListProductByIdTable({required this.currentProducts});
 }
-class GetListProductStatusEvent extends ProductEvent{
+
+class GetListProductStatusEvent extends ProductEvent {
   final ProductStatus status;
 
   const GetListProductStatusEvent({required this.status});
+}
+
+class SearchProductEvent extends ProductEvent {
+  final String query;
+
+  SearchProductEvent({required this.query});
 }

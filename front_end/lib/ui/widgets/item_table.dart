@@ -29,10 +29,11 @@ class _ItemTableState extends State<ItemTable> {
     Colors.yellow,
     Colors.red,
   ];
-  TextStyle colorizeTextStyle =  TextStyle(
+  TextStyle colorizeTextStyle = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,
   );
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -69,37 +70,39 @@ class _ItemTableState extends State<ItemTable> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                widget.table.status == 1 ?
-                                AnimatedTextKit(
-                                  repeatForever: true,
-                                  animatedTexts: [
-                                    ColorizeAnimatedText(
-                                      "${widget.table.name}",
-                                      textStyle: colorizeTextStyle,
-                                      colors: colorizeColors,
-                                    ),
-                                  ],
-                                  isRepeatingAnimation: true,
-                                  onTap: () {
-                                    print("Tap Event");
-                                  },
-                                ):
-                                Text(
-                                  widget.table.name ?? "NAME",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: widget.table.status != 3
-                                              ? widget.table.status == 1
-                                                  ? const Color(0xFF049C6B)
-                                                  : colorScheme(context).error
-                                              : colorScheme(context)
-                                                  .scrim
-                                                  .withOpacity(0.8)),
-                                ),
+                                widget.table.status == 1
+                                    ? AnimatedTextKit(
+                                        repeatForever: true,
+                                        animatedTexts: [
+                                          ColorizeAnimatedText(
+                                            "${widget.table.name}",
+                                            textStyle: colorizeTextStyle,
+                                            colors: colorizeColors,
+                                          ),
+                                        ],
+                                        isRepeatingAnimation: true,
+                                        onTap: () {
+                                          print("Tap Event");
+                                        },
+                                      )
+                                    : Text(
+                                        widget.table.name ?? "NAME",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: widget.table.status != 3
+                                                    ? widget.table.status == 1
+                                                        ? const Color(
+                                                            0xFF049C6B)
+                                                        : colorScheme(context)
+                                                            .error
+                                                    : colorScheme(context)
+                                                        .scrim
+                                                        .withOpacity(0.8)),
+                                      ),
                                 const SizedBox(height: 4),
                                 widget.table.firstTime != null
                                     ? Row(
@@ -145,15 +148,16 @@ class _ItemTableState extends State<ItemTable> {
                                     ? InkWell(
                                         borderRadius:
                                             BorderRadius.circular(100),
-                                        splashColor: Colors.blue.withOpacity(0.4),
-                                        hoverColor: Colors.blue.withOpacity(0.2),
+                                        splashColor:
+                                            Colors.blue.withOpacity(0.4),
+                                        hoverColor:
+                                            Colors.blue.withOpacity(0.2),
                                         onTap: () {},
-                                        child: Icon(
+                                        child: const Icon(
                                           Ionicons.flash,
                                           size: 38,
                                           color: Colors.blue,
-                                        ),
-                                      )
+                                        ))
                                     : const SizedBox.shrink()
                               ],
                             )

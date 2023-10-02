@@ -32,7 +32,6 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     controllerMsg.dispose();
     super.dispose();
   }
@@ -44,7 +43,6 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
     _listenEvent();
     super.initState();
   }
-
   _initProfile() {
     MySharePreferences.loadProfile().then((value) {
       setState(() {
@@ -80,8 +78,8 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
     if (!io.hasListeners(SocketEvent.onMsgTypingGroup)) {
       io.on(SocketEvent.onMsgTypingGroup, (data) {
         if (data['id'] != profile.id) {
-        msgBloc.add(TypingMessageEvent(data: data));
-        _scrollToEnd(true);
+          msgBloc.add(TypingMessageEvent(data: data));
+          _scrollToEnd(true);
         }
       });
     }
@@ -90,24 +88,25 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
       io.on(SocketEvent.onMsgTypedGroup, (data) {
         print(data);
         if (data != profile.id) {
-        _scrollToEnd(true);
-        msgBloc.add(TypedMessageEvent(id: data));
+          _scrollToEnd(true);
+          msgBloc.add(TypedMessageEvent(id: data));
         }
       });
     }
   }
 
-  _scrollToEnd(bool animate) async {
+  _scrollToEnd(bool animate, {bool isLoadFirst = false}) async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print(controllerMsg.position.maxScrollExtent);
       if (controllerMsg.hasClients) {
+
         animate
-            ? controllerMsg.animateTo(controllerMsg.position.maxScrollExtent,
+            ? controllerMsg.animateTo(controllerMsg.position.maxScrollExtent+580,
                 duration: 500.ms, curve: Curves.fastOutSlowIn)
             : controllerMsg.jumpTo(controllerMsg.position.maxScrollExtent);
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -123,7 +122,8 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
             if (!(size.width > mobileWidth)) const BackButton(),
             Container(
                 margin: const EdgeInsets.all(4),
-                child: const CircleAvatar(
+                child: CircleAvatar(
+                    backgroundColor: colorScheme(context).tertiary,
                     backgroundImage: AssetImage("assets/images/chicken.png"))),
           ],
         ),
@@ -184,7 +184,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                     child: Scrollbar(
                       controller: controllerMsg,
                       child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                        physics: ClampingScrollPhysics(),
                         shrinkWrap: true,
                         primary: false,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -224,7 +224,6 @@ class BottomActionChat extends StatefulWidget {
 
   @override
   State<BottomActionChat> createState() => _BottomActionChatState();
-
 }
 
 class _BottomActionChatState extends State<BottomActionChat> {
@@ -241,7 +240,6 @@ class _BottomActionChatState extends State<BottomActionChat> {
     });
   }
 
-
   _typing() {
     if (!isTyping) {
       isTyping = true;
@@ -249,7 +247,6 @@ class _BottomActionChatState extends State<BottomActionChat> {
     }
     startOrResetTypingTimer();
   }
-
 
   _typed(PointerDownEvent event) {
     if (myFocusNode.hasFocus) {
@@ -345,12 +342,12 @@ class _BottomActionChatState extends State<BottomActionChat> {
       ),
     );
   }
+
   @override
   void dispose() {
     typingTimer?.cancel();
     super.dispose();
   }
-
 }
 
 class ItemMsg extends StatelessWidget {
@@ -369,37 +366,56 @@ class ItemMsg extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             textDirection: isMine ? TextDirection.rtl : TextDirection.ltr,
             children: [
-              const CircleAvatar(
-                  backgroundImage: AssetImage("assets/images/avatar.jpg")),
+              ClipOval(
+                child: Image.asset("assets/images/avatar.jpg",
+                    width: 24, fit: BoxFit.cover),
+              ),
               const SizedBox(
                 width: 8,
               ),
               msg.statusMessage == StatusMessage.none
-                  ? Container(
-                      constraints:
-                          BoxConstraints(maxWidth: constraints.maxWidth * 0.6),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                          color: isMine
-                              ? Colors.pink
-                              : colorScheme(context).onPrimary,
-                          borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(18),
-                              topRight: const Radius.circular(18),
-                              bottomLeft: isMine
-                                  ? const Radius.circular(18)
-                                  : const Radius.circular(0),
-                              bottomRight: !isMine
-                                  ? const Radius.circular(18)
-                                  : const Radius.circular(0))),
-                      child: Text(
-                        msg.message ?? "",
-                        style: TextStyle(
-                            color: !isMine
-                                ? colorScheme(context).scrim
-                                : colorScheme(context).onPrimary),
-                      ))
+                  ? Column(
+                      crossAxisAlignment: !isMine
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          msg.profile?.name ?? '',
+                          style: TextStyle(
+                              fontSize: 10,
+                              color:
+                                  colorScheme(context).scrim.withOpacity(0.4)),
+                        ),
+                        SizedBox(
+                          height: 2,
+                        ),
+                        Container(
+                            constraints: BoxConstraints(
+                                maxWidth: constraints.maxWidth * 0.6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                                color: isMine
+                                    ? Colors.pink
+                                    : colorScheme(context).onPrimary,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(18),
+                                    topRight: const Radius.circular(18),
+                                    bottomLeft: isMine
+                                        ? const Radius.circular(18)
+                                        : const Radius.circular(0),
+                                    bottomRight: !isMine
+                                        ? const Radius.circular(18)
+                                        : const Radius.circular(0))),
+                            child: Text(
+                              msg.message ?? "",
+                              style: TextStyle(
+                                  color: !isMine
+                                      ? colorScheme(context).scrim
+                                      : Colors.white),
+                            )),
+                      ],
+                    )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

@@ -124,6 +124,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       return "Không xác định";
                   }
                 },
+                headerStyle: HeaderStyle(
+                  leftIcon: Icon(Icons.arrow_back,),
+                  rightIcon: Icon(Icons.arrow_forward),
+                  decoration: BoxDecoration(
+                    color: colorScheme(context).onPrimary
+                  )
+                ),
                 // to provide custom UI for month cells.
                 cellBuilder: (date, events, isToday, isInMonth) {
                   // Return your widget to display as month cell.
@@ -131,7 +138,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     color: isToday
                         ? Colors.indigo
                         : isInMonth
-                            ? Colors.white
+                            ? colorScheme(context).background
                             : null,
                     child: Column(
                       children: [

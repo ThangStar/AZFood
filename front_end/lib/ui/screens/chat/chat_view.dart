@@ -79,20 +79,20 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
 
     if (!io.hasListeners(SocketEvent.onMsgTypingGroup)) {
       io.on(SocketEvent.onMsgTypingGroup, (data) {
-        // if (data['id'] != profile.id) {
+        if (data['id'] != profile.id) {
         msgBloc.add(TypingMessageEvent(data: data));
         _scrollToEnd(true);
-        // }
+        }
       });
     }
 
     if (!io.hasListeners(SocketEvent.onMsgTypedGroup)) {
       io.on(SocketEvent.onMsgTypedGroup, (data) {
         print(data);
-        // if (data != profile.id) {
+        if (data != profile.id) {
         _scrollToEnd(true);
         msgBloc.add(TypedMessageEvent(id: data));
-        // }
+        }
       });
     }
   }

@@ -122,7 +122,7 @@ class ItemBill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      shape: Border.all(color: colorScheme(context).tertiary.withOpacity(0.6)),
+      shape: Border.all(color: colorScheme(context).scrim.withOpacity(0.1)),
       child: InkWell(
         onTap: () {},
         child: Padding(

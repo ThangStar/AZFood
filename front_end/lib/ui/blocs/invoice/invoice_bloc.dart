@@ -20,7 +20,7 @@ class InvoiceBloc extends Bloc<InvoiceEvent, InvoiceState> {
   FutureOr<void> _getInvoiceEvent(
       GetInvoiceEvent event, Emitter<InvoiceState> emit) async {
     emit(InvoiceLoadingState());
-    await Future.delayed(2.seconds);
+    await Future.delayed(200.milliseconds);
     Object result = await InvoiceApi.getAll();
     if (result is Success) {
       final data = result.response.data['resultRaw'] as List<dynamic>;

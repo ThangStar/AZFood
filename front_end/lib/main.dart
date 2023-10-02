@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'package:calendar_view/calendar_view.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/blocs/calendar/calendar_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/message/message_bloc.dart';
@@ -94,17 +96,23 @@ class _MyAppState extends State<MyApp> {
                 BlocProvider(
                   create: (context) => MessageBloc(),
                 ),
+                BlocProvider(
+                  create: (context) => CalendarBloc(),
+                ),
               ],
-              child: MaterialApp(
-                  themeMode: currentMode,
-                  debugShowCheckedModeBanner: false,
-                  theme: ThemeData(
-                      useMaterial3: true,
-                      colorScheme: lightColorScheme,
-                      textTheme: textTheme(context)),
-                  darkTheme: ThemeData(
-                      useMaterial3: true, colorScheme: darkColorScheme),
-                  home: const HomeMenuScreen()));
+              child: CalendarControllerProvider(
+                controller: EventController(),
+                child: MaterialApp(
+                    themeMode: currentMode,
+                    debugShowCheckedModeBanner: false,
+                    theme: ThemeData(
+                        useMaterial3: true,
+                        colorScheme: lightColorScheme,
+                        textTheme: textTheme(context)),
+                    darkTheme: ThemeData(
+                        useMaterial3: true, colorScheme: darkColorScheme),
+                    home: const LoginScreen()),
+              ));
         });
   }
 }

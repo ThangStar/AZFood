@@ -47,225 +47,220 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/bg_main.png"))),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-                child: Column(
-                  children: [
-                    MyToolbar(
-                      title: "Hôm nay",
-                      leading: MyIconButtonBlur(
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                        onTap: () {
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Column(
+                children: [
+                  MyToolbar(
+                    title: "Hôm nay",
+                    leading: MyIconButtonBlur(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white.withOpacity(0.8),
                       ),
-                      trailling: [
-                        MyIconButtonBlur(
-                          icon: Icon(Icons.more_horiz_sharp,
-                              color: Colors.white.withOpacity(0.8)),
-                          onTap: () {},
-                        )
-                      ],
-                      content: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 18),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  widget.tableName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                          fontSize: 20, color: Colors.white),
-                                ),
-                                BlocBuilder<ProductBloc, ProductState>(
-                                  builder: (context, state) {
-                                    return Text(
-                                      state.currentProducts != null
-                                          ? "Số lượng ${state.currentProducts!.length}"
-                                          : "đang tải..",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                              fontSize: 12,
-                                              color: Colors.white
-                                                  .withOpacity(0.6)),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            MyButtonBlur(
-                              text: "Thêm mới",
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddProductToCurrentBookingScreen(
-                                                tableID: widget.tableID)));
-                              },
-                            )
-                          ],
-                        ),
+                      onTap: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
+                    ),
+                    trailling: [
+                      MyIconButtonBlur(
+                        icon: Icon(Icons.more_horiz_sharp,
+                            color: Colors.white.withOpacity(0.8)),
+                        onTap: () {},
+                      )
+                    ],
+                    content: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 18),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.tableName,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        fontSize: 20, color: Colors.white),
+                              ),
+                              BlocBuilder<ProductBloc, ProductState>(
+                                builder: (context, state) {
+                                  return Text(
+                                    state.currentProducts != null
+                                        ? "Số lượng ${state.currentProducts!.length}"
+                                        : "đang tải..",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(
+                                            fontSize: 12,
+                                            color: Colors.white
+                                                .withOpacity(0.6)),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          MyButtonBlur(
+                            text: "Thêm mới",
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          AddProductToCurrentBookingScreen(
+                                              tableID: widget.tableID)));
+                            },
+                          )
+                        ],
                       ),
                     ),
-                    LayoutBuilder(
-                    builder: (BuildContext context, BoxConstraints constraints) {
-                      double maxWidth = constraints.maxWidth;
-                      int columns;
-                      if (maxWidth > mobileWidth) {
-                        if (maxWidth > tabletWidth) {
-                          columns = 3; // PC
-                        } else {
-                          columns = 2; // Tablet
-                        }
+                  ),
+                  LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    double maxWidth = constraints.maxWidth;
+                    int columns;
+                    if (maxWidth > mobileWidth) {
+                      if (maxWidth > tabletWidth) {
+                        columns = 3; // PC
                       } else {
-                        columns = 1; // Mobile
+                        columns = 2; // Tablet
                       }
-                      return BlocBuilder<ProductBloc, ProductState>(
-                        builder: (context, state) {
-                          if (state.status == ProductStatus.loading) {
+                    } else {
+                      columns = 1; // Mobile
+                    }
+                    return BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        if (state.status == ProductStatus.loading) {
+                          return Container(
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              child: const CircularProgressIndicator());
+                        }
+                        if (state.currentProducts != null &&
+                            state.status == ProductStatus.success) {
+                          if (state.currentProducts!.isEmpty) {
                             return Container(
-                                padding: const EdgeInsets.symmetric(vertical: 24),
-                                child: const CircularProgressIndicator());
+                              padding: const EdgeInsets.symmetric(vertical: 24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Icon(
+                                    Icons.no_food_outlined,
+                                    size: 64,
+                                    color: colorScheme(context)
+                                        .scrim
+                                        .withOpacity(0.3),
+                                  ),
+                                  const SizedBox(
+                                    height: 24,
+                                  ),
+                                  Text(
+                                    "Hiện tại chưa có sản phẩm nào",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: colorScheme(context)
+                                            .scrim
+                                            .withOpacity(0.3)),
+                                  )
+                                ],
+                              ),
+                            );
                           }
-                          if (state.currentProducts != null &&
-                              state.status == ProductStatus.success) {
-                            if (state.currentProducts!.isEmpty) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(vertical: 24),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.max,
+
+                          return GridView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: columns,
+                              childAspectRatio: (maxWidth / columns) / 80, // Tùy chỉnh giá trị này
+                            ),
+                            itemCount: state.currentProducts!.toSet().length,
+                            itemBuilder: (context, index) {
+                              Product product = state.currentProducts!
+                                  .toSet()
+                                  .elementAt(index);
+                              return ItemProduct(
+                                product: product,
+                                subTitle:
+                                SubTitleItemCurrentBill(product: product),
+                                trailling: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Icon(
-                                      Icons.no_food_outlined,
-                                      size: 64,
-                                      color: colorScheme(context)
-                                          .scrim
-                                          .withOpacity(0.3),
+                                    Center(
+                                      child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                            BorderRadius.circular(6),
+                                            border: Border.all(
+                                                color: colorScheme(context)
+                                                    .primary
+                                                    .withOpacity(0.3)),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            children: [
+                                              Material(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                BorderRadius.circular(6),
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding:
+                                                    const EdgeInsets.all(2),
+                                                    child: Icon(Icons.remove,
+                                                        color:
+                                                        colorScheme(context)
+                                                            .primary),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                "${product.quantity}",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: colorScheme(context)
+                                                        .scrim
+                                                        .withOpacity(0.8)),
+                                              ),
+                                              Material(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                BorderRadius.circular(6),
+                                                child: InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding:
+                                                    const EdgeInsets.all(2),
+                                                    child: Icon(Icons.add,
+                                                        color:
+                                                        colorScheme(context)
+                                                            .primary),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
                                     ),
-                                    const SizedBox(
-                                      height: 24,
-                                    ),
-                                    Text(
-                                      "Hiện tại chưa có sản phẩm nào",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: colorScheme(context)
-                                              .scrim
-                                              .withOpacity(0.3)),
-                                    )
                                   ],
                                 ),
                               );
-                            }
+                            },
+                          );
+                        }
+                        return const CircularProgressIndicator();
+                      },
+                    );
+                  }
 
-                            return GridView.builder(
-                              shrinkWrap: true,
-                              primary: false,
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: columns,
-                                childAspectRatio: (maxWidth / columns) / 80, // Tùy chỉnh giá trị này
-                              ),
-                              itemCount: state.currentProducts!.toSet().length,
-                              itemBuilder: (context, index) {
-                                Product product = state.currentProducts!
-                                    .toSet()
-                                    .elementAt(index);
-                                return ItemProduct(
-                                  product: product,
-                                  subTitle:
-                                  SubTitleItemCurrentBill(product: product),
-                                  trailling: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Center(
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                              BorderRadius.circular(6),
-                                              border: Border.all(
-                                                  color: colorScheme(context)
-                                                      .primary
-                                                      .withOpacity(0.3)),
-                                            ),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                              children: [
-                                                Material(
-                                                  color: Colors.transparent,
-                                                  borderRadius:
-                                                  BorderRadius.circular(6),
-                                                  child: InkWell(
-                                                    onTap: () {},
-                                                    child: Container(
-                                                      padding:
-                                                      const EdgeInsets.all(2),
-                                                      child: Icon(Icons.remove,
-                                                          color:
-                                                          colorScheme(context)
-                                                              .primary),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "${product.quantity}",
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: colorScheme(context)
-                                                          .scrim
-                                                          .withOpacity(0.8)),
-                                                ),
-                                                Material(
-                                                  color: Colors.transparent,
-                                                  borderRadius:
-                                                  BorderRadius.circular(6),
-                                                  child: InkWell(
-                                                    onTap: () {},
-                                                    child: Container(
-                                                      padding:
-                                                      const EdgeInsets.all(2),
-                                                      child: Icon(Icons.add,
-                                                          color:
-                                                          colorScheme(context)
-                                                              .primary),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            )),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          }
-                          return const CircularProgressIndicator();
-                        },
-                      );
-                    }
-
-                    )
-                  ],
-                ),
+                  )
+                ],
               ),
             ),
           ],

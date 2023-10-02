@@ -44,6 +44,7 @@ require("./app/routes/donViTinh.route.js")(app);
 require("./app/routes/invoice.route.js")(app);
 require("./app/routes/nhapHang.route.js")(app);
 require("./app/routes/statistics.route.js")(app);
+require("./app/routes/attendance.route.js")(app);
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {

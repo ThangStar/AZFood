@@ -61,7 +61,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           sumPrice: 999999,
           username: loginResponse?.username ?? "username",
           time: DateTime.now().toIso8601String());
-
+      io.emit("listProductByIdTable", {"id": event.tableId});
       event.pushScreen(PayStatus.success, billData);
     } else if (result is Failure) {
       print("pay failure ${result.response} ");

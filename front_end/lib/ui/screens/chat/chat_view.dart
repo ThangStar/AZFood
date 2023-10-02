@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,14 +26,15 @@ class ChatViewScreen extends StatefulWidget {
 
 class _ChatViewScreenState extends State<ChatViewScreen> {
   late MessageBloc msgBloc;
-  final ScrollController _controllerMsg = ScrollController();
+  ScrollController controllerMsg = ScrollController();
   LoginResponse profile = LoginResponse(
       connexion: false, jwtToken: "jwtToken", id: 0, username: "username");
 
   @override
   void dispose() {
+    // TODO: implement dispose
+    controllerMsg.dispose();
     super.dispose();
-    _controllerMsg.dispose();
   }
 
   @override
@@ -73,37 +73,37 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
   _listenEvent() {
     if (!io.hasListeners(SocketEvent.onMsgGroup)) {
       io.on(SocketEvent.onMsgGroup, (data) {
-        print("[sever] data: $data");
+        print("data from sever: $data");
       });
     }
 
     if (!io.hasListeners(SocketEvent.onMsgTypingGroup)) {
       io.on(SocketEvent.onMsgTypingGroup, (data) {
-        debugPrint("[sever] typing has client ${_controllerMsg.hasClients}");
-        // if (data['id'] != profile.id) {
-        msgBloc.add(InitMessageEvent(msgs: msgBloc.state.msgs));
+        if (data['id'] != profile.id) {
         msgBloc.add(TypingMessageEvent(data: data));
-        // }
+        _scrollToEnd(true);
+        }
       });
     }
 
     if (!io.hasListeners(SocketEvent.onMsgTypedGroup)) {
       io.on(SocketEvent.onMsgTypedGroup, (data) {
-        // if (data != profile.id) {
+        print(data);
+        if (data != profile.id) {
         _scrollToEnd(true);
         msgBloc.add(TypedMessageEvent(id: data));
-        // }
+        }
       });
     }
   }
 
   _scrollToEnd(bool animate) async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_controllerMsg.hasClients) {
+      if (controllerMsg.hasClients) {
         animate
-            ? _controllerMsg.animateTo(_controllerMsg.position.maxScrollExtent,
+            ? controllerMsg.animateTo(controllerMsg.position.maxScrollExtent,
                 duration: 500.ms, curve: Curves.fastOutSlowIn)
-            : _controllerMsg.jumpTo(_controllerMsg.position.maxScrollExtent);
+            : controllerMsg.jumpTo(controllerMsg.position.maxScrollExtent);
       }
     });
   }
@@ -168,38 +168,40 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
       body: Column(
         children: [
           BlocListener<MessageBloc, MessageState>(
-              listener: (context, state) {
-                if (state is AnimateToEndState) {
-                  _scrollToEnd(true);
-                }
+            listener: (context, state) {
+              if (state is AnimateToEndState) {
+                print("animate to end");
+                _scrollToEnd(true);
+              }
+            },
+            child: BlocBuilder<MessageBloc, MessageState>(
+              builder: (context, state) {
+                return Expanded(
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(
+                      scrollbars: false,
+                    ),
+                    child: Scrollbar(
+                      controller: controllerMsg,
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        primary: false,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        controller: controllerMsg,
+                        itemCount: state.msgs.length,
+                        itemBuilder: (context, index) {
+                          return ItemMsg(
+                              msg: state.msgs[index],
+                              isMine: state.msgs[index].sendBy == profile.id);
+                        },
+                      ),
+                    ),
+                  ),
+                );
               },
-              child: Expanded(
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(
-                    scrollbars: false,
-                  ),
-                  child: BlocBuilder<MessageBloc, MessageState>(
-                    builder: (context, state) {
-                      return CupertinoScrollbar(
-                        controller: _controllerMsg,
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          shrinkWrap: true,
-                          primary: false,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          controller: _controllerMsg,
-                          itemCount: state.msgs.length,
-                          itemBuilder: (context, index) {
-                            return ItemMsg(
-                                msg: state.msgs[index],
-                                isMine: state.msgs[index].sendBy == profile.id);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              )),
+            ),
+          ),
           BottomActionChat(
             profile: profile,
             onSubmit: (text) {
@@ -222,58 +224,37 @@ class BottomActionChat extends StatefulWidget {
 
   @override
   State<BottomActionChat> createState() => _BottomActionChatState();
+
 }
 
 class _BottomActionChatState extends State<BottomActionChat> {
   TextEditingController controllerMsg = TextEditingController();
-  FocusNode myFocusNode = FocusNode(canRequestFocus: true);
-  bool typing = false;
-  bool canDelayer = true;
+  FocusNode myFocusNode = FocusNode();
+  Timer? typingTimer;
+  bool isTyping = false;
 
-  _typing() {
-    print("candelayer $canDelayer");
-    print("typing $typing");
-    Timer t = Timer(50.ms, () { });
-    if (canDelayer) {
-      setState(() {
-        canDelayer = false;
-      });
-      t = Timer(Duration(seconds: 2), () {
-        if (canDelayer) {
-          setState(() {
-            typing = false;
-          });
-        }else{
-          _typed(const PointerDownEvent());
-        }
-        setState(() {
-          canDelayer = true;
-        });
-      });
-    }else{
-      t.cancel();
-    }
-
-    if (!typing) {
-      io.emit(SocketEvent.typingGroup, widget.profile.toMap());
-    }
-    setState(() {
-      typing = true;
+  void startOrResetTypingTimer() {
+    typingTimer?.cancel();
+    typingTimer = Timer(const Duration(seconds: 3), () {
+      isTyping = false;
+      io.emit(SocketEvent.typedGroup, {"id": widget.profile.id});
     });
   }
 
+
+  _typing() {
+    if (!isTyping) {
+      isTyping = true;
+      io.emit(SocketEvent.typingGroup, widget.profile.toMap());
+    }
+    startOrResetTypingTimer();
+  }
+
+
   _typed(PointerDownEvent event) {
-    setState(() {
-      typing = false;
-    });
     if (myFocusNode.hasFocus) {
       io.emit(SocketEvent.typedGroup, {"id": widget.profile.id});
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -285,92 +266,91 @@ class _BottomActionChatState extends State<BottomActionChat> {
           color: colorScheme(context).onPrimary,
           borderRadius: BorderRadius.circular(30)),
       width: size.width,
-      child: GestureDetector(
-        onPanDown: (details) {},
-        child: TextField(
-          onTapOutside: (event) {
-            myFocusNode.unfocus();
-            _typed(event);
-          },
-          // onTap: _typing,
-          focusNode: myFocusNode,
-          onSubmitted: (value) {
-            myFocusNode.requestFocus();
-            setState(() {
-              controllerMsg.text = '';
-            });
-            widget.onSubmit(value);
-          },
-          controller: controllerMsg,
-          textAlignVertical: TextAlignVertical.center,
-          onChanged: (value) {
-            _typing();
-            setState(() {
-              controllerMsg.text = value;
-            });
-          },
-          decoration: InputDecoration(
-              isDense: true,
-              alignLabelWithHint: true,
-              hintText: "Nhập tin nhắn",
-              hintStyle: const TextStyle(fontSize: 16),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              border: InputBorder.none,
-              suffixIcon: AnimatedSize(
-                duration: 100.ms,
-                child: controllerMsg.text == ""
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 24,
-                              )),
-                          IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.image, size: 24)),
-                          IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.keyboard_voice, size: 24)),
-                          const SizedBox(
-                            width: 6,
-                          )
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              color: Colors.red,
-                              onPressed: () {
-                                context.read<MessageBloc>().add(
-                                    ActionSendMessage(
-                                        msg: Message(
-                                            id: 1,
-                                            sendBy: 1,
-                                            message: controllerMsg.text,
-                                            type: 1)));
-                                setState(() {
-                                  controllerMsg.text = '';
-                                });
-                              },
-                              icon: const Icon(Icons.send,
-                                  color: Colors.pink, size: 24)),
-                          const SizedBox(
-                            width: 6,
-                          )
-                        ],
-                      ),
-              )),
-        ),
+      child: TextField(
+        onTapOutside: (event) => _typed(event),
+        onTap: _typing,
+        focusNode: myFocusNode,
+        onSubmitted: (value) {
+          myFocusNode.requestFocus();
+          setState(() {
+            controllerMsg.text = '';
+          });
+          widget.onSubmit(value);
+        },
+        controller: controllerMsg,
+        textAlignVertical: TextAlignVertical.center,
+        onChanged: (value) {
+          _typing();
+          setState(() {
+            controllerMsg.text = value;
+          });
+        },
+        decoration: InputDecoration(
+            isDense: true,
+            alignLabelWithHint: true,
+            hintText: "Nhập tin nhắn",
+            hintStyle: const TextStyle(fontSize: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            border: InputBorder.none,
+            suffixIcon: AnimatedSize(
+              duration: 100.ms,
+              child: controllerMsg.text == ""
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.camera_alt_outlined,
+                              size: 24,
+                            )),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.image, size: 24)),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.keyboard_voice, size: 24)),
+                        const SizedBox(
+                          width: 6,
+                        )
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                            color: Colors.red,
+                            onPressed: () {
+                              context.read<MessageBloc>().add(ActionSendMessage(
+                                  msg: Message(
+                                      id: 1,
+                                      sendBy: 1,
+                                      message: controllerMsg.text,
+                                      type: 1)));
+                              setState(() {
+                                controllerMsg.text = '';
+                              });
+                            },
+                            icon: const Icon(Icons.send,
+                                color: Colors.pink, size: 24)),
+                        const SizedBox(
+                          width: 6,
+                        )
+                      ],
+                    ),
+            )),
       ),
     );
   }
+  @override
+  void dispose() {
+    typingTimer?.cancel();
+    super.dispose();
+  }
+
 }
 
 class ItemMsg extends StatelessWidget {

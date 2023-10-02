@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/my_search_delegate.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
+import 'package:restaurant_manager_app/ui/widgets/keyboard_icon.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_icon_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 
@@ -33,7 +36,6 @@ class _AddProductToCurrentBookingScreenState
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     ProductBloc productBloc = BlocProvider.of(context);
@@ -45,176 +47,194 @@ class _AddProductToCurrentBookingScreenState
           onRefresh: () async {
             await Future.delayed(5.seconds);
           },
-          child: Scaffold(
-            floatingActionButton: FloatingActionButton.extended(
-                heroTag: "check_out",
-                key: cartKey,
-                backgroundColor: colorScheme(context).secondary,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                label: Badge(
-                  label: Text("${productsSelected.length}"),
-                  child: Icon(
-                    Icons.shopping_cart_rounded,
-                    color: colorScheme(context).onPrimary,
-                  ),
-                )),
-            appBar: AppBar(
-              bottom: const PreferredSize(
-                  preferredSize: Size.zero,
-                  child: Divider(
-                    height: 1,
-                  )),
-              title: const Text(
-                "Mặt hàng",
-                style: TextStyle(fontSize: 24),
-              ),
-              actions: [
-                MyIconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {},
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-              ],
-            ),
-            body: Column(
-              children: [
-                SingleChildScrollView(
-                    child: Column(children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: PageIndex(),
-                  ),
-                  BlocBuilder<ProductBloc, ProductState>(
-                    buildWhen: (previous, current) =>
-                        previous.categoryResponse != current.categoryResponse,
-                    builder: (context, state) {
-                      if (state.categoryResponse != null) {
-                        return TabBar(
-                            onTap: (value) {
-                              if (value != 0) {
-                                context.read<ProductBloc>().add(
-                                    GetProductFilterEvent(
-                                        idCategory: state.categoryResponse!
-                                            .category[value - 1].id));
-                              } else {
-                                productBloc.add(const GetProductsEvent());
-                              }
-                            },
-                            controller: TabController(
-                                length:
-                                    state.categoryResponse!.category.length + 1,
-                                vsync: this),
-                            tabs: [
-                              const Tab(
-                                text: "Tất cả",
-                              ),
-                              ...state.categoryResponse!.category
-                                  .map((e) => Tab(
-                                        text: e.name,
-                                      ))
-                                  .toList()
-                            ]);
-                      }
-                      return const Text("Không tìm thấy danh mục nào");
+          child: CallbackShortcuts(
+            bindings: <ShortcutActivator, VoidCallback>{
+              const SingleActivator(LogicalKeyboardKey.keyK,
+                  control: true): () {
+                showSearch(context: context, delegate: MySeartDelegate());
+              },
+              const SingleActivator(LogicalKeyboardKey.escape):
+                  () {
+                Navigator.pop(context);
+              },
+            },
+            child: FocusScope(
+              autofocus: true,
+              child: Scaffold(
+                floatingActionButton: FloatingActionButton.extended(
+                    heroTag: "check_out",
+                    key: cartKey,
+                    backgroundColor: colorScheme(context).secondary,
+                    onPressed: () {
+                      Navigator.pop(context);
                     },
+                    label: Badge(
+                      label: Text("${productsSelected.length}"),
+                      child: Icon(
+                        Icons.shopping_cart_rounded,
+                        color: colorScheme(context).onPrimary,
+                      ),
+                    )),
+                appBar: AppBar(
+                  backgroundColor: colorScheme(context).primary,
+                  bottom: PreferredSize(
+                      preferredSize: Size.zero,
+                      child: Divider(
+                        color: colorScheme(context).tertiary,
+                        height: 1,
+                      )),
+                  title: const Text(
+                    "Mặt hàng",
+                    style: TextStyle(fontSize: 24),
                   ),
-                  LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints constraints) {
-                        double maxWidth = constraints.maxWidth;
-                        int columns;
-                        if (maxWidth > mobileWidth) {
-                          if (maxWidth > tabletWidth) {
-                            columns = 3; // PC
-                          } else {
-                            columns = 2; // Tablet
-                          }
-                        } else {
-                          columns = 1; // Mobile
-                        }
-                    return BlocBuilder<ProductBloc, ProductState>(
-                      builder: (context, state) {
-                        if (state.productResponse != null) {
-                          return GridView.builder(
-                              itemCount: state.productResponse!.data.length,
-                              shrinkWrap: true,
-                              primary: false,
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: columns,
-                                childAspectRatio: (maxWidth / columns) / 80, // Tùy chỉnh giá trị này
-                              ),
-                              itemBuilder: (context, index) {
-                                Product product =
-                                    state.productResponse!.data[index];
-                                return ItemProduct(
-                                    isAddCart: true,
-                                    cartKey: cartKey,
-                                    product: product,
-                                    onTap: () {
-                                      context.read<OrderBloc>().add(
-                                          CreateOrderEvent(
-                                              product: ProductCheckOut(
-                                                  productID: product.id,
-                                                  quantity: 1,
-                                                  tableID: widget.tableID)));
-                                      final index = productsSelected.indexWhere(
-                                        (element) => element.id == product.id,
-                                      );
-                                      if (index == -1) {
-                                        setState(() {
-                                          productsSelected.add(product);
-                                        });
-                                      }
-                                      //  else {
-                                      //   // List<Product>  newData = List.from(productsSelected);
-                                      //   // newData[index].quantity! = 1;
-                                      //   Product productUpdate =
-                                      //       productsSelected[index];
-                                      //   if (productUpdate.quantity != null) {
-                                      //     ++productUpdate.amountCart;
-                                      //   }
-                                      //   setState(() {
-                                      //     productsSelected[index] = productUpdate;
-                                      //   });
-                                      // }
-
-                                      // final index = productsSelected.indexWhere(
-                                      //   (element) => element.id == product.id,
-                                      // );
-                                      // if (index == -1) {
-                                      //   setState(() {
-                                      //     productsSelected = [
-                                      //       ...productsSelected,
-                                      //       product
-                                      //     ];
-                                      //   });
-                                      // } else {
-                                      //   // List<Product>  newData = List.from(productsSelected);
-                                      //   // newData[index].quantity! = 1;
-                                      //   Product productUpdate =
-                                      //       productsSelected[index];
-                                      //   if (productUpdate.quantity != null) {
-                                      //     ++productUpdate.amountCart;
-                                      //   }
-                                      //   setState(() {
-                                      //     productsSelected[index] = productUpdate;
-                                      //   });
-                                      // }
-                                    },
-                                    subTitle: SubTitleProduct(product: product),
-                                    trailling: SubTitleItemCurrentBill(
-                                        product: product));
-                              });
-                        }
-                        return const Text("Xảy ra lỗi khi lấy dữ liệu");
-                      },
-                    );
-                  }),
-                ])),
-              ],
+                  actions: [
+                    GestureDetector(
+                      onTap: () => showSearch(
+                          context: context, delegate: MySeartDelegate()),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: colorScheme(context).scrim.withOpacity(0.3)),
+                          borderRadius: BorderRadius.circular(24),
+                          color: colorScheme(context).tertiary.withOpacity(0.4),
+                        ),
+                        child: const Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search),
+                            Text(
+                              " Search  ",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            KeyBoardIcon(
+                              label: "ctrl",
+                            ),
+                            KeyBoardIcon(
+                              label: "K",
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                  ],
+                ),
+                body: RawKeyboardListener(
+                  focusNode: FocusNode(),
+                  onKey: (value) {
+                    print(value.logicalKey);
+                    if (value is RawKeyDownEvent) {
+                      if (value.logicalKey == LogicalKeyboardKey.keyK) {
+                        print("object");
+                        showSearch(context: context, delegate: MySeartDelegate());
+                      }
+                    }
+                  },
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: PageIndex(),
+                        ),
+                        BlocBuilder<ProductBloc, ProductState>(
+                          buildWhen: (previous, current) =>
+                              previous.categoryResponse != current.categoryResponse,
+                          builder: (context, state) {
+                            if (state.categoryResponse != null) {
+                              return TabBar(
+                                  onTap: (value) {
+                                    if (value != 0) {
+                                      context.read<ProductBloc>().add(
+                                          GetProductFilterEvent(
+                                              idCategory: state.categoryResponse!
+                                                  .category[value - 1].id));
+                                    } else {
+                                      productBloc.add(const GetProductsEvent());
+                                    }
+                                  },
+                                  controller: TabController(
+                                      length:
+                                          state.categoryResponse!.category.length +
+                                              1,
+                                      vsync: this),
+                                  tabs: [
+                                    const Tab(
+                                      text: "Tất cả",
+                                    ),
+                                    ...state.categoryResponse!.category
+                                        .map((e) => Tab(
+                                              text: e.name,
+                                            ))
+                                        .toList()
+                                  ]);
+                            }
+                            return const Text("Không tìm thấy danh mục nào");
+                          },
+                        ),
+                        LayoutBuilder(builder:
+                            (BuildContext context, BoxConstraints constraints) {
+                          return BlocBuilder<ProductBloc, ProductState>(
+                            builder: (context, state) {
+                              if (state.productResponse != null) {
+                                return SizedBox(
+                                  height: MediaQuery.of(context).size.height,
+                                  child: GridView.builder(
+                                      itemCount: state.productResponse?.data.length,
+                                      shrinkWrap: true,
+                                      primary: false,
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: checkDevice(
+                                                  constraints.maxWidth, 1, 2, 3),
+                                              mainAxisExtent: 70),
+                                      itemBuilder: (context, index) {
+                                        Product product =
+                                            state.productResponse!.data[index];
+                                        return ItemProduct(
+                                            isAddCart: true,
+                                            cartKey: cartKey,
+                                            product: product,
+                                            onTap: () {
+                                              context.read<OrderBloc>().add(
+                                                  CreateOrderEvent(
+                                                      product: ProductCheckOut(
+                                                          productID: product.id,
+                                                          quantity: 1,
+                                                          tableID:
+                                                              widget.tableID)));
+                                              final index =
+                                                  productsSelected.indexWhere(
+                                                (element) =>
+                                                    element.id == product.id,
+                                              );
+                                              if (index == -1) {
+                                                setState(() {
+                                                  productsSelected.add(product);
+                                                });
+                                              }
+                                            },
+                                            subTitle:
+                                                SubTitleProduct(product: product),
+                                            trailling: SubTitleItemCurrentBill(
+                                                product: product));
+                                      }),
+                                );
+                              }
+                              return const Text("Xảy ra lỗi khi lấy dữ liệu");
+                            },
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           )),
     );

@@ -85,11 +85,11 @@ exports.createOrder = async (req, res) => {
                         await sequelize.query(updateTableStatusQuery, {
                             raw: true,
                             logging: false,
-                            replacements: [2, orderData.tableID],
+                            replacements: [1, orderData.tableID],
                             type: QueryTypes.UPDATE,
                             transaction
                         });
-                        io.emit('tableStatusChanged', { tableID: orderData.tableID, status: 2 });
+                        // io.emit('tableStatusChanged', { tableID: orderData.tableID, status: 2 });
                         return orderId;
                     });
 
@@ -399,10 +399,10 @@ exports.payBill = async (req, res) => {
             await sequelize.query(updateTableStatusQuery, {
                 raw: true,
                 logging: false,
-                replacements: [1, tableID],
+                replacements: [2, tableID],
                 type: QueryTypes.UPDATE
             });
-            io.emit('tableStatusChanged');
+            io.emit('table');
             await sequelize.transaction(async transaction => {
                 const deleteOrderItemsQuery = `DELETE FROM orderItems WHERE orderID = ?;`;
 

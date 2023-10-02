@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/ui/screens/bill/detail_bill_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 
@@ -30,6 +32,7 @@ class PaySuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: payStatus == PayStatus.success
               ? colorScheme(context).surfaceTint
               : colorScheme(context).error,
@@ -75,7 +78,7 @@ class PaySuccessScreen extends StatelessWidget {
                       child: Icon(
                         payStatus == PayStatus.success
                             ? Icons.done_outlined
-                            : Icons.close ,
+                            : Icons.close,
                         color: colorScheme(context).onPrimary,
                         size: 80,
                       ),
@@ -209,7 +212,14 @@ class BodyBillSuccess extends StatelessWidget {
               child: MyButton(
                 isOutline: true,
                 value: "Quay về",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeMenuScreen(),
+                      ),
+                      (route) => false);
+                },
               ),
             ),
             const SizedBox(
@@ -219,7 +229,14 @@ class BodyBillSuccess extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: MyButton(
                 value: "Xem hoá đơn",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailBillScreen(),
+                      ),
+                      (route) => false);
+                },
               ),
             ),
           ],

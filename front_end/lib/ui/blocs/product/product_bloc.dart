@@ -24,6 +24,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<GetProductFilterEvent>(_getProductFilterEvent);
     on<GetListProductByIdTable>(_getListProductByIdTable);
     on<GetListProductStatusEvent>(_getListProductStatusEvent);
+    on<SearchProductEvent>(_searchProductEvent);
   }
 
   FutureOr<void> _getProductsEvent(
@@ -80,5 +81,19 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   FutureOr<void> _getListProductStatusEvent(
       GetListProductStatusEvent event, Emitter<ProductState> emit) async {
     emit(state.copyWith(status: event.status));
+  }
+
+  FutureOr<void> _searchProductEvent(
+      SearchProductEvent event, Emitter<ProductState> emit) async {
+    Object result = await ProductApi.search(event.query);
+    if (result is Success) {
+      print(result.response.data);
+      List<dynamic> jsonList = result.response.data['data'] as List<dynamic>;
+      emit(state.copyWith(
+          productsSearchResults:
+              jsonList.map((e) => Product.fromJson(e)).toList()));
+    } else if (result is Failure) {
+      emit(state.copyWith(productsSearchResults: []));
+    }
   }
 }

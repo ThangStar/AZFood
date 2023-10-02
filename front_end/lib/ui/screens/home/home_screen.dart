@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool chatVisible = false;
   bool notificationVisible = false;
   late TableBloc tbBloc;
+  late ProductBloc prdBloc;
 
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
@@ -54,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     tbBloc = BlocProvider.of<TableBloc>(context);
+    prdBloc = BlocProvider.of<ProductBloc>(context);
     //init table
     io.emit('table', {"name": "thang"});
     if (!io.hasListeners("response")) {
@@ -285,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             "Không thể order bàn đang bận")
                                         .show(context);
                                   } else {
-                                    context.read<ProductBloc>().add(
+                                    prdBloc.add(
                                         const GetListProductStatusEvent(
                                             status: ProductStatus.loading));
                                     io.emit('listProductByIdTable',
@@ -304,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               .length;
                                           i.quantity = length;
                                         }
-                                        context.read<ProductBloc>().add(
+                                        prdBloc.add(
                                             GetListProductByIdTable(
                                                 currentProducts:
                                                     currentProducts));

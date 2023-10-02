@@ -107,6 +107,7 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
   }
 
   File? selectedImage;
+  bool changeImage = false;
   _showDialog() {
     showDialog(
       context: context,
@@ -154,7 +155,7 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                             ),
                     ),
                     const SizedBox(height: 20),
-                    TextButton(
+                    ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
                             colorScheme(context).primary),
@@ -162,7 +163,7 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(5.0), // Độ cong của viền
+                                BorderRadius.circular(3.0), // Độ cong của viền
                           ),
                         ),
                       ),
@@ -171,6 +172,7 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                         children: [
                           Icon(Icons.camera,
                               color: colorScheme(context).onSecondary),
+                          const SizedBox(width: 10),
                           Text("Chọn ảnh từ Camera",
                               style: Theme.of(context)
                                   .textTheme
@@ -200,15 +202,62 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                                 backgroundColor:
                                     colorScheme(context).onSecondary,
                                 surfaceTintColor: Colors.transparent,
-                                title: const Text('Lỗi'),
-                                content: const Text(
-                                    'Mở camera không khả dụng trên trình duyệt web.'),
+                                title: Center(
+                                  child: Icon(
+                                    Icons.report_gmailerrorred_outlined,
+                                    size: 60,
+                                    color: colorScheme(context).error,
+                                  ),
+                                ),
+                                content: Text(
+                                    'Mở camera không khả dụng trên trình duyệt web.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(fontSize: 15)),
                                 actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('Đóng'),
+                                  ButtonBar(
+                                    alignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      TextButton(
+                                          style: ButtonStyle(
+                                            // padding: MaterialStateProperty.all<
+                                            //         EdgeInsets>(
+                                            //     const EdgeInsets.symmetric(
+                                            //         horizontal: 15.0,
+                                            //         vertical: 5.0)),
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                        Color>(
+                                                    colorScheme(context)
+                                                        .primary),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 50.0,
+                                                vertical: 5.0),
+                                            child: Text('ĐÓNG',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge
+                                                    ?.copyWith(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            colorScheme(context)
+                                                                .onSecondary)),
+                                          )),
+                                      // TextButton(
+                                      //   onPressed: () {
+
+                                      //   },
+                                      //   child: const Text('Thử lại'),
+                                      // ),
+                                    ],
                                   ),
                                 ],
                               );
@@ -218,12 +267,25 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                         }
                       },
                     ),
-                    TextButton(
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            colorScheme(context).primary),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(3.0), // Độ cong của viền
+                          ),
+                        ),
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.image_outlined,
                               color: colorScheme(context).onSecondary),
+                          const SizedBox(width: 10),
                           Text("Chọn ảnh từ Gallery",
                               style: Theme.of(context)
                                   .textTheme
@@ -254,9 +316,13 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
               onPressed: () => Navigator.pop(context, "cancel"),
             ),
             TextButton(
-              child: const Text("OK"),
-              onPressed: () => Navigator.pop(context, "ok"),
-            ),
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context, "ok");
+                  setState(() {
+                    changeImage = true;
+                  });
+                }),
           ],
         );
       },
@@ -326,14 +392,14 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                                         size: Size.fromRadius(50.0 *
                                             checkDevice(size.width, 1.0, 1.5,
                                                 1.6)), // Image radius
-                                        child:
-                                            //  Image.file(
-                                            //             selectedImage!,
-                                            //             width: 250,
-                                            //             height: 250,
-                                            //             fit: BoxFit.cover,
-                                            //           )
-                                            Image.asset(
+                                        child: changeImage
+                                            ? Image.file(
+                                                selectedImage!,
+                                                width: 250,
+                                                height: 250,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.asset(
                                                 'assets/images/avatar.jpg',
                                                 fit: BoxFit.cover),
                                       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/info/change_password_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/update_info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -45,26 +46,23 @@ class _InfoScreenState extends State<InfoScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Center(
               child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                    builder: (context, state) {
-                      Profile profile = state.profile ??
-                          Profile(
-                              id: 0,
-                              username: "nhuy123",
-                              password: "123456",
-                              name: "Đặng Đình Thiên Như Ý",
-                              role: "admin",
-                              phoneNumber: "9876543210",
-                              email: "email");
-                      return Column(
-                children: <Widget>[
-                  InformationView(profile: profile, size: size),
-                  const SizedBox(height: 20),
-                  UtilitiesView(profile: profile ),
-                ]
-                      );
-                    },
-                  ),
-                  
+                builder: (context, state) {
+                  Profile profile = state.profile ??
+                      Profile(
+                          id: 0,
+                          username: "nhuy123",
+                          password: "123456",
+                          name: "Đặng Đình Thiên Như Ý",
+                          role: "admin",
+                          phoneNumber: "9876543210",
+                          email: "email");
+                  return Column(children: <Widget>[
+                    InformationView(profile: profile, size: size),
+                    const SizedBox(height: 20),
+                    UtilitiesView(profile: profile),
+                  ]);
+                },
+              ),
             ),
           ),
         ),
@@ -97,7 +95,8 @@ class InformationView extends StatelessWidget {
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
               ClipOval(
                 child: SizedBox.fromSize(
-                  size: Size.fromRadius(50.0 * checkDevice(size.width, 1, 1.5, 1.6)),
+                  size: Size.fromRadius(
+                      50.0 * checkDevice(size.width, 1, 1.5, 1.6)),
                   child: Image.asset(
                     'assets/images/avatar.jpg',
                     fit: BoxFit.cover,
@@ -110,14 +109,14 @@ class InformationView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    profile.name,
+                    "${profile.name}",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: colorScheme(context).onPrimary),
                   ),
                   Text(
-                    profile.role == "admin"? "Chủ cửa hàng": "Nhân viên",
+                    profile.role == "admin" ? "Chủ cửa hàng" : "Nhân viên",
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 13, color: colorScheme(context).onPrimary),
                   ),
@@ -201,7 +200,7 @@ class InformationView extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          profile.phoneNumber,
+                          "${profile.phoneNumber}",
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     fontSize: 14,
@@ -221,7 +220,7 @@ class InformationView extends StatelessWidget {
                                   ),
                         ),
                         Text(
-                          profile.email,
+                          "${profile.email}",
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     fontSize: 14,
@@ -262,7 +261,8 @@ class InformationView extends StatelessWidget {
 
 class UtilitiesView extends StatelessWidget {
   const UtilitiesView({
-    super.key, required this.profile,
+    super.key,
+    required this.profile,
   });
   final Profile profile;
   @override
@@ -330,7 +330,10 @@ class UtilitiesView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => UpdateInfoScreen(name: profile.name, phoneNumer: profile.phoneNumber, email: profile.email)),
+                            builder: (context) => UpdateInfoScreen(
+                                name: "${profile.name}",
+                                phoneNumer: "${profile.phoneNumber}",
+                                email: "${profile.email}")),
                       );
                     }),
               ),
@@ -377,7 +380,13 @@ class UtilitiesView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChangePasswordScreen()),
+                    );
+                  },
                 ),
               ),
               Container(

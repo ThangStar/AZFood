@@ -4,6 +4,7 @@ import tableReducer from './table-reducer/tableSlice';
 import orderReducer from './order-reducer/orderSlice';
 import nhapHangReducer from './kho-reducer/nhapHangSlice';
 import invoiceReducer from './invoice-reducer/invoiceSlice';
+import checkinHistoryState from './checkin-history-redux/checkin-historySlice';
 import userReducer from './user-reducer/userSlice';
 import authenticationReducer from './login-reducer/loginSlice';
 
@@ -14,6 +15,7 @@ export const store = configureStore({
     orderState: orderReducer,
     invoiceState: invoiceReducer,
     nhapHangState: nhapHangReducer,
+    checkinHistoryState: checkinHistoryState,
     userState: userReducer,
     authenticationState: authenticationReducer
   },

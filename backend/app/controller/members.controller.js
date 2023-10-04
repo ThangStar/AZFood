@@ -62,7 +62,7 @@ exports.createMember = async (req, res) => {
     try {
         const body = req.body;
         body.password = sha1(body.password);
-
+        console.log("body");
         const isAdmin = await Auth.checkAdmin(req);
         if (isAdmin) {
             if (body.id) {
@@ -107,7 +107,17 @@ exports.createMember = async (req, res) => {
 
 
                 } else {
-                    console.log("Chưa có file ảnh");
+                    console.log("insert");
+                    const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber , createAt) VALUES (?, ?, ?, ?, ? , ?);";
+                    const resultRaw = await sequelize.query(queryRaw, {
+                        raw: true,
+                        logging: false,
+                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, new Date(),],
+                        type: QueryTypes.INSERT
+                    });
+                    console.log("resultRaw ", resultRaw);
+                    res.status(200).json({ message: 'Member created successfully' });
+
                 }
 
 

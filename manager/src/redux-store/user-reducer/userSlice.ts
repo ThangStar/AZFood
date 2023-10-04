@@ -11,8 +11,8 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-    userList: [],
-    user: null,
+  userList: [],
+  user: null,
   status: 'idle',
 };
 
@@ -29,7 +29,24 @@ export const getUserListAsync = createAsyncThunk(
     return response.data;
   }
 );
+export const createUserListAsync = createAsyncThunk(
+  'user/create',
+  async (user: any) => {
+    const { name, username, password, role, phoneNumber } = user;
+    console.log(" user ", user);
 
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/user/create', {
+      name, username, password, role, phoneNumber
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 const TableSlice = createSlice({
   name: 'table',
   initialState,
@@ -46,11 +63,22 @@ const TableSlice = createSlice({
       })
       .addCase(getUserListAsync.rejected, (state) => {
         state.status = 'failed';
+      }).addCase(createUserListAsync.pending, (state) => {
+        state.status = 'loading';
       })
-      
+      .addCase(createUserListAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.userList = action.payload;
+        state.user = action.payload;
+      })
+      .addCase(createUserListAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
   },
 });
 
 export const getUserList = (state: RootState) => state.userState.userList;
+export const getStatusUserState = (state: RootState) => state.userState.status;
 
 export default TableSlice.reducer;

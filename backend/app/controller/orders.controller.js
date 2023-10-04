@@ -384,7 +384,6 @@ exports.payBill = async (req, res) => {
                  SET quantity = quantity - ?
                  WHERE productID = ?
              `;
-                console.log("detail.productID ", detail.productID);
                 await sequelize.query(updateProductQuantityQuery, {
                     raw: true,
                     logging: false,

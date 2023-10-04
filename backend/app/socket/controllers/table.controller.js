@@ -1,5 +1,5 @@
 const { QueryTypes } = require("sequelize");
-const { sequelize } = require("../../app/models");
+const { sequelize } = require("../../models");
 
 exports.getList = async (socket, io) => {
 

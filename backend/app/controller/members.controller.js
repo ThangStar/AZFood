@@ -7,7 +7,7 @@ const Auth = require('./checkAuth.controller')
 const Jwt = require("../config/checkJwt");
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, getDownloadURL, uploadBytes } = require('firebase/storage');
-const config = require('../../fireStoreConfig/config');
+const config = require('../fireStoreConfig/config');
 const nodemailer = require("nodemailer");
 const { emit } = require('nodemon');
 initializeApp(config.firebaseConfig);

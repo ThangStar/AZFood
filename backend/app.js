@@ -52,6 +52,6 @@ server.listen(PORT, () => {
 });
 require("./app/routes/members.route.js")(app);
 
-require('./socket/socket.init.js')(io);
+require('./app/socket/socket.init.js')(io);
 
 

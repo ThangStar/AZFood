@@ -1,5 +1,5 @@
 const { QueryTypes } = require("sequelize");
-const { sequelize } = require("../../app/models");
+const { sequelize } = require("../../models");
 
 exports.getMessages = async (socket, io, data) => {
     console.log("OK! refresh msg");

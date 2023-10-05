@@ -21,4 +21,6 @@ class Router {
 
   //calendar
   static String attendance = '/api/attendance/attendance';
+  //forgot_pass
+  static String sendEmail = '/api/user/checkAndSendOtpToEmail';
 }

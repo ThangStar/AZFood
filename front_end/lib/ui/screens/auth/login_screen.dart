@@ -12,7 +12,6 @@ import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
-import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_alert.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
@@ -31,9 +30,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late bool isShowPass;
   final TextEditingController usernameController =
-      TextEditingController(text: "");
+  TextEditingController(text: "");
   final TextEditingController passwordController =
-      TextEditingController(text: "");
+  TextEditingController(text: "");
   String messageErr = '';
   TypeAlert typeMessageErr = TypeAlert.error;
 
@@ -84,34 +83,38 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     AuthenticationBloc authBloc = BlocProvider.of<AuthenticationBloc>(context);
     TextEditingController controllerIpv4 = TextEditingController();
 
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthLoginSuccess) {
-          myAlert(context, checkDeviceType(size.width), AlertType.success,
-              "Thông báo", "Đăng nhập thành công")
-              .show(context);
+          ElegantNotification.success(
+              title:  const Text("Thông báo"),
+              description:  const Text("Đăng nhập thành công")
+          ).show(context);
+
+          // showMySnackBar(context, "Đăng nhập thành công", TypeSnackBar.success);
           Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const HomeMenuScreen(),
               ));
         } else if (state is AuthLoginFailed) {
-          myAlert(context, checkDeviceType(size.width), AlertType.error,
-                  "Thông báo", "Tài khoản hoặc mật khẩu không chính xác")
-              .show(context);
+          ElegantNotification.error(
+              title:  const Text("Thông báo"),
+              description:  const Text("Tài khoản hoặc mật khẩu không chính xác")
+          ).show(context);
           // setState(() {
           //   isShowAlert = true;
           //   messageErr = "Tài khoản hoặc mật khẩu không chính xác";
           //   typeMessageErr = TypeAlert.error;
           // });
         } else if (state is AuthLoginConnectionFailed) {
-          myAlert(context, checkDeviceType(size.width), AlertType.error,
-              "Thông báo", "Mất kết nối máy chủ")
-              .show(context);
+          ElegantNotification.error(
+              title:  const Text("Thông báo"),
+              description:  const Text("Mất kết nối máy chủ")
+          ).show(context);
         }
       },
       child: Scaffold(
@@ -146,9 +149,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     constraints.maxWidth,
                                     const SizedBox.shrink(),
                                     const Expanded(
-                                        flex: 1, child: LeadContentLogin()),
+                                        flex: 1,
+                                        child: LeadContentLogin()),
                                     const Expanded(
-                                        flex: 1, child: LeadContentLogin())),
+                                        flex: 1,
+                                        child: LeadContentLogin())),
                                 Expanded(
                                   flex: 1,
                                   child: Padding(
@@ -168,35 +173,36 @@ class _LoginScreenState extends State<LoginScreen> {
                                       key: _keyForm,
                                       child: Column(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               checkDevice(
-                                                  constraints.maxWidth,
-                                                  Row(
-                                                    children: [
-                                                      Image.asset(
-                                                        'assets/images/chicken.png',
-                                                        width: 40,
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 8,
-                                                      ),
-                                                    ],
+                                                  constraints.maxWidth, Row(
+                                                children: [
+                                                  Image.asset(
+                                                    'assets/images/chicken.png',
+                                                    width: 40,
                                                   ),
-                                                  const SizedBox.shrink(),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                ],
+                                              ), const SizedBox.shrink(),
                                                   const SizedBox.shrink()),
+
+
                                               Text(
                                                 "ĐĂNG NHẬP",
                                                 textAlign: TextAlign.center,
-                                                style: Theme.of(context)
+                                                style: Theme
+                                                    .of(context)
                                                     .textTheme
                                                     .titleMedium
                                                     ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 20),
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                    fontSize: 20),
                                               ),
                                             ],
                                           ),
@@ -208,22 +214,23 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: [
                                               const Padding(
                                                 padding:
-                                                    EdgeInsets.only(bottom: 4),
+                                                EdgeInsets.only(bottom: 4),
                                                 child: Text("Tên tài khoản"),
                                               ),
                                               MyTextField(
                                                 validator: (p0) {
                                                   bool isEmail = RegExp(
-                                                          r"^[a-zA-Z0-9]{5,12}$")
+                                                      r"^[a-zA-Z0-9]{5,12}$")
                                                       .hasMatch(p0!);
                                                   return isEmail
                                                       ? null
                                                       : "Tài khoản không chứa kí tự đặc biệt, 5-12 kí tự";
                                                 },
+
                                                 hintText: "Nhập tài khoản",
                                                 icon: const Icon(Icons.person),
                                                 label: "Tài khoản",
@@ -237,12 +244,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                               MyTextField(
                                                 validator: (p0) {
                                                   bool isEmail = RegExp(
-                                                          r"^[a-zA-Z0-9]{5,12}$")
+                                                      r"^[a-zA-Z0-9]{5,12}$")
                                                       .hasMatch(p0!);
                                                   return isEmail
                                                       ? null
                                                       : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
                                                 },
+
                                                 isShowPass: isShowPass,
                                                 label: "Mật khẩu",
                                                 controller: passwordController,
@@ -252,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                         ? Icons.visibility_off
                                                         : Icons.visibility),
                                                     onPressed:
-                                                        _onChangeShowPass),
+                                                    _onChangeShowPass),
                                               ),
                                             ],
                                           ),
@@ -261,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                             children: [
                                               Row(
                                                 children: [
@@ -283,10 +291,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 },
                                                 child: const Text(
                                                   'Quên mật khẩu',
-                                                  style: TextStyle(
-                                                      color: Colors.blue),
+                                                  style: TextStyle(color: Colors.blue),
                                                 ),
                                               )
+
                                             ],
                                           ),
                                           const SizedBox(
@@ -302,11 +310,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                                       .validate()) {
                                                     authBloc.add(LoginAutEvent(
                                                         username:
-                                                            usernameController
-                                                                .text,
+                                                        usernameController
+                                                            .text,
                                                         password:
-                                                            passwordController
-                                                                .text));
+                                                        passwordController
+                                                            .text));
                                                   }
                                                 },
                                               )),
@@ -382,32 +390,33 @@ class _ActionTestState extends State<ActionTest> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Nhập IPV4"),
-                  content: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        widget.controllerIpv4.text = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                        hintStyle: TextStyle(fontSize: 16),
-                        hintText: "192.168.1.10"),
-                    controller: widget.controllerIpv4,
-                  ),
-                  actions: [
-                    FilledButton(
-                        onPressed: () {
-                          Env.BASE_URL =
-                              "http://${widget.controllerIpv4.text}:8080";
-                          Env.SOCKET_URL =
-                              "http://${widget.controllerIpv4.text}:8080";
-                          print(Env.BASE_URL);
-                          Navigator.pop(context);
+                builder: (context) =>
+                    AlertDialog(
+                      title: const Text("Nhập IPV4"),
+                      content: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            widget.controllerIpv4.text = value;
+                          });
                         },
-                        child: const Text("Đặt"))
-                  ],
-                ),
+                        decoration: const InputDecoration(
+                            hintStyle: TextStyle(fontSize: 16),
+                            hintText: "192.168.1.10"),
+                        controller: widget.controllerIpv4,
+                      ),
+                      actions: [
+                        FilledButton(
+                            onPressed: () {
+                              Env.BASE_URL =
+                              "http://${widget.controllerIpv4.text}:8080";
+                              Env.SOCKET_URL =
+                              "http://${widget.controllerIpv4.text}:8080";
+                              print(Env.BASE_URL);
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Đặt"))
+                      ],
+                    ),
               );
             },
             child: const Text('enter ipv4')),
@@ -443,7 +452,11 @@ class LeadContentLogin extends StatelessWidget {
           ),
           Text(
             "AZFOOD",
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            style: Theme
+                .of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme(context).scrim.withOpacity(0.6)),
           ),
@@ -452,7 +465,10 @@ class LeadContentLogin extends StatelessWidget {
             child: Text(
               "Là một hệ thống trao đổi tương tác một cách tự nhiên và an toàn. Hệ thống hoạt động theo nguyên tắc tự nguyện trao đổi giữa các thành viên, cùng giúp nhau tăng tương tác, tăng hiệu quả bán hàng, truyền thông#traodoisub , #tangsub, #tuongtaccheo, #tuongtacfb, #tangtheodoimienphi, #tanglikemienphi, #tanglike, #tangtheodoi, #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok #tangcmt, #tangcamxuc, #tangshare, #cayxu, #toolcayxu, #tangview, #tangtiktok, #traodoitiktok, #tiktok #tangcmt, #tangcamxuc, #ta",
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyLarge,
             ),
           )
         ],

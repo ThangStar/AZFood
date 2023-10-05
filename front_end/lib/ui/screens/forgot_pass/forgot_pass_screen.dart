@@ -28,13 +28,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   listener: (context, state) {
     // TODO: implement listener
     if(state is SendEmailSuccess){
+      showMySnackBar(context, state.response['message'].toString(), TypeSnackBar.success);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const SendOTPScreen()),
       );
-      showMySnackBar(context, state.status, TypeSnackBar.success);
     }else if(state is SendEmailFailed){
-      showMySnackBar(context, state.status, TypeSnackBar.error);
+      showMySnackBar(context, state.response['message'].toString(), TypeSnackBar.error);
     }
   },
   child: Scaffold(

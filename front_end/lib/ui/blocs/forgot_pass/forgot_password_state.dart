@@ -1,28 +1,39 @@
 part of 'forgot_password_bloc.dart';
 
 class ForgotPasswordState extends Equatable {
-  const ForgotPasswordState({this.status=''});
-  final String status;
+  ForgotPasswordState({this.response=const{}});
+  final Map<String, dynamic> response;
   @override
   // TODO: implement props
   List<Object?> get props => [];
 
   ForgotPasswordState copyWith({
-    String? status,
+    Map<String, dynamic>? response,
   }) {
     return ForgotPasswordState(
-      status: status ?? this.status,
+      response: response ?? this.response,
     );
   }
 }
 class SendEmailProgress extends ForgotPasswordState{
-  SendEmailProgress({super.status});
+   SendEmailProgress({super.response});
 }
 class SendEmailSuccess extends ForgotPasswordState{
-  SendEmailSuccess({super.status});
+   SendEmailSuccess({super.response});
 }
 class SendEmailFailed extends ForgotPasswordState{
-  SendEmailFailed({super.status});
+   SendEmailFailed({super.response});
 }
 class SendEmailErorr extends ForgotPasswordState{
+}
+class VerifyOtpProgress extends ForgotPasswordState{
+   VerifyOtpProgress({super.response});
+}
+class VerifyOtpSuccess extends ForgotPasswordState{
+   VerifyOtpSuccess({super.response});
+}
+class VerifyOtpFailed extends ForgotPasswordState{
+   VerifyOtpFailed({super.response});
+}
+class VerifyOtpErorr extends ForgotPasswordState{
 }

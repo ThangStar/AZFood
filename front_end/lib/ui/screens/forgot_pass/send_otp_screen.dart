@@ -20,21 +20,17 @@ class SendOTPScreen extends StatefulWidget {
 
 class _SendOTPScreenState extends State<SendOTPScreen> {
   final TextEditingController sendOTPController =
-  TextEditingController(text: "");
+      TextEditingController(text: "");
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
         // TODO: implement listener
-        if(state is SendEmailSuccess){
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SendOTPScreen()),
-          );
-          showMySnackBar(context, state.status, TypeSnackBar.success);
-        }else if(state is SendEmailFailed){
-          showMySnackBar(context, state.status, TypeSnackBar.error);
+        if (state is VerifyOtpSuccess) {
+          showMySnackBar(context, state.response['message'].toString(),TypeSnackBar.success);
+        } else if (state is VerifyOtpFailed) {
+          showMySnackBar(context, state.response['message'].toString(), TypeSnackBar.error);
         }
       },
       child: Scaffold(
@@ -45,7 +41,8 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ForgotPasswordScreen()),
                 );
               },
               icon: Icon(
@@ -80,9 +77,9 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                   checkDevice(
                                       constraints.maxWidth,
                                       const SizedBox.shrink(),
-                                       Expanded(
+                                      const Expanded(
                                           flex: 1, child: LeadContentLogin()),
-                                       Expanded(
+                                      const Expanded(
                                           flex: 1, child: LeadContentLogin())),
                                   Expanded(
                                     flex: 1,
@@ -92,7 +89,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                       child: Form(
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
@@ -114,14 +111,13 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                 Text(
                                                   "QUÊN MẬT KHẨU",
                                                   textAlign: TextAlign.center,
-                                                  style: Theme
-                                                      .of(context)
+                                                  style: Theme.of(context)
                                                       .textTheme
                                                       .titleMedium
                                                       ?.copyWith(
-                                                      fontWeight:
-                                                      FontWeight.bold,
-                                                      fontSize: 20),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 20),
                                                 ),
                                               ],
                                             ),
@@ -133,17 +129,19 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                             ),
                                             Column(
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 const Padding(
-                                                  padding:
-                                                  EdgeInsets.only(bottom: 4),
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 4),
                                                   child: Text(
                                                       "Mã OTP khôi phục mật khẩu"),
                                                 ),
                                                 MyTextField(
-                                                  hintText: "Nhập mã OTP của bạn",
-                                                  icon: const Icon(Icons.qr_code_2),
+                                                  hintText:
+                                                      "Nhập mã OTP của bạn",
+                                                  icon: const Icon(
+                                                      Icons.qr_code_2),
                                                   label: "OTP từ email",
                                                   controller: sendOTPController,
                                                 ),
@@ -160,8 +158,14 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                 child: MyButton(
                                                   value: "Xác nhận OTP",
                                                   onPressed: () {
-                                                    BlocProvider.of<ForgotPasswordBloc>(context).add(
-                                                      SendEmailEvent(email: sendOTPController.text),
+                                                    BlocProvider.of<
+                                                        ForgotPasswordBloc>(
+                                                        context)
+                                                        .add(
+                                                      VerifyOtpEvent(
+                                                          otp: sendOTPController
+                                                              .text),
+
                                                     );
                                                   },
                                                 )),
@@ -178,7 +182,8 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                   "Bloc App",
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
-                                                      color: colorScheme(context)
+                                                      color: colorScheme(
+                                                              context)
                                                           .scrim
                                                           .withOpacity(0.6)),
                                                 ))
@@ -196,8 +201,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                 ),
               ),
             ),
-          )
-      ),
+          )),
     );
   }
 }

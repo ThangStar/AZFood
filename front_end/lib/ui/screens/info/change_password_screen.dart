@@ -1,15 +1,10 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_button_gradient.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as path;
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({
@@ -29,12 +24,18 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _controllerRepeatNewPassword = TextEditingController(text: "");
 
   bool _submitted = false;
-  bool passwordVisible = false;
+  bool passwordVisibleOld = false;
+  bool passwordVisibleNew = false;
+  bool passwordVisibleRepeat = false;
+  bool oldPasswordExist = false;
   String? get _errorTextOldPassword {
     final text = _controllerOldPassword.value.text;
     if (_submitted) {
       if (text.isEmpty) {
         return 'Mật khẩu cũ không được để trống.';
+      }
+      if(oldPasswordExist) {
+        return 'Mật khẩu cũ không đúng.';
       }
     }
     return null;
@@ -69,9 +70,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   void initState() {
     super.initState();
-    // _controllerEmail.text = widget.email;
-    // _controllerPhone.text = widget.phoneNumer;
-    passwordVisible = true;
+    passwordVisibleOld = true;
+    passwordVisibleNew = true;
+    passwordVisibleRepeat = true;
   }
 
   @override
@@ -83,14 +84,36 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   @override
-  Scaffold build(BuildContext context) {
+  Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    ProfileBloc profileBloc = BlocProvider.of<ProfileBloc>(context);
+    return BlocListener<ProfileBloc, ProfileState>(
+      listener: (context, state) {
+        if (state is ChangePasswordSuccess) {
+          myAlert(context, checkDeviceType(size.width), AlertType.success,
+                  "Thông báo", "Đổi mật khẩu thành công.")
+              .show(context);
+          _controllerOldPassword.clear();
+          _controllerNewPassword.clear();
+          _controllerRepeatNewPassword.clear();
+        } else if (state is ChangePasswordFailed) {
+          setState(() {
+            oldPasswordExist = true;
+          });
+        } else if (state is ChangePasswordConnectionFailed) {
+          myAlert(context, checkDeviceType(size.width), AlertType.error,
+                  "Thông báo", "Mất kết nối với máy chủ.")
+              .show(context);
+        }
+      },
+      child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: colorScheme(context).onSecondary,
         appBar: AppBar(
           backgroundColor: colorScheme(context).onTertiary,
           scrolledUnderElevation: 0,
+          centerTitle: false,
+          titleSpacing: -5.0,
           leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
@@ -101,11 +124,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             },
           ),
           title: Text(
-            'Thay đổi mật khẩu',
+            'THAY ĐỔI MẬT KHẨU',
             style: Theme.of(context)
                 .textTheme
-                .bodyLarge
-                ?.copyWith(fontSize: 25, fontWeight: FontWeight.bold),
+                .titleMedium
+                ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
           ),
           shape: Border(
               bottom: BorderSide(
@@ -113,184 +136,257 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             width: 1,
           )),
         ),
-        body: LayoutBuilder(builder: (context, constraints) {
-          return ScrollConfiguration(
-              behavior:
-                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              child: SingleChildScrollView(
-                  child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                          minWidth: constraints.maxWidth,
-                          minHeight: constraints.maxHeight),
-                      child: IntrinsicHeight(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child:
-                              Column(mainAxisSize: MainAxisSize.max, children: [
-                            const SizedBox(
-                              height: 50,
-                            ),
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: Form(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Mật khẩu cũ: ",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                              fontSize: 13,
-                                              color: _errorTextOldPassword !=
-                                                      null
-                                                  ? colorScheme(context).error
-                                                  : colorScheme(context).scrim),
+        body: Center(
+          child: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Image.asset(
+                        'assets/images/image_password.png',
+                        height: 200,
+                        width: 200,
+                        fit: BoxFit.cover,
+                      ),
+                      SizedBox(
+                        width: 270,
+                        child: Text(
+                            "Vui lòng tạo mật khẩu mới độ dài từ 10 ~ 25 bao gồm ký tự và số.",
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(fontSize: 12)),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Form(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Mật khẩu cũ: ",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        fontSize: 13,
+                                        color: _errorTextOldPassword != null
+                                            ? colorScheme(context).error
+                                            : colorScheme(context).outline),
+                              ),
+                              TextField(
+                                controller: _controllerOldPassword,
+                                obscureText: passwordVisibleOld,
+                                obscuringCharacter: '●',
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(fontSize: 12),
+                                  hintText: 'Nhập mật khẩu cũ...',
+                                  errorText: _errorTextOldPassword,
+                                  contentPadding: const EdgeInsets.all(10),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      passwordVisibleOld
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: colorScheme(context).outline,
                                     ),
-                                    TextField(
-                                      controller: _controllerOldPassword,
-                                      obscureText: passwordVisible,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0)),
-                                        hintStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(fontSize: 12),
-                                        hintText: 'Nhập mật khẩu cũ...',
-                                        errorText: _errorTextOldPassword,
-                                        contentPadding:
-                                            const EdgeInsets.all(10),
-                                        suffixIcon: IconButton(
-                                          icon: Icon(passwordVisible
-                                              ? Icons.visibility
-                                              : Icons.visibility_off),
-                                          onPressed: () {
-                                            setState(
-                                              () {
-                                                passwordVisible =
-                                                    !passwordVisible;
-                                              },
-                                            );
-                                          },
-                                        ),
-                                        alignLabelWithHint: false,
-                                      ),
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
-                                      textInputAction: TextInputAction.done,
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          passwordVisibleOld =
+                                              !passwordVisibleOld;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  alignLabelWithHint: false,
+                                ),
+                                keyboardType: TextInputType.visiblePassword,
+                                textInputAction: TextInputAction.done,
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "Mật khẩu mới: ",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        fontSize: 13,
+                                        color: _errorTextNewPassword != null
+                                            ? colorScheme(context).error
+                                            : colorScheme(context).outline),
+                              ),
+                              TextField(
+                                controller: _controllerNewPassword,
+                                obscureText: passwordVisibleNew,
+                                obscuringCharacter: '●',
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(fontSize: 12),
+                                  hintText: 'Nhập mật khẩu mới...',
+                                  errorText: _errorTextNewPassword,
+                                  contentPadding: const EdgeInsets.all(10),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      passwordVisibleNew
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: colorScheme(context).outline,
                                     ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      "Mật khẩu mới: ",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                              fontSize: 13,
-                                              color: _errorTextNewPassword !=
-                                                      null
-                                                  ? colorScheme(context).error
-                                                  : colorScheme(context).scrim),
-                                    ),
-                                    TextField(
-                                      controller: _controllerNewPassword,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0)),
-                                        hintStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(fontSize: 12),
-                                        focusedBorder: const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.blue)),
-                                        hintText: 'Nhập mật khẩu mới...',
-                                        errorText: _errorTextNewPassword,
-                                        contentPadding:
-                                            const EdgeInsets.all(10),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      "Nhập lại mật khẩu mới: ",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(
-                                              fontSize: 13,
-                                              color:
-                                                  _errorTextRepeatNewPassword !=
-                                                          null
-                                                      ? colorScheme(context)
-                                                          .error
-                                                      : colorScheme(context)
-                                                          .scrim),
-                                    ),
-                                    TextField(
-                                      controller: _controllerRepeatNewPassword,
-                                      decoration: InputDecoration(
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0)),
-                                        hintStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(fontSize: 12),
-                                        hintText: "Nhập lại mật khẩu mới...",
-                                        errorText: _errorTextRepeatNewPassword,
-                                        contentPadding:
-                                            const EdgeInsets.all(10),
-                                      ),
-                                    ),
-                                  ],
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          passwordVisibleNew =
+                                              !passwordVisibleNew;
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Container(),
-                            ),
-                            const SizedBox(
-                              height: 100,
-                            ),
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 800),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: MyButtonGradient(
-                                      text: "THAY ĐỔI MẬT KHẨU",
-                                      onTap: () {
-                                        setState(() => _submitted = true);
-                                        if (_errorTextOldPassword == null &&
-                                            _errorTextNewPassword == null &&
-                                            _errorTextRepeatNewPassword ==
-                                                null) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                                content: Text(
-                                                    'VALIDATE OK MAN ${_controllerOldPassword.text} / ${_controllerOldPassword.text} / ${_controllerRepeatNewPassword.text}')),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(height: 20),
+                              Text(
+                                "Nhập lại mật khẩu mới: ",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                        fontSize: 13,
+                                        color:
+                                            _errorTextRepeatNewPassword != null
+                                                ? colorScheme(context).error
+                                                : colorScheme(context).outline),
                               ),
-                            ),
-                          ]),
+                              TextField(
+                                controller: _controllerRepeatNewPassword,
+                                obscureText: passwordVisibleRepeat,
+                                obscuringCharacter: '●',
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(fontSize: 12),
+                                  hintText: "Nhập lại mật khẩu mới...",
+                                  errorText: _errorTextRepeatNewPassword,
+                                  contentPadding: const EdgeInsets.all(10),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      passwordVisibleRepeat
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: colorScheme(context).outline,
+                                    ),
+                                    onPressed: () {
+                                      setState(
+                                        () {
+                                          passwordVisibleRepeat =
+                                              !passwordVisibleRepeat;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ))));
-        }));
+                      ),
+                      const SizedBox(
+                        height: 80,
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                                child: Container(
+                              height: 45.0,
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5.0)),
+                                  gradient: const LinearGradient(colors: [
+                                    Color.fromRGBO(109, 92, 255, 1),
+                                    Color.fromRGBO(160, 91, 255, 1)
+                                  ]),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromARGB(255, 0, 0, 0)
+                                          .withOpacity(0.2),
+                                      spreadRadius: 4,
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 5),
+                                    )
+                                  ]),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() => _submitted = true);
+                                  if(oldPasswordExist){
+                                    oldPasswordExist = false;
+                                  }
+                                  if (_errorTextOldPassword == null &&
+                                      _errorTextNewPassword == null &&
+                                      _errorTextRepeatNewPassword == null) {
+                                    profileBloc.add(ChangePasswordEvent(
+                                        oldPassword:
+                                            _controllerOldPassword.text,
+                                        newPassword:
+                                            _controllerNewPassword.text));
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                ),
+                                child: Text(
+                                  'THAY ĐỔI MẬT KHẨU',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium
+                                      ?.copyWith(
+                                          fontSize: 16,
+                                          color:
+                                              colorScheme(context).onSecondary),
+                                ),
+                              ),
+                            )),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

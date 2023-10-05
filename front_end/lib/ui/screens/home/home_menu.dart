@@ -1,9 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/calendar/calendar_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/calendar/verify_screen.dart';
@@ -85,7 +85,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                                     colorScheme(context).scrim.withOpacity(0.6),
                                 selectedIconTheme: IconThemeData(
                                     color: colorScheme(context).onPrimary),
-                                elevation: 10,
+                                elevation: 5,
                                 leading: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
@@ -115,14 +115,15 @@ class _ZoomState extends State<HomeMenuScreen> {
                                 destinations: [
                                   ...itemsDrawer.map((e) {
                                     return NavigationRailDestination(
-                                        icon: Icon(e.icon), label: Text(e.label));
+                                        icon: Icon(e.icon),
+                                        label: Text(e.label));
                                   }).toList(),
                                   NavigationRailDestination(
                                       icon: Switch(
                                         value: isDarkTheme,
                                         onChanged: (value) async {
-                                          await MySharePreferences.setIsDarkTheme(
-                                              value);
+                                          await MySharePreferences
+                                              .setIsDarkTheme(value);
                                           if (value) {
                                             MyApp.themeNotifier.value =
                                                 ThemeMode.dark;
@@ -138,9 +139,14 @@ class _ZoomState extends State<HomeMenuScreen> {
                                       label: const Text("Chế độ tối"))
                                 ],
                                 onDestinationSelected: (value) {
-                                  setState(() {
-                                    selectedNavRail = value;
-                                  });
+                                  print(value);
+                                  print(itemsDrawer.length);
+                                  if (value != itemsDrawer.length){
+                                    setState(() {
+                                      selectedNavRail = value;
+                                    });
+
+                                  }
                                 },
                                 selectedIndex: selectedNavRail),
                           ),
@@ -167,7 +173,17 @@ class _ZoomState extends State<HomeMenuScreen> {
                         case PageNavRail.calendar:
                           return VerifyScreen(constraints: constraints);
                         case PageNavRail.logout:
-                          return HomeScreen(constraints: constraints);
+                          {
+                            WidgetsBinding.instance?.addPostFrameCallback((_) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                  (route) => false);
+                            });
+                          }
+                          break;
                         default:
                           return HomeScreen(constraints: constraints);
                       }

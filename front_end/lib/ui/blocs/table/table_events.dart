@@ -18,3 +18,10 @@ class OnFilterTable extends TableEvent {
 
   const OnFilterTable({this.status = 0});
 }
+
+class UpdateStatusEvent extends TableEvent {
+  final int idTable;
+  final int status;
+
+  UpdateStatusEvent({required this.idTable, required this.status});
+}

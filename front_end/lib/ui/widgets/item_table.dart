@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +11,8 @@ import 'package:ionicons/ionicons.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/utils/spacing_date_to_now.dart';
+
+import '../blocs/table/table_bloc.dart';
 
 // status: 1 -> online, 2 -> error, 3 -> watting,
 class ItemTable extends StatefulWidget {
@@ -152,7 +155,12 @@ class _ItemTableState extends State<ItemTable> {
                                             Colors.blue.withOpacity(0.4),
                                         hoverColor:
                                             Colors.blue.withOpacity(0.2),
-                                        onTap: () {},
+                                        onTap: () {
+                                          context.read<TableBloc>().add(
+                                              UpdateStatusEvent(
+                                                  idTable: widget.table.id ?? 0,
+                                                  status: 3 ));
+                                        },
                                         child: const Icon(
                                           Ionicons.flash,
                                           size: 38,

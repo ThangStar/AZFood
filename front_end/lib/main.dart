@@ -51,7 +51,7 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   static final ValueNotifier<ThemeMode> themeNotifier =
-      ValueNotifier(ThemeMode.light);
+  ValueNotifier(ThemeMode.light);
 
   const MyApp({Key? key}) : super(key: key);
 
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     MySharePreferences.getIsDarkTheme().then((value) {
       MyApp.themeNotifier.value =
-          value ?? false ? ThemeMode.dark : ThemeMode.light;
+      value ?? false ? ThemeMode.dark : ThemeMode.light;
     });
 
     super.initState();
@@ -100,6 +100,8 @@ class _MyAppState extends State<MyApp> {
                 ),
                 BlocProvider(
                   create: (context) => CalendarBloc(),
+                ), BlocProvider(
+                  create: (context) => ForgotPasswordBloc(),
                 ),
               ],
               child: CalendarControllerProvider(

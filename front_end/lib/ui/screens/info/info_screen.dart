@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/info/change_password_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/update_info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -60,16 +61,13 @@ class _InfoScreenState extends State<InfoScreen> {
                           role: "admin",
                           phoneNumber: "9876543210",
                           email: "email");
-                  return Column(
-                      children: <Widget>[
-                        InformationView(profile: profile, size: size),
-                        const SizedBox(height: 20),
-                        UtilitiesView(profile: profile),
-                      ]
-                  );
+                  return Column(children: <Widget>[
+                    InformationView(profile: profile, size: size),
+                    const SizedBox(height: 20),
+                    UtilitiesView(profile: profile),
+                  ]);
                 },
               ),
-
             ),
           ),
         ),
@@ -117,23 +115,15 @@ class InformationView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    profile.name ?? "",
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(
+                    "${profile.name}",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: colorScheme(context).onPrimary),
                   ),
                   Text(
                     profile.role == "admin" ? "Chủ cửa hàng" : "Nhân viên",
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge
-                        ?.copyWith(
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 13, color: colorScheme(context).onPrimary),
                   ),
                 ],
@@ -240,7 +230,7 @@ class InformationView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          profile.phoneNumber ?? "",
+                          "${profile.phoneNumber}",
                           style:
                           Theme
                               .of(context)
@@ -268,7 +258,7 @@ class InformationView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          profile.email ?? "",
+                          "${profile.email}",
                           style:
                           Theme
                               .of(context)
@@ -321,7 +311,8 @@ class InformationView extends StatelessWidget {
 
 class UtilitiesView extends StatelessWidget {
   const UtilitiesView({
-    super.key, required this.profile,
+    super.key,
+    required this.profile,
   });
 
   final Profile profile;
@@ -396,10 +387,10 @@ class UtilitiesView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                UpdateInfoScreen(name: "${profile.name}",
-                                    phoneNumer: "${profile.phoneNumber}",
-                                    email: "${profile.email}")),
+                            builder: (context) => UpdateInfoScreen(
+                                name: "${profile.name}",
+                                phoneNumer: "${profile.phoneNumber}",
+                                email: "${profile.email}")),
                       );
                     }),
               ),
@@ -447,7 +438,13 @@ class UtilitiesView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ChangePasswordScreen()),
+                    );
+                  },
                 ),
               ),
               Container(

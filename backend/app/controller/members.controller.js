@@ -162,6 +162,7 @@ exports.createMember = async (req, res) => {
 //                     replacements: [body.username, body.password, body.name, body.phoneNumber, body.email, body.address, imgUrl, body.birtDay, userID],
 //                     type: QueryTypes.UPDATE
 //                 });
+//                 console.log("resultRaw ", resultRaw);
 //                 res.status(200).json({ message: 'Password updated successfully' });
 //             } else {
 //                 res.status(400).json({ message: 'Old password is incorrect' });
@@ -172,6 +173,71 @@ exports.createMember = async (req, res) => {
 //         res.status(500).json({ message: 'Internal server error' });
 //     }
 // };
+exports.changePassUser = async (req, res) => {
+    
+    try {
+        const body = req.body;
+        body.password = sha1(body.password);
+        const user = Jwt.getCurrentLogin(req);
+        const userID = user.userId;
+        if (userID) {
+            const userInDb = await getUserById(userID);
+            if (userInDb.password === sha1(body.oldPassword)) {
+                const queryRaw = "UPDATE users SET password = ? WHERE id = ?";
+                const resultRaw = await sequelize.query(queryRaw, {
+                    raw: true,
+                    logging: false,
+                    replacements: [body.password, userID],
+                    type: QueryTypes.UPDATE
+                });
+                console.log("resultRaw ", resultRaw);
+                res.status(200).json({ message: 'Password updated successfully' });
+            } else {
+                res.status(400).json({ message: 'Old password is incorrect' });
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// exports.updateUserInfo = async (req, res) => {
+//     const storage = getStorage();
+
+//     try {
+//         const body = req.body;
+//         const user = Jwt.getCurrentLogin(req);
+//         const userID = user.userId;
+
+//         if (userID) {
+//             const image = req.file;
+//             const imageFileName = `${Date.now()}_${image.originalname}`;
+
+//             const storageRef = ref(storage, `files/usersss/${imageFileName}`);
+//             const metadata = {
+//                 contentType: req.file.mimetype,
+//             };
+//             const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+//             const imgUrl = await getDownloadURL(snapshot.ref);
+
+//             const queryRaw = "UPDATE users SET email = ?, phoneNumber = ?, birtDay = ?, imgUrl = ? WHERE id = ?";
+//             const resultRaw = await sequelize.query(queryRaw, {
+//                 raw: true,
+//                 logging: false,
+//                 replacements: [body.email, body.phoneNumber, body.birtDay, imgUrl, userID],
+//                 type: QueryTypes.UPDATE
+//             });
+
+//             console.log("resultRaw ", resultRaw);
+//             res.status(200).json({ message: 'User information updated successfully' });
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// };
+
 const getUserById = async (id) => {
     try {
         const query = "SELECT * FROM users WHERE id = :id;";

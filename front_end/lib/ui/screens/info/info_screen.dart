@@ -22,24 +22,23 @@ class InfoScreen extends StatefulWidget {
 class _InfoScreenState extends State<InfoScreen> {
   @override
   Scaffold build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: colorScheme(context).onSecondary,
       appBar: AppBar(
         backgroundColor: colorScheme(context).onTertiary,
         scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleSpacing: checkDevice(size.width, -5.0, 15.0, 15.0),
         automaticallyImplyLeading: checkDevice(size.width, true, false, false),
         title: Text(
-          'Cá nhân',
-          style: Theme
-              .of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(fontSize: 25, fontWeight: FontWeight.bold),
-        ),
+            'CÁ NHÂN',
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
+          ),
         shape: Border(
             bottom: BorderSide(
                 color: colorScheme(context).outlineVariant, width: 1)),
@@ -137,11 +136,7 @@ class InformationView extends StatelessWidget {
           children: [
             Text(
               "Thông tin cá nhân",
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: colorScheme(context).primary),
@@ -165,24 +160,16 @@ class InformationView extends StatelessWidget {
                         Text(
                           "Giới tính: ",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                         Text(
                           "Nam",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                       ],
                     ),
@@ -193,24 +180,16 @@ class InformationView extends StatelessWidget {
                         Text(
                           "Ngày sinh: ",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                         Text(
                           "01/01/2001",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                       ],
                     ),
@@ -221,24 +200,16 @@ class InformationView extends StatelessWidget {
                         Text(
                           "Số điện thoại: ",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                         Text(
                           "${profile.phoneNumber}",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                       ],
                     ),
@@ -249,24 +220,16 @@ class InformationView extends StatelessWidget {
                         Text(
                           "Email: ",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                         Text(
                           "${profile.email}",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                       ],
                     ),
@@ -277,24 +240,16 @@ class InformationView extends StatelessWidget {
                         Text(
                           "Ngày vào làm: ",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                         Text(
                           "01/01/2021",
                           style:
-                          Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontSize: 14,
-                          ),
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontSize: 14,
+                                  ),
                         ),
                       ],
                     ),
@@ -326,11 +281,7 @@ class UtilitiesView extends StatelessWidget {
         children: [
           Text(
             "Dịch vụ tiện ích",
-            style: Theme
-                .of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: colorScheme(context).primary),
@@ -368,8 +319,7 @@ class UtilitiesView extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               "Cập nhật thông tin cá nhân",
-                              style: Theme
-                                  .of(context)
+                              style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
                                   ?.copyWith(fontSize: 14),
@@ -423,8 +373,7 @@ class UtilitiesView extends StatelessWidget {
                           const SizedBox(width: 10),
                           Text(
                             "Đổi mật khẩu",
-                            style: Theme
-                                .of(context)
+                            style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(fontSize: 14),
@@ -476,8 +425,7 @@ class UtilitiesView extends StatelessWidget {
                           const SizedBox(width: 10),
                           Text(
                             "Tiếp kiệm pin",
-                            style: Theme
-                                .of(context)
+                            style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(fontSize: 14),

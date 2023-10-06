@@ -20,7 +20,9 @@ export default function Table() {
     const [modal1, setModal1] = useState(false);
     const [status, setStatus] = useState<number>(0);
     const [tableName, setTableName] = useState("");
+    const [statusTableFilter, setStatusTableFilter] = useState("");
     const [id, setID] = useState<number>(0);
+    const [filteredTables, setFilteredTables] = useState<any[]>([]);
 
     useEffect(() => {
 
@@ -29,7 +31,7 @@ export default function Table() {
         dispatch(getStatusTableAsync());
 
     }, [dispatch]);
-    console.log("order ", orderList);
+
     useEffect(() => {
         if (tableList && tableList.resultRaw) {
             setTables(tableList.resultRaw);
@@ -42,6 +44,27 @@ export default function Table() {
         }
     }, [tableList, orderList, statusList]);
 
+    useEffect(() => {
+        if (statusTableFilter === 'all') {
+            setFilteredTables(tables);
+        } else {
+            const filtered = tables.filter((table) => {
+                if (statusTableFilter === 'trong') {
+                    return table.status === 3;
+                } else if (statusTableFilter === 'ban') {
+                    return table.status === 2;
+                } else if (statusTableFilter === 'cho') {
+                    return table.status === 1;
+                } else if (statusTableFilter === 'mangve') {
+                    return table.name === 'mang về';
+                }
+
+                return true;
+            });
+
+            setFilteredTables(filtered);
+        }
+    }, [statusTableFilter, tables]);
     const calculateTotalForTable = (tableID: number) => {
         const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
 
@@ -84,7 +107,6 @@ export default function Table() {
 
     }
     const addTable = () => {
-
         try {
             dispatch(createTableListAsync({ name: tableName }));
             dispatch(getTableListAsync());
@@ -94,7 +116,7 @@ export default function Table() {
         }
 
     }
-    const busy = "#DC3545";
+    const ban = "#DC3545";
     const trong = "#26A744";
     const cho = "yellow";
     return (
@@ -119,18 +141,30 @@ export default function Table() {
                         <div className="card-header">
                             <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn</button>
 
-                            <div className="card-tools">
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
+                            <div className="card-tools" >
+                                <select
+                                    className="form-control"
+                                    id="statusTable"
+                                    value={statusTableFilter}
+                                    onChange={(e) => {
+                                        setStatusTableFilter(e.target.value);
+                                    }}
+                                >
+                                    <option value='all' selected>Tất cả </option>
+                                    <option value='trong' style={{ color: trong }}>Trống</option>
+                                    <option value='ban' style={{ color: ban }}>Bận</option>
+                                    <option value='cho' style={{ color: cho }}>Chờ</option>
+                                    <option value='mangve' style={{ color: cho }}>Mang về</option>
+
+
+
+                                </select>
+
                             </div>
                         </div>
                     </div>
                     <div className="container-fluid row wrap" style={{ paddingLeft: 80, paddingRight: 80 }}>
-                        {tables && tables.length > 0 ? tables.map((item: any, i: number) => (
+                        {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
                             <div className="col-md-3 col-sm-8 col-12">
                                 <div className="info-box " style={{ backgroundColor: "#C3E4EA" }}>
 
@@ -141,7 +175,7 @@ export default function Table() {
                                         <span className="info-box-number">Tổng tiền : {formatMoney(calculateTotalForTable(item.id))} đ</span>
 
                                         <button onClick={() => { openModal(item) }} className="info-box-text"
-                                            style={{ color: item.status === 2 ? busy : item.status === 1 ? cho : trong }}>
+                                            style={{ color: item.status === 2 ? ban : item.status === 1 ? cho : trong }}>
                                             {item.status_name}
                                         </button>
                                     </div>

@@ -11,6 +11,9 @@ class Router {
   static String productsFilter = '/api/products/filterData';
   static String searchProduct = '/api/products/searchProducts';
 
+  //table
+  static String updateStatusTable = '/api/table/updateStatus';
+
   //order
   static String createOrder = '/api/orders/create';
   static String getOrderInTable = '/api/orders/getOrder';
@@ -23,4 +26,5 @@ class Router {
   static String attendance = '/api/attendance/attendance';
   //forgot_pass
   static String sendEmail = '/api/user/checkAndSendOtpToEmail';
+
 }

@@ -1,5 +1,5 @@
 const { QueryTypes } = require("sequelize");
-const { sequelize } = require("../../app/models");
+const { sequelize } = require("../../models");
 const { getList } = require("./table.controller");
 
 exports.getOrdersForTable = async (socket, io, data) => {
@@ -23,7 +23,7 @@ exports.getOrdersForTable = async (socket, io, data) => {
             type: QueryTypes.SELECT
         });
         console.log("OK! refresh orders");
-        io.emit('responseOrder',orders)
+        io.emit('responseOrder', orders)
         getList(socket, io)
 
     } catch (error) {

@@ -2,7 +2,6 @@ const db = require("../models");
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller')
-
 exports.ceateTable = async (req, res) => {
     try {
         const body = req.body;
@@ -51,8 +50,9 @@ exports.updateTable = async (req, res) => {
 exports.updateStatusTable = async (req, res) => {
     try {
         const body = req.body;
-        const isAuth = await Auth.checkAuth(req);
-        if (isAuth) {
+        console.log(body);
+        // const isAuth = await Auth.checkAuth(req);
+        // if (isAuth) {
             console.log("id ", body.id);
             const queryRaw = "UPDATE tables SET status = ? WHERE id = ?";
             const resultRaw = await sequelize.query(queryRaw, {
@@ -62,7 +62,7 @@ exports.updateStatusTable = async (req, res) => {
                 type: QueryTypes.UPDATE
             });
             res.status(200).json({ message: 'tables updated successfully' });
-        }
+        // }
 
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error });

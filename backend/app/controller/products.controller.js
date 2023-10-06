@@ -4,7 +4,7 @@ const sequelize = db.sequelize;
 const Auth = require('./checkAuth.controller');;
 const { initializeApp } = require('firebase/app')
 const { getStorage, ref, getDownloadURL, uploadBytes } = require('firebase/storage');
-const config = require('../../fireStoreConfig/config');
+const config = require('../fireStoreConfig/config');
 initializeApp(config.firebaseConfig);
 
 
@@ -17,7 +17,7 @@ exports.createProduct = async (req, res) => {
     if (isAdmin) {
         console.log("id ", body.id);
         if (body.id) {
-        console.log("body ", body);
+            console.log("body ", body);
 
             if (req.file) {
                 console.log("  có file");
@@ -83,7 +83,7 @@ exports.createProduct = async (req, res) => {
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.name, body.price,  body.category, body.status, body.dvtID, imgUrl],
+                        replacements: [body.name, body.price, body.category, body.status, body.dvtID, imgUrl],
                         type: QueryTypes.INSERT
                     });
 
@@ -230,7 +230,7 @@ exports.getList = async (req, res) => {
             });
 
 
-            res.status(200).json({data: resultRaw});
+            res.status(200).json({ data: resultRaw });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
             console.log("error", error)
@@ -323,10 +323,10 @@ exports.getDetails = async (req, res) => {
 exports.delete = async (req, res) => {
     const isAdmin = await Auth.checkAdmin(req);
     const body = req.body;
-    console.log("isAdmin " ,isAdmin);
+    console.log("isAdmin ", isAdmin);
 
     if (isAdmin) {
-        console.log("body.id " ,body.id);
+        console.log("body.id ", body.id);
         const queryRaw = "DELETE FROM products WHERE id=? ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
@@ -354,7 +354,7 @@ exports.filterCategory = async (req, res) => {
         const queryRaw = "SELECT * FROM products WHERE category = ?;";
         const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [categoryID], type: QueryTypes.SELECT });
         res.status(200);
-        res.send({resultRaw});
+        res.send({ resultRaw });
     } else {
         res.status(401);
     }

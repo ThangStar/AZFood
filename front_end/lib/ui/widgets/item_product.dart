@@ -237,7 +237,7 @@ class SubTitleItemCurrentBill extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .bodyLarge
-              ?.copyWith(color: colorScheme(context).primary),
+              ?.copyWith(color: colorScheme(context).scrim),
         ));
   }
 }

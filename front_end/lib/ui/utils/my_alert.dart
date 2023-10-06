@@ -46,7 +46,6 @@ ElegantNotification myAlert(BuildContext context, DeviceType deviceType,
                 fontSize: deviceType == DeviceType.mobile ? 12 : 14,
                 color: colorScheme(context).scrim.withOpacity(0.6)),
           ));
-      break;
     default:
       return ElegantNotification.success(
           background: colorScheme(context).surface,

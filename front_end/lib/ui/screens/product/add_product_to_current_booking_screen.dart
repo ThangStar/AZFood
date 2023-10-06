@@ -49,18 +49,18 @@ class _AddProductToCurrentBookingScreenState
           },
           child: CallbackShortcuts(
             bindings: <ShortcutActivator, VoidCallback>{
-              const SingleActivator(LogicalKeyboardKey.keyK,
-                  control: true): () {
+              const SingleActivator(LogicalKeyboardKey.keyK, control: true):
+                  () {
                 showSearch(context: context, delegate: MySeartDelegate());
               },
-              const SingleActivator(LogicalKeyboardKey.escape):
-                  () {
+              const SingleActivator(LogicalKeyboardKey.escape): () {
                 Navigator.pop(context);
               },
             },
             child: FocusScope(
               autofocus: true,
               child: Scaffold(
+                backgroundColor: colorScheme(context).background,
                 floatingActionButton: FloatingActionButton.extended(
                     heroTag: "check_out",
                     key: cartKey,
@@ -76,12 +76,15 @@ class _AddProductToCurrentBookingScreenState
                       ),
                     )),
                 appBar: AppBar(
-                  backgroundColor: colorScheme(context).primary,
+                  shadowColor: colorScheme(context).background,
+                  surfaceTintColor: colorScheme(context).background,
+                  backgroundColor: colorScheme(context).onPrimary,
+                  elevation: 4,
                   bottom: PreferredSize(
                       preferredSize: Size.zero,
                       child: Divider(
-                        color: colorScheme(context).tertiary,
-                        height: 1,
+                        color: colorScheme(context).scrim.withOpacity(0.4),
+                        height: 2,
                       )),
                   title: const Text(
                     "Mặt hàng",
@@ -93,25 +96,27 @@ class _AddProductToCurrentBookingScreenState
                           context: context, delegate: MySeartDelegate()),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          border: Border.all(color: colorScheme(context).scrim.withOpacity(0.3)),
+                          border: Border.all(
+                              color:
+                                  colorScheme(context).scrim.withOpacity(0.3)),
                           borderRadius: BorderRadius.circular(24),
                           color: colorScheme(context).tertiary.withOpacity(0.4),
                         ),
                         child: const Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.search),
+                            Icon(Icons.search, size: 22,),
                             Text(
-                              " Search  ",
-                              style: TextStyle(fontSize: 18),
+                              " Tìm kiếm...  ",
+                              style: TextStyle(fontSize: 14),
                             ),
                             KeyBoardIcon(
                               label: "ctrl",
                             ),
                             KeyBoardIcon(
-                              label: "K",
+                              label: "k ",
                             )
                           ],
                         ),
@@ -129,7 +134,8 @@ class _AddProductToCurrentBookingScreenState
                     if (value is RawKeyDownEvent) {
                       if (value.logicalKey == LogicalKeyboardKey.keyK) {
                         print("object");
-                        showSearch(context: context, delegate: MySeartDelegate());
+                        showSearch(
+                            context: context, delegate: MySeartDelegate());
                       }
                     }
                   },
@@ -144,7 +150,8 @@ class _AddProductToCurrentBookingScreenState
                         ),
                         BlocBuilder<ProductBloc, ProductState>(
                           buildWhen: (previous, current) =>
-                              previous.categoryResponse != current.categoryResponse,
+                              previous.categoryResponse !=
+                              current.categoryResponse,
                           builder: (context, state) {
                             if (state.categoryResponse != null) {
                               return TabBar(
@@ -152,16 +159,18 @@ class _AddProductToCurrentBookingScreenState
                                     if (value != 0) {
                                       context.read<ProductBloc>().add(
                                           GetProductFilterEvent(
-                                              idCategory: state.categoryResponse!
-                                                  .category[value - 1].id));
+                                              idCategory: state
+                                                  .categoryResponse!
+                                                  .category[value - 1]
+                                                  .id));
                                     } else {
                                       productBloc.add(const GetProductsEvent());
                                     }
                                   },
                                   controller: TabController(
-                                      length:
-                                          state.categoryResponse!.category.length +
-                                              1,
+                                      length: state.categoryResponse!.category
+                                              .length +
+                                          1,
                                       vsync: this),
                                   tabs: [
                                     const Tab(
@@ -185,13 +194,17 @@ class _AddProductToCurrentBookingScreenState
                                 return SizedBox(
                                   height: MediaQuery.of(context).size.height,
                                   child: GridView.builder(
-                                      itemCount: state.productResponse?.data.length,
+                                      itemCount:
+                                          state.productResponse?.data.length,
                                       shrinkWrap: true,
                                       primary: false,
                                       gridDelegate:
                                           SliverGridDelegateWithFixedCrossAxisCount(
                                               crossAxisCount: checkDevice(
-                                                  constraints.maxWidth, 1, 2, 3),
+                                                  constraints.maxWidth,
+                                                  1,
+                                                  2,
+                                                  3),
                                               mainAxisExtent: 70),
                                       itemBuilder: (context, index) {
                                         Product product =
@@ -219,8 +232,8 @@ class _AddProductToCurrentBookingScreenState
                                                 });
                                               }
                                             },
-                                            subTitle:
-                                                SubTitleProduct(product: product),
+                                            subTitle: SubTitleProduct(
+                                                product: product),
                                             trailling: SubTitleItemCurrentBill(
                                                 product: product));
                                       }),

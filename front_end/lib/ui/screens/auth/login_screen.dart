@@ -84,24 +84,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     AuthenticationBloc authBloc = BlocProvider.of<AuthenticationBloc>(context);
     TextEditingController controllerIpv4 = TextEditingController();
 
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthLoginSuccess) {
-          myAlert(context, checkDeviceType(size.width), AlertType.success,
-              "Thông báo", "Đăng nhập thành công")
+          myAlert(context, checkDeviceType(MediaQuery.of(context).size.width),
+                  AlertType.success, "Thông báo", "Đăng nhập thành công")
               .show(context);
+
+          // showMySnackBar(context, "Đăng nhập thành công", TypeSnackBar.success);
           Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const HomeMenuScreen(),
               ));
         } else if (state is AuthLoginFailed) {
-          myAlert(context, checkDeviceType(size.width), AlertType.error,
-                  "Thông báo", "Tài khoản hoặc mật khẩu không chính xác")
+          ElegantNotification.error(
+                  title: const Text("Thông báo"),
+                  description:
+                      const Text("Tài khoản hoặc mật khẩu không chính xác"))
               .show(context);
           // setState(() {
           //   isShowAlert = true;
@@ -109,8 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
           //   typeMessageErr = TypeAlert.error;
           // });
         } else if (state is AuthLoginConnectionFailed) {
-          myAlert(context, checkDeviceType(size.width), AlertType.error,
-              "Thông báo", "Mất kết nối máy chủ")
+          ElegantNotification.error(
+                  title: const Text("Thông báo"),
+                  description: const Text("Mất kết nối máy chủ"))
               .show(context);
         }
       },
@@ -278,7 +282,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 onTap: () {
                                                   Navigator.push(
                                                     context,
-                                                    MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const ForgotPasswordScreen()),
                                                   );
                                                 },
                                                 child: const Text(

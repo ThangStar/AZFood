@@ -8,6 +8,7 @@ import 'package:restaurant_manager_app/utils/response.dart';
 class Http {
   late Dio dio;
   late String token;
+
   Http() {
     dio = Dio(BaseOptions(
         baseUrl: Env.BASE_URL ?? "http://localhost:8080",
@@ -70,6 +71,6 @@ class Http {
 }
 
 //how to use
+//final response = await http.get('https://your-api.com/endpoint');
+
 Dio http = Http().dio;
-//
-//     final response = await dio.get('https://your-api.com/endpoint');

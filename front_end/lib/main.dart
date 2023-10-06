@@ -103,6 +103,9 @@ class _MyAppState extends State<MyApp> {
                 ), BlocProvider(
                   create: (context) => ForgotPasswordBloc(),
                 ),
+                BlocProvider(
+                  create: (context) => ForgotPasswordBloc(),
+                ),
               ],
               child: CalendarControllerProvider(
                 controller: EventController(),

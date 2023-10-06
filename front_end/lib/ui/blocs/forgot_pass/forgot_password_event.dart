@@ -11,3 +11,8 @@ class SendEmailEvent extends ForgotPasswordEvent{
   final String email;
   const SendEmailEvent({required this.email});
 }
+
+class VerifyOtpEvent extends ForgotPasswordEvent{
+  final String otp;
+  const VerifyOtpEvent({required this.otp});
+}

@@ -4,7 +4,7 @@ const db = require('../models');
 const { QueryTypes } = require('sequelize');
 const sequelize = db.sequelize;
 const { initializeApp } = require('firebase/app');
-const config = require('../../fireStoreConfig/config');
+const config = require('../fireStoreConfig/config');
 
 initializeApp(config.firebaseConfig);
 

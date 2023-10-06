@@ -51,6 +51,10 @@ dependencies:
   elegant_notification: ^1.11.1
   image_picker: ^1.0.4
   path_provider: ^2.1.1
+  ionicons: ^0.2.2
+  animated_text_kit: ^4.2.2
+  calendar_view: ^1.0.4
+  lottie: ^2.6.0
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:

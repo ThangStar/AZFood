@@ -10,6 +10,7 @@ module.exports = app => {
     router.post("/login", login.login);
     router.post("/checkAndSendOtpToEmail", member.checkAndSendOtpToEmail );
   // router.post("/update", [jwt.checkJwt, upload.single('file')], member.updateUser);
+  router.post("/create",[jwt.checkJwt ,upload.single('file')] , member.createMember );
   router.post("/change", [jwt.checkJwt, upload.single('file')], member.changePassUser);
   router.post("/delete", [jwt.checkJwt], member.delete);
   router.get("/list", [jwt.checkJwt], member.getList);

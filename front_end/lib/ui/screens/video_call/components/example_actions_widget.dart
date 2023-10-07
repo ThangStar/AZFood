@@ -28,7 +28,7 @@ class ExampleActionsWidget extends StatelessWidget {
     }
 
     const actionsTitle = Text(
-      'Actions',
+      'Thông tin cuộc gọi',
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
     );
 

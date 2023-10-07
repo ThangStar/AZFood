@@ -107,7 +107,7 @@ class _State extends State<ScreenSharing> with KeepRemoteVideoViewsMixin {
     final localUid = int.tryParse(_localUidController.text);
     if (localUid != null) {
       await _engine.joinChannelEx(
-          token: '',
+          token: config.token,
           connection:
               RtcConnection(channelId: _controller.text, localUid: localUid),
           options: const ChannelMediaOptions(

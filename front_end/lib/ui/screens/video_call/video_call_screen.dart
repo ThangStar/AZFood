@@ -9,6 +9,7 @@ import 'package:restaurant_manager_app/ui/screens/video_call/examples/basic/inde
 import 'components/android_foreground_service_widget.dart';
 import 'components/log_sink.dart';
 import 'config/agora.config.dart' as config;
+import 'examples/advanced/enable_virtualbackground/enable_virtualbackground.dart';
 class VideoCallScreen extends StatefulWidget {
   const VideoCallScreen({super.key});
 
@@ -17,6 +18,46 @@ class VideoCallScreen extends StatefulWidget {
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
+  final _data = [...basic, ...advanced];
+
+  bool _isConfigInvalid() {
+    return config.appId == '<YOUR_APP_ID>' ||
+        config.token == '<YOUR_TOKEN>' ||
+        config.channelId == '<YOUR_CHANNEL_ID>';
+  }
+  Future<void> _requestPermissionIfNeed() async {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      await [Permission.microphone, Permission.camera].request();
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _requestPermissionIfNeed();
+
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Video call'),
+        actions: [
+        ],
+      ),
+      body: EnableVirtualBackground(),
+    );
+  }
+}
+
+class VideoCallSetup extends StatefulWidget {
+  const VideoCallSetup({super.key});
+
+  @override
+  State<VideoCallSetup> createState() => _VideoCallSetupState();
+}
+
+class _VideoCallSetupState extends State<VideoCallSetup> {
   final _data = [...basic, ...advanced];
 
   bool _isConfigInvalid() {

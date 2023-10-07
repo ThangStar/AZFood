@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/config/agora.config.dart'
     as config;
 
@@ -117,6 +118,10 @@ class _State extends State<EnableVirtualBackground>
         channelId: _controller.text,
         uid: config.uid,
         options: const ChannelMediaOptions());
+    await Future.delayed(2.seconds);
+    setState(() {
+      loading = false;
+    });
   }
 
   _leaveChannel() async {
@@ -128,6 +133,7 @@ class _State extends State<EnableVirtualBackground>
 
   bool isPitched = false;
   bool muted = false;
+  bool loading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -136,6 +142,22 @@ class _State extends State<EnableVirtualBackground>
         if (!_isReadyPreview) return Container();
         return Stack(
           children: [
+            loading ? Align(
+              alignment: Alignment.center,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  FittedBox(child: Text("🌎",style: TextStyle(
+                    fontSize: 100
+                  ),).animate(onComplete: (controller) => controller.repeat(),).rotate(duration: 1.seconds)),
+                  SizedBox(height: 8,),
+                  Text("Đang kết nối cuộc gọi..", style: TextStyle(
+                    fontSize: 24
+                  ),)
+                ],
+              ),
+            ) :
             AgoraVideoView(
                 controller: VideoViewController(
               rtcEngine: _engine,
@@ -263,14 +285,16 @@ class _State extends State<EnableVirtualBackground>
                           backgroundColor:
                               MaterialStatePropertyAll(Colors.grey)),
                       onPressed: () async {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Scaffold(
-                                appBar: AppBar(),
-                                body: ScreenSharing(),
-                              ),
-                            ));
+                       await _engine.enableFaceDetection(true);
+                       print("face detector on");
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => Scaffold(
+                        //         appBar: AppBar(),
+                        //         body: ScreenSharing(),
+                        //       ),
+                        //     ));
                       },
                       icon: Icon(Icons.screen_share),
                     ),

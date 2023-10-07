@@ -9,6 +9,7 @@ import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/message.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/media_picker.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -130,7 +131,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                 margin: const EdgeInsets.all(4),
                 child: CircleAvatar(
                     backgroundColor: colorScheme(context).tertiary,
-                    backgroundImage: AssetImage("assets/images/chicken.png"))),
+                    backgroundImage: const AssetImage("assets/images/chicken.png"))),
           ],
         ),
         title: Column(
@@ -148,10 +149,15 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.dark_mode_outlined,
-              color: colorScheme(context).scrim.withOpacity(0.8),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => VideoCallScreen(),));
+            },
+            icon: Badge(
+              backgroundColor: Colors.green,
+              child: Icon(
+                Icons.videocam_rounded,
+                color: colorScheme(context).scrim.withOpacity(0.8),
+              ),
             ),
           ),
           IconButton(
@@ -190,7 +196,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                     child: Scrollbar(
                       controller: controllerMsg,
                       child: ListView.builder(
-                        physics: ClampingScrollPhysics(),
+                        physics: const ClampingScrollPhysics(),
                         shrinkWrap: true,
                         primary: false,
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -412,7 +418,7 @@ class _ItemMsgState extends State<ItemMsg> {
                               color:
                                   colorScheme(context).scrim.withOpacity(0.4)),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 2,
                         ),
                         MouseRegion(
@@ -427,7 +433,7 @@ class _ItemMsgState extends State<ItemMsg> {
                           },
                           child: Row(
                             children: [
-                              if (widget.isMine && isShowUtil) MsgItemUtils(),
+                              if (widget.isMine && isShowUtil) const MsgItemUtils(),
                               Container(
                                   constraints: BoxConstraints(
                                       maxWidth: constraints.maxWidth * 0.6),
@@ -493,7 +499,7 @@ class _ItemMsgState extends State<ItemMsg> {
                                         return Container();
                                     }
                                   }())),
-                              if (!widget.isMine && isShowUtil) MsgItemUtils(),
+                              if (!widget.isMine && isShowUtil) const MsgItemUtils(),
                             ],
                           ),
                         ),
@@ -556,12 +562,12 @@ class _MsgItemUtilsState extends State<MsgItemUtils> {
                     position: RelativeRect.fromLTRB(pos.x, pos.y,
                         pos.size.width + pos.x, pos.y + pos.size.height),
                     items: [
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         child: InkWell(child: Text("❤ Yêu thích")),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         child: InkWell(child: Text("😆 Haha")),
-                      ), PopupMenuItem(
+                      ), const PopupMenuItem(
                         child: InkWell(child: Text("😥 Buồn")),
                       ),
                     ]);

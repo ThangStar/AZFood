@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Position getPositionbyKey(GlobalKey key) {
+Position getPositionByKey(GlobalKey key) {
   RenderBox box = key.currentContext!.findRenderObject() as RenderBox;
   Size size = box.size;
   Offset position = box.localToGlobal(Offset.zero); //this is global position

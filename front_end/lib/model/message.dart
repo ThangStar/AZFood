@@ -1,6 +1,6 @@
 import 'package:restaurant_manager_app/model/profile.dart';
 
-enum TypeMessage { text, message, voice }
+enum TypeMessage { text, image, voice }
 enum StatusMessage {typing, none}
 class Message {
   final int id;

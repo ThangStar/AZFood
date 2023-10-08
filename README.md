@@ -3,17 +3,22 @@
 <a href="https://www.yushi.dev/" target="_blank" rel="noreferrer">DỰ ÁN 2</a> 👋
 </h3>
 
-![Presentation](https://github.com/ThangStar/restaurant_manager_app/assets/52882277/05da895d-e4a2-48fd-bcf9-7e0c118342b4)
+Server RTC: https://github.com/ThangStar/AZFood-Server-VideoCall
+
+Web RTC Token: https://jolly-deer-lingerie.cyclic.app/rtc/a/publisher/userAccount/1121/
+
+Figma: https://www.figma.com/file/mInuUtNZnQCLiQNWP507LD
 
 <h2 align="center">
  Ứng dụng quản lí nhà hàng
 </h2> 
 
+![Presentation](https://github.com/ThangStar/restaurant_manager_app/assets/52882277/05da895d-e4a2-48fd-bcf9-7e0c118342b4)
 
 ### 🤝 Chức năng chính
 - quản lí bàn
 - Tính tiền( Lưu hóa đơn, xuất hóa đơn) , lưu công nợ
-- Quản lý menu  ⇒ huy bổ sung
+- Quản lý menu 
 - Quản lý khách hàng (lưu thông tin khách hàng , lịch sử thanh toán hóa đơn của khách hàng)
 - lên món ăn
 - quản lí nhân viên

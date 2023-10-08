@@ -128,7 +128,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
           children: [
             if (!(size.width > mobileWidth)) const BackButton(),
             Container(
-                margin: const EdgeInsets.all(4),
+                margin: size.width > mobileWidth ? const EdgeInsets.all(4) : null,
                 child: CircleAvatar(
                     backgroundColor: colorScheme(context).tertiary,
                     backgroundImage: const AssetImage("assets/images/chicken.png"))),

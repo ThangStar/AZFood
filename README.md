@@ -3,9 +3,7 @@
 <a href="https://www.yushi.dev/" target="_blank" rel="noreferrer">DỰ ÁN 2</a> 👋
 </h3>
 
-Server RTC: https://github.com/ThangStar/AZFood-Server-VideoCall
-
-Web RTC Token: https://jolly-deer-lingerie.cyclic.app/rtc/a/publisher/userAccount/1121/
+Web RTC Token: http://cute-singlet-cod.cyclic.app/rtc/a/publisher/userAccount/11/
 
 Figma: https://www.figma.com/file/mInuUtNZnQCLiQNWP507LD
 

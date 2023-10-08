@@ -147,7 +147,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     int ran = Random().nextInt(10000);
     try {
       Response res = await http.get(
-          "https://jolly-deer-lingerie.cyclic.app/rtc/a/publisher/userAccount/$ran/");
+          "http://cute-singlet-cod.cyclic.app/rtc/a/publisher/userAccount/$ran/");
       token = res.data['rtcToken'];
       print("TOKEN: ${res.data['rtcToken']}");
     } catch (err) {

@@ -7,6 +7,7 @@ import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/calendar/calendar_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/calendar/verify_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/chart/chart_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -27,7 +28,7 @@ class HomeMenuScreen extends StatefulWidget {
   _ZoomState createState() => _ZoomState();
 }
 
-enum PageNavRail { table, bill, check, calendar, rank, profile, logout }
+enum PageNavRail { table, bill, check, calendar, chart, profile, logout }
 
 class _ZoomState extends State<HomeMenuScreen> {
   int selectedNavRail = 0;
@@ -36,7 +37,7 @@ class _ZoomState extends State<HomeMenuScreen> {
     PageNavRail.bill,
     PageNavRail.check,
     PageNavRail.calendar,
-    PageNavRail.rank,
+    PageNavRail.chart,
     PageNavRail.profile,
     PageNavRail.logout,
   ];
@@ -168,6 +169,8 @@ class _ZoomState extends State<HomeMenuScreen> {
                           return BillScreen(constraints: constraints);
                         case PageNavRail.check:
                           return CalendarScreen(constraints: constraints);
+                        case PageNavRail.chart:
+                          return ChartScreen(constraints: constraints);
                         case PageNavRail.profile:
                           return const InfoScreen();
                         case PageNavRail.calendar:

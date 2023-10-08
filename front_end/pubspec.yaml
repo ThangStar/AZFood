@@ -58,7 +58,7 @@ dependencies:
   camera_windows: ^0.2.1+8
   agora_rtc_engine: ^6.2.2
   permission_handler: ^8.1.1
-
+  fl_chart: ^0.64.0
   video_raw_data:
     git:
       url: https://github.com/AgoraIO-Extensions/RawDataPluginSample.git

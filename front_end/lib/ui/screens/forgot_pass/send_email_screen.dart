@@ -1,43 +1,65 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/forgot_pass/reset_password_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
-
+import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_otp_screen.dart';
+import 'package:restaurant_manager_app/ui/utils/my_snack_bar.dart';
 import '../../blocs/forgot_pass/forgot_password_bloc.dart';
 import '../../theme/color_schemes.dart';
-import '../../utils/my_snack_bar.dart';
 import '../../utils/size_config.dart';
 import '../../widgets/my_button.dart';
 import '../../widgets/my_text_field.dart';
 import '../auth/login_screen.dart';
 
-class SendOTPScreen extends StatefulWidget {
-  const SendOTPScreen({Key? key}) : super(key: key);
+class SendEmailScreen extends StatefulWidget {
+  const SendEmailScreen({Key? key}) : super(key: key);
 
   @override
-  State<SendOTPScreen> createState() => _SendOTPScreenState();
+  State<SendEmailScreen> createState() => _SendEmailScreenState();
 }
 
-class _SendOTPScreenState extends State<SendOTPScreen> {
-  final TextEditingController sendOTPController =
+class _SendEmailScreenState extends State<SendEmailScreen> {
+  final TextEditingController fogetPassController =
       TextEditingController(text: "");
+  bool _isDialogShown = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
-        // TODO: implement listener
-        if (state is VerifyOtpSuccess) {
-          showMySnackBar(context,'Đã xác nhận OTP thành công',TypeSnackBar.success);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
-          );
-        } else if (state is VerifyOtpFailed) {
-          showMySnackBar(context,'Mã OTP sai', TypeSnackBar.error);
-        }else if (state is VerifyOtpErorr){
-          showMySnackBar(context,'Đã xảy ra lỗi, vui lòng thử lại', TypeSnackBar.error);
+        if (state is SendEmailProgress && !_isDialogShown) {
+          _isDialogShown = true;
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return const Dialog(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }).then((value) {
+            _isDialogShown = false;
+          });
+        } else if (state is SendEmailSuccess || state is SendEmailFailed) {
+          if (_isDialogShown) {
+            Navigator.of(context).pop();
+            _isDialogShown = false;
+          }
+          if (state is SendEmailSuccess) {
+            showMySnackBar(context, state.response['message'].toString(),
+                TypeSnackBar.success);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SendOTPScreen()),
+            );
+          } else if (state is SendEmailFailed) {
+            showMySnackBar(context, state.response['message'].toString(),
+                TypeSnackBar.error);
+          } else if (state is SendEmailErorr) {
+            showMySnackBar(
+                context, 'Có lỗi xảy ra, vui lòng thử lại', TypeSnackBar.error);
+          }
         }
       },
       child: Scaffold(
@@ -48,8 +70,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const SendEmailScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
               icon: Icon(
@@ -142,19 +163,22 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                   padding: EdgeInsets.only(
                                                       bottom: 4),
                                                   child: Text(
-                                                      "Mã OTP khôi phục mật khẩu"),
+                                                      "Email khôi phục tài khoản"),
                                                 ),
                                                 MyTextField(
-                                                  validator: (value) {
-                                                    bool isValidOtp = RegExp(r"^\d{6}$").hasMatch(value!);
-                                                    return isValidOtp ? null : "Mã OTP phải là số và có 6 kí tự";
+                                                  validator: (p0) {
+                                                    bool isEmail = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
+                                                        .hasMatch(p0!);
+                                                    return isEmail
+                                                        ? null
+                                                        : "Địa chỉ email không hợp lệ";
                                                   },
                                                   hintText:
-                                                      "Nhập mã OTP của bạn",
-                                                  icon: const Icon(
-                                                      Icons.qr_code_2),
-                                                  label: "OTP từ email",
-                                                  controller: sendOTPController,
+                                                      "Nhập email của bạn",
+                                                  icon: const Icon(Icons.email),
+                                                  label: "email",
+                                                  controller:
+                                                      fogetPassController,
                                                 ),
                                               ],
                                             ),
@@ -167,16 +191,16 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                             Hero(
                                                 tag: "login_hero",
                                                 child: MyButton(
-                                                  value: "Xác nhận OTP",
+                                                  value: "Lấy mã xác nhận",
                                                   onPressed: () {
                                                     BlocProvider.of<
-                                                        ForgotPasswordBloc>(
-                                                        context)
+                                                                ForgotPasswordBloc>(
+                                                            context)
                                                         .add(
-                                                      VerifyOtpEvent(
-                                                          otp: sendOTPController
-                                                              .text),
-
+                                                      SendEmailEvent(
+                                                          email:
+                                                              fogetPassController
+                                                                  .text),
                                                     );
                                                   },
                                                 )),

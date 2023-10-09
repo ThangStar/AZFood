@@ -1,43 +1,79 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/forgot_pass/reset_password_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 
 import '../../blocs/forgot_pass/forgot_password_bloc.dart';
 import '../../theme/color_schemes.dart';
 import '../../utils/my_snack_bar.dart';
 import '../../utils/size_config.dart';
+import '../../widgets/my_alert.dart';
 import '../../widgets/my_button.dart';
 import '../../widgets/my_text_field.dart';
-import '../auth/login_screen.dart';
 
-class SendOTPScreen extends StatefulWidget {
-  const SendOTPScreen({Key? key}) : super(key: key);
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
 
   @override
-  State<SendOTPScreen> createState() => _SendOTPScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _SendOTPScreenState extends State<SendOTPScreen> {
-  final TextEditingController sendOTPController =
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  late bool isShowPass;
+  final TextEditingController resetPassController =
       TextEditingController(text: "");
+  final TextEditingController verifyPassController =
+      TextEditingController(text: "");
+  String messageErr = '';
+  TypeAlert typeMessageErr = TypeAlert.error;
+
+  bool isValid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isShowPass = false;
+    _fillDataForm();
+  }
+
+  void _fillDataForm() async {
+    if (!isValid) {
+      setState(() {
+        isValid = true;
+      });
+    }
+
+    if (isValid) {
+      setState(() {
+        isValid = false;
+      });
+    }
+  }
+
+  void _onChangeShowPass() {
+    setState(() {
+      isShowPass = !isShowPass;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
         // TODO: implement listener
-        if (state is VerifyOtpSuccess) {
-          showMySnackBar(context,'Đã xác nhận OTP thành công',TypeSnackBar.success);
+        if (state is ResetPasswordSuccess) {
+          showMySnackBar(context, state.response['message'].toString(),
+              TypeSnackBar.success);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
-        } else if (state is VerifyOtpFailed) {
-          showMySnackBar(context,'Mã OTP sai', TypeSnackBar.error);
-        }else if (state is VerifyOtpErorr){
-          showMySnackBar(context,'Đã xảy ra lỗi, vui lòng thử lại', TypeSnackBar.error);
+        } else if (state is ResetPasswordFailed) {
+          showMySnackBar(context, state.response['message'].toString(),
+              TypeSnackBar.error);
+        }else if (state is ResetPasswordErorr) {
+          showMySnackBar(context, 'Đã xảy ra lỗi, vui lòng thử lại',
+              TypeSnackBar.error);
         }
       },
       child: Scaffold(
@@ -48,8 +84,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const SendEmailScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
               icon: Icon(
@@ -141,21 +176,57 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                 const Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom: 4),
-                                                  child: Text(
-                                                      "Mã OTP khôi phục mật khẩu"),
+                                                  child:
+                                                      Text("Đặt lại mật khẩu"),
                                                 ),
                                                 MyTextField(
-                                                  validator: (value) {
-                                                    bool isValidOtp = RegExp(r"^\d{6}$").hasMatch(value!);
-                                                    return isValidOtp ? null : "Mã OTP phải là số và có 6 kí tự";
+                                                  validator: (p0) {
+                                                    bool isEmail = RegExp(
+                                                        r"^[a-zA-Z0-9]{5,12}$")
+                                                        .hasMatch(p0!);
+                                                    return isEmail
+                                                        ? null
+                                                        : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
                                                   },
+                                                  isShowPass: isShowPass,
                                                   hintText:
-                                                      "Nhập mã OTP của bạn",
+                                                      "Nhập mật khẩu mới của bạn",
                                                   icon: const Icon(
-                                                      Icons.qr_code_2),
-                                                  label: "OTP từ email",
-                                                  controller: sendOTPController,
+                                                      Icons.password),
+                                                  label: "Password",
+                                                  controller:
+                                                      resetPassController,
                                                 ),
+                                                const SizedBox(
+                                                  height: 10,
+                                                ),
+                                                MyTextField(
+                                                  validator: (p0) {
+                                                    bool isEmail = RegExp(
+                                                        r"^[a-zA-Z0-9]{5,12}$")
+                                                        .hasMatch(p0!);
+                                                    return isEmail
+                                                        ? null
+                                                        : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
+                                                  },
+                                                  isShowPass: isShowPass,
+                                                  hintText:
+                                                      "Xác nhận mật khẩu của bạn",
+                                                  icon: const Icon(
+                                                      Icons.password),
+                                                  label: "Verify Password",
+                                                  controller:
+                                                      verifyPassController,
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    _onChangeShowPass();
+                                                  },
+                                                  child: const Text(
+                                                    'Hiện mật khẩu',
+                                                    style: TextStyle(color: Colors.blue),
+                                                  ),
+                                                )
                                               ],
                                             ),
                                             const SizedBox(
@@ -167,17 +238,22 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                             Hero(
                                                 tag: "login_hero",
                                                 child: MyButton(
-                                                  value: "Xác nhận OTP",
+                                                  value: "Đổi mật khẩu",
                                                   onPressed: () {
-                                                    BlocProvider.of<
-                                                        ForgotPasswordBloc>(
-                                                        context)
-                                                        .add(
-                                                      VerifyOtpEvent(
-                                                          otp: sendOTPController
-                                                              .text),
-
-                                                    );
+                                                    if(resetPassController.text == verifyPassController.text){
+                                                      BlocProvider.of<
+                                                          ForgotPasswordBloc>(
+                                                          context)
+                                                          .add(
+                                                        ResetPasswordEvent(
+                                                            password:
+                                                            resetPassController
+                                                                .text,),
+                                                      );
+                                                    }else{
+                                                      showMySnackBar(context, 'Mật khẩu không trùng khớp',
+                                                          TypeSnackBar.error);
+                                                    }
                                                   },
                                                 )),
                                             const SizedBox(

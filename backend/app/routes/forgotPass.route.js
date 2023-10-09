@@ -4,6 +4,7 @@ module.exports = app => {
       var router = require("express").Router();
 
       router.post("/checkAndSendOtpToEmail", forgotPass.checkAndSendOtpToEmail );
+      router.post("/resetPassword", forgotPass.resetPassword );
 
       app.use('/api/auth', router);
       

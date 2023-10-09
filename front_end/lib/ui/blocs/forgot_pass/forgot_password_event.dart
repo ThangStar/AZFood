@@ -16,3 +16,8 @@ class VerifyOtpEvent extends ForgotPasswordEvent{
   final String otp;
   const VerifyOtpEvent({required this.otp});
 }
+
+class ResetPasswordEvent extends ForgotPasswordEvent{
+  final String password;
+  const ResetPasswordEvent({required this.password});
+}

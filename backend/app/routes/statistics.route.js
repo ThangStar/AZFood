@@ -7,4 +7,5 @@ module.exports = app => {
     router.get("/total", stats.getInvoiceDailyStats);
 
     app.use('/api/stats', [jwt.checkJwt], router);
+    app.use('/api/stats/revenue-year', [jwt.checkJwt], stats.getRevenueCurrentYear);
 };

@@ -74,8 +74,8 @@ class _ItemProductState extends State<ItemProduct>
             onTap: () {
               widget.onTap!() ?? () {};
               if (widget.cartKey != null && mounted && widget.isAddCart) {
-                final pos = getPositionbyKey(widget.cartKey!);
-                final thisPos = getPositionbyKey(key);
+                final pos = getPositionByKey(widget.cartKey!);
+                final thisPos = getPositionByKey(key);
                 moveXAnimation = Tween(begin: 0.0, end: pos.x - thisPos.x)
                     .animate(moveController
                         .drive(CurveTween(curve: Curves.easeOut)));
@@ -237,7 +237,7 @@ class SubTitleItemCurrentBill extends StatelessWidget {
           style: Theme.of(context)
               .textTheme
               .bodyLarge
-              ?.copyWith(color: colorScheme(context).primary),
+              ?.copyWith(color: colorScheme(context).scrim),
         ));
   }
 }

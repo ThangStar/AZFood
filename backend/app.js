@@ -36,7 +36,7 @@ require("./app/routes/invoice.route.js")(app);
 require("./app/routes/nhapHang.route.js")(app);
 require("./app/routes/statistics.route.js")(app);
 require("./app/routes/attendance.route.js")(app);
-require('./socket/socket.init.js')(io);
+require('./app/socket/socket.init.js')(io);
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {

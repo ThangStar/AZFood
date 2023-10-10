@@ -1,6 +1,6 @@
 // const { getMessagesForUser, insertMessage } = require('../controllers/message.controller')
-const { sequelize } = require("../../app/models");
-const { QueryTypes } = require("sequelize");
+// const { sequelize } = require("../../app/models");
+// const { QueryTypes } = require("sequelize");
 const messageController = require('../controllers/message.controller')
 
 //ROLE:

@@ -1,5 +1,5 @@
 const { QueryTypes } = require("sequelize");
-const { sequelize } = require("../../app/models");
+const { sequelize } = require("../../models");
 
 exports.getMessages = async (socket, io, data) => {
     console.log("OK! refresh msg");
@@ -25,6 +25,9 @@ exports.getMessages = async (socket, io, data) => {
 };
 
 exports.insertMessage = async (socket, io, data) => {
+    // if(data.img){
+        console.log(data);
+    // }
     const { type, message, raw, imageUrl, sendBy } = data
     try {
         const queryRaw = `INSERT INTO MESSAGE(type, message, raw, imageUrl, sendBy) VALUES (?,?,?,?,?)`;

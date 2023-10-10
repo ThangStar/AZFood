@@ -25,9 +25,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: colorScheme(context).onPrimary,
+      backgroundColor: colorScheme(context).surfaceVariant,
       appBar: AppBar(
-        title: Text(
+        shadowColor: colorScheme(context).tertiary,
+        surfaceTintColor: colorScheme(context).onPrimary,
+          elevation: 4,
+          title: Text(
           'Thông báo',
           style: Theme.of(context)
               .textTheme

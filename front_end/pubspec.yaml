@@ -49,12 +49,22 @@ dependencies:
   flutter_local_notifications: ^15.1.1
   local_notifier: ^0.1.5
   elegant_notification: ^1.11.1
-  lottie: ^2.6.0
   image_picker: ^1.0.4
   path_provider: ^2.1.1
   ionicons: ^0.2.2
   animated_text_kit: ^4.2.2
   calendar_view: ^1.0.4
+  lottie: ^2.6.0
+  camera_windows: ^0.2.1+8
+  agora_rtc_engine: ^6.2.2
+  permission_handler: ^8.1.1
+  fl_chart: ^0.64.0
+  video_raw_data:
+    git:
+      url: https://github.com/AgoraIO-Extensions/RawDataPluginSample.git
+      path: frameworks/flutter/video_raw_data
+      ref: 51dde78706a015743a993368f25a06df7960378e
+
 dev_dependencies:
   flutter_lints: ^2.0.0
   flutter_test:
@@ -75,6 +85,13 @@ flutter:
     - assets/svgs/
     - assets/raws/
     - .env
+    - assets/Sound_Horizon.mp3
+    - assets/audio_mixing/Agora.io-Interactions.mp3
+    - assets/agora-logo.png
+    - assets/dang.mp3
+    - assets/ding.mp3
+    - assets/gif.gif
+    - assets/jpg.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

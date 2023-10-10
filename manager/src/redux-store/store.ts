@@ -6,6 +6,7 @@ import nhapHangReducer from './kho-reducer/nhapHangSlice';
 import invoiceReducer from './invoice-reducer/invoiceSlice';
 import checkinHistoryState from './checkin-history-redux/checkin-historySlice';
 import userReducer from './user-reducer/userSlice';
+import evenueReducer from './evenue-reducer/evenueSlice';
 import authenticationReducer from './login-reducer/loginSlice';
 
 export const store = configureStore({
@@ -17,6 +18,7 @@ export const store = configureStore({
     nhapHangState: nhapHangReducer,
     checkinHistoryState: checkinHistoryState,
     userState: userReducer,
+    evenueState: evenueReducer,
     authenticationState: authenticationReducer
   },
 });

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -28,7 +29,6 @@ class UpdateInfoScreen extends StatefulWidget {
 
 class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
   DateTime selectedDate = DateTime.now();
-  File? selectedImage;
   //Validate Form
   final _controllerEmail = TextEditingController(text: "");
   final _controllerPhone = TextEditingController(text: "");
@@ -106,79 +106,233 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
     }
   }
 
-  Future _pickImage(ImageSource source) async {
-    final XFile? image = await ImagePicker().pickImage(source: source);
-    setState(() {
-      if (image == null) return;
-      selectedImage = File(image.path);
-      
-    });
-  }
-
+  File? selectedImage;
+  bool changeImage = false;
   _showDialog() {
     showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              title: Text("ẢNH ĐẠI DIỆN",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme(context).scrim)),
-              content: Container(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "ẢNH ĐẠI DIỆN",
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme(context).scrim,
+                ),
+          ),
+          elevation: 24.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          backgroundColor: colorScheme(context).onSecondary,
+          surfaceTintColor: Colors.transparent,
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Container(
                 padding: const EdgeInsets.all(11.0),
                 child: Column(
                   children: [
-                    if (selectedImage != null)
-                      Image.file(
-                        selectedImage!,
-                        width: 300,
-                        height: 300,
-                        fit: BoxFit.cover,
-                      )
-                    else
-                      Image.asset(
-                        'assets/images/avatar.jpg',
-                        fit: BoxFit.cover,
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5.0),
+                        border: Border.all(
+                          color: colorScheme(context)
+                              .scrim, // Màu viền của Container
+                          width: 1.0, // Độ dày của viền
+                        ),
                       ),
+                      child: selectedImage != null
+                          ? Image.file(
+                              selectedImage!,
+                              width: 300,
+                              height: 300,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/images/avatar.jpg',
+                              fit: BoxFit.cover,
+                            ),
+                    ),
                     const SizedBox(height: 20),
-                    TextButton(
-                      child: const Text("Chọn ảnh từ Camera"),
-                      onPressed: () {
-                        setState(() {
-                          _pickImage(ImageSource.camera);
-                        });
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            colorScheme(context).primary),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(3.0), // Độ cong của viền
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.camera,
+                              color: colorScheme(context).onSecondary),
+                          const SizedBox(width: 10),
+                          Text("Chọn ảnh từ Camera",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                      fontSize: 15,
+                                      color: colorScheme(context).onSecondary)),
+                        ],
+                      ),
+                      onPressed: () async {
+                        try {
+                          final pickedImage =
+                              await _pickImage(ImageSource.camera);
+                          if (pickedImage == null) return;
+                          setState(() {
+                            selectedImage = pickedImage;
+                          });
+                        } catch (e) {
+                          // ignore: use_build_context_synchronously
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                backgroundColor:
+                                    colorScheme(context).onSecondary,
+                                surfaceTintColor: Colors.transparent,
+                                title: Center(
+                                  child: Icon(
+                                    Icons.report_gmailerrorred_outlined,
+                                    size: 60,
+                                    color: colorScheme(context).error,
+                                  ),
+                                ),
+                                content: Text(
+                                    'Mở camera không khả dụng trên trình duyệt web.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(fontSize: 15)),
+                                actions: [
+                                  ButtonBar(
+                                    alignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      TextButton(
+                                          style: ButtonStyle(
+                                            // padding: MaterialStateProperty.all<
+                                            //         EdgeInsets>(
+                                            //     const EdgeInsets.symmetric(
+                                            //         horizontal: 15.0,
+                                            //         vertical: 5.0)),
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                        Color>(
+                                                    colorScheme(context)
+                                                        .primary),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 50.0,
+                                                vertical: 5.0),
+                                            child: Text('ĐÓNG',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge
+                                                    ?.copyWith(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color:
+                                                            colorScheme(context)
+                                                                .onSecondary)),
+                                          )),
+                                      // TextButton(
+                                      //   onPressed: () {
+
+                                      //   },
+                                      //   child: const Text('Thử lại'),
+                                      // ),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          print(e);
+                        }
                       },
                     ),
-                    TextButton(
-                      child: const Text("Chọn ảnh từ Gallery"),
-                      onPressed: () => {
-                        setState(() {
-                          _pickImage(ImageSource.gallery);
-                          // print(selectedImage);
-                        })
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            colorScheme(context).primary),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(3.0), // Độ cong của viền
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.image_outlined,
+                              color: colorScheme(context).onSecondary),
+                          const SizedBox(width: 10),
+                          Text("Chọn ảnh từ Gallery",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                      fontSize: 15,
+                                      color: colorScheme(context).onSecondary)),
+                        ],
+                      ),
+                      onPressed: () async {
+                        final pickedImage =
+                            await _pickImage(ImageSource.gallery);
+                        if (pickedImage != null) {
+                          setState(() {
+                            selectedImage = pickedImage;
+                          });
+                        }
                       },
                     )
                   ],
                 ),
-              ),
-              elevation: 24.0,
-              backgroundColor: colorScheme(context).onTertiary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(2.0),
-              ),
-              actions: [
-                TextButton(
-                    child: const Text("CANCEL"),
-                    onPressed: () => Navigator.pop(context, "cancel")),
-                TextButton(
-                    child: const Text("OK"),
-                    onPressed: () => Navigator.pop(context, "ok")),
-              ],
-            );
-          });
-        });
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              child: const Text("CANCEL"),
+              onPressed: () => Navigator.pop(context, "cancel"),
+            ),
+            TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.pop(context, "ok");
+                  setState(() {
+                    changeImage = true;
+                  });
+                }),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<File?> _pickImage(ImageSource source) async {
+    final XFile? image = await ImagePicker().pickImage(source: source);
+    if (image == null) return null;
+    return File(image.path);
   }
 
   @override
@@ -238,16 +392,14 @@ class _UpdateInfoScreenState extends State<UpdateInfoScreen> {
                                         size: Size.fromRadius(50.0 *
                                             checkDevice(size.width, 1.0, 1.5,
                                                 1.6)), // Image radius
-                                        child:
-                                            //  _showDialog(context) == "ok"
-                                            //     ? Image.file(
-                                            //         selectedImage!,
-                                            //         width: 250,
-                                            //         height: 250,
-                                            //         fit: BoxFit.cover,
-                                            //       )
-                                            //     :
-                                            Image.asset(
+                                        child: changeImage
+                                            ? Image.file(
+                                                selectedImage!,
+                                                width: 250,
+                                                height: 250,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.asset(
                                                 'assets/images/avatar.jpg',
                                                 fit: BoxFit.cover),
                                       ),

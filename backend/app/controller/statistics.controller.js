@@ -38,3 +38,84 @@ exports.getInvoiceDailyStats = async (req, res) => {
         res.status(401).send('You are not logged in');
     }
 }
+
+exports.getRevenueCurrentYear = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+
+    if (checkAuth) {
+        try {
+            const currentTime = new Date();
+            const currentYear = currentTime.getFullYear();
+
+            const query = `
+                SELECT 
+                    YEAR(createAt) AS year,
+                    MONTH(createAt) AS month,
+                    SUM(total) AS total_amount
+                FROM 
+                    invoice
+                WHERE 
+                    YEAR(createAt) = :currentYear
+                GROUP BY 
+                    YEAR(createAt), MONTH(createAt)
+                ORDER BY 
+                    YEAR(createAt), MONTH(createAt);
+            `;
+
+            const result = await sequelize.query(query, {
+                replacements: { currentYear },
+                type: QueryTypes.SELECT
+            });
+
+            if (result.length > 0) {
+                res.status(200).json({ result });
+            } else {
+                res.status(204).send('No data');
+            }
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    } else {
+        res.status(401).send('You are not logged in');
+    }
+};
+exports.getRevenueMonth = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+
+    if (checkAuth) {
+        try {
+            const currentTime = new Date();
+            const currentYear = currentTime.getFullYear();
+
+            const query = `
+                SELECT 
+                    YEAR(createAt) AS year,
+                    MONTH(createAt) AS month,
+                    SUM(total) AS total_amount
+                FROM 
+                    invoice
+                WHERE 
+                    YEAR(createAt) = :currentYear
+                GROUP BY 
+                    YEAR(createAt), MONTH(createAt)
+                ORDER BY 
+                    YEAR(createAt), MONTH(createAt);
+            `;
+
+            const result = await sequelize.query(query, {
+                replacements: { currentYear },
+                type: QueryTypes.SELECT
+            });
+
+            if (result.length > 0) {
+                res.status(200).json({ result });
+            } else {
+                res.status(204).send('No data');
+            }
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    } else {
+        res.status(401).send('You are not logged in');
+    }
+};

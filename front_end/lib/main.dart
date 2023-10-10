@@ -15,10 +15,14 @@ import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
+import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/index.dart';
+import 'package:restaurant_manager_app/ui/screens/video_call/examples/basic/index.dart';
+import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 
@@ -51,7 +55,7 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   static final ValueNotifier<ThemeMode> themeNotifier =
-      ValueNotifier(ThemeMode.light);
+  ValueNotifier(ThemeMode.light);
 
   const MyApp({Key? key}) : super(key: key);
 
@@ -60,13 +64,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _showPerformanceOverlay = false;
   @override
   void initState() {
     MySharePreferences.getIsDarkTheme().then((value) {
       MyApp.themeNotifier.value =
-          value ?? false ? ThemeMode.dark : ThemeMode.light;
+      value ?? false ? ThemeMode.dark : ThemeMode.light;
     });
-
     super.initState();
   }
 
@@ -100,14 +104,20 @@ class _MyAppState extends State<MyApp> {
                 ),
                 BlocProvider(
                   create: (context) => CalendarBloc(),
+                ), BlocProvider(
+                  create: (context) => ForgotPasswordBloc(),
                 ),
                 BlocProvider(
                   create: (context) => ForgotPasswordBloc(),
+                ),
+                  BlocProvider(
+                  create: (context) => ProfileBloc(),
                 ),
               ],
               child: CalendarControllerProvider(
                 controller: EventController(),
                 child: MaterialApp(
+                    showPerformanceOverlay: _showPerformanceOverlay,
                     themeMode: currentMode,
                     debugShowCheckedModeBanner: false,
                     theme: ThemeData(

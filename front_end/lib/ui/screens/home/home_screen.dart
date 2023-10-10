@@ -466,7 +466,7 @@ class ToolbarHome extends StatelessWidget {
                     children: [
                       MyIconButtonBlur(
                         icon: Badge(
-                          label: const Text("9+"),
+                          label:  Text("9+", style: TextStyle(color: Colors.white,)),
                           backgroundColor: Colors.redAccent,
                           child: const Icon(Icons.chat, color: Colors.white)
                               .animate(

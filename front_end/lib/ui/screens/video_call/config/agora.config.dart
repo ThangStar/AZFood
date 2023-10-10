@@ -9,7 +9,7 @@ String get appId {
 String get token {
   // Allow pass a `token` as an environment variable with name `TEST_TOKEN` by using --dart-define
   return const String.fromEnvironment('TEST_TOKEN',
-      defaultValue: '007eJxTYMio/JDHYLjjXOzORzFKDxrMZ+9L9rH7PidnbsibzpSn7usVGEwT05LSkkzNUtOSDUxSTM2SzJOSk0zMTU1MTdIMzcxNORcppTYEMjI8eHiHlZEBAkF8RoZEBgYAa6wgNA==');
+      defaultValue: '007eJxTYKgQdlr8zGzOgWtTL/rclL50cqf2Yg2Lmh3iLcuS93gf+PFfgcE0MS0pLcnULDUt2cAkxdQsyTwpOcnE3NTE1CTN0MzcNGGbSmpDICNDrtJVZkYGCATxGRkSGRgAhuYf9Q==');
 }
 
 /// Your channel ID

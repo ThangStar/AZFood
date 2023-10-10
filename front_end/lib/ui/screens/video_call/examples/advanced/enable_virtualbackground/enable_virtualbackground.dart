@@ -147,11 +147,11 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     int ran = Random().nextInt(10000);
     try {
       Response res = await http.get(
-          "http://cute-singlet-cod.cyclic.app/rtc/a/publisher/userAccount/$ran/");
+          "https://cute-singlet-cod.cyclic.app/rtc/a/publisher/userAccount/$ran/");
       token = res.data['rtcToken'];
-      print("TOKEN: ${res.data['rtcToken']}");
+      print("TOKENSSSSSSSSSS: ${res.data['rtcToken']}");
     } catch (err) {
-      print("LỖI $err");
+      print("LỖIs $err");
     }
     await _engine.joinChannel(
         token: config.token,

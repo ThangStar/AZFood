@@ -50,7 +50,7 @@ func main() {
 
 	api.Use(nocache())
 	api.GET("rtc/:channelName/:role/:tokentype/:uid/", getRtcToken)
-	api.GET("rtm/:uid/", getRtmToken)
+	api.GET("rtm/:uid/", getRtmToken)	
 	api.GET("rte/:channelName/:role/:tokentype/:uid/", getBothTokens)
 	api.Run(":" + port) // listen and serve on localhost:8080
 }

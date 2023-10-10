@@ -27,4 +27,5 @@ class Router {
   //forgot_pass
   static String sendEmail = '/api/auth/checkAndSendOtpToEmail';
   static String verifyOtp = '/api/auth/verifyOtpFromUser';
+  static String resetPass = '/api/auth/resetPassword';
 }

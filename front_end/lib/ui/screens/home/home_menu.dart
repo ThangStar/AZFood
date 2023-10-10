@@ -12,6 +12,7 @@ import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
+import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_drawer.dart';
 
 import '../../../main.dart';
@@ -28,7 +29,7 @@ class HomeMenuScreen extends StatefulWidget {
   _ZoomState createState() => _ZoomState();
 }
 
-enum PageNavRail { table, bill, check, calendar, chart, profile, logout }
+enum PageNavRail { table, bill, check, calendar, chart, profile }
 
 class _ZoomState extends State<HomeMenuScreen> {
   int selectedNavRail = 0;
@@ -39,7 +40,6 @@ class _ZoomState extends State<HomeMenuScreen> {
     PageNavRail.calendar,
     PageNavRail.chart,
     PageNavRail.profile,
-    PageNavRail.logout,
   ];
   bool isDarkTheme = false;
 
@@ -56,6 +56,25 @@ class _ZoomState extends State<HomeMenuScreen> {
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
+    void logout(BuildContext context) {
+      showDialog(
+          context: context,
+          builder: (context) => MyDialog(
+                title: "Đăng xuất?",
+                content: "Bạn có chắc chắn muốn đăng xuất",
+                onTapLeading: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                      (route) => false);
+                },
+                onTapTrailling: () {
+                  Navigator.pop(context);
+                },
+              ));
+    }
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -120,6 +139,13 @@ class _ZoomState extends State<HomeMenuScreen> {
                                         label: Text(e.label));
                                   }).toList(),
                                   NavigationRailDestination(
+                                      icon: Icon(Icons.logout),
+                                      label: GestureDetector(
+                                          onTap: () {
+                                            logout(context);
+                                          },
+                                          child: Text("Đăng xuất"))),
+                                  NavigationRailDestination(
                                       icon: Switch(
                                         value: isDarkTheme,
                                         onChanged: (value) async {
@@ -142,11 +168,14 @@ class _ZoomState extends State<HomeMenuScreen> {
                                 onDestinationSelected: (value) {
                                   print(value);
                                   print(itemsDrawer.length);
-                                  if (value != itemsDrawer.length){
+                                  if (value != itemsDrawer.length + 1) {
+                                    if (value == itemsDrawer.length) {
+                                      logout(context);
+                                      return;
+                                    }
                                     setState(() {
                                       selectedNavRail = value;
                                     });
-
                                   }
                                 },
                                 selectedIndex: selectedNavRail),
@@ -175,18 +204,6 @@ class _ZoomState extends State<HomeMenuScreen> {
                           return const InfoScreen();
                         case PageNavRail.calendar:
                           return VerifyScreen(constraints: constraints);
-                        case PageNavRail.logout:
-                          {
-                            WidgetsBinding.instance?.addPostFrameCallback((_) {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginScreen(),
-                                  ),
-                                  (route) => false);
-                            });
-                          }
-                          break;
                         default:
                           return HomeScreen(constraints: constraints);
                       }

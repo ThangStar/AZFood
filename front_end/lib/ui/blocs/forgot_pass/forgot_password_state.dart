@@ -26,9 +26,7 @@ class SendEmailFailed extends ForgotPasswordState{
 }
 class SendEmailErorr extends ForgotPasswordState{
 }
-class VerifyOtpProgress extends ForgotPasswordState{
-   VerifyOtpProgress({super.response});
-}
+
 class VerifyOtpSuccess extends ForgotPasswordState{
    VerifyOtpSuccess({super.response});
 }
@@ -36,4 +34,13 @@ class VerifyOtpFailed extends ForgotPasswordState{
    VerifyOtpFailed({super.response});
 }
 class VerifyOtpErorr extends ForgotPasswordState{
+}
+
+class ResetPasswordSuccess extends ForgotPasswordState{
+  ResetPasswordSuccess({super.response});
+}
+class ResetPasswordFailed extends ForgotPasswordState{
+  ResetPasswordFailed({super.response});
+}
+class ResetPasswordErorr extends ForgotPasswordState{
 }

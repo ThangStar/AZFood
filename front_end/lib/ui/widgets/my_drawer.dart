@@ -50,10 +50,6 @@ final List<ItemDrawer> itemsDrawer = [
       typeDrawer: TypeDrawer.analytics),
   ItemDrawer(
       label: "Cá nhân", icon: Icons.person, typeDrawer: TypeDrawer.profile),
-  ItemDrawer(
-      label: "Đăng xuất",
-      icon: Icons.logout_outlined,
-      typeDrawer: TypeDrawer.logout),
 ];
 
 class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {

@@ -8,6 +8,7 @@ import { store } from '@/redux-store/store'
 import { Provider } from 'react-redux';
 import { useEffect, useState } from 'react'
 import Login from '@/component/Login/login'
+import Messenger from '@/component/Messenger/messenger'
 const inter = Inter({ subsets: ['latin'] })
 
 
@@ -65,6 +66,7 @@ export default function RootLayout({
         <Provider store={store}>
           {token ? (
             <>
+              <Messenger />
               <Header />
               {children}
               <LeftSideBar />

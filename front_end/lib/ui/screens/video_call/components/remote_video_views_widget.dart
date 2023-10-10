@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 mixin KeepRemoteVideoViewsMixin<T extends StatefulWidget> on State<T> {
   final GlobalKey _keepRemoteVideoViewsKey = GlobalKey();
+
   GlobalKey get keepRemoteVideoViewsKey => _keepRemoteVideoViewsKey;
 }
 
@@ -12,10 +13,13 @@ class RemoteVideoViewsWidget extends StatefulWidget {
       {Key? key,
       required this.rtcEngine,
       required this.channelId,
-      this.connectionUid})
+      this.connectionUid,
+      this.onSelectedUser})
       : super(key: key);
 
   final RtcEngine rtcEngine;
+
+  final Function(int)? onSelectedUser;
 
   final String channelId;
 
@@ -55,6 +59,10 @@ class _RemoteVideoViewsWidgetState extends State<RemoteVideoViewsWidget> {
           if (!_localRtcConnection.any((e) => e.localUid == remoteUid)) {
             _remoteUidsMap.putIfAbsent(remoteUid, () => connection);
           }
+          print("has a user join:${_remoteUidsMap.keys.first}");
+          _remoteUidsMap.length > 0
+              ? widget.onSelectedUser!(_remoteUidsMap.keys.first)
+              : widget.onSelectedUser!(_remoteUidsMap.keys.first);
         });
       },
       onUserOffline: (RtcConnection connection, int remoteUid,
@@ -80,13 +88,14 @@ class _RemoteVideoViewsWidgetState extends State<RemoteVideoViewsWidget> {
     final widgets = <Widget>[];
     debugPrint('_remoteUidsMap: $_remoteUidsMap');
     _remoteUidsMap.forEach((key, value) {
+      print("key $key");
       widgets.add(
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: Stack(
-            children: [
-              AgoraVideoView(
+        Stack(
+          children: [
+            SizedBox(
+              width: 150,
+              height: 150,
+              child: AgoraVideoView(
                 controller: VideoViewController.remote(
                   rtcEngine: widget.rtcEngine,
                   canvas: VideoCanvas(uid: key),
@@ -95,25 +104,25 @@ class _RemoteVideoViewsWidgetState extends State<RemoteVideoViewsWidget> {
                       localUid: widget.connectionUid),
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.connectionUid != null
-                        ? 'localuid: ${widget.connectionUid}'
-                        : '',
-                    style: const TextStyle(color: Colors.white, fontSize: 10),
-                  ),
-                  Text(
-                    'remoteuid: $key',
-                    style: const TextStyle(color: Colors.white, fontSize: 10),
-                  ),
-                ],
-              )
-            ],
-          ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.connectionUid != null
+                      ? 'localuid: ${widget.connectionUid}'
+                      : '',
+                  style: const TextStyle(color: Colors.red, fontSize: 10),
+                ),
+                Text(
+                  'nguười dùng: $key',
+                  style: const TextStyle(color: Colors.red, fontSize: 10),
+                ),
+              ],
+            )
+          ],
         ),
       );
     });

@@ -46,12 +46,12 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.call,
               color: Colors.green,
               size: 24,
             ),
-            SizedBox(
+            const SizedBox(
               width: 4,
             ),
             Text(
@@ -63,9 +63,9 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             ),
           ],
         ),
-        actions: [],
+        actions: const [],
       ),
-      body: EnableVirtualBackground(),
+      body: const EnableVirtualBackground(),
     );
   }
 }

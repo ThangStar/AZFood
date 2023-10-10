@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 typedef ExampleActionsBuilder = Widget Function(
     BuildContext context, bool isLayoutHorizontal);
 
-class ExampleActionsWidget extends StatefulWidget {
+class ExampleActionsWidget extends StatelessWidget {
   const ExampleActionsWidget({
     Key? key,
     required this.displayContentBuilder,
@@ -16,11 +16,6 @@ class ExampleActionsWidget extends StatefulWidget {
   final ExampleActionsBuilder? actionsBuilder;
 
   @override
-  State<ExampleActionsWidget> createState() => _ExampleActionsWidgetState();
-}
-
-class _ExampleActionsWidgetState extends State<ExampleActionsWidget> {
-  @override
   Widget build(BuildContext context) {
     final mediaData = MediaQuery.of(context);
     final bool isLayoutHorizontal = mediaData.size.aspectRatio >= 1.5 ||
@@ -28,8 +23,8 @@ class _ExampleActionsWidgetState extends State<ExampleActionsWidget> {
             !(defaultTargetPlatform == TargetPlatform.android ||
                 defaultTargetPlatform == TargetPlatform.iOS));
 
-    if (widget.actionsBuilder == null) {
-      return widget.displayContentBuilder(context, isLayoutHorizontal);
+    if (actionsBuilder == null) {
+      return displayContentBuilder(context, isLayoutHorizontal);
     }
 
     const actionsTitle = Text(
@@ -54,7 +49,7 @@ class _ExampleActionsWidgetState extends State<ExampleActionsWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     actionsTitle,
-                    widget.actionsBuilder!(context, isLayoutHorizontal),
+                    actionsBuilder!(context, isLayoutHorizontal),
                   ],
                 ),
               ),
@@ -66,7 +61,7 @@ class _ExampleActionsWidgetState extends State<ExampleActionsWidget> {
           ),
           Expanded(
             flex: 2,
-            child: widget.displayContentBuilder(context, isLayoutHorizontal),
+            child: displayContentBuilder(context, isLayoutHorizontal),
           ),
         ],
       );
@@ -77,7 +72,7 @@ class _ExampleActionsWidgetState extends State<ExampleActionsWidget> {
         SizedBox.expand(
           child: Container(
             padding: const EdgeInsets.only(bottom: 150),
-            child: widget.displayContentBuilder(context, isLayoutHorizontal),
+            child: displayContentBuilder(context, isLayoutHorizontal),
           ),
         ),
         DraggableScrollableSheet(
@@ -107,7 +102,7 @@ class _ExampleActionsWidgetState extends State<ExampleActionsWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     actionsTitle,
-                    widget.actionsBuilder!(context, isLayoutHorizontal),
+                    actionsBuilder!(context, isLayoutHorizontal),
                   ],
                 ),
               ),

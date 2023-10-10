@@ -5,6 +5,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/config/agora.config.dart'
     as config;
 
@@ -17,6 +18,7 @@ import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/s
 import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/voice_changer/voice_changer.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import '../../../../../../utils/dio.dart';
+import '../../../../../blocs/video_call/video_call_bloc.dart';
 import '../../../components/example_actions_widget.dart';
 import '../../../components/log_sink.dart';
 import '../../../components/remote_video_views_widget.dart';
@@ -44,10 +46,12 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   late final TextEditingController _localUidController;
   late final TextEditingController _screenShareUidController;
   bool _isScreenShared = false;
+  late VideoCallBloc videoCallBloc;
 
   @override
   void initState() {
     super.initState();
+    videoCallBloc = BlocProvider.of<VideoCallBloc>(context);
     _controller = TextEditingController(text: config.channelId);
     _screenShareUidController = TextEditingController(text: '1001');
     _initEngine();
@@ -56,6 +60,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   @override
   void dispose() {
     super.dispose();
+    videoCallBloc.add(ResetUidSelected());
     _engine.release();
   }
 
@@ -172,450 +177,85 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
 
   @override
   Widget build(BuildContext context) {
-    return uidSelected == 0 ?  ExampleActionsWidget(
+    return ExampleActionsWidget(
       displayContentBuilder: (context, isLayoutHorizontal) {
         if (!_isReadyPreview) return Container();
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: RemoteVideoViewsWidget(
-                      key: keepRemoteVideoViewsKey,
-                      rtcEngine: _engine,
-                      channelId: _controller.text,
-                      onSelectedUser: (int uid){
-                        print("UID SELECTED $uid");
-                        setState(() {
-                          uidSelected = uid;
-                        });
-                      }
-                  ),
-                ),
-                loading
-                    ? Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FittedBox(
-                          child: const Text(
-                            "🌎",
-                            style: TextStyle(fontSize: 100),
-                          )
-                              .animate(
-                            onComplete: (controller) =>
-                                controller.repeat(),
-                          )
-                              .rotate(duration: 1.seconds)),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        "Đang kết nối cuộc gọi..",
-                        style: TextStyle(fontSize: 24),
-                      )
-                    ],
-                  ),
-                )
-                    : Align(
-                  alignment: Alignment.topRight,
-                  child: SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: AgoraVideoView(
-                        controller: VideoViewController(
-                          rtcEngine: _engine,
-                          canvas: const VideoCanvas(uid: 0),
-                        )),
-                  ),
-                ),
-              ],
-            );
-
-          },);
-      },
-      actionsBuilder: (context, isLayoutHorizontal) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return Stack(
           children: [
-            SizedBox(
-              height: 24,
-            ),
-            RichText(
-                text: TextSpan(
-                    text: "Nhóm: ",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: colorScheme(context).scrim.withOpacity(0.7)),
-                    children: [
-                      TextSpan(
-                          text: "AZFood",
-                          style: TextStyle(fontWeight: FontWeight.w500)),
-                    ])),
-            SizedBox(
-              height: 24,
-            ),
-            Text(
-              "Người tham gia",
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colorScheme(context).tertiary)),
-              height: 300,
-              child: ListView.separated(
-                itemCount: 12,
-                itemBuilder: (context, index) => ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/images/avatar.jpg'),
-                  ),
-                  title: Text("${index + 1}. Nông Văn Thắng"),
-                  subtitle: Text("Nhân viên"),
-                ),
-                separatorBuilder: (BuildContext context, int index) =>
-                    Divider(),
-              ),
-            ),
-            Column(
-              children: [
-                SizedBox(
-                  height: 24,
-                ),
-                // TextField(
-                //   controller: _controller,
-                //   decoration: const InputDecoration(hintText: 'Channel ID'),
-                // ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                        color: Colors.white,
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                                _isEnabledVirtualBackgroundImage
-                                    ? Colors.purple
-                                    : Colors.grey)),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Dialog(
-                                backgroundColor: Colors.transparent,
-                                surfaceTintColor: Colors.transparent,
-                                child: SizedBox(
-                                  width: 100,
-                                  child: GridView(
-                                    gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2),
-                                    children: [
-                                      GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            if (isJoined) {
-                                              setState(() {
-                                                _isEnabledVirtualBackgroundImage =
-                                                false;
-                                              });
-                                              _enableVirtualBackground(
-                                                  "assets/images/bg_app_bar.jpg");
-                                            }
-                                          },
-                                          child: Container(
-                                            color: Colors.grey,
-                                            child: const Icon(
-                                                Icons.image_not_supported),
-                                          )),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_app_bar.jpg",
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_app_bar.jpg");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/background.jpg",
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              false;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/background.jpg");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_meet_1.png",
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_meet_1.png");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_meet_2.jpg",
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_meet_2.jpg");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_meet_3.jpg",
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_meet_3.jpg");
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ));
-                        },
-                        icon: Icon(Icons.broken_image_rounded)),
-                    IconButton(
-                      color: Colors.white,
-                      style: ButtonStyle(
-                          backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey)),
-                      onPressed: () {},
-                      // startScreenShare ,
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //       builder: (context) => Scaffold(
-                      //         appBar: AppBar(),
-                      //         body: ScreenSharing(),
-                      //       ),
-                      //     ));
-                      icon: Icon(Icons.screen_share),
-                    ),
-                    IconButton(
-                      color: Colors.white,
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                              muted ? Colors.red : Colors.grey)),
-                      onPressed: () async {
-                        setState(() {
-                          muted = !muted;
-                        });
-                        await _engine.muteLocalAudioStream(muted);
-                      },
-                      icon: Icon(Icons.volume_up),
-                    ),
-                    IconButton(
-                      color: Colors.white,
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                              isPitched ? Colors.blue : Colors.grey)),
-                      onPressed: () async {
-                        setState(() {
-                          isPitched = !isPitched;
-                        });
-                        isPitched
-                            ? await _engine.setLocalVoicePitch(2)
-                            : await _engine.setLocalVoicePitch(1);
-                      },
-                      icon: Icon(Icons.record_voice_over_outlined),
-                    ),
-                    IconButton(
-                      color: Colors.white,
-                      style: ButtonStyle(
-                          backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey)),
-                      onPressed: () async {
-                        //face detection
-                        await _engine.enableFaceDetection(true);
-                      },
-                      icon: Icon(Icons.more_vert),
-                    ),
-                    IconButton(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        color: Colors.white,
-                        style: ButtonStyle(
-                            backgroundColor:
-                            MaterialStatePropertyAll(Colors.red)),
-                        // onPressed: isJoined ? _leaveChannel : _joinChannel,
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(Icons.call_end)),
-                    // Expanded(
-                    //   flex: 1,
-                    //   child: ElevatedButton(
-                    //     onPressed: isJoined ? _leaveChannel : _joinChannel,
-                    //     child: Text('${isJoined ? 'Leave' : 'Join'} channel'),
-                    //   ),
-                    // )
-                  ],
-                ),
-              ],
-            ),
-            // if (defaultTargetPlatform == TargetPlatform.android ||
-            //     defaultTargetPlatform == TargetPlatform.iOS)
-            //   ScreenShareMobile(
-            //       rtcEngine: _engine,
-            //       isScreenShared: _isScreenShared,
-            //       onStartScreenShared: () {
-            //         if (isJoined) {
-            //           _updateScreenShareChannelMediaOptions();
-            //         }
-            //       },
-            //       onStopScreenShare: () {}),
-            // if (defaultTargetPlatform == TargetPlatform.windows ||
-            //     defaultTargetPlatform == TargetPlatform.macOS)
-            //   ScreenShareDesktop(
-            //       rtcEngine: _engine,
-            //       isScreenShared: _isScreenShared,
-            //       onStartScreenShared: () {
-            //           _updateScreenShareChannelMediaOptions();
-            //       },
-            //       onStopScreenShare: () {}),
-          ],
-        );
-      },
-    )
-        :  ExampleActionsWidget(
-      displayContentBuilder: (context, isLayoutHorizontal) {
-        if (!_isReadyPreview) return Container();
-        return StatefulBuilder(
-          builder: (BuildContext context, void Function(void Function()) setState) {
-            return Stack(
-              children: [
-                uidSelected != 0
+            BlocBuilder<VideoCallBloc, VideoCallState>(
+              buildWhen: (previous, current) {
+                print(previous.uidSelected);
+                print(current.uidSelected);
+                return true;
+              },
+              builder: (context, state) {
+                return state.uidSelected != 0
                     ? AgoraVideoView(
                   controller: VideoViewController.remote(
                     rtcEngine: _engine,
-                    canvas: VideoCanvas(uid: uidSelected),
+                    canvas: VideoCanvas(uid: state.uidSelected),
                     connection: RtcConnection(
-                        channelId: _controller.text, localUid: 111),
+                      channelId: channelId,
+                    ),
                   ),
                 )
-                    : Container(),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: RemoteVideoViewsWidget(
-                      key: keepRemoteVideoViewsKey,
-                      rtcEngine: _engine,
-                      channelId: _controller.text,
-                      onSelectedUser: (int uid){
-                        print("UID SELECTED $uid");
-                        setState(() {
-                          uidSelected = uid;
-                        });
-                      }
+                // ? Text("${state.uidSelected}", style: TextStyle(color: Colors.red, fontSize: 100))
+                    : Text("NO SELECTOR", style: TextStyle(color: Colors.red, fontSize: 100),);
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: RemoteVideoViewsWidget(
+                  key: keepRemoteVideoViewsKey,
+                  rtcEngine: _engine,
+                  channelId: _controller.text,
+                  onSelectedUser: (int uid) {
+                    context
+                        .read<VideoCallBloc>()
+                        .add(OnChangeUidSelected(uidSelected: uid));
+                  }),
+            ),
+            loading
+                ? Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FittedBox(
+                            child: const Text(
+                          "🌎",
+                          style: TextStyle(fontSize: 100),
+                        )
+                                .animate(
+                                  onComplete: (controller) =>
+                                      controller.repeat(),
+                                )
+                                .rotate(duration: 1.seconds)),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          "Đang kết nối cuộc gọi..",
+                          style: TextStyle(fontSize: 24),
+                        )
+                      ],
+                    ),
+                  )
+                : Align(
+                    alignment: Alignment.topRight,
+                    child: SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: AgoraVideoView(
+                          controller: VideoViewController(
+                        rtcEngine: _engine,
+                        canvas: const VideoCanvas(uid: 0),
+                      )),
+                    ),
                   ),
-                ),
-                loading
-                    ? Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FittedBox(
-                          child: const Text(
-                            "🌎",
-                            style: TextStyle(fontSize: 100),
-                          )
-                              .animate(
-                            onComplete: (controller) =>
-                                controller.repeat(),
-                          )
-                              .rotate(duration: 1.seconds)),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Text(
-                        "Đang kết nối cuộc gọi..",
-                        style: TextStyle(fontSize: 24),
-                      )
-                    ],
-                  ),
-                )
-                    : Align(
-                  alignment: Alignment.topRight,
-                  child: SizedBox(
-                    width: 150,
-                    height: 150,
-                    child: AgoraVideoView(
-                        controller: VideoViewController(
-                          rtcEngine: _engine,
-                          canvas: const VideoCanvas(uid: 0),
-                        )),
-                  ),
-                ),
-              ],
-            );
-
-          },);
+          ],
+        );
       },
       actionsBuilder: (context, isLayoutHorizontal) {
         return Column(
@@ -633,10 +273,10 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                         fontSize: 18,
                         color: colorScheme(context).scrim.withOpacity(0.7)),
                     children: [
-                      TextSpan(
-                          text: "AZFood",
-                          style: TextStyle(fontWeight: FontWeight.w500)),
-                    ])),
+                  TextSpan(
+                      text: "AZFood",
+                      style: TextStyle(fontWeight: FontWeight.w500)),
+                ])),
             SizedBox(
               height: 24,
             ),
@@ -690,143 +330,143 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                           showDialog(
                               context: context,
                               builder: (context) => Dialog(
-                                backgroundColor: Colors.transparent,
-                                surfaceTintColor: Colors.transparent,
-                                child: SizedBox(
-                                  width: 100,
-                                  child: GridView(
-                                    gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2),
-                                    children: [
-                                      GestureDetector(
-                                          onTap: () {
-                                            Navigator.pop(context);
-                                            if (isJoined) {
-                                              setState(() {
-                                                _isEnabledVirtualBackgroundImage =
-                                                false;
-                                              });
-                                              _enableVirtualBackground(
-                                                  "assets/images/bg_app_bar.jpg");
-                                            }
-                                          },
-                                          child: Container(
-                                            color: Colors.grey,
-                                            child: const Icon(
-                                                Icons.image_not_supported),
-                                          )),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_app_bar.jpg",
+                                    backgroundColor: Colors.transparent,
+                                    surfaceTintColor: Colors.transparent,
+                                    child: SizedBox(
+                                      width: 100,
+                                      child: GridView(
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2),
+                                        children: [
+                                          GestureDetector(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                if (isJoined) {
+                                                  setState(() {
+                                                    _isEnabledVirtualBackgroundImage =
+                                                        false;
+                                                  });
+                                                  _enableVirtualBackground(
+                                                      "assets/images/bg_app_bar.jpg");
+                                                }
+                                              },
+                                              child: Container(
+                                                color: Colors.grey,
+                                                child: const Icon(
+                                                    Icons.image_not_supported),
+                                              )),
+                                          GestureDetector(
+                                            child: Container(
+                                              color: colorScheme(context)
+                                                  .background,
+                                              child: Image.asset(
+                                                "assets/images/bg_app_bar.jpg",
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (isJoined) {
+                                                setState(() {
+                                                  _isEnabledVirtualBackgroundImage =
+                                                      true;
+                                                });
+                                                _enableVirtualBackground(
+                                                    "assets/images/bg_app_bar.jpg");
+                                              }
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_app_bar.jpg");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/background.jpg",
+                                          GestureDetector(
+                                            child: Container(
+                                              color: colorScheme(context)
+                                                  .background,
+                                              child: Image.asset(
+                                                "assets/images/background.jpg",
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (isJoined) {
+                                                setState(() {
+                                                  _isEnabledVirtualBackgroundImage =
+                                                      false;
+                                                });
+                                                _enableVirtualBackground(
+                                                    "assets/images/background.jpg");
+                                              }
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              false;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/background.jpg");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_meet_1.png",
+                                          GestureDetector(
+                                            child: Container(
+                                              color: colorScheme(context)
+                                                  .background,
+                                              child: Image.asset(
+                                                "assets/images/bg_meet_1.png",
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (isJoined) {
+                                                setState(() {
+                                                  _isEnabledVirtualBackgroundImage =
+                                                      true;
+                                                });
+                                                _enableVirtualBackground(
+                                                    "assets/images/bg_meet_1.png");
+                                              }
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_meet_1.png");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_meet_2.jpg",
+                                          GestureDetector(
+                                            child: Container(
+                                              color: colorScheme(context)
+                                                  .background,
+                                              child: Image.asset(
+                                                "assets/images/bg_meet_2.jpg",
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (isJoined) {
+                                                setState(() {
+                                                  _isEnabledVirtualBackgroundImage =
+                                                      true;
+                                                });
+                                                _enableVirtualBackground(
+                                                    "assets/images/bg_meet_2.jpg");
+                                              }
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_meet_2.jpg");
-                                          }
-                                        },
-                                      ),
-                                      GestureDetector(
-                                        child: Container(
-                                          color: colorScheme(context)
-                                              .background,
-                                          child: Image.asset(
-                                            "assets/images/bg_meet_3.jpg",
+                                          GestureDetector(
+                                            child: Container(
+                                              color: colorScheme(context)
+                                                  .background,
+                                              child: Image.asset(
+                                                "assets/images/bg_meet_3.jpg",
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                              if (isJoined) {
+                                                setState(() {
+                                                  _isEnabledVirtualBackgroundImage =
+                                                      true;
+                                                });
+                                                _enableVirtualBackground(
+                                                    "assets/images/bg_meet_3.jpg");
+                                              }
+                                            },
                                           ),
-                                        ),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                          if (isJoined) {
-                                            setState(() {
-                                              _isEnabledVirtualBackgroundImage =
-                                              true;
-                                            });
-                                            _enableVirtualBackground(
-                                                "assets/images/bg_meet_3.jpg");
-                                          }
-                                        },
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ));
+                                    ),
+                                  ));
                         },
                         icon: Icon(Icons.broken_image_rounded)),
                     IconButton(
                       color: Colors.white,
                       style: ButtonStyle(
                           backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey)),
+                              MaterialStatePropertyAll(Colors.grey)),
                       onPressed: () {},
                       // startScreenShare ,
                       // Navigator.push(
@@ -871,7 +511,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                       color: Colors.white,
                       style: ButtonStyle(
                           backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey)),
+                              MaterialStatePropertyAll(Colors.grey)),
                       onPressed: () async {
                         //face detection
                         await _engine.enableFaceDetection(true);
@@ -883,7 +523,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                         color: Colors.white,
                         style: ButtonStyle(
                             backgroundColor:
-                            MaterialStatePropertyAll(Colors.red)),
+                                MaterialStatePropertyAll(Colors.red)),
                         // onPressed: isJoined ? _leaveChannel : _joinChannel,
                         onPressed: () => Navigator.pop(context),
                         icon: Icon(Icons.call_end)),

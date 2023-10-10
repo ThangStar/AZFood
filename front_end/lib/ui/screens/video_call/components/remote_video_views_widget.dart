@@ -9,12 +9,11 @@ mixin KeepRemoteVideoViewsMixin<T extends StatefulWidget> on State<T> {
 }
 
 class RemoteVideoViewsWidget extends StatefulWidget {
-  const RemoteVideoViewsWidget(
-      {Key? key,
-      required this.rtcEngine,
-      required this.channelId,
-      this.connectionUid,
-      this.onSelectedUser})
+  const RemoteVideoViewsWidget({Key? key,
+    required this.rtcEngine,
+    required this.channelId,
+    this.connectionUid,
+    this.onSelectedUser})
       : super(key: key);
 
   final RtcEngine rtcEngine;
@@ -54,21 +53,23 @@ class _RemoteVideoViewsWidgetState extends State<RemoteVideoViewsWidget> {
       },
       onUserJoined: (connection, remoteUid, elapsed) {
         logSink.log(
-            '[onUserJoined] connection: ${connection.toJson()}, remoteUid: $remoteUid, elapsed: $elapsed');
+            '[onUserJoined] connection: ${connection
+                .toJson()}, remoteUid: $remoteUid, elapsed: $elapsed');
         setState(() {
           if (!_localRtcConnection.any((e) => e.localUid == remoteUid)) {
             _remoteUidsMap.putIfAbsent(remoteUid, () => connection);
           }
           print("has a user join:${_remoteUidsMap.keys.first}");
-          _remoteUidsMap.length > 0
-              ? widget.onSelectedUser!(_remoteUidsMap.keys.first)
-              : widget.onSelectedUser!(_remoteUidsMap.keys.first);
+          // _remoteUidsMap.length > 0
+          //     ? widget.onSelectedUser!(_remoteUidsMap.keys.first)
+          //     : widget.onSelectedUser!(_remoteUidsMap.keys.first);
         });
       },
       onUserOffline: (RtcConnection connection, int remoteUid,
           UserOfflineReasonType reason) {
         logSink.log(
-            '[onUserOffline] connection: ${connection.toJson()}, remoteUid: $remoteUid');
+            '[onUserOffline] connection: ${connection
+                .toJson()}, remoteUid: $remoteUid');
         setState(() {
           _remoteUidsMap.remove(remoteUid);
         });
@@ -92,16 +93,23 @@ class _RemoteVideoViewsWidgetState extends State<RemoteVideoViewsWidget> {
       widgets.add(
         Stack(
           children: [
-            SizedBox(
-              width: 150,
-              height: 150,
-              child: AgoraVideoView(
-                controller: VideoViewController.remote(
-                  rtcEngine: widget.rtcEngine,
-                  canvas: VideoCanvas(uid: key),
-                  connection: RtcConnection(
-                      channelId: widget.channelId,
-                      localUid: widget.connectionUid),
+            Material(
+              child: InkWell(
+                onTap: () {
+                  widget.onSelectedUser!(key);
+                },
+                child: SizedBox(
+                  width: 150,
+                  height: 150,
+                  child: AgoraVideoView(
+                    controller: VideoViewController.remote(
+                      rtcEngine: widget.rtcEngine,
+                      canvas: VideoCanvas(uid: key),
+                      connection: RtcConnection(
+                          channelId: widget.channelId,
+                          localUid: widget.connectionUid),
+                    ),
+                  ),
                 ),
               ),
             ),

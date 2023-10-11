@@ -10,6 +10,7 @@ import 'package:restaurant_manager_app/services/notification_mobile.dart';
 import 'package:restaurant_manager_app/services/notification_window.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
@@ -19,7 +20,6 @@ import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
 
-import '../forgot_pass/forgot_pass_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -284,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            const ForgotPasswordScreen()),
+                                                            const SendEmailScreen()),
                                                   );
                                                 },
                                                 child: const Text(

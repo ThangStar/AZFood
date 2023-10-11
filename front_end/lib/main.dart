@@ -17,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
@@ -25,7 +26,6 @@ import 'package:restaurant_manager_app/ui/screens/video_call/examples/basic/inde
 import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
-
 
 late List<CameraDescription> cameras;
 
@@ -55,7 +55,7 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   static final ValueNotifier<ThemeMode> themeNotifier =
-  ValueNotifier(ThemeMode.light);
+      ValueNotifier(ThemeMode.light);
 
   const MyApp({Key? key}) : super(key: key);
 
@@ -65,11 +65,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _showPerformanceOverlay = false;
+
   @override
   void initState() {
     MySharePreferences.getIsDarkTheme().then((value) {
       MyApp.themeNotifier.value =
-      value ?? false ? ThemeMode.dark : ThemeMode.light;
+          value ?? false ? ThemeMode.dark : ThemeMode.light;
     });
     super.initState();
   }
@@ -104,14 +105,18 @@ class _MyAppState extends State<MyApp> {
                 ),
                 BlocProvider(
                   create: (context) => CalendarBloc(),
-                ), BlocProvider(
+                ),
+                BlocProvider(
                   create: (context) => ForgotPasswordBloc(),
                 ),
                 BlocProvider(
                   create: (context) => ForgotPasswordBloc(),
                 ),
-                  BlocProvider(
+                BlocProvider(
                   create: (context) => ProfileBloc(),
+                ),
+                BlocProvider(
+                  create: (context) => VideoCallBloc(),
                 ),
               ],
               child: CalendarControllerProvider(

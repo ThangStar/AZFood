@@ -5,8 +5,9 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/config/agora.config.dart'
-as config;
+    as config;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +18,7 @@ import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/s
 import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/voice_changer/voice_changer.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import '../../../../../../utils/dio.dart';
+import '../../../../../blocs/video_call/video_call_bloc.dart';
 import '../../../components/example_actions_widget.dart';
 import '../../../components/log_sink.dart';
 import '../../../components/remote_video_views_widget.dart';
@@ -36,9 +38,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   late final RtcEngineEx _engine;
   bool _isReadyPreview = false;
 
-  bool isJoined = false,
-      switchCamera = true,
-      switchRender = true;
+  bool isJoined = false, switchCamera = true, switchRender = true;
   late TextEditingController _controller;
   bool _isEnabledVirtualBackgroundImage = false;
 
@@ -46,10 +46,12 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   late final TextEditingController _localUidController;
   late final TextEditingController _screenShareUidController;
   bool _isScreenShared = false;
+  late VideoCallBloc videoCallBloc;
 
   @override
   void initState() {
     super.initState();
+    videoCallBloc = BlocProvider.of<VideoCallBloc>(context);
     _controller = TextEditingController(text: config.channelId);
     _screenShareUidController = TextEditingController(text: '1001');
     _initEngine();
@@ -58,6 +60,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   @override
   void dispose() {
     super.dispose();
+    videoCallBloc.add(ResetUidSelected());
     _engine.release();
   }
 
@@ -75,7 +78,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
         clientRoleType: ClientRoleType.clientRoleBroadcaster,
       ),
       connection:
-      RtcConnection(channelId: _controller.text, localUid: shareShareUid),
+          RtcConnection(channelId: _controller.text, localUid: shareShareUid),
     );
   }
 
@@ -91,16 +94,14 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
       },
       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
         logSink.log(
-            '[onJoinChannelSuccess] connection: ${connection
-                .toJson()} elapsed: $elapsed');
+            '[onJoinChannelSuccess] connection: ${connection.toJson()} elapsed: $elapsed');
         setState(() {
           isJoined = true;
         });
       },
       onLeaveChannel: (RtcConnection connection, RtcStats stats) {
         logSink.log(
-            '[onLeaveChannel] connection: ${connection.toJson()} stats: ${stats
-                .toJson()}');
+            '[onLeaveChannel] connection: ${connection.toJson()} stats: ${stats.toJson()}');
         setState(() {
           isJoined = false;
         });
@@ -121,12 +122,10 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   Future<void> _enableVirtualBackground(String source) async {
     ByteData data = await rootBundle.load(source);
     List<int> bytes =
-    data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
-    String p = path.join(appDocDir.path, "${source
-        .split("/")
-        .last}");
+    String p = path.join(appDocDir.path, "${source.split("/").last}");
     final file = File(p);
     if (!(await file.exists())) {
       await file.create();
@@ -139,7 +138,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
             backgroundSourceType: BackgroundSourceType.backgroundImg,
             source: p),
         segproperty:
-        const SegmentationProperty(modelType: SegModelType.segModelAi));
+            const SegmentationProperty(modelType: SegModelType.segModelAi));
   }
 
   void _joinChannel() async {
@@ -154,9 +153,9 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
       print("LỖIs $err");
     }
     await _engine.joinChannel(
-        token: config.token,
-        channelId: _controller.text,
-        uid: config.uid,
+        token: token,
+        channelId: "a",
+        uid: ran,
         options: const ChannelMediaOptions());
     await Future.delayed(2.seconds);
     setState(() {
@@ -174,55 +173,121 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   bool isPitched = false;
   bool muted = false;
   bool loading = true;
+  int uidSelected = 0;
 
   @override
   Widget build(BuildContext context) {
     return ExampleActionsWidget(
       displayContentBuilder: (context, isLayoutHorizontal) {
         if (!_isReadyPreview) return Container();
-        return Stack(
-          children: [
-            loading
-                ? Align(
-              alignment: Alignment.center,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FittedBox(
-                      child: Text(
-                        "🌎",
-                        style: TextStyle(fontSize: 100),
-                      )
-                          .animate(
-                        onComplete: (controller) =>
-                            controller.repeat(),
-                      )
-                          .rotate(duration: 1.seconds)),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Đang kết nối cuộc gọi..",
-                    style: TextStyle(fontSize: 24),
-                  )
-                ],
+        return Container(
+          color: colorScheme(context).background,
+          child: Stack(
+            children: [
+              BlocBuilder<VideoCallBloc, VideoCallState>(
+                builder: (context, state) {
+                  return state.uidSelected != 0 &&
+                          state.counterSelected % 2 == 0
+                      ? AgoraVideoView(
+                          controller: VideoViewController.remote(
+                            rtcEngine: _engine,
+                            canvas: VideoCanvas(uid: state.uidSelected),
+                            connection: RtcConnection(
+                              channelId: channelId,
+                            ),
+                          ),
+                        )
+                  // ? Text("COUNTER: ${state.counterSelected}")
+                      : state.uidSelected != 0 && state.counterSelected % 2 != 0
+                          ? Stack(
+                            children: [
+                              AgoraVideoView(
+                                  controller: VideoViewController.remote(
+                                    rtcEngine: _engine,
+                                    canvas: VideoCanvas(uid: state.uidSelected),
+                                    connection: RtcConnection(
+                                      channelId: channelId,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          )
+                          : loading
+                              ? const SizedBox.shrink()
+                              : Center(
+                                  child: Container(
+                                    padding: EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme(context)
+                                          .scrim
+                                          .withOpacity(0.6),
+                                      border: Border.all(
+                                          width: 2,
+                                          color: colorScheme(context).tertiary),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: SizedBox.square(
+                                        child: Image.asset(
+                                      'assets/images/chicken.png',
+                                      fit: BoxFit.contain,
+                                    )),
+                                  ),
+                                );
+                },
               ),
-            )
-                : AgoraVideoView(
-                controller: VideoViewController(
-                  rtcEngine: _engine,
-                  canvas: const VideoCanvas(uid: 0),
-                )),
-            Align(
-              alignment: Alignment.topLeft,
-              child: RemoteVideoViewsWidget(
-                key: keepRemoteVideoViewsKey,
-                rtcEngine: _engine,
-                channelId: _controller.text,
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: RemoteVideoViewsWidget(
+                    key: keepRemoteVideoViewsKey,
+                    rtcEngine: _engine,
+                    channelId: _controller.text,
+                    onSelectedUser: (int uid) {
+                      context
+                          .read<VideoCallBloc>()
+                          .add(OnChangeUidSelected(uidSelected: uid));
+                    }),
               ),
-            ),
-          ],
+              loading
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FittedBox(
+                              child: const Text(
+                            "🌎",
+                            style: TextStyle(fontSize: 100),
+                          )
+                                  .animate(
+                                    onComplete: (controller) =>
+                                        controller.repeat(),
+                                  )
+                                  .rotate(duration: 1.seconds)),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            "Đang kết nối cuộc gọi..",
+                            style: TextStyle(fontSize: 24),
+                          )
+                        ],
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.topRight,
+                      child: SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: AgoraVideoView(
+                            controller: VideoViewController(
+                          rtcEngine: _engine,
+                          canvas: const VideoCanvas(uid: 0),
+                        )),
+                      ),
+                    ),
+            ],
+          ),
         );
       },
       actionsBuilder: (context, isLayoutHorizontal) {
@@ -241,10 +306,10 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                         fontSize: 18,
                         color: colorScheme(context).scrim.withOpacity(0.7)),
                     children: [
-                      TextSpan(
-                          text: "AZFood",
-                          style: TextStyle(fontWeight: FontWeight.w500)),
-                    ])),
+                  TextSpan(
+                      text: "AZFood",
+                      style: TextStyle(fontWeight: FontWeight.w500)),
+                ])),
             SizedBox(
               height: 24,
             ),
@@ -264,14 +329,13 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
               height: 300,
               child: ListView.separated(
                 itemCount: 12,
-                itemBuilder: (context, index) =>
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage('assets/images/avatar.jpg'),
-                      ),
-                      title: Text("${index + 1}. Nông Văn Thắng"),
-                      subtitle: Text("Nhân viên"),
-                    ),
+                itemBuilder: (context, index) => ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/images/avatar.jpg'),
+                  ),
+                  title: Text("${index + 1}. Nông Văn Thắng"),
+                  subtitle: Text("Nhân viên"),
+                ),
                 separatorBuilder: (BuildContext context, int index) =>
                     Divider(),
               ),
@@ -298,16 +362,15 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                         onPressed: () {
                           showDialog(
                               context: context,
-                              builder: (context) =>
-                                  Dialog(
+                              builder: (context) => Dialog(
                                     backgroundColor: Colors.transparent,
                                     surfaceTintColor: Colors.transparent,
                                     child: SizedBox(
                                       width: 100,
                                       child: GridView(
                                         gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2),
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 2),
                                         children: [
                                           GestureDetector(
                                               onTap: () {
@@ -315,7 +378,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                                                 if (isJoined) {
                                                   setState(() {
                                                     _isEnabledVirtualBackgroundImage =
-                                                    false;
+                                                        false;
                                                   });
                                                   _enableVirtualBackground(
                                                       "assets/images/bg_app_bar.jpg");
@@ -339,7 +402,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                                               if (isJoined) {
                                                 setState(() {
                                                   _isEnabledVirtualBackgroundImage =
-                                                  true;
+                                                      true;
                                                 });
                                                 _enableVirtualBackground(
                                                     "assets/images/bg_app_bar.jpg");
@@ -359,7 +422,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                                               if (isJoined) {
                                                 setState(() {
                                                   _isEnabledVirtualBackgroundImage =
-                                                  false;
+                                                      false;
                                                 });
                                                 _enableVirtualBackground(
                                                     "assets/images/background.jpg");
@@ -379,7 +442,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                                               if (isJoined) {
                                                 setState(() {
                                                   _isEnabledVirtualBackgroundImage =
-                                                  true;
+                                                      true;
                                                 });
                                                 _enableVirtualBackground(
                                                     "assets/images/bg_meet_1.png");
@@ -399,7 +462,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                                               if (isJoined) {
                                                 setState(() {
                                                   _isEnabledVirtualBackgroundImage =
-                                                  true;
+                                                      true;
                                                 });
                                                 _enableVirtualBackground(
                                                     "assets/images/bg_meet_2.jpg");
@@ -419,7 +482,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                                               if (isJoined) {
                                                 setState(() {
                                                   _isEnabledVirtualBackgroundImage =
-                                                  true;
+                                                      true;
                                                 });
                                                 _enableVirtualBackground(
                                                     "assets/images/bg_meet_3.jpg");
@@ -436,7 +499,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                       color: Colors.white,
                       style: ButtonStyle(
                           backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey)),
+                              MaterialStatePropertyAll(Colors.grey)),
                       onPressed: () {},
                       // startScreenShare ,
                       // Navigator.push(
@@ -481,7 +544,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                       color: Colors.white,
                       style: ButtonStyle(
                           backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey)),
+                              MaterialStatePropertyAll(Colors.grey)),
                       onPressed: () async {
                         //face detection
                         await _engine.enableFaceDetection(true);
@@ -493,7 +556,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
                         color: Colors.white,
                         style: ButtonStyle(
                             backgroundColor:
-                            MaterialStatePropertyAll(Colors.red)),
+                                MaterialStatePropertyAll(Colors.red)),
                         // onPressed: isJoined ? _leaveChannel : _joinChannel,
                         onPressed: () => Navigator.pop(context),
                         icon: Icon(Icons.call_end)),
@@ -536,11 +599,12 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
 }
 
 class ScreenShareMobile extends StatefulWidget {
-  const ScreenShareMobile({Key? key,
-    required this.rtcEngine,
-    required this.isScreenShared,
-    required this.onStartScreenShared,
-    required this.onStopScreenShare})
+  const ScreenShareMobile(
+      {Key? key,
+      required this.rtcEngine,
+      required this.isScreenShared,
+      required this.onStartScreenShared,
+      required this.onStopScreenShare})
       : super(key: key);
 
   final RtcEngine rtcEngine;
@@ -555,7 +619,7 @@ class ScreenShareMobile extends StatefulWidget {
 class _ScreenShareMobileState extends State<ScreenShareMobile>
     implements ScreenShareInterface {
   final MethodChannel _iosScreenShareChannel =
-  const MethodChannel('example_screensharing_ios');
+      const MethodChannel('example_screensharing_ios');
 
   @override
   bool get isScreenShared => widget.isScreenShared;
@@ -618,11 +682,12 @@ class _ScreenShareMobileState extends State<ScreenShareMobile>
 }
 
 class ScreenShareDesktop extends StatefulWidget {
-  const ScreenShareDesktop({Key? key,
-    required this.rtcEngine,
-    required this.isScreenShared,
-    required this.onStartScreenShared,
-    required this.onStopScreenShare})
+  const ScreenShareDesktop(
+      {Key? key,
+      required this.rtcEngine,
+      required this.isScreenShared,
+      required this.onStartScreenShared,
+      required this.onStopScreenShare})
       : super(key: key);
 
   final RtcEngine rtcEngine;
@@ -710,10 +775,10 @@ class _ScreenShareDesktopState extends State<ScreenShareDesktop>
         onChanged: isScreenShared
             ? null
             : (v) {
-          setState(() {
-            _selectedScreenCaptureSourceInfo = v!;
-          });
-        });
+                setState(() {
+                  _selectedScreenCaptureSourceInfo = v!;
+                });
+              });
   }
 
   @override
@@ -739,7 +804,7 @@ class _ScreenShareDesktopState extends State<ScreenShareDesktop>
                 child: ElevatedButton(
                   onPressed: startScreenShare,
                   child:
-                  Text('${isScreenShared ? 'Stop' : 'Start'} screen share'),
+                      Text('${isScreenShared ? 'Stop' : 'Start'} screen share'),
                 ),
               )
             ],

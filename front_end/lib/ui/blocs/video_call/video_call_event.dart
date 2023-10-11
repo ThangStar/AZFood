@@ -13,5 +13,7 @@ class OnChangeUidSelected extends VideoCallEvent {
   OnChangeUidSelected({required this.uidSelected});
 }
 class ResetUidSelected extends VideoCallEvent{
+}
+class IncrementCounter extends VideoCallEvent{
 
 }

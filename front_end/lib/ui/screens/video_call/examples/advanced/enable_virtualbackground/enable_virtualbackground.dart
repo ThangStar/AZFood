@@ -180,81 +180,114 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     return ExampleActionsWidget(
       displayContentBuilder: (context, isLayoutHorizontal) {
         if (!_isReadyPreview) return Container();
-        return Stack(
-          children: [
-            BlocBuilder<VideoCallBloc, VideoCallState>(
-              buildWhen: (previous, current) {
-                print(previous.uidSelected);
-                print(current.uidSelected);
-                return true;
-              },
-              builder: (context, state) {
-                return state.uidSelected != 0
-                    ? AgoraVideoView(
-                  controller: VideoViewController.remote(
+        return Container(
+          color: colorScheme(context).background,
+          child: Stack(
+            children: [
+              BlocBuilder<VideoCallBloc, VideoCallState>(
+                builder: (context, state) {
+                  return state.uidSelected != 0 &&
+                          state.counterSelected % 2 == 0
+                      ? AgoraVideoView(
+                          controller: VideoViewController.remote(
+                            rtcEngine: _engine,
+                            canvas: VideoCanvas(uid: state.uidSelected),
+                            connection: RtcConnection(
+                              channelId: channelId,
+                            ),
+                          ),
+                        )
+                  // ? Text("COUNTER: ${state.counterSelected}")
+                      : state.uidSelected != 0 && state.counterSelected % 2 != 0
+                          ? Stack(
+                            children: [
+                              AgoraVideoView(
+                                  controller: VideoViewController.remote(
+                                    rtcEngine: _engine,
+                                    canvas: VideoCanvas(uid: state.uidSelected),
+                                    connection: RtcConnection(
+                                      channelId: channelId,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          )
+                          : loading
+                              ? const SizedBox.shrink()
+                              : Center(
+                                  child: Container(
+                                    padding: EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme(context)
+                                          .scrim
+                                          .withOpacity(0.6),
+                                      border: Border.all(
+                                          width: 2,
+                                          color: colorScheme(context).tertiary),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: SizedBox.square(
+                                        child: Image.asset(
+                                      'assets/images/chicken.png',
+                                      fit: BoxFit.contain,
+                                    )),
+                                  ),
+                                );
+                },
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: RemoteVideoViewsWidget(
+                    key: keepRemoteVideoViewsKey,
                     rtcEngine: _engine,
-                    canvas: VideoCanvas(uid: state.uidSelected),
-                    connection: RtcConnection(
-                      channelId: channelId,
+                    channelId: _controller.text,
+                    onSelectedUser: (int uid) {
+                      context
+                          .read<VideoCallBloc>()
+                          .add(OnChangeUidSelected(uidSelected: uid));
+                    }),
+              ),
+              loading
+                  ? Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FittedBox(
+                              child: const Text(
+                            "🌎",
+                            style: TextStyle(fontSize: 100),
+                          )
+                                  .animate(
+                                    onComplete: (controller) =>
+                                        controller.repeat(),
+                                  )
+                                  .rotate(duration: 1.seconds)),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            "Đang kết nối cuộc gọi..",
+                            style: TextStyle(fontSize: 24),
+                          )
+                        ],
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.topRight,
+                      child: SizedBox(
+                        width: 150,
+                        height: 150,
+                        child: AgoraVideoView(
+                            controller: VideoViewController(
+                          rtcEngine: _engine,
+                          canvas: const VideoCanvas(uid: 0),
+                        )),
+                      ),
                     ),
-                  ),
-                )
-                // ? Text("${state.uidSelected}", style: TextStyle(color: Colors.red, fontSize: 100))
-                    : Text("NO SELECTOR", style: TextStyle(color: Colors.red, fontSize: 100),);
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: RemoteVideoViewsWidget(
-                  key: keepRemoteVideoViewsKey,
-                  rtcEngine: _engine,
-                  channelId: _controller.text,
-                  onSelectedUser: (int uid) {
-                    context
-                        .read<VideoCallBloc>()
-                        .add(OnChangeUidSelected(uidSelected: uid));
-                  }),
-            ),
-            loading
-                ? Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        FittedBox(
-                            child: const Text(
-                          "🌎",
-                          style: TextStyle(fontSize: 100),
-                        )
-                                .animate(
-                                  onComplete: (controller) =>
-                                      controller.repeat(),
-                                )
-                                .rotate(duration: 1.seconds)),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          "Đang kết nối cuộc gọi..",
-                          style: TextStyle(fontSize: 24),
-                        )
-                      ],
-                    ),
-                  )
-                : Align(
-                    alignment: Alignment.topRight,
-                    child: SizedBox(
-                      width: 150,
-                      height: 150,
-                      child: AgoraVideoView(
-                          controller: VideoViewController(
-                        rtcEngine: _engine,
-                        canvas: const VideoCanvas(uid: 0),
-                      )),
-                    ),
-                  ),
-          ],
+            ],
+          ),
         );
       },
       actionsBuilder: (context, isLayoutHorizontal) {

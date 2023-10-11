@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
 typedef ExampleActionsBuilder = Widget Function(
     BuildContext context, bool isLayoutHorizontal);
@@ -33,37 +34,40 @@ class ExampleActionsWidget extends StatelessWidget {
     );
 
     if (isLayoutHorizontal) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Expanded(
-            flex: 1,
-            child: SingleChildScrollView(
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    actionsTitle,
-                    actionsBuilder!(context, isLayoutHorizontal),
-                  ],
+      return Container(
+        color: colorScheme(context).background,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              flex: 1,
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      actionsTitle,
+                      actionsBuilder!(context, isLayoutHorizontal),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            color: Colors.grey.shade100,
-            width: 20,
-          ),
-          Expanded(
-            flex: 2,
-            child: displayContentBuilder(context, isLayoutHorizontal),
-          ),
-        ],
+            Container(
+              color: colorScheme(context).scrim.withOpacity(0.1),
+              width: 2,
+            ),
+            Expanded(
+              flex: 2,
+              child: displayContentBuilder(context, isLayoutHorizontal),
+            ),
+          ],
+        ),
       );
     }
 

@@ -2,7 +2,7 @@
 import { useState } from "react"
 
 const Messenger = () => {
-    const [showChat, setShowChat] = useState(false)
+    const [showChat, setShowChat] = useState(true)
     const [message, setMessage] = useState('')
     const [showBtnSend, setShowBtnSend] = useState(false)
     const listMessages: any[] = data

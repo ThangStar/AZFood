@@ -6,30 +6,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEvenueMonthList, getEvenueMonthListAsync } from "@/redux-store/evenue-reducer/evenueSlice";
 import { Line } from 'react-chartjs-2';
 
-const reportDay = () => {
+const reportDay = (selectMonth: any) => {
     const dispatch: AppDispatch = useDispatch();
     const evenueList: any = useSelector(getEvenueMonthList);
     const [evenueMonthList, setEevenueMonthList] = useState<any[]>([]);
     const chartRef = useRef<HTMLCanvasElement | null>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
+    const month = selectMonth.selectedYear;
     useEffect(() => {
         if (evenueList && evenueList.result) {
             setEevenueMonthList(evenueList.result);
         }
 
     }, [evenueList]);
-    console.log("currentMonth ", currentMonth);
 
     useEffect(() => {
-        dispatch(getEvenueMonthListAsync(currentMonth));
-    }, [dispatch]);
+        dispatch(getEvenueMonthListAsync(month));
+    }, [dispatch, month]);
 
     useEffect(() => {
         const canvas = chartRef.current;
-        console.log("evenueMonthList", evenueMonthList);
-
-
         if (canvas) {
             const ctx = canvas.getContext('2d');
 
@@ -64,7 +61,6 @@ const reportDay = () => {
                         },
                     });
                 } else {
-                    // Update the chart data and options
                     chartInstanceRef.current.data = data;
                     chartInstanceRef.current.options = {
                         responsive: true,
@@ -76,13 +72,14 @@ const reportDay = () => {
                         },
                     };
 
-                    // Update the chart
                     chartInstanceRef.current.update();
                 }
 
             }
         }
     }, [evenueMonthList]);
+    console.log("selectMonth ", selectMonth);
+    console.log("evenueMonthList ", evenueMonthList);
 
 
     return (
@@ -104,7 +101,7 @@ const reportDay = () => {
                     </div>
                     <div className="card-footer bg-transparent" style={{ justifyContent: "center", alignSelf: "center" }}>
 
-                        <h3>Doanh thu theo tháng trong năm 2023</h3>
+                        <h3>Doanh thu trong tháng {month} trong năm 2023 </h3>
 
                     </div>
                 </div>

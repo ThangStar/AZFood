@@ -86,8 +86,8 @@ exports.getRevenueMonth = async (req, res) => {
         return res.status(401).send('You are not logged in');
     }
 
-    const month = req.query.month; // Tháng được truyền vào
-
+    const month = req.query.month;
+    console.log("month ", month);
     try {
         const queryRaw = `
         SELECT 
@@ -109,7 +109,7 @@ exports.getRevenueMonth = async (req, res) => {
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
             logging: false,
-            replacements: [8, 2023],
+            replacements: [month, 2023],
             type: QueryTypes.SELECT
         });
 

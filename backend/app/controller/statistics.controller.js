@@ -82,40 +82,45 @@ exports.getRevenueCurrentYear = async (req, res) => {
 exports.getRevenueMonth = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
 
-    if (checkAuth) {
-        try {
-            const currentTime = new Date();
-            const currentYear = currentTime.getFullYear();
+    if (!checkAuth) {
+        return res.status(401).send('You are not logged in');
+    }
 
-            const query = `
-                SELECT 
-                    YEAR(createAt) AS year,
-                    MONTH(createAt) AS month,
-                    SUM(total) AS total_amount
-                FROM 
-                    invoice
-                WHERE 
-                    YEAR(createAt) = :currentYear
-                GROUP BY 
-                    YEAR(createAt), MONTH(createAt)
-                ORDER BY 
-                    YEAR(createAt), MONTH(createAt);
-            `;
+    const month = req.query.month; // Tháng được truyền vào
 
-            const result = await sequelize.query(query, {
-                replacements: { currentYear },
-                type: QueryTypes.SELECT
-            });
+    try {
+        const queryRaw = `
+        SELECT 
+            YEAR(createAt) AS year,
+            MONTH(createAt) AS month,
+            DAY(createAt) AS day,
+            SUM(total) AS total_amount
+        FROM 
+            invoice
+        WHERE 
+            MONTH(createAt) = ?
+            AND YEAR(createAt) = ?
+        GROUP BY 
+            YEAR(createAt), MONTH(createAt), DAY(createAt)
+            ORDER BY
+                DAY(createAt);
+    `;
 
-            if (result.length > 0) {
-                res.status(200).json({ result });
-            } else {
-                res.status(204).send('No data');
-            }
-        } catch (error) {
-            res.status(500).send(error);
+        const resultRaw = await sequelize.query(queryRaw, {
+            raw: true,
+            logging: false,
+            replacements: [8, 2023],
+            type: QueryTypes.SELECT
+        });
+
+        if (resultRaw.length > 0) {
+            return res.status(200).json({ result: resultRaw });
+        } else {
+            return res.status(204).send('No data');
         }
-    } else {
-        res.status(401).send('You are not logged in');
+    } catch (error) {
+        console.log("Lỗi ", error);
+        return res.status(500).send(error.message);
     }
 };
+

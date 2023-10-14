@@ -1,51 +1,18 @@
 'use client'
-import { useSocket } from "@/socket/io.init"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 
 const Messenger = () => {
-    const [showChat, setShowChat] = useState(false)
-    const [userID, setUserID] = useState()
-    const [textMessage, setTextMessage] = useState('')
-    const [typeMessage, setTypeMessage] = useState(1)
-    const [listMessages, setListMessages] = useState([])
+    const [showChat, setShowChat] = useState(true)
+    const [message, setMessage] = useState('')
     const [showBtnSend, setShowBtnSend] = useState(false)
-    const socket = useSocket();
-    const messagesRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const userLocal = localStorage.getItem('user');
-        if (userLocal) {
-            setUserID(JSON.parse(userLocal).userID);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (socket) {
-            socket.emit('client-msg-init-group');
-            socket.on('sever-msg-init-group', (data) => {
-                if (data !== 'error') {
-                    setListMessages(data);
-                }
-            })
-        }
-    }, [socket]);
-
-    useEffect(() => {
-        ScrollToBottom()
-    }, [listMessages]);
-
+    const listMessages: any[] = data
     const onToggleChat = () => {
         setShowChat(!showChat)
     }
 
-    const ScrollToBottom = () => {
-        if (messagesRef.current) {
-            messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-        }
-    }
 
     const onChangeMessage = (text: any) => {
-        setTextMessage(text)
+        setMessage(text)
         if (text.trim().length > 0) {
             setShowBtnSend(true)
         } else {
@@ -53,67 +20,54 @@ const Messenger = () => {
         }
     }
 
-    const createMessage = () => {
-        console.log(userID)
-        const data = {
-            type: typeMessage,
-            message: textMessage,
-            raw: null,
-            imageUrl: null,
-            sendBy: userID,
-        }
-        socket?.emit('client-msg-group', data)
-        setTextMessage('')
-    }
-
     return (
         <div className="position-fixed bottom-0 end-0 m-4 " style={{ zIndex: 3000 }}>
-            {!showChat ?
+            {showChat ?
                 <button className="btn btn-lg btn-primary rounded-pill shadow-lg" onClick={() => onToggleChat()}>
-                    <i className="fas fa-comment-dots"></i>
+                    Tin nhắn
                 </button>
                 :
-                <div className="shadow bg-white d-flex flex-column" style={{ width: 400, maxHeight: 600 }}>
+                <div className="shadow bg-white d-flex flex-column" style={{ width: 350, height: 500 }}>
                     <div className="px-3 py-2 d-flex justify-content-between align-items-center border-bottom">
                         <div className="h4">Tin nhắn ...</div>
                         <button className="btn" onClick={() => onToggleChat()}>
-                            <i className="fas fa-times"></i>
+                            <i className="">ẩn</i>
                         </button>
                     </div>
 
-                    <div ref={messagesRef} className="px-3 pt-2 pb-1 flex-grow-1" style={{ overflow: "auto" }}>
-                        {listMessages && listMessages.length > 0 ?
-                            listMessages.map((message, i) => (<ItemMessage item={message} key={i} userID={userID} />))
-                            :
-                            <div>Trống</div>
+                    <div className="px-3 pt-2 pb-1 flex-grow-1" style={{ overflowY: "scroll" }}>
+                        {listMessages && listMessages.length > 0 &&
+                            data.map(message => (<ItemMessage item={message} />))
                         }
                     </div>
 
-                    <div className="border-top d-flex p-2 align-items-center">
-                        <div className="flex-grow-1">
-                            <input type="text" className="form-control" placeholder="Nhập tin nhắn..." value={textMessage} onChange={(e) => onChangeMessage(e.target.value)} />
-                        </div>
-                        <div className="flex-grow-0 ms-2">
-                            <button className={`btn btn-primary ${!showBtnSend && 'disabled'}`} onClick={() => createMessage()}>
-                                <i className="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
+                    <div className="border-top">
+                        <form className="d-flex p-2 align-items-center">
+                            <div className="flex-grow-1">
+                                <input type="text" className="form-control" placeholder="Nhập tin nhắn..." value={message} onChange={(e) => onChangeMessage(e.target.value)} />
+                            </div>
+                            <div className="flex-grow-0 ms-2">
+                                <button type="submit" className={`btn btn-primary ${!showBtnSend && 'disabled'}`}>Gửi</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             }
+
         </div>
     )
 }
 
 const ItemMessage = (props: any) => {
-    const { item, userID } = props
-    const isSender = item?.sendBy === userID
+    const { item } = props
+    const user = 6
+    const isSender = item?.sendBy === user
     return (
         <div className="row justify-content-between pb-2">
             {!isSender ?
                 <>
                     <div className="col-9" title={item?.dateTime}>
-                        <div style={{ fontSize: 12 }}>{item?.profile.name}</div>
+                        <div style={{ fontSize: 12 }}>Người gửi {item?.sendBy}</div>
                         <div className="px-2 py-1 bg-secondary rounded-3 float-start">
                             {item?.message}
                         </div>
@@ -135,3 +89,15 @@ const ItemMessage = (props: any) => {
 }
 
 export default Messenger
+
+const data = [
+    { id: 1, type: 1, message: 'Tin nhắn 1', sendBy: 1, dateTime: '2023-02-10T12:30:00' },
+    { id: 2, type: 1, message: 'Tin nhắn 2', sendBy: 2, dateTime: '2023-02-10T12:30:00' },
+    { id: 3, type: 1, message: 'Tin nhắn 3', sendBy: 3, dateTime: '2023-02-10T12:30:00' },
+    { id: 4, type: 1, message: 'Tin nhắn 4', sendBy: 4, dateTime: '2023-02-10T12:30:00' },
+    { id: 5, type: 1, message: 'Tin nhắn 5', sendBy: 5, dateTime: '2023-02-10T12:30:00' },
+    { id: 6, type: 1, message: 'Tin nhắn 6', sendBy: 6, dateTime: '2023-02-10T12:30:00' },
+    { id: 7, type: 1, message: 'Tin nhắn 7', sendBy: 7, dateTime: '2023-02-10T12:30:00' },
+    { id: 8, type: 1, message: 'Tin nhắn 8', sendBy: 8, dateTime: '2023-02-10T12:30:00' },
+    { id: 9, type: 1, message: 'Tin nhắn 9', sendBy: 9, dateTime: '2023-02-10T12:30:00' },
+]; 

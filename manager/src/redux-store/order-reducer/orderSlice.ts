@@ -33,8 +33,6 @@ export const updateOrderAsync = createAsyncThunk(
   'order/update',
   async ({ data, orderID }: { data: any; orderID: any }) => {
     const { userID, tableID, productID, quantity } = data;
-    console.log("data redux :", data);
-    console.log("orderID redux :", orderID);
 
     const token = localStorage.getItem('token');
     const response = await axios.post(serverUrl + '/api/orders/update', { orderID, userID, tableID, productID, quantity }, {

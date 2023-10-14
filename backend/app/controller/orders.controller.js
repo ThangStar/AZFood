@@ -265,7 +265,7 @@ exports.getOrdersForTable = async (req, res) => {
         if (isAuth) {
             const getOrdersQuery = `
             SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
-             oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
+             oi.quantity, oi.subTotal , p.category , p.price , u.name As userName ,u.id As userID
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id
@@ -325,7 +325,7 @@ exports.payBill = async (req, res) => {
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
-                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, o.totalAmount , o.id
+                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, u.id AS userID, o.totalAmount , o.id
                 FROM orders o
                 INNER JOIN orderItems oi ON o.id = oi.orderID
                 INNER JOIN products p ON oi.productID = p.id
@@ -347,18 +347,17 @@ exports.payBill = async (req, res) => {
                 totalInvoiceAmount += detail.totalAmount;
                 idOder = detail.id
             }
-
             // Lưu thông tin hoá đơn vào bảng invoice
 
             const createInvoiceQuery = `
-                INSERT INTO invoice (tableID,total, createAt, userName, invoiceNumber )
-                VALUES (?, ?, ? , ?,?)
+            INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber )
+            VALUES (?, ?, ?,? , ?,?)
             `;
             const invoiceNumber = getInvoiceNumber();
             const invoiceResult = await sequelize.query(createInvoiceQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, invoiceNumber],
+                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, billDetails[0].userID, invoiceNumber],
                 type: QueryTypes.INSERT
             });
 
@@ -412,6 +411,7 @@ exports.payBill = async (req, res) => {
             res.status(200).json({ message: 'Bill paid successfully', invoiceID });
         } catch (error) {
             res.status(500).json({ message: 'Error paying bill', error: error.message });
+            console.log(" lỗi : ", error);
         }
     } else {
         res.status(403).json({ message: 'Unauthorized' });

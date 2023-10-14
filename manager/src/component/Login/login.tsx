@@ -50,7 +50,7 @@ const Login = () => {
                 </div>
                 <div className="card">
                     <div className="card-body login-card-body">
-                        <p className="login-box-msg">Đăng nhập để sửa dụng hệ thống</p>
+                        <p className="login-box-msg">Đăng nhập để sử dụng hệ thống</p>
 
                         <div>
                             <div className="input-group mb-3">
@@ -88,7 +88,7 @@ const Login = () => {
 
                                 <div className="col-12">
                                     <button type="submit" className="btn btn-primary btn-block" onClick={handleLogin}>
-                                        Đănng nhập
+                                        Đăng nhập
                                     </button>
                                 </div>
                             </div>

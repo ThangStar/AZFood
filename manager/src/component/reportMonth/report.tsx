@@ -20,7 +20,6 @@ const reportMonth = () => {
         }
 
     }, [evenueList]);
-
     useEffect(() => {
         dispatch(getEvenueListAsync());
     }, [dispatch]);

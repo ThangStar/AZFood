@@ -19,11 +19,7 @@ import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
-import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/index.dart';
-import 'package:restaurant_manager_app/ui/screens/video_call/examples/basic/index.dart';
-import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/info/test.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 

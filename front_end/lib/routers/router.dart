@@ -3,7 +3,7 @@ class Router {
   static String login = "/api/user/login";
   static String register = "/register";
   static String profileDetail = "/api/user/details";
-  static String updatePassword = "/api/user/change";
+ 
 
   //product
   static String listProduct = "/api/products/list";
@@ -28,4 +28,7 @@ class Router {
   static String sendEmail = '/api/auth/checkAndSendOtpToEmail';
   static String verifyOtp = '/api/auth/verifyOtpFromUser';
   static String resetPass = '/api/auth/resetPassword';
+  //profile
+  static String updatePassword = "/api/user/change";
+  static String updateProfile = "/api/user/updateinfo";
 }

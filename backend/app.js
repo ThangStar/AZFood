@@ -5,8 +5,14 @@ const session = require('express-session');
 const cors = require('cors');
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+});
 app.io = io;
+
 
 app.use(cors());
 app.use(bodyParser.json({ limit: "50mb" }));

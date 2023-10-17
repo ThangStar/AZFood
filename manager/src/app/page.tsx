@@ -1,94 +1,28 @@
-"use client"
-import { useEffect, useRef, useState } from "react";
-import Chart from 'chart.js/auto';
-import { AppDispatch } from "@/redux-store/store";
-import { useDispatch, useSelector } from "react-redux";
-import { getEvenueList, getEvenueListAsync } from "@/redux-store/evenue-reducer/evenueSlice";
-import { Line } from 'react-chartjs-2';
+'use client'
+import { useEffect, useState } from 'react';
+import ReportMonth from '../component/reportMonth/report'
+import ReportDay from '../component/reportDay/report'
+
 
 export default function Home() {
-  const dispatch: AppDispatch = useDispatch();
-  const evenueList: any = useSelector(getEvenueList);
-
   const [optionsChart, setOptionsChart] = useState("");
-  // const [month, setMonth] = useState<any[]>([]);
-  // const [totalAmout, setTotalAmout] = useState<any[]>([]);
-  const [evenueYearList, setEevenueYearList] = useState<any[]>([]);
-  const chartRef = useRef<HTMLCanvasElement | null>(null);
-  const chartInstanceRef = useRef<Chart | null>(null);
-  useEffect(() => {
-    if (evenueList && evenueList.result) {
-      setEevenueYearList(evenueList.result);
-    }
-
-  }, [evenueList]);
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [currentMonth, setCurrentMonth] = useState<number>()
 
   useEffect(() => {
-    dispatch(getEvenueListAsync());
-  }, [dispatch]);
-
-  useEffect(() => {
-    const canvas = chartRef.current;
-
-
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-
-      if (ctx) {
-        const month = evenueYearList.map(item => `Tháng ${item.month}`);
-        const totalAmount = evenueYearList.map(item => item.total_amount);
-
-        const data = {
-          labels: month,
-          datasets: [
-            {
-              label: 'Tổng tiền',
-              data: totalAmount,
-              backgroundColor: 'rgba(57, 204, 204, 0.5)',
-              borderColor: 'rgba(57, 204, 204, 1)',
-              borderWidth: 1,
-            },
-          ],
-        };
-        if (!chartInstanceRef.current) {
-          chartInstanceRef.current = new Chart(ctx, {
-            type: 'line',
-            data: data,
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                },
-              },
-            },
-          });
-        } else {
-          // Update the chart data and options
-          chartInstanceRef.current.data = data;
-          chartInstanceRef.current.options = {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-            },
-          };
-
-          // Update the chart
-          chartInstanceRef.current.update();
-        }
-
-      }
-    }
-  }, [evenueYearList]);
-
-
+    const currentDate = new Date();
+    const getCurrentMonth = currentDate.getMonth() + 1;
+    setCurrentMonth(getCurrentMonth);
+  }, [currentMonth]);
+  const month = [
+    {
+      value: 1, name: 'Tháng 1'
+    }, { value: 2, name: 'Tháng 2' }, { value: 3, name: 'Tháng 3' }, { value: 4, name: 'Tháng 4' }, { value: 5, name: 'Tháng 5' }, { value: 6, name: 'Tháng 6' }
+    , { value: 7, name: 'Tháng 7' }, { value: 8, name: 'Tháng 8' }, { value: 9, name: 'Tháng 9' }, { value: 10, name: 'Tháng 10' }, { value: 11, name: 'Tháng 11' }, { value: 12, name: 'Tháng 12' }
+  ]
+  const years = [2021, 2022, 2023];
   return (
     <div className="main-header card">
-
       <div className="container-fluid">
         <div className="row mb-2">
           <div className="col-sm-6">
@@ -104,39 +38,38 @@ export default function Home() {
                     setOptionsChart(e.target.value);
                   }}
                 >
-                  <option value="day">Ngày</option>
+                  <option value="all" selected>Tổng quát</option>
                   <option value="month">Tháng</option>
-                  <option value="year">Năm</option>
                 </select>
 
 
+
+
+              </div>
+              <div className="card-tools flex items-center" style={{ alignItems: "center" }}>
+
+                {optionsChart === 'month' ? (
+                  <div>
+                    <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+                      <option value="">Chọn tháng</option>
+                      {month.map((item) => (
+                        <option key={item.value} value={item.value}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+
+                  </div>
+                ) : ""}
               </div>
             </ol>
           </div>
         </div>
       </div>
-      <div className="container">
-        <div className="card-header">
+      {optionsChart === 'month' ? <ReportDay selectedYear={selectedMonth as string} /> : <ReportMonth />}
 
-        </div>
-        <div className="card bg-gradient-info">
-          <div className="card-header border-0">
-            <h3 className="card-title">
-              Doanh Thu
-            </h3>
 
-          </div>
-          <div className="card-body">
-            {/* <canvas className="chart" id="line-chart" style={{ minHeight: 250, height: 250, maxHeight: 250, maxWidth: '100%' }} /> */}
-            <canvas className="chart" id="line-chart" ref={chartRef} style={{ minHeight: 250, height: 250, maxHeight: 250, maxWidth: '100%' }} />
-          </div>
-          <div className="card-footer bg-transparent" style={{ justifyContent: "center", alignSelf: "center" }}>
 
-            <h3>Doanh thu theo tháng trong năm 2023</h3>
-
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

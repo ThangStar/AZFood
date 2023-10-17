@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Header = () => {
     return (
-        <div className=" navbar navbar-expand" style={{backgroundColor: '#BAE8E8'}}>
+        <div className=" navbar navbar-expand" style={{backgroundColor: '#BAE8E8', display: 'flex'}}>
             <div className="d-flex" style={{ alignItems: 'center', justifyContent: 'center' }}>
             <img src="img\logo\chicken.png" alt="" style={{height: '40px'}}/>
                 <span className="brand-text fs-4 col-sm-8 fw-bolder" style={{ color: '#272343' }}>AZFOOD</span>

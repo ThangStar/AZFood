@@ -68,9 +68,9 @@ export default function User() {
         }
     }
     return (
-        <>
-            <div className="main-header card" >
-                <div className="card-header">
+
+            <div className="main-header" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
+                <div className="">
                     <div className="container-fluid">
                         <div className="row mb-2">
                             <div className="col-sm-6">
@@ -318,6 +318,5 @@ export default function User() {
                     </ModalFooter>
                 </Modal>
             </div>
-        </>
     )
 }

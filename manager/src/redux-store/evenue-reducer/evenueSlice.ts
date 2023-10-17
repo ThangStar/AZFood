@@ -6,11 +6,13 @@ const serverUrl = "http://localhost:8080";
 
 export interface evenueState {
     evenueList: any[];
+    evenueMonthList: any[];
     status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: evenueState = {
     evenueList: [],
+    evenueMonthList: [],
     status: 'idle',
 };
 
@@ -29,7 +31,22 @@ export const getEvenueListAsync = createAsyncThunk(
         return response.data;
     }
 );
+export const getEvenueMonthListAsync = createAsyncThunk(
+    'invoice/get-month',
+    async (month: any) => {
+        const token = localStorage.getItem('token');
 
+        const response = await axios.get(serverUrl + '/api/stats/revenue-month', {
+            params: { month },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        });
+
+        return response.data;
+    }
+);
 const evenueSlice = createSlice({
     name: 'invoice',
     initialState,
@@ -46,11 +63,22 @@ const evenueSlice = createSlice({
             })
             .addCase(getEvenueListAsync.rejected, (state) => {
                 state.status = 'failed';
+            })
+            .addCase(getEvenueMonthListAsync.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(getEvenueMonthListAsync.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.evenueMonthList = action.payload;
+            })
+            .addCase(getEvenueMonthListAsync.rejected, (state) => {
+                state.status = 'failed';
             });
 
     },
 });
 
 export const getEvenueList = (state: RootState) => state.evenueState.evenueList;
+export const getEvenueMonthList = (state: RootState) => state.evenueState.evenueMonthList;
 
 export default evenueSlice.reducer;

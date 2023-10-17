@@ -8,4 +8,5 @@ module.exports = app => {
 
     app.use('/api/stats', [jwt.checkJwt], router);
     app.use('/api/stats/revenue-year', [jwt.checkJwt], stats.getRevenueCurrentYear);
+    app.use('/api/stats/revenue-month', [jwt.checkJwt], stats.getRevenueMonth);
 };

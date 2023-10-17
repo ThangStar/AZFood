@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { showAlert } from '../utils/alert/alert';
 import { useRouter } from 'next/navigation';
+import '../../../public/img/logo/chicken.png'
 
 const Login = () => {
 
@@ -42,61 +43,72 @@ const Login = () => {
     }, [status, jwtToken, userFullname]);
 
     return (
+        <div className="login-screen row" style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: '50px' }}>
+            <div className='box-image col-sm-5' >
+                <img src="/img/login-image.jpg" alt="Hình ảnh" />
+            </div>
+            <div className='box-login col-sm-5'>
+                <div className="card" style={{ padding: '25px', margin: '15px'}}>
+                    <div className="header-form" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div className="logo" style={{ display: 'flex', alignItems: 'center'}}>
+                            <img src="/img/logo/chicken.png" alt="Hình ảnh" style={{ height: '40px' }} />
+                            <h6 style={{ marginLeft: '10px' }}>AZFOOD</h6>
+                        </div>
+                        <h5 className="login-text">
+                            Đăng nhập
+                        </h5>
+                    </div>
 
-        <div className="hold-transition login-page">
-            <div className="login-box">
-                <div className="login-logo">
-                    <a href="../../index2.html"><b>Quản Lý Nhà Hàng </b></a>
-                </div>
-                <div className="card">
-                    <div className="card-body login-card-body">
-                        <p className="login-box-msg">Đăng nhập để sử dụng hệ thống</p>
+                    <div className="line" style={{ borderBottom: '1px solid #C0C0C0', margin: '15px 0 20px 0' }}></div>
 
-                        <div>
-                            <div className="input-group mb-3">
-                                <input
-                                    className="form-control"
-                                    type="text"
-                                    placeholder="username"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                />
-                                <div className="input-group-append">
-                                    <div className="input-group-text">
-                                        <span className="fas fa-user"></span>
-                                    </div>
-                                </div>
+                    <div className="input-group mb-3 mt-2">
+                            <input
+                                className="form-control"
+                                type="text"
+                                placeholder="Tên đăng nhập"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                            />
+                        <div className="input-group-append">
+                            <div className="input-group-text">
+                                <span className="fas fa-user"></span>
                             </div>
-                            <div className="input-group mb-3">
-                                <input
-                                    className="form-control"
-                                    type="password"
-                                    placeholder="Password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                                <div className="input-group-append">
-                                    <div className="input-group-text">
-                                        <span className="fas fa-lock"></span>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                    <div className="input-group mt-2">
+                        <input
+                            className="form-control"
+                            type="password"
+                            placeholder="Mật khẩu"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <div className="input-group-append">
+                            <div className="input-group-text">
+                                <span className="fas fa-lock"></span>
                             </div>
-                            <div className="row">
+                        </div>
+                    </div>
 
+                    <div className="bottom-form" style={{display: 'flex',justifyContent: 'right' }}>
+                        <div style={{ display: 'flex', alignItems: 'center'}}>
+                            <a style={{ fontSize: '14px', color: 'red', padding: '10px 0 20px 0' }}>Quên mật khẩu</a>
+                        </div>
+                    </div>
 
-                                <div className="col-12">
-                                    <button type="submit" className="btn btn-primary btn-block" onClick={handleLogin}>
-                                        Đăng nhập
-                                    </button>
-                                </div>
-                            </div>
+                    <div className="row">
+                        <div className="col-12">
+                            <button type="submit" className="btn btn-primary btn-block" onClick={handleLogin}>
+                                Đăng nhập
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     )
 }
 export default Login;

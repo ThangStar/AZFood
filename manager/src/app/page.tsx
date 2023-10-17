@@ -22,7 +22,7 @@ export default function Home() {
   ]
   const years = [2021, 2022, 2023];
   return (
-    <div className="main-header card">
+    <div className="main-header">
       <div className="container-fluid">
         <div className="row mb-2">
           <div className="col-sm-6">

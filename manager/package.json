@@ -10,6 +10,10 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.13",
+    "@mui/material": "^5.14.13",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/node": "20.4.5",
     "@types/react": "18.2.18",
@@ -17,6 +21,7 @@
     "@types/socket.io-client": "^3.0.0",
     "autoprefixer": "10.4.15",
     "axios": "^1.4.0",
+    "bootstrap-icons": "^1.11.1",
     "chart.js": "^4.4.0",
     "date-fns-tz": "^2.0.0",
     "eslint": "8.47.0",

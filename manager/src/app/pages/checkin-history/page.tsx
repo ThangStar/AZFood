@@ -88,7 +88,7 @@ export default function Home() {
     };
 
     return (
-        <div className="main-header card" style={{ width: '100%', height: '100vh', overflow: 'auto' }}>
+        <div className="main-header card" style={{overflow: 'auto' }}>
             <div className="card">
                 <div className="card-header">
                     <h3 className="card-title">Lịch sử check in</h3>

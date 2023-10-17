@@ -1,22 +1,12 @@
 import Link from "next/link";
 
-
 const Header = () => {
     return (
-
-        <div className="main-header navbar navbar-expand navbar-white navbar-light" >
-
-            <ul className="navbar-nav">
-                <li className="nav-item">
-                    <a className="nav-link" data-widget="pushmenu" href="#" role="button"><i className="fas fa-bars"></i></a>
-                </li>
-                <li className="nav-item d-none d-sm-inline-block">
-                    <Link href="/" className="nav-link">Home</Link>
-                </li>
-                <li className="nav-item d-none d-sm-inline-block">
-                    <a href="#" className="nav-link">Contact</a>
-                </li>
-            </ul>
+        <div className=" navbar navbar-expand" style={{backgroundColor: '#BAE8E8'}}>
+            <div className="d-flex" style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <img src="img\logo\chicken.png" alt="" style={{height: '40px'}}/>
+                <span className="brand-text fs-4 col-sm-8 fw-bolder" style={{ color: '#272343' }}>AZFOOD</span>
+            </div>
 
             <ul className="navbar-nav ml-auto">
                 <li className="nav-item dropdown">
@@ -46,14 +36,7 @@ const Header = () => {
                     </div>
                 </li>
                 <li className="nav-item">
-                    <a className="nav-link" data-widget="fullscreen" href="#" role="button">
-                        <i className="fas fa-expand-arrows-alt"></i>
-                    </a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
-                        <i className="fas fa-th-large"></i>
-                    </a>
+                    <img src="img\about-us-1.jpg" alt="" style={{height: '40px',width: '40px', borderRadius: '20px', margin:'0 15px'}} />
                 </li>
             </ul>
         </div>

@@ -43,7 +43,10 @@ export default function User() {
             password,
             name,
             role,
-            phoneNumber
+            phoneNumber,
+            birtDay,
+            address,
+            email
         }
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
@@ -68,9 +71,9 @@ export default function User() {
         }
     }
     return (
-
-            <div className="main-header" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
-                <div className="">
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header mr-2" style={{ paddingTop: '10px'}}>
+                <div className="" style={{ borderBottom:'1.5px solid rgb(195 211 210)'}}>
                     <div className="container-fluid">
                         <div className="row mb-2">
                             <div className="col-sm-6">
@@ -86,22 +89,12 @@ export default function User() {
                     </div>
                 </div>
 
-                <div className="content">
-
-                    <div className="card">
+                <div className="content mr-2">
+                    <div className="">
                         <div className="card-header">
                             <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
-
-                            <div className="card-tools">
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
-                            </div>
                         </div>
-                        <div className="card-body p-0">
+                        <div className="card card-body p-0 ">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -318,5 +311,6 @@ export default function User() {
                     </ModalFooter>
                 </Modal>
             </div>
+        </div>
     )
 }

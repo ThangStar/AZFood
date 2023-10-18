@@ -68,8 +68,9 @@ export default function RootLayout({
             <>
               <Messenger />
               <Header />
+              <LeftSideBar/>
               {children}
-              <LeftSideBar />
+              
             </>
           ) : (
             <Login />

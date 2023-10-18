@@ -32,12 +32,12 @@ export const getUserListAsync = createAsyncThunk(
 export const createUserListAsync = createAsyncThunk(
   'user/create',
   async (user: any) => {
-    const { name, username, password, role, phoneNumber } = user;
+    const { name, username, password, role,phoneNumber,birtDay,address,email } = user;
     console.log(" user ", user);
 
     const token = localStorage.getItem('token');
     const response = await axios.post(serverUrl + '/api/user/create', {
-      name, username, password, role, phoneNumber
+      name, username, password, role, phoneNumber,birtDay,address,email
     }, {
       headers: {
         'Content-Type': 'application/json',

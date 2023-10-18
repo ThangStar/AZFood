@@ -16,6 +16,7 @@ class Profile {
   String? role;
   String? phoneNumber;
   String? email;
+  String? imgUrl;
 
   Profile({
     required this.id,
@@ -25,6 +26,7 @@ class Profile {
     this.role,
     this.phoneNumber,
     this.email,
+    this.imgUrl,
   });
 
   Map<String, dynamic> toJson() {
@@ -36,6 +38,7 @@ class Profile {
       'role': role,
       'phoneNumber': phoneNumber,
       'email': email,
+      'imgUrl': imgUrl,
     };
   }
 
@@ -48,6 +51,7 @@ class Profile {
       role: map['role'] as String?,
       phoneNumber: map['phoneNumber'] as String?,
       email: map['email'] as String?,
+      imgUrl: map['imgUrl'] as String?,
     );
   }
 }

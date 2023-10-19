@@ -23,6 +23,7 @@ export default function User() {
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
     const [isEdit, setIsEdit] = useState(false);
+    const [searchName, setSearchName] = useState("")
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
@@ -67,14 +68,17 @@ export default function User() {
             setIsEdit(true);
         }
     }
-    return (
+    const onSearchChange = (searchName: any) => {
 
-            <div className="main-header" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
+    }
+    return (
+        <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
+            <div className="main-header" style={{marginRight: '15px', border: 'none'}}>
                 <div className="">
                     <div className="container-fluid">
-                        <div className="row mb-2">
+                    <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
                             <div className="col-sm-6">
-                                <h1>Danh sách Nhân viên</h1>
+                                <h1>Danh sách nhân viên</h1>
                             </div>
                             <div className="col-sm-6">
                                 <ol className="breadcrumb float-sm-right">
@@ -87,21 +91,22 @@ export default function User() {
                 </div>
 
                 <div className="content">
-
-                    <div className="card">
-                        <div className="card-header">
+                    <div className="">
+                        <div className="card-header" style={{border: 'none'}}>
                             <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
-
-                            <div className="card-tools">
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
+                            <div className="card-tools flex items-center">
+                                <form role="search">
+                                    <input
+                                        type="text"
+                                        value={searchName}
+                                        onChange={(e)=>onSearchChange(e.target.value)}
+                                        placeholder="Tìm kiếm nhân viên..."
+                                        className='form-control'
+                                    />
+                                </form>
                             </div>
                         </div>
-                        <div className="card-body p-0">
+                        <div className="card card-body p-0 mt-3">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -303,6 +308,7 @@ export default function User() {
 
                                     </div>
                                 </div>
+                                
                             </> : ""}
 
 
@@ -317,6 +323,7 @@ export default function User() {
                         </Button>
                     </ModalFooter>
                 </Modal>
+            </div>
             </div>
     )
 }

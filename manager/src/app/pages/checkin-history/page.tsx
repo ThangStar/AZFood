@@ -88,42 +88,38 @@ export default function Home() {
     };
 
     return (
-        <div className="main-header card" style={{overflow: 'auto' }}>
-            <div className="card">
-                <div className="card-header">
-                    <h3 className="card-title">Lịch sử check in</h3>
-                    <div className="card-tools">
-                        <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                            <i className="fas fa-minus"></i>
-                        </button>
-                        <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                            <i className="fas fa-times"></i>
-                        </button>
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
+
+                    <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                        <div className="col-sm-6">
+                            <h1>Lịch sử Checkin</h1>
+                        </div>
+                    </div>
+                    <div className="card container-fluid mt-4" style={{ overflowY: 'auto' }}>
+                        <table className="table table-bordered table-striped projects mt-3">
+                            <thead>
+                                <tr style={{ fontSize: '9px' }}>
+                                    <th>Nhân viên</th>
+                                    {/* <th>ảnh</th> */}
+                                    <th>Tổng ngày công</th>
+                                    {renderRowTable().map((e: any, i: number) => (
+                                        <th key={i}>
+                                            <span>
+                                                <strong>{e.day}</strong><br />
+                                                {e.date}
+                                            </span>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody style={{ fontSize: '9px' }}>
+                                {formattedData.length > 0 ? renderTableData() : null}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div className="container-fluid" style={{ overflowY: 'auto' }}>
-                    <table className="table table-bordered table-striped projects">
-                        <thead>
-                            <tr style={{ fontSize: '9px' }}>
-                                <th>Nhân viên</th>
-                                {/* <th>ảnh</th> */}
-                                <th>Tổng ngày công</th>
-                                {renderRowTable().map((e: any, i: number) => (
-                                    <th key={i}>
-                                        <span>
-                                            <strong>{e.day}</strong><br />
-                                            {e.date}
-                                        </span>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody style={{ fontSize: '9px' }}>
-                            {formattedData.length > 0 ? renderTableData() : null}
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        </div>
+
     );
 }

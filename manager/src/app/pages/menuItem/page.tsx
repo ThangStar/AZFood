@@ -248,7 +248,7 @@ export default function MunuItems() {
                                     >
                                         <option value="" selected>Chọn loại món</option>
                                         {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
-                                            <option value={item.id}>{item.name}</option>
+                                            <option value={item.id} key={id}>{item.name}</option>
 
 
                                         )) : ""}

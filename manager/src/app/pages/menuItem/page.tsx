@@ -107,11 +107,11 @@ export default function MunuItems() {
     }
 
     return (
-        <>
-            <div className="main-header card" >
-                <div className="card-header">
+        <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
+            <div className="main-header" style={{marginRight: '15px'}}>
+                <div className="card-header p-0" style={{border: 'none'}}>
                     <div className="container-fluid">
-                        <div className="row mb-2">
+                    <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
                             <div className="col-sm-6">
                                 <h1>Danh sách món</h1>
                             </div>
@@ -126,9 +126,8 @@ export default function MunuItems() {
                 </div>
 
                 <div className="content">
-
-                    <div className="card">
-                        <div className="card-header">
+                    <div>
+                        <div className="card-header" style={{border: 'none'}}>
                             <button className="btn btn-success" onClick={() => {
                                 openModal()
                             }}><i className="fas fa-plus-circle mr-2"></i>Thêm món</button>
@@ -143,16 +142,9 @@ export default function MunuItems() {
                                         className='form-control'
                                     />
                                 </form>
-
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
                             </div>
                         </div>
-                        <div className="card-body p-0">
+                        <div className="card card-body p-0 mt-3">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -392,6 +384,6 @@ export default function MunuItems() {
                     </li>
                 </ul>
             </div>
-        </>
+        </div>
     )
 }

@@ -121,7 +121,7 @@ export default function Table() {
     const cho = "black";
     return (
         <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
-            <div className="main-header" style={{marginRight: '15px'}}>
+            <div className="main-header" style={{marginRight: '15px', border: 'none'}}>
                 <div className="container-fluid">
                     <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
                         <div className="col-sm-6">
@@ -137,7 +137,7 @@ export default function Table() {
                 </div>
                 <div className="content">
                     <div className="">
-                        <div className="card-header">
+                        <div className="card-header" style={{border: 'none'}}>
                             <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn</button>
 
                             <div className="card-tools" style={{display: 'flex', width:'150px'}}>

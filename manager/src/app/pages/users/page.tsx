@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
-import { createUserListAsync, getStatusUserState, getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
+import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -23,6 +23,8 @@ export default function User() {
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
     const [isEdit, setIsEdit] = useState(false);
+    const [file, setFile] = useState<File>()
+    const [searchName, setSearchName] = useState("")
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
@@ -39,19 +41,27 @@ export default function User() {
     }, [userList]);
     const handleAddUser = () => {
         const user = {
+            idUser,
             username,
             password,
             name,
             role,
-            phoneNumber
+            phoneNumber,
+            email,
+            address,
+            birtDay,
+            file
         }
+
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
-            showAlert("success", "Thâm nhân viên mới thành công ");
+            showAlert("success", "Thêm nhân viên mới thành công ");
             dispatch(getUserListAsync());
             openModal1();
+            setDataForm("");
+            setIsEdit(false);
         } else {
-            showAlert("error", "Thâm nhân viên mới  bại ");
+            showAlert("error", "Thêm nhân viên mới  bại ");
         }
     }
     const setDataForm = (item: any) => {
@@ -67,14 +77,34 @@ export default function User() {
             setIsEdit(true);
         }
     }
-    return (
+    const onSearchChange = (searchName: any) => {
 
-            <div className="main-header" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
+    }
+    const handleChangeFile = (event: any) => {
+        if (event.target.files && event.target.files[0]) {
+            const selectedImage = event.target.files[0];
+            setFile(selectedImage);
+        }
+    }
+
+    const handleDeleteUser = (id: any) => {
+
+        dispatch(deleteUserAsync(id));
+        if (status == 'idle') {
+            showAlert("success", "Xoá nhân viên mới thành công ");
+            dispatch(getUserListAsync());
+        } else {
+            showAlert("error", "Xoá nhân viên mới  bại ");
+        }
+    }
+    return (
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
                 <div className="">
                     <div className="container-fluid">
-                        <div className="row mb-2">
+                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                             <div className="col-sm-6">
-                                <h1>Danh sách Nhân viên</h1>
+                                <h1>Danh sách nhân viên</h1>
                             </div>
                             <div className="col-sm-6">
                                 <ol className="breadcrumb float-sm-right">
@@ -87,21 +117,22 @@ export default function User() {
                 </div>
 
                 <div className="content">
-
-                    <div className="card">
-                        <div className="card-header">
+                    <div className="">
+                        <div className="card-header" style={{ border: 'none' }}>
                             <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
-
-                            <div className="card-tools">
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
+                            <div className="card-tools flex items-center">
+                                <form role="search">
+                                    <input
+                                        type="text"
+                                        value={searchName}
+                                        onChange={(e) => onSearchChange(e.target.value)}
+                                        placeholder="Tìm kiếm nhân viên..."
+                                        className='form-control'
+                                    />
+                                </form>
                             </div>
                         </div>
-                        <div className="card-body p-0">
+                        <div className="card card-body p-0 mt-3">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -170,7 +201,9 @@ export default function User() {
                                                         Edit
 
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" >
+                                                    <button className="btn btn-danger btn-sm" onClick={() => {
+                                                        handleDeleteUser(item.id);
+                                                    }}>
                                                         <i className="fas fa-trash"></i> Delete
                                                     </button>
                                                 </div>
@@ -202,8 +235,18 @@ export default function User() {
                                             setName(e.target.value)
                                         }}
                                     />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
+                                <div className="col-sm-8">
 
-
+                                    <input
+                                        className="form-control"
+                                        type='file'
+                                        id="image"
+                                        onChange={handleChangeFile}
+                                    />
                                 </div>
                             </div>
                             <div className="form-group row">
@@ -272,7 +315,7 @@ export default function User() {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Dia Chi</label>
+                                    <label className="col-sm-4 col-form-label">Địa chỉ</label>
                                     <div className="col-sm-8">
 
                                         <input
@@ -288,7 +331,7 @@ export default function User() {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Sinh nhat</label>
+                                    <label className="col-sm-4 col-form-label">Sinh nhật</label>
                                     <div className="col-sm-8">
 
                                         <input
@@ -303,6 +346,7 @@ export default function User() {
 
                                     </div>
                                 </div>
+
                             </> : ""}
 
 
@@ -318,5 +362,6 @@ export default function User() {
                     </ModalFooter>
                 </Modal>
             </div>
+        </div>
     )
 }

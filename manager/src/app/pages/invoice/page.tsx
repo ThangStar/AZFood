@@ -97,10 +97,10 @@ const ListInvoice = () => {
         return `background-color: #f5f5f5`;
     }
     return (
-        <div className="main-header card">
-            <div className="card-header">
+        <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
+            <div className="main-header" style={{marginRight: '15px', border: 'none'}}>
                 <div className="container-fluid">
-                    <div className="row mb-2">
+                <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
                         <div className="col-sm-6">
                             <h1>Danh sách Hóa đơn</h1>
                         </div>
@@ -112,15 +112,12 @@ const ListInvoice = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+
 
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-12">
-                        <div className="card">
-                            <div className="card-header">
-                                <h3 className="card-title">Danh sách hóa đơn</h3>
-                            </div>
+                        <div className="">
                             <div className="invoice-content row d-flex" style={{ marginTop: 20 }}>
                                 <div className="table-responsive" style={{ width: showDetails ? "65%" : "100%" }}>
                                     <table id="example2" className="table table-bordered table-hover" >
@@ -290,6 +287,7 @@ const ListInvoice = () => {
                 </ModalFooter>
             </Modal>
 
+        </div>
         </div>
 
     )

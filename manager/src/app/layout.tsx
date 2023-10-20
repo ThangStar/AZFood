@@ -32,6 +32,12 @@ export default function RootLayout({
     }
   }, []);
 
+  const logout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    setToken(null)
+  }
+
   return (
     <html lang="en">
       <head>
@@ -69,7 +75,7 @@ export default function RootLayout({
               <Messenger />
               <Header />
               {children}
-              <LeftSideBar />
+              <LeftSideBar onLogout={() => logout()} />
             </>
           ) : (
             <Login />

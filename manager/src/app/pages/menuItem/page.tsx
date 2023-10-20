@@ -114,7 +114,11 @@ export default function MunuItems() {
 
     const onSearchChange = (searchName: any) => {
         setSearchName(searchName);
-        dispatch(getSearchMenuListAsync(searchName));
+        if (searchName.trim() !== '') {
+            dispatch(getSearchMenuListAsync(searchName));
+        } else {
+            handlePageChange(currentPage)
+        }
     }
     const handleChangeFile = (event: any) => {
         if (event.target.files && event.target.files[0]) {

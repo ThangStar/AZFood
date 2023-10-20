@@ -24,14 +24,18 @@ export default function MunuItems() {
     const [itemName, setItemName] = useState("");
     const [itemPrice, setItemPrice] = useState("");
     const [itemDVT, setItemDVT] = useState("");
+    const [status, setStatus] = useState("");
     const [itemCategory, setItemCategory] = useState("");
     const [idItemDelete, setIdItemDelete] = useState<number>(0);
-    const [idItem, setIdItem] = useState<number>(0);
+    const [idItem, setIdItem] = useState<number>();
     const [listCategory, setListCategory] = useState<string[]>([]);
     const [listDvt, setListDvt] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchName, setSearchName] = useState("")
+    const [isEdit, setIsEdit] = useState(false);
+    const [image, setImage] = useState("");
 
+    const [file, setFile] = useState<File>();
     const totalPages = menuItemList.totalPages || 1;
 
     useEffect(() => {
@@ -41,7 +45,7 @@ export default function MunuItems() {
     }, [dispatch, currentPage]);
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        // setCurrentPage(page);
         dispatch(getMenuItemListAsync(page));
     };
     useEffect(() => {
@@ -56,18 +60,23 @@ export default function MunuItems() {
             setListDvt(dvtList.resultRaw);
         }
 
-    }, [menuItemList, categoryList, dvtList]);
+    }, [menuItemList, categoryList, dvtList, dispatch]);
 
     const toggle = () => setModal(!modal);
-    const openModal = (data: any = null) => {
+    const openModal = () => {
+
+        toggle();
+    }
+    const setDataForm = (data: any) => {
         if (data) {
             setIdItem(data.id);
             setItemName(data.name);
             setItemPrice(data.price);
             setItemCategory(data.category);
             setItemDVT(data.dvtID);
+            setStatus(data.status);
+            setImage(data.imgUrl);
         }
-        toggle();
     }
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (id: any = null) => {
@@ -80,12 +89,14 @@ export default function MunuItems() {
             name: itemName,
             price: itemPrice,
             category: itemCategory,
-            status,
+            status: status,
             dvtID: itemDVT,
             id: idItem,
+            file
         }
         dispatch(createMenuItemAsync(data));
-        handlePageChange(currentPage);
+        setDataForm("");
+        handlePageChange(1);
         showAlert("success", " Thêm món thành công");
         toggle();
     }
@@ -105,13 +116,18 @@ export default function MunuItems() {
         setSearchName(searchName);
         dispatch(getSearchMenuListAsync(searchName));
     }
-
+    const handleChangeFile = (event: any) => {
+        if (event.target.files && event.target.files[0]) {
+            const selectedImage = event.target.files[0];
+            setFile(selectedImage);
+        }
+    }
     return (
-        <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
-            <div className="main-header" style={{marginRight: '15px'}}>
-                <div className="card-header p-0" style={{border: 'none'}}>
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px' }}>
+                <div className="card-header p-0" style={{ border: 'none' }}>
                     <div className="container-fluid">
-                    <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
+                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                             <div className="col-sm-6">
                                 <h1>Danh sách món</h1>
                             </div>
@@ -127,7 +143,7 @@ export default function MunuItems() {
 
                 <div className="content">
                     <div>
-                        <div className="card-header" style={{border: 'none'}}>
+                        <div className="card-header" style={{ border: 'none' }}>
                             <button className="btn btn-success" onClick={() => {
                                 openModal()
                             }}><i className="fas fa-plus-circle mr-2"></i>Thêm món</button>
@@ -137,7 +153,7 @@ export default function MunuItems() {
                                     <input
                                         type="text"
                                         value={searchName}
-                                        onChange={(e)=>onSearchChange(e.target.value)}
+                                        onChange={(e) => onSearchChange(e.target.value)}
                                         placeholder="Tìm kiếm món ăn..."
                                         className='form-control'
                                     />
@@ -208,7 +224,9 @@ export default function MunuItems() {
                                                         <i className="fas fa-folder mr-1"></i> View
                                                     </a>
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
-                                                        openModal(item)
+                                                        openModal();
+                                                        setIsEdit(true);
+                                                        setDataForm(item);
                                                     }}>
                                                         <i className="fas fa-pencil-alt mr-1"></i> Sửa
                                                     </button>
@@ -256,70 +274,87 @@ export default function MunuItems() {
 
                                 </div>
                             </div>
-                            {itemCategory != "" ?
-                                <>
-                                    <div className="form-group row">
-                                        <label className="col-sm-4 col-form-label">Tên món ăn </label>
-                                        <div className="col-sm-8">
 
-                                            <input
-                                                className="form-control"
-                                                id="name"
-                                                value={itemName}
-                                                onChange={(e) => {
-                                                    setItemName(e.target.value)
+                            <>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
+                                    <div className="col-sm-8">
 
-                                                }}
-                                            />
+                                        <input
+                                            className="form-control"
+                                            type='file'
+                                            id="image"
+                                            onChange={handleChangeFile}
 
-
-                                        </div>
+                                        />
+                                        <img src={image} alt="" width={80} height={80} />
                                     </div>
-                                    <div className="form-group row">
-                                        <label className="col-sm-4 col-form-label">Giá</label>
-                                        <div className="col-sm-8">
+                                </div>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Tên món ăn </label>
+                                    <div className="col-sm-8">
 
-                                            <input
-                                                className="form-control"
-                                                id="name"
-                                                value={itemPrice}
-                                                onChange={(e) => {
-                                                    setItemPrice(e.target.value)
-                                                }}
-                                            />
+                                        <input
+                                            className="form-control"
+                                            id="name"
+                                            value={itemName}
+                                            onChange={(e) => {
+                                                setItemName(e.target.value)
+
+                                            }}
+                                        />
 
 
-                                        </div>
                                     </div>
+                                </div>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Giá</label>
+                                    <div className="col-sm-8">
 
-                                    <div className="form-group row">
-                                        <label className="col-sm-4 col-form-label">Đơn vị tính</label>
-                                        <div className="col-sm-8">
-
-                                            <select
-                                                className="form-control"
-                                                id="dvt"
-                                                value={itemDVT}
-                                                onChange={(e) => {
-                                                    setItemDVT(e.target.value)
-                                                }}
-                                            >
-                                                <option value=" ">Chọn đơn vị tính</option>
-
-                                                {listDvt && listDvt.length > 0 ? listDvt.map((item: any, id: number) => (
-                                                    <option value={item.id}>{item.tenDVT}</option>
+                                        <input
+                                            className="form-control"
+                                            id="name"
+                                            value={itemPrice}
+                                            onChange={(e) => {
+                                                setItemPrice(e.target.value)
+                                            }}
+                                        />
 
 
-                                                )) : ""}
-                                            </select>
+                                    </div>
+                                </div>
 
-                                        </div>
-                                    </div></> : " "}
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Đơn vị tính</label>
+                                    <div className="col-sm-8">
+
+                                        <select
+                                            className="form-control"
+                                            id="dvt"
+                                            value={itemDVT}
+                                            onChange={(e) => {
+                                                setItemDVT(e.target.value)
+                                            }}
+                                        >
+                                            <option value=" ">Chọn đơn vị tính</option>
+
+                                            {listDvt && listDvt.length > 0 ? listDvt.map((item: any, id: number) => (
+                                                <option value={item.id}>{item.tenDVT}</option>
+
+
+                                            )) : ""}
+                                        </select>
+
+                                    </div>
+                                </div></>
 
                         </form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={addMenuItem}>
+                        <Button color="primary" onClick={() => {
+
+                            addMenuItem();
+                        }}>
                             Lưu
                         </Button>
                         <Button color="secondary" onClick={() => openModal()}>
@@ -344,7 +379,10 @@ export default function MunuItems() {
                         }}>
                             Xóa
                         </Button>
-                        <Button color="secondary" onClick={() => openModal1()}>
+                        <Button color="secondary" onClick={() => {
+                            openModal1()
+                            setDataForm(" ");
+                        }}>
                             Hủy
                         </Button>
                     </ModalFooter>

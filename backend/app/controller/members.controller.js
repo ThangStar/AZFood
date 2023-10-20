@@ -96,7 +96,6 @@ exports.createMember = async (req, res) => {
                         replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, body.birtDay, body.idUser],
                         type: QueryTypes.INSERT
                     });
-                    console.log("resultRaw ", resultRaw);
                     res.status(200).json({ message: 'Member created successfully' });
 
                 }

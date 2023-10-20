@@ -22,6 +22,7 @@ export default function User() {
     const [address, setAddress] = useState("");
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
+    const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState<File>()
     const [searchName, setSearchName] = useState("")
@@ -75,6 +76,7 @@ export default function User() {
             setBirtDay(item.birtDay);
             setIdUser(item.id);
             setIsEdit(true);
+            setImage(item.imgUrl)
         }
     }
     const onSearchChange = (searchName: any) => {
@@ -191,7 +193,7 @@ export default function User() {
                                                         </i>
                                                         View
                                                     </a>
-                                                    <button className="btn btn-success btn-sm pd-5" onClick={() => {
+                                                    <button className="btn btn-success btn-sm pd-5" disabled={item.role == 'admin' ? true : false} onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
                                                         setIsEdit(true);
@@ -247,6 +249,7 @@ export default function User() {
                                         id="image"
                                         onChange={handleChangeFile}
                                     />
+                                    <img src={image} alt="" width={80} height={80} />
                                 </div>
                             </div>
                             <div className="form-group row">

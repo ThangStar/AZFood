@@ -198,7 +198,7 @@ exports.getList = async (req, res) => {
 
 
 
-exports.getList = async (req, res) => {
+exports.getListAll = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
         try {

@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
-import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
+import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -25,7 +25,7 @@ export default function User() {
     const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState<File>()
     const [searchName, setSearchName] = useState("")
-    const [currentPage, setCurrentPage] = useState(2)
+    const [currentPage, setCurrentPage] = useState(1)
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
@@ -89,7 +89,12 @@ export default function User() {
         }
     }
     const onSearchChange = (searchName: any) => {
-
+        setSearchName(searchName);
+        if (searchName.trim() !== '') {
+            dispatch(searchUserAsync(searchName));
+        } else {
+            handlePageChange(currentPage)
+        }
     }
     const handleChangeFile = (event: any) => {
         if (event.target.files && event.target.files[0]) {

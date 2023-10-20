@@ -10,6 +10,7 @@ import 'package:restaurant_manager_app/ui/screens/calendar/verify_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/chart/chart_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/info/profile_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
@@ -201,7 +202,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                         case PageNavRail.chart:
                           return ChartScreen(constraints: constraints);
                         case PageNavRail.profile:
-                          return const InfoScreen();
+                          return const ProfileScreen();
                         case PageNavRail.calendar:
                           return VerifyScreen(constraints: constraints);
                         default:

@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/chart/chart_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -20,12 +22,14 @@ class _ChartScreenState extends State<ChartScreen> {
   ];
 
   bool showAvg = true;
+  late ChartBloc chartBloc;
 
   @override
   void initState() {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_){
-    setState(() {
+    chartBloc = BlocProvider.of<ChartBloc>(context);
+    chartBloc.add(GetIncomeAYear());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
         showAvg = false;
       });
     });
@@ -36,7 +40,9 @@ class _ChartScreenState extends State<ChartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: widget.constraints.maxWidth > mobileWidth ? null : const BackButton(),
+        leading: widget.constraints.maxWidth > mobileWidth
+            ? null
+            : const BackButton(),
         title: const Text(
           "Doanh thu tháng này",
           style: TextStyle(fontSize: 24),

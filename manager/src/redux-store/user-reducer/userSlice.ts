@@ -18,13 +18,16 @@ const initialState: UserState = {
 
 export const getUserListAsync = createAsyncThunk(
   'user/get-list',
-  async () => {
+  async (page: any) => {
     const token = localStorage.getItem('token');
     const response = await axios.get(serverUrl + '/api/user/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
       },
+      params: {
+        page: page,
+      }
     });
     return response.data;
   }

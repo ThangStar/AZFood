@@ -25,20 +25,31 @@ export default function User() {
     const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState<File>()
     const [searchName, setSearchName] = useState("")
+    const [currentPage, setCurrentPage] = useState(2)
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
         toggle1();
     }
+
     useEffect(() => {
-        dispatch(getUserListAsync());
-    }, [dispatch]);
+        dispatch(getUserListAsync(currentPage));
+    }, [dispatch, currentPage]);
+
     useEffect(() => {
-        if (userList && userList.resultRaw) {
-            setUsers(userList.resultRaw);
+        if (userList && userList.data) {
+            setUsers(userList.data);
         }
     }, [userList]);
+
+    const totalPages = userList?.totalPages || 1;
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        dispatch(getUserListAsync(page));
+    };
+
     const handleAddUser = () => {
         const user = {
             idUser,
@@ -56,7 +67,7 @@ export default function User() {
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
             showAlert("success", "Thêm nhân viên mới thành công ");
-            dispatch(getUserListAsync());
+            dispatch(getUserListAsync(currentPage));
             openModal1();
             setDataForm("");
             setIsEdit(false);
@@ -92,7 +103,7 @@ export default function User() {
         dispatch(deleteUserAsync(id));
         if (status == 'idle') {
             showAlert("success", "Xoá nhân viên mới thành công ");
-            dispatch(getUserListAsync());
+            dispatch(getUserListAsync(currentPage));
         } else {
             showAlert("error", "Xoá nhân viên mới  bại ");
         }
@@ -361,6 +372,40 @@ export default function User() {
                         </Button>
                     </ModalFooter>
                 </Modal>
+                {/* Pagination */}
+                <div className="d-flex justify-content-center align-items-center">
+                    <ul className="pagination">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            >
+                                &#60;
+                            </button>
+                        </li>
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <li
+                                className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                key={i + 1}
+                            >
+                                <button
+                                    className="page-link"
+                                    onClick={() => handlePageChange(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            </li>
+                        ))}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                &#62;
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     )

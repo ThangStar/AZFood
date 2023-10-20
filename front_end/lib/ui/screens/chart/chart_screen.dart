@@ -59,9 +59,17 @@ class _ChartScreenState extends State<ChartScreen> {
                 top: 24,
                 bottom: 12,
               ),
-              child: LineChart(
-                duration: 300.ms,
-                showAvg ? avgData() : mainData(),
+              child: BlocBuilder<ChartBloc, ChartState>(
+                builder: (context, state) {
+                  return LineChart(
+                    duration: 300.ms,
+                    showAvg
+                        ? avgData()
+                        : mainData(
+                            state: state,
+                          ),
+                  );
+                },
               ),
             ),
           ),
@@ -93,14 +101,42 @@ class _ChartScreenState extends State<ChartScreen> {
     );
     Widget text;
     switch (value.toInt()) {
+      case 0:
+        text = const Text('T1', style: style);
+      case 1:
+        text = const Text('T2', style: style);
       case 2:
-        text = const Text('Tháng 3', style: style);
+        text = const Text('T3', style: style);
+        break;
+      case 2:
+        text = const Text('T3', style: style);
+        break;
+      case 3:
+        text = const Text('T4', style: style);
+        break;
+      case 4:
+        text = const Text('T5', style: style);
         break;
       case 5:
-        text = const Text('Tháng 6', style: style);
+        text = const Text('T6', style: style);
+        break;
+      case 6:
+        text = const Text('T7', style: style);
+        break;
+      case 7:
+        text = const Text('T8', style: style);
         break;
       case 8:
-        text = const Text('Tháng 9', style: style);
+        text = const Text('T9', style: style);
+        break;
+      case 9:
+        text = const Text('T10', style: style);
+        break;
+      case 10:
+        text = const Text('T11', style: style);
+        break;
+      case 11:
+        text = const Text('T12', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -121,13 +157,13 @@ class _ChartScreenState extends State<ChartScreen> {
     String text;
     switch (value.toInt()) {
       case 1:
-        text = '1tr';
+        text = '10tr';
         break;
       case 3:
-        text = '5tr';
+        text = '30tr';
         break;
       case 5:
-        text = '10tr';
+        text = '50tr';
         break;
       default:
         return Container();
@@ -136,7 +172,7 @@ class _ChartScreenState extends State<ChartScreen> {
     return Text(text, style: style, textAlign: TextAlign.left);
   }
 
-  LineChartData mainData() {
+  LineChartData mainData({required ChartState state}) {
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -191,15 +227,21 @@ class _ChartScreenState extends State<ChartScreen> {
       maxY: 6,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2, 2),
-            FlSpot(4, 5),
-            FlSpot(6, 3.1),
-            FlSpot(8, 4),
-            FlSpot(10, 3),
-            FlSpot(11, 4),
-          ],
+          // spots: const [
+          //   FlSpot(0, 3),
+          //   FlSpot(2, 2),
+          //   FlSpot(4, 5),
+          //   FlSpot(6, 3.1),
+          //   FlSpot(8, 4),
+          //   FlSpot(10, 3),
+          //   FlSpot(11, 4),
+          // ],
+          spots: state.incomesYear
+              .asMap()
+              .entries
+              .map((e) => FlSpot(
+                  e.key.toDouble(), e.value.totalAmount!.toDouble() / 10000000))
+              .toList(),
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -279,13 +321,19 @@ class _ChartScreenState extends State<ChartScreen> {
       lineBarsData: [
         LineChartBarData(
           spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
+            FlSpot(0, 3),
+            FlSpot(1, 3),
+            FlSpot(2, 3),
+            FlSpot(3, 3),
+            FlSpot(4, 3),
+            FlSpot(5, 3),
+            FlSpot(6, 3),
+            FlSpot(7, 3),
+            FlSpot(8, 3),
+            FlSpot(9, 3),
+            FlSpot(10, 3),
+            FlSpot(11, 3),
+            FlSpot(12, 3),
           ],
           isCurved: true,
           gradient: LinearGradient(

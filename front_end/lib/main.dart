@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/calendar/calendar_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/chart/chart_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/forgot_pass/forgot_password_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
@@ -19,7 +20,6 @@ import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
-import 'package:restaurant_manager_app/ui/screens/info/test.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 
@@ -113,6 +113,9 @@ class _MyAppState extends State<MyApp> {
                 ),
                 BlocProvider(
                   create: (context) => VideoCallBloc(),
+                ),
+                BlocProvider(
+                  create: (context) => ChartBloc(),
                 ),
               ],
               child: CalendarControllerProvider(

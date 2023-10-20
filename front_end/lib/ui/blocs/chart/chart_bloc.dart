@@ -22,8 +22,9 @@ class ChartBloc extends Bloc<ChartEvent, ChartState> {
     Object result = await ChartApi.getIncomeAYear();
     if (result is Success) {
       print(result.response.data);
-    } else if (result is Failure) {
-
-    }
+      List<dynamic> jsons = result.response.data['result'] as List<dynamic>;
+      List<Income> incomes = jsons.map((e) => Income.fromJson(e)).toList();
+      emit(state.copyWith(incomesYear: incomes));
+    } else if (result is Failure) {}
   }
 }

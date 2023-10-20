@@ -7,7 +7,7 @@ import '../../utils/response.dart';
 class ChartApi {
   static Future<Object> getIncomeAYear() async {
     try {
-      Response<dynamic> response = await http.get(Router.inComeAMonth);
+      Response<dynamic> response = await http.get(Router.inComeAYear);
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
       } else {

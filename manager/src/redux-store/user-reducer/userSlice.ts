@@ -18,13 +18,16 @@ const initialState: UserState = {
 
 export const getUserListAsync = createAsyncThunk(
   'user/get-list',
-  async () => {
+  async (page: any) => {
     const token = localStorage.getItem('token');
     const response = await axios.get(serverUrl + '/api/user/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
       },
+      params: {
+        page: page,
+      }
     });
     return response.data;
   }
@@ -74,6 +77,21 @@ export const deleteUserAsync = createAsyncThunk(
   }
 );
 
+export const searchUserAsync = createAsyncThunk(
+  'user/search-list',
+  async (name: any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(serverUrl + '/api/user/search', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      params: { name }
+    });
+    return response.data;
+  }
+);
+
 const TableSlice = createSlice({
   name: 'table',
   initialState,
@@ -111,7 +129,16 @@ const TableSlice = createSlice({
       .addCase(deleteUserAsync.rejected, (state) => {
         state.status = 'failed';
       })
-
+      .addCase(searchUserAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(searchUserAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.userList = action.payload;
+      })
+      .addCase(searchUserAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
   },
 });
 

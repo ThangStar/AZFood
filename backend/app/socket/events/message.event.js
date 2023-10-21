@@ -15,6 +15,7 @@ const messageGroup = async (socket, io) => {
 
     socket.on('client-msg-typing-group', (data) => messageController.typing(socket, io, data));
     socket.on('client-msg-typed-group', (data) => messageController.typed(socket, io, data));
+
 }
 
 module.exports = messageGroup;

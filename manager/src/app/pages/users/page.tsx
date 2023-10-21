@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
-import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
+import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -23,23 +23,35 @@ export default function User() {
     const [address, setAddress] = useState("");
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
+    const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState<File>()
     const [searchName, setSearchName] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
         toggle1();
     }
+
     useEffect(() => {
-        dispatch(getUserListAsync());
-    }, [dispatch]);
+        dispatch(getUserListAsync(currentPage));
+    }, [dispatch, currentPage]);
+
     useEffect(() => {
-        if (userList && userList.resultRaw) {
-            setUsers(userList.resultRaw);
+        if (userList && userList.data) {
+            setUsers(userList.data);
         }
     }, [userList]);
+
+    const totalPages = userList?.totalPages || 1;
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        dispatch(getUserListAsync(page));
+    };
+
     const handleAddUser = () => {
         const user = {
             idUser,
@@ -57,7 +69,7 @@ export default function User() {
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
             showAlert("success", "Thêm nhân viên mới thành công ");
-            dispatch(getUserListAsync());
+            dispatch(getUserListAsync(currentPage));
             openModal1();
             setDataForm("");
             setIsEdit(false);
@@ -76,10 +88,16 @@ export default function User() {
             setBirtDay(item.birtDay);
             setIdUser(item.id);
             setIsEdit(true);
+            setImage(item.imgUrl)
         }
     }
     const onSearchChange = (searchName: any) => {
-
+        setSearchName(searchName);
+        if (searchName.trim() !== '') {
+            dispatch(searchUserAsync(searchName));
+        } else {
+            handlePageChange(currentPage)
+        }
     }
     const handleChangeFile = (event: any) => {
         if (event.target.files && event.target.files[0]) {
@@ -93,7 +111,7 @@ export default function User() {
         dispatch(deleteUserAsync(id));
         if (status == 'idle') {
             showAlert("success", "Xoá nhân viên mới thành công ");
-            dispatch(getUserListAsync());
+            dispatch(getUserListAsync(currentPage));
         } else {
             showAlert("error", "Xoá nhân viên mới  bại ");
         }
@@ -195,7 +213,7 @@ export default function User() {
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a> */}
+                                                    </a>
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
@@ -251,6 +269,7 @@ export default function User() {
                                         id="image"
                                         onChange={handleChangeFile}
                                     />
+                                    <img src={image} alt="" width={80} height={80} />
                                 </div>
                             </div>
                             <div className="form-group row">
@@ -365,6 +384,40 @@ export default function User() {
                         </Button>
                     </ModalFooter>
                 </Modal>
+                {/* Pagination */}
+                <div className="d-flex justify-content-center align-items-center">
+                    <ul className="pagination">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            >
+                                &#60;
+                            </button>
+                        </li>
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <li
+                                className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                key={i + 1}
+                            >
+                                <button
+                                    className="page-link"
+                                    onClick={() => handlePageChange(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            </li>
+                        ))}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                &#62;
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     )

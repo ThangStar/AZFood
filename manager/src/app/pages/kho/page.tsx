@@ -41,7 +41,7 @@ export default function Kho() {
         if (ProductList) {
             setProducts(ProductList);
         }
-    }, [phieuNhapList]);
+    }, [phieuNhapList, dispatch]);
     const toggle = () => setModal(!modal);
     const openModal = (data: any = null) => {
         toggle();
@@ -61,11 +61,11 @@ export default function Kho() {
     }
 
     return (
-        <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
-            <div className="main-header" style={{marginRight: '15px'}}>
-                <div className="card-header p-0" style={{border: 'none'}}>
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px' }}>
+                <div className="card-header p-0" style={{ border: 'none' }}>
                     <div className="container-fluid">
-                        <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
+                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                             <div className="col-sm-6">
                                 <h1>Kho hàng</h1>
                             </div>
@@ -81,14 +81,14 @@ export default function Kho() {
 
                 <div className="content">
                     <div >
-                        <div className="card-header" style={{border: 'none'}}>
+                        <div className="card-header" style={{ border: 'none' }}>
                             <button className="btn btn-success" onClick={() => { openModal() }}>Nhập hàng</button>
                             <div className="card-tools flex items-center">
                                 <form role="search">
                                     <input
                                         type="text"
                                         value={searchName}
-                                        onChange={(e)=>onSearchChange(e.target.value)}
+                                        onChange={(e) => onSearchChange(e.target.value)}
                                         placeholder="Tìm kiếm..."
                                         className='form-control'
                                     />

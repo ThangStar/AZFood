@@ -96,7 +96,6 @@ exports.createMember = async (req, res) => {
                         replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, body.birtDay, body.idUser],
                         type: QueryTypes.INSERT
                     });
-                    console.log("resultRaw ", resultRaw);
                     res.status(200).json({ message: 'Member created successfully' });
 
                 }
@@ -231,6 +230,48 @@ const getUserById = async (id) => {
         throw new Error('Could not retrieve user by ID');
     }
 };
+
+exports.getListPage = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
+        try {
+            const PAGE_SIZE = 4
+            const currentPage = parseInt(req.query.page) || 1
+            const offset = (currentPage - 1) * PAGE_SIZE
+
+            const totalCountQuery = `SELECT COUNT(*) AS total FROM users`
+            const totalCountResult = await sequelize.query(totalCountQuery, {
+                raw: true,
+                logging: false,
+                type: QueryTypes.SELECT
+            })
+            const queryRaw = "SELECT * FROM users LIMIT :limit OFFSET :offset;"
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: {
+                    limit: PAGE_SIZE,
+                    offset: offset
+                },
+                type: QueryTypes.SELECT
+            })
+            const totalPages = Math.ceil(totalCountResult[0].total / PAGE_SIZE)
+
+            res.status(200).json({
+                data: resultRaw,
+                currentPage: currentPage,
+                totalPages: totalPages,
+                totalItems: totalCountResult[0].total
+            })
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+            console.log("error", error)
+        }
+    } else {
+        res.status(401).send('User is not admin');
+    }
+}
+
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
@@ -260,7 +301,7 @@ exports.searchUser = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
     if (isAdmin) {
-        const name = req.body.name;
+        const name = req.query.name;
         const queryRaw = "SELECT * FROM users where name LIKE :name";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
@@ -269,7 +310,7 @@ exports.searchUser = async (req, res) => {
                 replacements: { name: `%${name}%` },
                 type: QueryTypes.SELECT
             });
-            res.send({ resultRaw })
+            res.send({ data: resultRaw })
             res.status(200);
         } catch (error) {
             res.status(500);
@@ -281,6 +322,7 @@ exports.searchUser = async (req, res) => {
     }
 
 }
+
 exports.getDetails = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     const id = req.body.id;

@@ -1,10 +1,14 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'package:calendar_view/calendar_view.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_isolate/flutter_isolate.dart';
 import 'package:local_notifier/local_notifier.dart';
+import 'package:restaurant_manager_app/routers/socket.event.dart';
+import 'package:restaurant_manager_app/services/notification_window.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/calendar/calendar_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/chart/chart_bloc.dart';
@@ -22,6 +26,11 @@ import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart'
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
+import 'package:restaurant_manager_app/utils/io_client.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import 'constants/env.dart';
+import 'model/message.dart';
 
 late List<CameraDescription> cameras;
 
@@ -44,6 +53,21 @@ void main() async {
     }
     print("object3");
     runApp(const MyApp());
+
+    var port = ReceivePort();
+    port.listen((msg) {
+      MySharePreferences.loadProfile().then((value) {
+        Message ms = msg as Message;
+        print("Received message from isolate ${msg.message}");
+        if (value?.id != ms.sendBy) {
+          showNotiWindow(title: msg.profile?.name, body: msg.message);
+        }
+      });
+    });
+
+    final isolate = Isolate.spawn((message) {
+      onNotiMsgFromServer(message);
+    }, {'SOCKET_URL': Env.SOCKET_URL, "PORT": port.sendPort});
   } catch (e) {
     print(e);
   }
@@ -133,5 +157,21 @@ class _MyAppState extends State<MyApp> {
                     home: const LoginScreen()),
               ));
         });
+  }
+}
+
+@pragma('vm:entry-point')
+void onNotiMsgFromServer(Map<dynamic, dynamic> params) {
+  print("TASK1!!!!!!!!!!!!${params['SOCKET_URL']}");
+  IoClient client = IoClient();
+  client.updateUrl(url: params['SOCKET_URL']);
+  IO.Socket io = client.io;
+  if (!io.hasListeners(SocketEvent.onNotiMsgGroup)) {
+    io.on(SocketEvent.onNotiMsgGroup, (data) {
+      //transform data
+      print("HAVING A NEW MESSAGE!!!!! $data");
+      Message msg = Message.fromMap(data);
+      params['PORT'].send(msg);
+    });
   }
 }

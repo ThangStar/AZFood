@@ -14,6 +14,7 @@ export default function User() {
     const status: any = useSelector(getStatusUserState);
     const [users, setUsers] = useState<any[]>([]);
     const [modal1, setModal1] = useState(false);
+    const [isAdd, setisAdd] = useState(true);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
@@ -119,7 +120,10 @@ export default function User() {
                 <div className="content">
                     <div className="">
                         <div className="card-header" style={{ border: 'none' }}>
-                            <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
+                            <button className="btn btn-success" onClick={() => {
+                                                        openModal1();
+                                                        setisAdd(true);
+                                                    }}>Thêm nhân viên</button>
                             <div className="card-tools flex items-center">
                                 <form role="search">
                                     <input
@@ -139,23 +143,23 @@ export default function User() {
                                         <th style={{ width: "1%" }}>
                                             STT
                                         </th>
-                                        <th style={{ width: "20%" }}>
-                                            Tên NV
+                                        <th style={{ width: "18%" }}>
+                                            Tên nhân viên
                                         </th>
                                         <th style={{ width: "10%" }}>
-                                            Hình Ảnh
+                                            Quyền
                                         </th>
-                                        <th>
+                                        <th style={{ width: "25%" }}>
                                             Địa chỉ
                                         </th>
-                                        <th>
-                                            Số điện thoại
+                                        <th style={{ width: "15%" }}>  
+                                            STĐ
                                         </th>
-                                        <th>
+                                        <th style={{ width: "20%" }}>
                                             Email
                                         </th>
-                                        <th style={{ width: "15%" }} className="text-center">
-                                            actions
+                                        <th style={{ width: "10%" }} className="text-center">
+                                            Actions
                                         </th>
 
                                     </tr>
@@ -173,7 +177,8 @@ export default function User() {
                                                 <br />
                                             </td>
                                             <td>
-                                                <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
+                                                {/* <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} /> */}
+                                                {item && item.role ? item.role : null}
                                             </td>
                                             <td className="project_progress">
                                                 {item && item.address ? item.address : null}
@@ -186,26 +191,25 @@ export default function User() {
                                             </td>
                                             <td className="project-actions text-right">
                                                 <div className="d-flex justify-content-between " >
-                                                    <a className="btn btn-primary btn-sm" href="#">
+                                                    {/* <a className="btn btn-primary btn-sm" href="#">
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a>
+                                                    </a> */}
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
                                                         setIsEdit(true);
+                                                        setisAdd(false);
                                                     }}>
                                                         <i className="fas fa-pencil-alt"></i>
-
                                                         Edit
-
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" onClick={() => {
+                                                    {/* <button className="btn btn-danger btn-sm" onClick={() => {
                                                         handleDeleteUser(item.id);
                                                     }}>
                                                         <i className="fas fa-trash"></i> Delete
-                                                    </button>
+                                                    </button> */}
                                                 </div>
 
                                             </td>
@@ -220,7 +224,7 @@ export default function User() {
 
                 </div>
                 <Modal isOpen={modal1} toggle1={openModal1}>
-                    <ModalHeader toggle1={openModal1}>{"Thêm nhân viên mới"}</ModalHeader>
+                    <ModalHeader toggle1={openModal1}>{isAdd ? "Thêm tài khoản nhân viên" : "Sửa tài khoản nhân viên"}</ModalHeader>
                     <ModalBody>
                         <form className="form-horizontal">
                             <div className="form-group row">

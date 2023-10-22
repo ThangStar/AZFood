@@ -24,6 +24,8 @@ import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/set_beauty_effect/set_beauty_effect.dart';
+import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/theme/text_theme.dart';
 import 'package:restaurant_manager_app/utils/io_client.dart';
@@ -154,7 +156,7 @@ class _MyAppState extends State<MyApp> {
                         textTheme: textTheme(context)),
                     darkTheme: ThemeData(
                         useMaterial3: true, colorScheme: darkColorScheme),
-                    home: const LoginScreen()),
+                    home: VideoCallScreen()),
               ));
         });
   }

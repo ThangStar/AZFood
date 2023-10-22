@@ -43,9 +43,6 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
   bool _isEnabledVirtualBackgroundImage = false;
 
   String channelId = config.channelId;
-  late final TextEditingController _localUidController;
-  late final TextEditingController _screenShareUidController;
-  bool _isScreenShared = false;
   late VideoCallBloc videoCallBloc;
 
   @override
@@ -53,7 +50,6 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     super.initState();
     videoCallBloc = BlocProvider.of<VideoCallBloc>(context);
     _controller = TextEditingController(text: config.channelId);
-    _screenShareUidController = TextEditingController(text: '1001');
     _initEngine();
   }
 
@@ -62,25 +58,26 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     super.dispose();
     videoCallBloc.add(ResetUidSelected());
     _engine.release();
+    _leaveChannel();
   }
 
-  Future<void> _updateScreenShareChannelMediaOptions() async {
-    final shareShareUid = int.tryParse(_screenShareUidController.text);
-    if (shareShareUid == null) return;
-    await _engine.updateChannelMediaOptionsEx(
-      options: const ChannelMediaOptions(
-        publishScreenTrack: true,
-        publishSecondaryScreenTrack: true,
-        publishCameraTrack: false,
-        publishMicrophoneTrack: false,
-        publishScreenCaptureAudio: true,
-        publishScreenCaptureVideo: true,
-        clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      ),
-      connection:
-          RtcConnection(channelId: _controller.text, localUid: shareShareUid),
-    );
-  }
+  // Future<void> _updateScreenShareChannelMediaOptions() async {
+  //   final shareShareUid = int.tryParse(_screenShareUidController.text);
+  //   if (shareShareUid == null) return;
+  //   await _engine.updateChannelMediaOptionsEx(
+  //     options: const ChannelMediaOptions(
+  //       publishScreenTrack: true,
+  //       publishSecondaryScreenTrack: true,
+  //       publishCameraTrack: false,
+  //       publishMicrophoneTrack: false,
+  //       publishScreenCaptureAudio: true,
+  //       publishScreenCaptureVideo: true,
+  //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
+  //     ),
+  //     connection:
+  //         RtcConnection(channelId: _controller.text, localUid: shareShareUid),
+  //   );
+  // }
 
   Future<void> _initEngine() async {
     _engine = createAgoraRtcEngineEx();
@@ -126,6 +123,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String p = path.join(appDocDir.path, "${source.split("/").last}");
+    print("PATH NAME: $p");
     final file = File(p);
     if (!(await file.exists())) {
       await file.create();
@@ -157,7 +155,7 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
         channelId: "a",
         uid: ran,
         options: const ChannelMediaOptions());
-    await Future.delayed(2.seconds);
+    // await Future.delayed(2.seconds);
     setState(() {
       loading = false;
     });
@@ -170,11 +168,11 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     await _engine.leaveChannel();
   }
 
+
   bool isPitched = false;
   bool muted = false;
   bool loading = true;
   int uidSelected = 0;
-
   @override
   Widget build(BuildContext context) {
     return ExampleActionsWidget(

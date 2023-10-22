@@ -9,7 +9,7 @@ String get appId {
 String get token {
   // Allow pass a `token` as an environment variable with name `TEST_TOKEN` by using --dart-define
   return const String.fromEnvironment('TEST_TOKEN',
-      defaultValue: '0065afbfb56efc04d56b7bcb475454f1675IACmZElIqwiXUiD61ppbmms82LEtLkok+PuTvm1/vi6QTyo6c+T3yPnbIgB4ZnkEpHImZQQAAQA0LyVlAgA0LyVlAwA0LyVlBAA0LyVl');
+      defaultValue: '0065afbfb56efc04d5s6b7bcb475454f1675IAAfthdmFkUV3eJyFpE2B7v0Az6/3BLpqgdOpBdvoJiByUO+t+g9UWtNIgAzmXQFQtY1ZQQAAQDSkjRlAgDSkjRlAwDSkjRlBADSkjRl');
 }
 
 /// Your channel ID
@@ -22,7 +22,7 @@ String get channelId {
 }
 
 /// Your int user ID
-const int uid = 0;
+const int uid = 111;
 
 /// Your user ID for the screen sharing
 const int screenSharingUid = 10;

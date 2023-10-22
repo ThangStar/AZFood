@@ -4,7 +4,7 @@ const Header = () => {
     return (
         <div className=" navbar navbar-expand" style={{backgroundColor: '#BAE8E8', display: 'flex'}}>
             <div className="d-flex" style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <img src="img\logo\chicken.png" alt="" style={{height: '40px'}}/>
+            <img src="\img\logo\chicken.png" alt="" style={{height: '40px'}}/>
                 <span className="brand-text fs-4 col-sm-8 fw-bolder" style={{ color: '#272343' }}>AZFOOD</span>
             </div>
 
@@ -36,7 +36,7 @@ const Header = () => {
                     </div>
                 </li>
                 <li className="nav-item">
-                    <img src="img\about-us-1.jpg" alt="" style={{height: '40px',width: '40px', borderRadius: '20px', margin:'0 15px'}} />
+                    <img src="\img\about-us-1.jpg" alt="" style={{height: '40px',width: '40px', borderRadius: '20px', margin:'0 15px'}} />
                 </li>
             </ul>
         </div>

@@ -43,14 +43,14 @@ const Login = () => {
     }, [status, jwtToken, userFullname]);
 
     return (
-        <div className="login-screen row" style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: '50px' }}>
-            <div className='box-image col-sm-5' >
+        <div className="login-screen row vw-100" style={{ height: '100%', alignItems: 'center', justifyContent: 'center', padding: '50px' }}>
+            <div className='box-image col-md-5 d-none d-md-block' >
                 <img src="/img/login-image.jpg" alt="Hình ảnh" />
             </div>
-            <div className='box-login col-sm-5'>
-                <div className="card" style={{ padding: '25px', margin: '15px'}}>
+            <div className='box-login col-md-5'>
+                <div className="card m-lg-4" style={{ padding: '25px' }}>
                     <div className="header-form" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div className="logo" style={{ display: 'flex', alignItems: 'center'}}>
+                        <div className="logo" style={{ display: 'flex', alignItems: 'center' }}>
                             <img src="/img/logo/chicken.png" alt="Hình ảnh" style={{ height: '40px' }} />
                             <h6 style={{ marginLeft: '10px' }}>AZFOOD</h6>
                         </div>
@@ -62,14 +62,14 @@ const Login = () => {
                     <div className="line" style={{ borderBottom: '1px solid #C0C0C0', margin: '15px 0 20px 0' }}></div>
 
                     <div className="input-group mb-3 mt-2">
-                            <input
-                                className="form-control"
-                                type="text"
-                                placeholder="Tên đăng nhập"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
+                        <input
+                            className="form-control"
+                            type="text"
+                            placeholder="Tên đăng nhập"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                        />
                         <div className="input-group-append">
                             <div className="input-group-text">
                                 <span className="fas fa-user"></span>
@@ -92,8 +92,8 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <div className="bottom-form" style={{display: 'flex',justifyContent: 'right' }}>
-                        <div style={{ display: 'flex', alignItems: 'center'}}>
+                    <div className="bottom-form" style={{ display: 'flex', justifyContent: 'right' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
                             <a style={{ fontSize: '14px', color: 'red', padding: '10px 0 20px 0' }}>Quên mật khẩu</a>
                         </div>
                     </div>

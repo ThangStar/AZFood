@@ -48,18 +48,28 @@ exports.attendance = async (req, res) => {
     }
 };
 
+const getCurrentMonthYear = () => {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0'); // Lấy tháng hiện tại và định dạng thành "MM"
+    return `${year}-${month}`;
+};
+
 exports.getListAttendance = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
     if (isAdmin) {
+        const month = req.query.month || getCurrentMonthYear()
         const queryRaw = `SELECT d.id, d.date, d.status, u.name, u.imgUrl 
         FROM attendance AS d
-        INNER JOIN users AS u ON u.id = d.userID; `;
+        INNER JOIN users AS u ON u.id = d.userID
+        WHERE DATE_FORMAT(d.date, '%Y-%m') = ?; `;
+        console.log(month)
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [],
+                replacements: [month],
                 type: QueryTypes.SELECT
             });
             res.send({ resultRaw })

@@ -97,10 +97,10 @@ const ListInvoice = () => {
         return `background-color: #f5f5f5`;
     }
     return (
-        <div className="content" style={{height:'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)'}}>
-            <div className="main-header" style={{marginRight: '15px', border: 'none'}}>
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
                 <div className="container-fluid">
-                <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
+                    <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                         <div className="col-sm-6">
                             <h1>Danh sách Hóa đơn</h1>
                         </div>
@@ -114,180 +114,182 @@ const ListInvoice = () => {
                 </div>
 
 
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-12">
-                        <div className="">
-                            <div className="invoice-content row d-flex" style={{ marginTop: 20 }}>
-                                <div className="table-responsive" style={{ width: showDetails ? "65%" : "100%" }}>
-                                    <table id="example2" className="table table-bordered table-hover" >
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: "5%" }}>Số hóa đơn</th>
-                                                <th >Bàn</th>
-                                                <th>Ngày thanh toán </th>
-                                                <th>Tên nhân viên</th>
-                                                <th>Tổng tiền</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            {invoiceStateList.map((invoice: any, i: number) => (
-                                                <tr key={invoice.id} onClick={() => {
-                                                    setShowDetails(true);
-                                                    setInvoiceID(invoice.id);
-                                                    setInvoiceNumber(invoice.invoiceNumber)
-                                                }} >
-                                                    <td>
-                                                        <Link href={`invoice/invoice-details?id=${invoice && invoice.id ? invoice.id : null}`}>{invoice.invoiceNumber}</Link>
-                                                    </td>
-                                                    <td>{invoice.table_Name}</td>
-                                                    <td>{formatDate(invoice.createAt)}</td>
-                                                    <td>{invoice.userName}</td>
-                                                    <td>{formatMoney(invoice.total)} VND
-
-                                                    </td>
-
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="">
+                                <div className="invoice-content row d-flex" style={{ marginTop: 20 }}>
+                                    <div className="table-responsive" style={{ width: showDetails ? "65%" : "100%" }}>
+                                        <table id="example2" className="table table-bordered table-hover" >
+                                            <thead>
+                                                <tr>
+                                                    <th style={{ width: "8%" }}>SHĐ</th>
+                                                    <th>Bàn</th>
+                                                    <th>Ngày thanh toán </th>
+                                                    <th>Tên nhân viên</th>
+                                                    <th>Tổng tiền</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {showDetails == true ? <>
-                                    <div className="form-horizontal" style={{
-                                        width: "33%", maxHeight: 600, overflowY: "auto", padding: 10, borderWidth: 1,
-                                        borderColor: "red", borderRadius: 20
-                                    }}>
-                                        <div className="row align-items-center">
-                                            <div className="col-md-6">
-                                                <h4>Ch tiết hóa đơn</h4>
-                                            </div>
+                                            </thead>
 
-                                            <button className="btn btn-danger" style={{ width: "20%", marginRight: 0 }} onClick={() => {
-                                                setShowDetails(false);
-                                            }}>X</button>
-                                        </div>
+                                            <tbody>
+                                                {invoiceStateList.map((invoice: any, i: number) => (
+                                                    <tr key={invoice.id} onClick={() => {
+                                                        setShowDetails(true);
+                                                        setInvoiceID(invoice.id);
+                                                        setInvoiceNumber(invoice.invoiceNumber)
+                                                    }} >
+                                                        <td>
+                                                            <Link href={`invoice/invoice-details?id=${invoice && invoice.id ? invoice.id : null}`}>{invoice.invoiceNumber}</Link>
+                                                        </td>
+                                                        <td>{invoice.table_Name}</td>
+                                                        <td>{formatDate(invoice.createAt)}</td>
+                                                        <td>{invoice.userName}</td>
+                                                        <td>{formatMoney(invoice.total)} VND
 
-                                        {invoiceDetailsStateList && invoiceDetailsStateList.length > 0 ? (
-                                            <div>
-                                                <div className="title">
-                                                    <p>Số hóa đơn : {invoiceNumber}</p>
-                                                </div>
-                                                <div style={{ width: "100%" }}>
-                                                    <table id="example2" className="table table-bordered table-hover">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Tên món </th>
-                                                                <th>Số lượng</th>
-                                                                <th>Tổng tiền</th>
-                                                            </tr>
-                                                        </thead>
+                                                        </td>
 
-                                                        <tbody>
-                                                            {invoiceDetailsStateList.map((item, id) => (
-                                                                <tr >
-                                                                    <td>{item.poductName}</td>
-                                                                    <td>{item.quantity}</td>
-                                                                    <td>{formatMoney(item.totalAmount)} VND</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-
-                                            </div>
-                                        ) : null}
-
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
-                                </> : " "}
-                            </div>
+                                    {showDetails == true ? <>
+                                        <div className="form-horizontal" style={{
+                                            width: "33%", maxHeight: 600, overflowY: "auto", padding: 10, borderWidth: 1,
+                                            borderColor: "red", borderRadius: 20
+                                        }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)', padding: '8px 0'}}>
+                                                <h6 style={{ margin: '0' }}>Chi tiết hóa đơn</h6>
 
+                                                <button style={{ backgroundColor: 'red', color: 'white', padding: '5px 8px', borderRadius: '5px'}} onClick={() => {
+                                                    setShowDetails(false);
+                                                }}>
+                                                    <h6 style={{ margin: '0' }}>
+                                                        Đóng
+                                                    </h6>
+                                                </button>
+                                            </div>
+
+                                            {invoiceDetailsStateList && invoiceDetailsStateList.length > 0 ? (
+                                                <div className="mt-2">
+                                                    <div className="title">
+                                                        <p>Số hóa đơn : {invoiceNumber}</p>
+                                                    </div>
+                                                    <div style={{ width: "100%" }}>
+                                                        <table id="example2" className="table table-bordered table-hover">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Tên món </th>
+                                                                    <th>Số lượng</th>
+                                                                    <th>Tổng tiền</th>
+                                                                </tr>
+                                                            </thead>
+
+                                                            <tbody>
+                                                                {invoiceDetailsStateList.map((item, id) => (
+                                                                    <tr >
+                                                                        <td>{item.poductName}</td>
+                                                                        <td>{item.quantity}</td>
+                                                                        <td>{formatMoney(item.totalAmount)} VND</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+
+                                                </div>
+                                            ) : null}
+
+                                        </div>
+                                    </> : " "}
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div className="d-flex justify-content-center align-items-center">
-                <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button
-                            className="page-link"
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                            {"<="}
-                        </button>
-                    </li>
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <li
-                            className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                            key={i + 1}
-                        >
+                <div className="d-flex justify-content-center align-items-center">
+                    <ul className="pagination">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                             <button
                                 className="page-link"
-                                onClick={() => handlePageChange(i + 1)}
+                                onClick={() => handlePageChange(currentPage - 1)}
                             >
-                                {i + 1}
+                                {"<="}
                             </button>
                         </li>
-                    ))}
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button
-                            className="page-link"
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                            {"=>"}
-                        </button>
-                    </li>
-                </ul>
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <li
+                                className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                key={i + 1}
+                            >
+                                <button
+                                    className="page-link"
+                                    onClick={() => handlePageChange(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            </li>
+                        ))}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                {"=>"}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+
+                <Modal isOpen={modal} toggle={openModal} backdrop={'static'}>
+                    <ModalHeader toggle={openModal}>{"Tìm kiếm theo ngày "}</ModalHeader>
+                    <ModalBody>
+                        <form className="form-horizontal">
+                            <div className="form-group row">
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label" htmlFor="start-date">Từ ngày: </label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            id="start-date"
+                                            type="date"
+                                            value={startDate ? startDate : ''}
+                                            onChange={(e) => setStartDate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label" htmlFor="end-date">Đến hết ngày </label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            id="end-date"
+                                            type="date"
+                                            value={endDate ? endDate : ''}
+                                            onChange={(e) => setEndDate(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => {
+                            search();
+                        }}>
+                            Tìm
+                        </Button>
+                        <Button color="secondary" onClick={() => openModal()}>
+                            Hủy
+                        </Button>
+                    </ModalFooter>
+                </Modal>
+
             </div>
-
-
-            <Modal isOpen={modal} toggle={openModal} backdrop={'static'}>
-                <ModalHeader toggle={openModal}>{"Tìm kiếm theo ngày "}</ModalHeader>
-                <ModalBody>
-                    <form className="form-horizontal">
-                        <div className="form-group row">
-                            <div className="form-group row">
-                                <label className="col-sm-4 col-form-label" htmlFor="start-date">Từ ngày: </label>
-                                <div className="col-sm-8">
-                                    <input
-                                        className="form-control"
-                                        id="start-date"
-                                        type="date"
-                                        value={startDate ? startDate : ''}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group row">
-                                <label className="col-sm-4 col-form-label" htmlFor="end-date">Đến hết ngày </label>
-                                <div className="col-sm-8">
-                                    <input
-                                        className="form-control"
-                                        id="end-date"
-                                        type="date"
-                                        value={endDate ? endDate : ''}
-                                        onChange={(e) => setEndDate(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                    </form>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" onClick={() => {
-                        search();
-                    }}>
-                        Tìm
-                    </Button>
-                    <Button color="secondary" onClick={() => openModal()}>
-                        Hủy
-                    </Button>
-                </ModalFooter>
-            </Modal>
-
-        </div>
         </div>
 
     )

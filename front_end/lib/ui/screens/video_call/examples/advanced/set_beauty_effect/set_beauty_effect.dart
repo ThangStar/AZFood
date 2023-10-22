@@ -55,7 +55,7 @@ class _State extends State<SetBeautyEffect> with KeepRemoteVideoViewsMixin {
   void _initEngine() async {
     _engine = createAgoraRtcEngine();
     await _engine.initialize(RtcEngineContext(
-      appId: config.appId,
+      appId: "5afbfb56efc04d56b7bcb475454f1675",
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     ));
     _engine.registerEventHandler(RtcEngineEventHandler(
@@ -122,9 +122,9 @@ class _State extends State<SetBeautyEffect> with KeepRemoteVideoViewsMixin {
 
   void _joinChannel() async {
     await _engine.joinChannel(
-        token: config.token,
-        channelId: _channelIdController.text,
-        uid: 0,
+        token: "0065afbfb56efc04d56b7bcb475454f1675IAAfthdmFkUV3eJyFpE2B7v0Az6/3BLpqgdOpBdvoJiByUO+t+g9UWtNIgAzmXQFQtY1ZQQAAQDSkjRlAgDSkjRlAwDSkjRlBADSkjRl",
+        channelId: "a",
+        uid: 111,
         options: const ChannelMediaOptions());
   }
 

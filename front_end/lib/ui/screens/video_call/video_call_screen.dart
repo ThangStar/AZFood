@@ -21,12 +21,6 @@ class VideoCallScreen extends StatefulWidget {
 class _VideoCallScreenState extends State<VideoCallScreen> {
   final _data = [...basic, ...advanced];
 
-  bool _isConfigInvalid() {
-    return config.appId == '<YOUR_APP_ID>' ||
-        config.token == '<YOUR_TOKEN>' ||
-        config.channelId == '<YOUR_CHANNEL_ID>';
-  }
-
   Future<void> _requestPermissionIfNeed() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await [Permission.microphone, Permission.camera].request();
@@ -103,8 +97,6 @@ class _VideoCallSetupState extends State<VideoCallSetup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('APIExample'),
-        actions: [],
       ),
       body: _isConfigInvalid()
           ? const InvalidConfigWidget()

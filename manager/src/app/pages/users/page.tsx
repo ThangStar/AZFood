@@ -213,8 +213,8 @@ export default function User() {
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a>
-                                                    <button className="btn btn-success btn-sm pd-5" disabled={item.role == 'admin' ? true : false} onClick={() => {
+                                                    </a> 
+                                                    <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
                                                         setIsEdit(true);
@@ -223,7 +223,7 @@ export default function User() {
                                                         <i className="fas fa-pencil-alt"></i>
                                                         Edit
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" disabled={item.role == 'admin' ? true : false} onClick={() => {
+                                                    <button className="btn btn-danger btn-sm" onClick={() => {
                                                         handleDeleteUser(item.id);
                                                     }}>
                                                         <i className="fas fa-trash"></i> Delete

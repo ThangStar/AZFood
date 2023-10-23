@@ -224,11 +224,11 @@ export default function MunuItems() {
                                                 {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
                                             </td>
                                             <td className="project-actions text-right">
-                                                <div className="d-flex justify-content-around">
-                                                    {/* <a className="btn btn-info btn-sm me-2" href="#">
-                                                        <i className="fas fa-folder"></i> Xem
+                                                <div className="d-flex justify-content-between " >
+                                                    {/* <a className="btn btn-primary btn-sm" href="#">
+                                                        <i className="fas fa-folder mr-1"></i> View
                                                     </a> */}
-                                                    <button className="btn btn-success btn-sm me-2" onClick={() => {
+                                                    <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal();
                                                         setIsEdit(true);
                                                         setDataForm(item);

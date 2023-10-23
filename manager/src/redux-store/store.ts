@@ -8,6 +8,7 @@ import checkinHistoryState from './checkin-history-redux/checkin-historySlice';
 import userReducer from './user-reducer/userSlice';
 import evenueReducer from './evenue-reducer/evenueSlice';
 import authenticationReducer from './login-reducer/loginSlice';
+import forgotPassReducer from './forgot-password-reducer/forgot-passwordSlide';
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +20,8 @@ export const store = configureStore({
     checkinHistoryState: checkinHistoryState,
     userState: userReducer,
     evenueState: evenueReducer,
-    authenticationState: authenticationReducer
+    authenticationState: authenticationReducer,
+    forgotPassSate: forgotPassReducer
   },
 });
 

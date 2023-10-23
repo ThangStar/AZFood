@@ -9,11 +9,15 @@ import { useRouter } from 'next/navigation';
 import '../../../public/img/logo/chicken.png'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import OtpInput from 'react-otp-input';
+import { checkOTP, resetPasswordAsync, sendOtpToEmailAsync, } from '@/redux-store/forgot-password-reducer/forgot-passwordSlide';
 
 
 const Login = () => {
 
     const status = useSelector((state: RootState) => state.authenticationState.status);
+    const resultSendOtp: any = useSelector((state: RootState) => state.forgotPassSate.result);
+    const statusForgot = useSelector((state: RootState) => state.forgotPassSate.status);
+    const isCheckForgot = useSelector((state: RootState) => state.forgotPassSate.isCheck);
     const jwtToken = useSelector(getJWTToken);
     const userFullname = useSelector(getUserFullname);
     const userID: any = useSelector(getUserID);
@@ -23,7 +27,6 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [hidePassword, setHidePassword] = useState(true)
     const [hidePassChange, setHidePassChange] = useState(true)
-    const [isCheckForgot, setIsCheckForgot] = useState<"email" | "otp" | "pass">("email");
     const [modalForgot, setModalForgot] = useState(false);
     const [otp, setOtp] = useState('');
     const [email, setEmail] = useState('');
@@ -53,6 +56,23 @@ const Login = () => {
         }
     }, [status, jwtToken, userFullname]);
 
+    useEffect(() => {
+        // check hanhle forgot password
+        if (statusForgot === 'failed' && isCheckForgot === 'email') {
+            showAlert("error", "Không thể gửi mã otp");
+        } else if (statusForgot === 'failed' && isCheckForgot === 'otp') {
+            showAlert("error", "Mã otp không đúng");
+        } else if (statusForgot === 'failed' && isCheckForgot === 'password') {
+            showAlert("error", "Lỗi khi đổi password");
+        } else if (statusForgot === 'success') {
+            showAlert("success", "Đổi password thành công");
+            openModalForgot()
+            setOtp('')
+            setEmail('')
+            setNewPass('')
+        }
+    }, [statusForgot, isCheckForgot]);
+
     const toggle = () => {
         setModalForgot(!modalForgot)
     }
@@ -62,19 +82,19 @@ const Login = () => {
     }
 
     const handleSendOtp = () => {
-        setIsCheckForgot("otp")
+        dispatch(sendOtpToEmailAsync(email))
     }
 
     const handleCheckOtp = () => {
-        setIsCheckForgot('pass')
+        dispatch(checkOTP(otp))
     }
 
     const handleChangePassword = () => {
-        setIsCheckForgot('email')
-        openModalForgot()
-        setOtp('')
-        setEmail('')
-        setNewPass('')
+        const data = {
+            email: resultSendOtp?.email,
+            password: newPass
+        }
+        dispatch(resetPasswordAsync(data))
     }
 
     return (
@@ -144,7 +164,7 @@ const Login = () => {
                 </div>
             </div>
             {/* Modal forgot password */}
-            <Modal isOpen={modalForgot} toggle={openModalForgot}>
+            <Modal isOpen={modalForgot} toggle1={openModalForgot}>
                 <ModalHeader toggle={openModalForgot}>{"Quên mật khẩu"}</ModalHeader>
                 <ModalBody>
                     <div className="form-horizontal">
@@ -170,7 +190,7 @@ const Login = () => {
                                 <div>
                                     <h4 className='text-center'>Xác thực OTP</h4>
                                     <div className="d-flex flex-column align-items-center mt-2">
-                                        <div className='w-75 text-center mb-4'>Mã otp đã được gửi đến email {email}. Vui lòng kiểm tra email và nhập mã otp để xác thực.</div>
+                                        <div className='w-75 text-center mb-4'>Mã otp đã được gửi đến email {resultSendOtp?.email}. Vui lòng kiểm tra email và nhập mã otp để xác thực.</div>
                                         <OtpInput
                                             value={otp}
                                             onChange={setOtp}

@@ -213,7 +213,7 @@ export default function User() {
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a>
+                                                    </a> */}
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
@@ -223,11 +223,11 @@ export default function User() {
                                                         <i className="fas fa-pencil-alt"></i>
                                                         Edit
                                                     </button>
-                                                    {/* <button className="btn btn-danger btn-sm" onClick={() => {
+                                                    <button className="btn btn-danger btn-sm" onClick={() => {
                                                         handleDeleteUser(item.id);
                                                     }}>
                                                         <i className="fas fa-trash"></i> Delete
-                                                    </button> */}
+                                                    </button>
                                                 </div>
 
                                             </td>

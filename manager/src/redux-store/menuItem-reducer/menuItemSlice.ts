@@ -91,6 +91,8 @@ export const getCategoryListAsync = createAsyncThunk(
 export const deleteMenuItemAsync = createAsyncThunk(
   'product/delete',
   async (id: any) => {
+    console.log("id", id);
+
     const token = localStorage.getItem('token');
     const response = await axios.post(serverUrl + '/api/products/delete', { id }, {
       headers: {

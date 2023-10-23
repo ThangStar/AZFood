@@ -101,14 +101,12 @@ export default function MunuItems() {
     }
 
     const deleteItem = (id: number) => {
-        if (id) {
-            dispatch(deleteMenuItemAsync(id));
-            showAlert("success", "Xóa món ăn thành công");
-            handlePageChange(currentPage);
-            toggle1();
-        } else {
-            showAlert("error", "Không tìm thấy sản phẩm");
-        }
+        dispatch(deleteMenuItemAsync(id));
+
+        showAlert("success", "Xóa món ăn thành công");
+        handlePageChange(currentPage);
+        toggle1();
+
     };
 
     const onSearchChange = (searchName: any) => {

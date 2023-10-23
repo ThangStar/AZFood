@@ -336,7 +336,7 @@ exports.delete = async (req, res) => {
 
     if (isAdmin) {
         console.log("body.id ", body.id);
-        const queryRaw = "DELETE FROM products WHERE id=? ";
+        const queryRaw = "DELETE FROM products WHERE id = ? ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,

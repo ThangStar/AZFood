@@ -9,9 +9,14 @@ export default function Home() {
     const checkinHistoryList: any = useAppSelector(getCheckinHistoryList);
 
     const [formattedData, setFormattedData] = useState<any[]>([]);
+    const currentMonth = moment().format('MM')
+    const currentYear = moment().format('YYYY')
+    const [monthInput, setMonthInput] = useState(`${currentYear}-${currentMonth}`);
+    const [monthSelect, setMonthSelect] = useState<number | null>();
+    const [yearSelect, setYearSelect] = useState<number | null>();
 
     useEffect(() => {
-        dispatch(getCheckinHistoryListAsync());
+        dispatch(getCheckinHistoryListAsync(`${currentYear}-${currentMonth}`));
     }, [dispatch]);
 
     useEffect(() => {
@@ -75,28 +80,47 @@ export default function Home() {
     };
 
     const renderRowTable = () => {
-        const currentMonth = parseInt(moment().format('MM')) - 2;
-        const currentYear = parseInt(moment().format('YYYY'));
         const names = ['CN', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
-        let date = new Date(currentYear, currentMonth, 1);
+        const year = yearSelect || parseInt(currentYear)
+        const month = monthSelect || parseInt(currentMonth) - 1
+        let date = new Date(year, month, 1);
         let result = [];
-        while (date.getMonth() === currentMonth) {
+        while (date.getMonth() === month) {
             result.push({ date: moment(date).format('DD/MM'), day: names[date.getDay()] });
             date.setDate(date.getDate() + 1);
         }
         return result;
     };
 
+    const handleMonthChange = () => {
+        dispatch(getCheckinHistoryListAsync(monthInput))
+        const parts = monthInput.split('-');
+        if (parts.length === 2) {
+            setYearSelect(parseInt(parts[0]))
+            setMonthSelect(parseInt(parts[1]) - 1);
+        } else {
+            console.log('không lấy được tháng năm') // Hoặc giá trị mặc định nếu định dạng không hợp lệ
+        }
+    };
+
     return (
         <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
             <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
-
-                    <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                        <div className="col-sm-6">
-                            <h1>Lịch sử Checkin</h1>
+                <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                    <div className="col-sm-6">
+                        <h1>Lịch sử Checkin</h1>
+                    </div>
+                </div>
+                <div className="card container-fluid mt-4" >
+                    <div className="card-header">
+                        <div className="float-right">
+                            <div className="input-group">
+                                <input className="form-control" type="month" placeholder="Chọn tháng" value={monthInput} onChange={(e) => setMonthInput(e.target.value)} />
+                                <button className="btn btn-primary" onClick={() => handleMonthChange()}>Xác nhận</button>
+                            </div>
                         </div>
                     </div>
-                    <div className="card container-fluid mt-4" style={{ overflowY: 'auto' }}>
+                    <div style={{ overflowY: 'auto' }}>
                         <table className="table table-bordered table-striped projects mt-3">
                             <thead>
                                 <tr style={{ fontSize: '9px' }}>
@@ -120,6 +144,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+        </div>
 
     );
 }

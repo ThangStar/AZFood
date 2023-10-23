@@ -139,9 +139,9 @@ export default function User() {
                     <div className="">
                         <div className="card-header" style={{ border: 'none' }}>
                             <button className="btn btn-success" onClick={() => {
-                                                        openModal1();
-                                                        setisAdd(true);
-                                                    }}>Thêm nhân viên</button>
+                                openModal1();
+                                setisAdd(true);
+                            }}>Thêm nhân viên</button>
                             <div className="card-tools flex items-center">
                                 <form role="search">
                                     <input
@@ -170,7 +170,7 @@ export default function User() {
                                         <th style={{ width: "25%" }}>
                                             Địa chỉ
                                         </th>
-                                        <th style={{ width: "15%" }}>  
+                                        <th style={{ width: "15%" }}>
                                             STĐ
                                         </th>
                                         <th style={{ width: "20%" }}>
@@ -209,12 +209,12 @@ export default function User() {
                                             </td>
                                             <td className="project-actions text-right">
                                                 <div className="d-flex justify-content-between " >
-                                                    {/* <a className="btn btn-primary btn-sm" href="#">
+                                                    <a className="btn btn-primary btn-sm" href="#">
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
                                                     </a>
-                                                    <button className="btn btn-success btn-sm pd-5" onClick={() => {
+                                                    <button className="btn btn-success btn-sm pd-5" disabled={item.role == 'admin' ? true : false} onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
                                                         setIsEdit(true);
@@ -223,11 +223,11 @@ export default function User() {
                                                         <i className="fas fa-pencil-alt"></i>
                                                         Edit
                                                     </button>
-                                                    {/* <button className="btn btn-danger btn-sm" onClick={() => {
+                                                    <button className="btn btn-danger btn-sm" disabled={item.role == 'admin' ? true : false} onClick={() => {
                                                         handleDeleteUser(item.id);
                                                     }}>
                                                         <i className="fas fa-trash"></i> Delete
-                                                    </button> */}
+                                                    </button>
                                                 </div>
 
                                             </td>

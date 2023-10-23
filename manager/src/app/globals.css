@@ -33,3 +33,23 @@
 .scroll::-webkit-scrollbar {
   width: 0;
 }
+
+.otp-input {
+  width: 36px !important;
+  height: 40px !important;
+  line-height: 1.5 !important;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-weight: 700;
+}
+
+.otp-input:focus {
+  border: 1px solid #058fff;
+  outline: none;
+}
+
+.otp-input::-webkit-inner-spin-button,
+.otp-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

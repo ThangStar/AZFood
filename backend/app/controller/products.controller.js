@@ -397,3 +397,46 @@ exports.searchProduct = async (req, res) => {
         res.status(401).send('User is not admin');
     }
 };
+exports.getListTop = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (!checkAuth) {
+        return res.status(401).send('User is not admin');
+    }
+
+    try {
+        const topSellingProductsQuery = `
+            SELECT
+                p.id,
+                p.name,
+                p.price,
+                p.category,
+                p.status,
+                SUM(id.quantity) AS totalQuantity,
+                p.dvtID,
+                p.imgUrl,
+                c.name AS category_name,
+                d.tenDVT AS dvt_name
+            FROM
+                products p
+            JOIN
+                category c ON p.category = c.id
+            JOIN
+                donViTinh d ON p.dvtID = d.id
+            LEFT JOIN
+                invoicedetails id ON p.id = id.productID
+            GROUP BY
+                p.id
+            ORDER BY
+                totalQuantity DESC
+            LIMIT 2;`;
+
+        const topSellingProducts = await sequelize.query(topSellingProductsQuery, {
+            type: QueryTypes.SELECT
+        });
+
+        res.status(200).json(topSellingProducts);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+        console.log("error", error);
+    }
+};

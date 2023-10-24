@@ -78,6 +78,7 @@ export default function User() {
         }
     }
     const setDataForm = (item: any) => {
+
         if (item) {
             setUsername(item.username);
             setPassword(item.password);
@@ -89,6 +90,16 @@ export default function User() {
             setIdUser(item.id);
             setIsEdit(true);
             setImage(item.imgUrl)
+        } else {
+            setUsername("");
+            setPassword("");
+            setName("");
+            setPhoneNumber("");
+            setEmail("");
+            setAddress("");
+            setBirtDay("");
+            setIdUser("");
+            setImage("")
         }
     }
     const onSearchChange = (searchName: any) => {
@@ -379,7 +390,10 @@ export default function User() {
                         <Button color="primary" onClick={handleAddUser}>
                             Lưu
                         </Button>
-                        <Button color="secondary" onClick={() => openModal1()}>
+                        <Button color="secondary" onClick={() => {
+                            openModal1();
+                            setDataForm(null);
+                        }}>
                             Hủy
                         </Button>
                     </ModalFooter>

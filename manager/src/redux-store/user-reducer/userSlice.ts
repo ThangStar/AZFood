@@ -18,13 +18,16 @@ const initialState: UserState = {
 
 export const getUserListAsync = createAsyncThunk(
   'user/get-list',
-  async () => {
+  async (page: any) => {
     const token = localStorage.getItem('token');
     const response = await axios.get(serverUrl + '/api/user/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
       },
+      params: {
+        page: page,
+      }
     });
     return response.data;
   }
@@ -32,13 +35,39 @@ export const getUserListAsync = createAsyncThunk(
 export const createUserListAsync = createAsyncThunk(
   'user/create',
   async (user: any) => {
-    const { name, username, password, role, phoneNumber } = user;
-    console.log(" user ", user);
+
+    const { idUser, name, username, password, role, phoneNumber, email, address, birtDay, file } = user;
+
+
+    const formData = new FormData();
+    formData.append('idUser', idUser);
+    formData.append('name', name);
+    formData.append('username', username);
+    formData.append('password', password);
+    formData.append('role', role);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('email', email);
+    formData.append('address', address);
+    formData.append('birtDay', birtDay);
+    formData.append('file', file);
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/user/create', {
-      name, username, password, role, phoneNumber
-    }, {
+    const response = await axios.post(serverUrl + '/api/user/create', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+export const deleteUserAsync = createAsyncThunk(
+  'user/delete',
+  async (id: any) => {
+    const token = localStorage.getItem('token');
+    console.log(" id ", id);
+
+    const response = await axios.post(serverUrl + '/api/user/delete', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -47,6 +76,22 @@ export const createUserListAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const searchUserAsync = createAsyncThunk(
+  'user/search-list',
+  async (name: any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(serverUrl + '/api/user/search', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      params: { name }
+    });
+    return response.data;
+  }
+);
+
 const TableSlice = createSlice({
   name: 'table',
   initialState,
@@ -73,8 +118,27 @@ const TableSlice = createSlice({
       })
       .addCase(createUserListAsync.rejected, (state) => {
         state.status = 'failed';
+      }).addCase(deleteUserAsync.pending, (state) => {
+        state.status = 'loading';
       })
-
+      .addCase(deleteUserAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.userList = action.payload;
+        state.user = action.payload;
+      })
+      .addCase(deleteUserAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+      .addCase(searchUserAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(searchUserAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.userList = action.payload;
+      })
+      .addCase(searchUserAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
   },
 });
 

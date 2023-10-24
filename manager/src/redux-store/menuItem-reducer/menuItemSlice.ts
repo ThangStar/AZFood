@@ -54,11 +54,21 @@ export const getSearchMenuListAsync = createAsyncThunk(
 export const createMenuItemAsync = createAsyncThunk(
   'product/create',
   async (data: any) => {
-    const { id, name, price, category, status, dvtID } = data;
+    const { dvtID, name, price, category, status, id, file } = data;
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('price', price);
+    formData.append('category', category);
+    formData.append('status', status);
+    formData.append('id', id);
+    formData.append('file', file);
+    formData.append('dvtID', dvtID);
+
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/products/create', { id, name, price, category, status, dvtID }, {
+    const response = await axios.post(serverUrl + '/api/products/create', { dvtID, name, price, category, status, id, file }, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
         'Authorization': 'Bearer ' + token,
       },
     });
@@ -81,6 +91,8 @@ export const getCategoryListAsync = createAsyncThunk(
 export const deleteMenuItemAsync = createAsyncThunk(
   'product/delete',
   async (id: any) => {
+    console.log("id", id);
+
     const token = localStorage.getItem('token');
     const response = await axios.post(serverUrl + '/api/products/delete', { id }, {
       headers: {

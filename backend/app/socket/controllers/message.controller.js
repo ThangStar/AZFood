@@ -17,7 +17,8 @@ exports.getMessages = async (socket, io, data) => {
             replacements: [],
             type: QueryTypes.SELECT
         });
-        io.emit('sever-msg-init-group', resultRaw);
+        io.emit('sever-msg-init-group', resultRaw); //send to all user
+        io.emit('sever-msg-noti', resultRaw[resultRaw.length-1]); // noti to all user
     } catch (error) {
         console.error('Error getting messages:', error);
         io.to(socket.id).emit('sever-msg-init-group', "error")
@@ -26,7 +27,7 @@ exports.getMessages = async (socket, io, data) => {
 
 exports.insertMessage = async (socket, io, data) => {
     // if(data.img){
-        console.log(data);
+    console.log(data);
     // }
     const { type, message, raw, imageUrl, sendBy } = data
     try {

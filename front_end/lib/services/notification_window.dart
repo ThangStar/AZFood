@@ -4,19 +4,15 @@
 
 import 'package:local_notifier/local_notifier.dart';
 
-Future<void> showNotiWindow() async {
-  LocalNotification notification = LocalNotification(
-    title: "Tin nhắn mới",
-    body: "Anh đang làm gì thế ❤",
-    actions: [
-      LocalNotificationAction(
-        text: "Trả lời",
-      ),
-      LocalNotificationAction(
-          text: "Đóng"
-      ),
-    ]
-  );
+Future<void> showNotiWindow(
+    {title = "Tin nhắn mới", body = "Anh đang làm gì thế ❤"}) async {
+  LocalNotification notification =
+      LocalNotification(title: title, body: body, actions: [
+    LocalNotificationAction(
+      text: "Trả lời",
+    ),
+    LocalNotificationAction(text: "Đóng"),
+  ]);
   notification.onShow = () {
     print('onShow ${notification.identifier}');
   };

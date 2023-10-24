@@ -3,7 +3,6 @@ class Router {
   static String login = "/api/user/login";
   static String register = "/register";
   static String profileDetail = "/api/user/details";
- 
 
   //product
   static String listProduct = "/api/products/list";
@@ -24,11 +23,17 @@ class Router {
 
   //calendar
   static String attendance = '/api/attendance/attendance';
+
   //forgot_pass
   static String sendEmail = '/api/auth/checkAndSendOtpToEmail';
   static String verifyOtp = '/api/auth/verifyOtpFromUser';
   static String resetPass = '/api/auth/resetPassword';
+
   //profile
   static String updatePassword = "/api/user/change";
   static String updateProfile = "/api/user/updateinfo";
+
+  //Income
+  static String inComeAYear = "/api/stats/revenue-year";
+  static String inComeAMonth = "/api/stats/revenue-month";
 }

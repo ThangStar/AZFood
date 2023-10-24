@@ -54,28 +54,30 @@ class _ZoomState extends State<HomeMenuScreen> {
     super.initState();
   }
 
+  void logout(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => MyDialog(
+              title: "Đăng xuất?",
+              content: "Bạn có chắc chắn muốn đăng xuất",
+              onTapLeading: () {
+                MySharePreferences.setRememberMe(false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                    (route) => false);
+              },
+              onTapTrailling: () {
+                Navigator.pop(context);
+              },
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size sizeScreen = MediaQuery.of(context).size;
-    void logout(BuildContext context) {
-      showDialog(
-          context: context,
-          builder: (context) => MyDialog(
-                title: "Đăng xuất?",
-                content: "Bạn có chắc chắn muốn đăng xuất",
-                onTapLeading: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                      (route) => false);
-                },
-                onTapTrailling: () {
-                  Navigator.pop(context);
-                },
-              ));
-    }
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {

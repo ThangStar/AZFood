@@ -24,14 +24,18 @@ export default function MunuItems() {
     const [itemName, setItemName] = useState("");
     const [itemPrice, setItemPrice] = useState("");
     const [itemDVT, setItemDVT] = useState("");
+    const [status, setStatus] = useState("");
     const [itemCategory, setItemCategory] = useState("");
     const [idItemDelete, setIdItemDelete] = useState<number>(0);
-    const [idItem, setIdItem] = useState<number>(0);
+    const [idItem, setIdItem] = useState<number>();
     const [listCategory, setListCategory] = useState<string[]>([]);
     const [listDvt, setListDvt] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchName, setSearchName] = useState("")
+    const [isEdit, setIsEdit] = useState(false);
+    const [image, setImage] = useState("");
 
+    const [file, setFile] = useState<File>();
     const totalPages = menuItemList.totalPages || 1;
 
     useEffect(() => {
@@ -40,12 +44,7 @@ export default function MunuItems() {
         dispatch(getDvtListAsync());
     }, [dispatch, currentPage]);
 
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        dispatch(getMenuItemListAsync(page));
-    };
     useEffect(() => {
-
         if (menuItemList && menuItemList.data) {
             setMenuItems(menuItemList.data);
         }
@@ -55,20 +54,29 @@ export default function MunuItems() {
         if (dvtList && dvtList.resultRaw) {
             setListDvt(dvtList.resultRaw);
         }
+    }, [menuItemList, categoryList, dvtList, dispatch]);
 
-    }, [menuItemList, categoryList, dvtList]);
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        dispatch(getMenuItemListAsync(page));
+    }
 
     const toggle = () => setModal(!modal);
-    const openModal = (data: any = null) => {
+    const openModal = () => {
+        toggle();
+    }
+    const setDataForm = (data: any) => {
         if (data) {
             setIdItem(data.id);
             setItemName(data.name);
             setItemPrice(data.price);
             setItemCategory(data.category);
             setItemDVT(data.dvtID);
+            setStatus(data.status);
+            setImage(data.imgUrl);
         }
-        toggle();
     }
+
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (id: any = null) => {
         setIdItemDelete(id);
@@ -80,44 +88,54 @@ export default function MunuItems() {
             name: itemName,
             price: itemPrice,
             category: itemCategory,
-            status,
+            status: status,
             dvtID: itemDVT,
             id: idItem,
+            file
         }
         dispatch(createMenuItemAsync(data));
+        setDataForm("");
         handlePageChange(currentPage);
         showAlert("success", " Thêm món thành công");
         toggle();
     }
 
     const deleteItem = (id: number) => {
-        if (id) {
-            dispatch(deleteMenuItemAsync(id));
-            showAlert("success", " Xóa món ăn thành công");
-            handlePageChange(currentPage);
-            toggle1();
-        } else {
-            showAlert("error", " Không tìm thấy sản phẩm");
-        }
+        dispatch(deleteMenuItemAsync(id));
+
+        showAlert("success", "Xóa món ăn thành công");
+        handlePageChange(currentPage);
+        toggle1();
+
     };
 
     const onSearchChange = (searchName: any) => {
         setSearchName(searchName);
-        dispatch(getSearchMenuListAsync(searchName));
+        if (searchName.trim() !== '') {
+            dispatch(getSearchMenuListAsync(searchName));
+        } else {
+            handlePageChange(currentPage)
+        }
     }
 
+    const handleChangeFile = (event: any) => {
+        if (event.target.files && event.target.files[0]) {
+            const selectedImage = event.target.files[0];
+            setFile(selectedImage);
+        }
+    }
     return (
-        <>
-            <div className="main-header card" >
-                <div className="card-header">
+        <div className="content scroll" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header mr-md-3 border-0">
+                <div className="card-header p-0 border-0">
                     <div className="container-fluid">
-                        <div className="row mb-2">
-                            <div className="col-sm-6">
+                        <div className="row mb-2 align-items-center" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                            <div className="col-sm-6 p-0">
                                 <h1>Danh sách món</h1>
                             </div>
-                            <div className="col-sm-6">
-                                <ol className="breadcrumb float-sm-right">
-                                    <li className="breadcrumb-item"><a href="#">Home</a></li>
+                            <div className="col-sm-6 p-0">
+                                <ol className="breadcrumb p-2 float-sm-right">
+                                    <li className="breadcrumb-item"><a href="#">Trang chủ</a></li>
                                     <li className="breadcrumb-item active">Danh sách món</li>
                                 </ol>
                             </div>
@@ -126,33 +144,28 @@ export default function MunuItems() {
                 </div>
 
                 <div className="content">
-
-                    <div className="card">
-                        <div className="card-header">
+                    <div>
+                        {/* add and search */}
+                        <div className="card-header border-0 px-0">
                             <button className="btn btn-success" onClick={() => {
                                 openModal()
-                            }}><i className="fas fa-plus-circle mr-2"></i>Thêm món</button>
+                            }}><i className="fas fa-plus-circle mx-0"></i>Thêm món ăn</button>
 
-                            <div className="card-tools flex items-center">
-                                <form role="search">
+                            <div className="card-tools m-0 pt-1">
+                                <div className="input-group">
                                     <input
                                         type="text"
                                         value={searchName}
-                                        onChange={(e)=>onSearchChange(e.target.value)}
+                                        onChange={(e) => onSearchChange(e.target.value)}
                                         placeholder="Tìm kiếm món ăn..."
                                         className='form-control'
                                     />
-                                </form>
-
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
+                                    <span className='input-group-text bg-success text-bg-success'><i className="fas fa-search"></i></span>
+                                </div>
                             </div>
                         </div>
-                        <div className="card-body p-0">
+                        {/* table */}
+                        <div className="card card-body border-0 p-0 mt-3">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -172,15 +185,14 @@ export default function MunuItems() {
                                             Loại Món
                                         </th>
                                         <th>
-                                            Đơn Vị Tính
+                                            Đv Tính
                                         </th>
                                         <th>
-                                            Trạng thái / Số lượng
+                                            Tồn Kho
                                         </th>
-                                        <th style={{ width: "15%" }} className="text-center">
-                                            Actions
+                                        <th style={{ width: "20%" }} className="text-center">
+                                            Tùy Chỉnh
                                         </th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -190,16 +202,17 @@ export default function MunuItems() {
                                                 {i + 1}
                                             </td>
                                             <td>
-                                                <a>
-                                                    {item && item.name ? item.name : null}
-                                                </a>
-                                                <br />
+                                                {item && item.name ? item.name : null}
                                             </td>
                                             <td>
-                                                <img alt="món ăn" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
+                                                {item && item.imgUrl ?
+                                                    <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
+                                                    :
+                                                    <img src="" alt=" món ăn" style={{ height: 40 }} />
+                                                }
                                             </td>
                                             <td className="project_progress" style={{}}>
-                                                {item && item.price ? `${formatMoney(item.price)} vnd` : null}
+                                                {item && item.price ? `${formatMoney(item.price)} ₫` : null}
                                             </td>
                                             <td className="project_progress">
                                                 {item && item.category_name ? item.category_name : ""}
@@ -208,37 +221,72 @@ export default function MunuItems() {
                                                 {item && item.dvt_name ? item.dvt_name : null}
                                             </td>
                                             <td className="project_progress">
-                                                {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
+                                                {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
                                             </td>
                                             <td className="project-actions text-right">
                                                 <div className="d-flex justify-content-between " >
-                                                    <a className="btn btn-primary btn-sm" href="#">
+                                                    {/* <a className="btn btn-primary btn-sm" href="#">
                                                         <i className="fas fa-folder mr-1"></i> View
-                                                    </a>
+                                                    </a> */}
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
-                                                        openModal(item)
+                                                        openModal();
+                                                        setIsEdit(true);
+                                                        setDataForm(item);
                                                     }}>
-                                                        <i className="fas fa-pencil-alt mr-1"></i> Sửa
+                                                        <i className="fas fa-pencil-alt"></i> Sửa
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm " onClick={() => {
+                                                    <button className="btn btn-danger btn-sm me-2" onClick={() => {
                                                         openModal1(item.id)
+                                                        setItemName(item?.name)
                                                     }}>
-                                                        <i className="fas fa-trash  mr-1"></i> Xóa
+                                                        <i className="fas fa-trash"></i> Xóa
                                                     </button>
                                                 </div>
-
                                             </td>
                                         </tr>
                                     )) : ""}
-
-
                                 </tbody>
                             </table>
                         </div>
+                        {/* pagination */}
+                        <div className="card-footer bg-white p-0">
+                            <div className="d-flex justify-content-center align-items-center">
+                                <ul className="pagination">
+                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                        >
+                                            &#60;
+                                        </button>
+                                    </li>
+                                    {Array.from({ length: totalPages }, (_, i) => (
+                                        <li
+                                            className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                            key={i + 1}
+                                        >
+                                            <button
+                                                className="page-link"
+                                                onClick={() => handlePageChange(i + 1)}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        </li>
+                                    ))}
+                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                        >
+                                            &#62;
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
-
+                {/* modal add and edit */}
                 <Modal isOpen={modal} toggle={openModal}>
                     <ModalHeader toggle={openModal}>{"Thêm Món Mới"}</ModalHeader>
                     <ModalBody>
@@ -256,142 +304,113 @@ export default function MunuItems() {
                                     >
                                         <option value="" selected>Chọn loại món</option>
                                         {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
-                                            <option value={item.id}>{item.name}</option>
-
-
+                                            <option value={item.id} key={id}>{item.name}</option>
                                         )) : ""}
                                     </select>
-
                                 </div>
                             </div>
-                            {itemCategory != "" ?
-                                <>
-                                    <div className="form-group row">
-                                        <label className="col-sm-4 col-form-label">Tên món ăn </label>
-                                        <div className="col-sm-8">
+                            <>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            type='file'
+                                            id="image"
+                                            onChange={handleChangeFile}
 
-                                            <input
-                                                className="form-control"
-                                                id="name"
-                                                value={itemName}
-                                                onChange={(e) => {
-                                                    setItemName(e.target.value)
-
-                                                }}
-                                            />
-
-
-                                        </div>
+                                        />
+                                        {image &&
+                                            <div className='ratio ratio-1x1 w-50 mt-2'>
+                                                <img src={image} alt="" style={{ objectFit: 'cover' }} />
+                                            </div>
+                                        }
                                     </div>
-                                    <div className="form-group row">
-                                        <label className="col-sm-4 col-form-label">Giá</label>
-                                        <div className="col-sm-8">
-
-                                            <input
-                                                className="form-control"
-                                                id="name"
-                                                value={itemPrice}
-                                                onChange={(e) => {
-                                                    setItemPrice(e.target.value)
-                                                }}
-                                            />
-
-
-                                        </div>
+                                </div>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Tên món ăn </label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            id="name"
+                                            value={itemName}
+                                            onChange={(e) => {
+                                                setItemName(e.target.value)
+                                            }}
+                                        />
                                     </div>
-
-                                    <div className="form-group row">
-                                        <label className="col-sm-4 col-form-label">Đơn vị tính</label>
-                                        <div className="col-sm-8">
-
-                                            <select
-                                                className="form-control"
-                                                id="dvt"
-                                                value={itemDVT}
-                                                onChange={(e) => {
-                                                    setItemDVT(e.target.value)
-                                                }}
-                                            >
-                                                <option value=" ">Chọn đơn vị tính</option>
-
-                                                {listDvt && listDvt.length > 0 ? listDvt.map((item: any, id: number) => (
-                                                    <option value={item.id}>{item.tenDVT}</option>
-
-
-                                                )) : ""}
-                                            </select>
-
-                                        </div>
-                                    </div></> : " "}
-
+                                </div>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Giá</label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            id="name"
+                                            value={itemPrice}
+                                            onChange={(e) => {
+                                                setItemPrice(e.target.value)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Đơn vị tính</label>
+                                    <div className="col-sm-8">
+                                        <select
+                                            className="form-control"
+                                            id="dvt"
+                                            value={itemDVT}
+                                            onChange={(e) => {
+                                                setItemDVT(e.target.value)
+                                            }}
+                                        >
+                                            <option value=" ">Chọn đơn vị tính</option>
+                                            {listDvt && listDvt.length > 0 ? listDvt.map((item: any, id: number) => (
+                                                <option value={item.id}>{item.tenDVT}</option>
+                                            )) : ""}
+                                        </select>
+                                    </div>
+                                </div></>
                         </form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={addMenuItem}>
-                            Lưu
-                        </Button>
                         <Button color="secondary" onClick={() => openModal()}>
                             Hủy
                         </Button>
+                        <Button color="primary" onClick={() => {
+                            addMenuItem();
+                        }}>
+                            Lưu
+                        </Button>
                     </ModalFooter>
                 </Modal>
-
-                <Modal isOpen={modal1} toggle1={openModal1}>
-                    <ModalHeader toggle1={openModal1}>{"Xác nhận xóa "}</ModalHeader>
+                {/* modal delete */}
+                <Modal isOpen={modal1} toggle={openModal1}>
+                    <ModalHeader toggle1={openModal1}>{"Xác nhận xóa món ăn"}</ModalHeader>
                     <ModalBody>
                         <form className="form-horizontal">
                             <div className="form-group row">
-                                <h3>Bạn muốn xóa món ăn này?</h3>
+                                <h4>Bạn có chắc chắn muốn xóa {itemName} không? </h4>
+                                <div>Sau khi xóa món ăn sẽ bị xóa vĩnh viễn khỏi thực đơn không thể khôi phực lại được nữa</div>
                             </div>
-
                         </form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={() => {
+                        <Button color="secondary" onClick={() => {
+                            openModal1()
+                            setDataForm(" ");
+                        }}>
+                            Hủy
+                        </Button>
+                        <Button color="danger" onClick={() => {
                             deleteItem(idItemDelete);
                         }}>
-                            Xóa
-                        </Button>
-                        <Button color="secondary" onClick={() => openModal1()}>
-                            Hủy
+                            Đồng ý xóa
                         </Button>
                     </ModalFooter>
                 </Modal>
 
             </div>
-            <div className="d-flex justify-content-center align-items-center">
-                <ul className="pagination">
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button
-                            className="page-link"
-                            onClick={() => handlePageChange(currentPage - 1)}
-                        >
-                            Previous
-                        </button>
-                    </li>
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <li
-                            className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                            key={i + 1}
-                        >
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(i + 1)}
-                            >
-                                {i + 1}
-                            </button>
-                        </li>
-                    ))}
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button
-                            className="page-link"
-                            onClick={() => handlePageChange(currentPage + 1)}
-                        >
-                            Next
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </>
+        </div>
     )
 }

@@ -18,7 +18,7 @@ const initialState: InvoiceSate = {
 
 export const getCheckinHistoryListAsync = createAsyncThunk(
     'checkin-history',
-    async () => {
+    async (month: any) => {
         const token = localStorage.getItem('token');
 
         const response = await axios.get(serverUrl + '/api/attendance/list', {
@@ -26,6 +26,7 @@ export const getCheckinHistoryListAsync = createAsyncThunk(
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
             },
+            params: { month: month }
         });
 
         return response.data;

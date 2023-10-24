@@ -14,7 +14,8 @@ module.exports = app => {
   router.post("/change", [jwt.checkJwt], member.changePassUser);
   router.post("/updateinfo", [jwt.checkJwt, upload.single('file')], member.updateUserInfo);
   router.post("/delete", [jwt.checkJwt], member.delete);
-  router.get("/list", [jwt.checkJwt], member.getList);
+  router.get("/list", [jwt.checkJwt], member.getListPage);
+  router.get("/listAll", [jwt.checkJwt], member.getList);
   router.get("/details", [jwt.checkJwt], member.getDetails);
   router.get("/account", [jwt.checkJwt], login.account);
   router.get("/checkAuth", [jwt.checkJwt], Auth.getUserLogin);

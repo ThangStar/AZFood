@@ -5,10 +5,13 @@ import 'package:elegant_notification/resources/arrays.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
+import 'package:restaurant_manager_app/services/notification_mobile.dart';
+import 'package:restaurant_manager_app/services/notification_window.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
@@ -26,6 +29,10 @@ import 'package:restaurant_manager_app/ui/widgets/notification_news.dart';
 import 'package:restaurant_manager_app/ui/widgets/page_index.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/utils/io_client.dart';
+import 'package:restaurant_manager_app/model/message.dart' as msg;
+
+import '../../../model/message.dart';
+import '../../../routers/socket.event.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.constraints});
@@ -46,6 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool notificationVisible = false;
   late TableBloc tbBloc;
   late ProductBloc prdBloc;
+  // LoginResponse profile = LoginResponse(
+  //     connexion: false, jwtToken: "jwtToken", id: 0, username: "username");
 
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
@@ -54,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    // _initProfile();
+    // _initMessage();
     tbBloc = BlocProvider.of<TableBloc>(context);
     prdBloc = BlocProvider.of<ProductBloc>(context);
     //init table
@@ -64,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final jsonResponse = data as List<dynamic>;
         List<Model.Table> tables =
-            jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
+        jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
         //name is required having value
         tables.sort((a, b) => a.name!.compareTo(b.name!));
         print("mounted $mounted");
@@ -74,6 +85,34 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _fillData();
   }
+
+  // _initProfile() {
+  //   MySharePreferences.loadProfile().then((value) {
+  //     setState(() {
+  //       profile = value ??
+  //           LoginResponse(
+  //               connexion: false, jwtToken: "", id: 0, username: "username");
+  //     });
+  //   });
+  // }
+
+  // _initMessage() {
+  //   if (!io.hasListeners(SocketEvent.onNotiMsgGroup)) {
+  //     io.on(SocketEvent.onNotiMsgGroup, (data) {
+  //       //transform data
+  //       final rs = data as List<dynamic>;
+  //       List<msg.Message> msgs = rs.map((e) {
+  //         return msg.Message.fromMap(e);
+  //       }).toList();
+  //       if (msgs.last.sendBy != profile.id)
+  //         if (Theme
+  //             .of(context)
+  //             .platform == TargetPlatform.windows) {
+  //           showNotiWindow();
+  //         }
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -103,146 +142,153 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: ClipRRect(
                     child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 80.0, sigmaY: 80.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                        builder: (context, state) {
-                          Profile profile = state.profile ??
-                              Profile(
-                                  id: 0,
-                                  username: "ABC",
-                                  password: "pass",
-                                  name: "ABC",
-                                  role: "admin",
-                                  phoneNumber: "0123",
-                                  email: "email");
-                          return ToolbarHome(
-                            openChat: widget.constraints.maxWidth > mobileWidth
-                                ? () {
-                                    setState(() {
-                                      chatVisible = !chatVisible;
-                                    });
-                                  }
-                                : () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ChatViewScreen(
-                                                  onClose: () {
-                                                    setState(() {
-                                                      chatVisible =
-                                                          !chatVisible;
-                                                    });
-                                                  },
-                                                )));
-                                  },
-                            openNotification:
+                      filter: ImageFilter.blur(sigmaX: 80.0, sigmaY: 80.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                            builder: (context, state) {
+                              Profile profile = state.profile ??
+                                  Profile(
+                                      id: 0,
+                                      username: "ABC",
+                                      password: "pass",
+                                      name: "ABC",
+                                      role: "admin",
+                                      phoneNumber: "0123",
+                                      email: "email");
+                              return ToolbarHome(
+                                openChat: widget.constraints.maxWidth >
+                                    mobileWidth
+                                    ? () {
+                                  setState(() {
+                                    chatVisible = !chatVisible;
+                                  });
+                                }
+                                    : () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChatViewScreen(
+                                                onClose: () {
+                                                  setState(() {
+                                                    chatVisible =
+                                                    !chatVisible;
+                                                  });
+                                                },
+                                              )));
+                                },
+                                openNotification:
                                 widget.constraints.maxWidth > mobileWidth
                                     ? () {
-                                        setState(() {
-                                          notificationVisible =
-                                              !notificationVisible;
-                                        });
-                                      }
+                                  setState(() {
+                                    notificationVisible =
+                                    !notificationVisible;
+                                  });
+                                }
                                     : () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    NotificationScreen(
-                                                      onClose: () {
-                                                        setState(() {
-                                                          notificationVisible =
-                                                              !notificationVisible;
-                                                        });
-                                                      },
-                                                    )));
-                                      },
-                            profile: profile,
-                            showDrawer: checkDevice(widget.constraints.maxWidth,
-                                true, false, false),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 16,
-                            ),
-                            Text(
-                              "Danh sách bàn",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              NotificationScreen(
+                                                onClose: () {
+                                                  setState(() {
+                                                    notificationVisible =
+                                                    !notificationVisible;
+                                                  });
+                                                },
+                                              )));
+                                },
+                                profile: profile,
+                                showDrawer: checkDevice(
+                                    widget.constraints.maxWidth,
+                                    true, false, false),
+                              );
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Danh sách bàn",
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
-                            ).animate().moveY(),
-                            const PageIndex(),
-                          ],
-                        ),
-                      ),
-                      const Divider(),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              RichText(
-                                text: TextSpan(
-                                    text: "Trạng thái: ",
-                                    style: TextStyle(
-                                        color: colorScheme(context)
-                                            .scrim
-                                            .withOpacity(0.8)),
-                                    children: [
-                                      TextSpan(
-                                          text: filterStatus[
+                                ).animate().moveY(),
+                                const PageIndex(),
+                              ],
+                            ),
+                          ),
+                          const Divider(),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                        text: "Trạng thái: ",
+                                        style: TextStyle(
+                                            color: colorScheme(context)
+                                                .scrim
+                                                .withOpacity(0.8)),
+                                        children: [
+                                          TextSpan(
+                                              text: filterStatus[
                                               posFilterStatusSelected],
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold))
-                                    ]),
-                              ),
-                              IconButton(
-                                  color: colorScheme(context).primary,
-                                  onPressed: () {
-                                    setState(() {
-                                      isShowFilter = !isShowFilter;
-                                    });
-                                  },
-                                  icon: Icon(isShowFilter
-                                      ? Icons.filter_alt_rounded
-                                      : Icons.filter_alt_outlined))
-                            ],
-                          )),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: AnimatedContainer(
-                          height: isShowFilter ? 60 : 0,
-                          clipBehavior: Clip.antiAlias,
-                          decoration: const BoxDecoration(),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          duration: 200.ms,
-                          child: Row(children: [
-                            Wrap(
-                              spacing: 8,
-                              children: filterStatus
-                                  .asMap()
-                                  .entries
-                                  .map((e) => MyChipToggle(
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold))
+                                        ]),
+                                  ),
+                                  IconButton(
+                                      color: colorScheme(context).primary,
+                                      onPressed: () {
+                                        setState(() {
+                                          isShowFilter = !isShowFilter;
+                                        });
+                                      },
+                                      icon: Icon(isShowFilter
+                                          ? Icons.filter_alt_rounded
+                                          : Icons.filter_alt_outlined))
+                                ],
+                              )),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: AnimatedContainer(
+                              height: isShowFilter ? 60 : 0,
+                              clipBehavior: Clip.antiAlias,
+                              decoration: const BoxDecoration(),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              duration: 200.ms,
+                              child: Row(children: [
+                                Wrap(
+                                  spacing: 8,
+                                  children: filterStatus
+                                      .asMap()
+                                      .entries
+                                      .map((e) =>
+                                      MyChipToggle(
                                         isSelected:
-                                            posFilterStatusSelected == e.key,
+                                        posFilterStatusSelected == e.key,
                                         label: e.value,
                                         onTap: () {
                                           setState(() {
@@ -252,153 +298,154 @@ class _HomeScreenState extends State<HomeScreen> {
                                               OnFilterTable(status: e.key));
                                         },
                                       ))
-                                  .toList(),
-                            )
-                          ]),
-                        ),
-                      ),
-                      BlocBuilder<TableBloc, TableState>(
-                        builder: (context, state) {
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            primary: false,
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            gridDelegate:
+                                      .toList(),
+                                )
+                              ]),
+                            ),
+                          ),
+                          BlocBuilder<TableBloc, TableState>(
+                            builder: (context, state) {
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: const BouncingScrollPhysics(),
+                                primary: false,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16),
+                                gridDelegate:
                                 SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisSpacing: 6,
                                     mainAxisSpacing: 6,
                                     mainAxisExtent: 160,
                                     crossAxisCount: checkDevice(
                                         widget.constraints.maxWidth, 2, 3, 4)),
-                            itemBuilder: (context, index) {
-                              Model.Table table = state.tablesFilter[index];
-                              return ItemTable(
-                                table: table,
-                                onTap: () {
-                                  if (table.status == 2) {
-                                    //
-                                    myAlert(
+                                itemBuilder: (context, index) {
+                                  Model.Table table = state.tablesFilter[index];
+                                  return ItemTable(
+                                    table: table,
+                                    onTap: () {
+                                      if (table.status == 2) {
+                                        //
+                                        myAlert(
                                             context,
                                             checkDeviceType(
                                                 widget.constraints.maxWidth),
                                             AlertType.error,
                                             "Cảnh báo",
                                             "Không thể order bàn đang bận")
-                                        .show(context);
-                                  } else {
-                                    prdBloc.add(
-                                        const GetListProductStatusEvent(
-                                            status: ProductStatus.loading));
-                                    io.emit('listProductByIdTable',
-                                        {"id": table.id});
-                                    if (!io.hasListeners("responseOrder")) {
-                                      io.on('responseOrder', (data) {
-                                        final jsonResponse =
+                                            .show(context);
+                                      } else {
+                                        prdBloc.add(
+                                            const GetListProductStatusEvent(
+                                                status: ProductStatus.loading));
+                                        io.emit('listProductByIdTable',
+                                            {"id": table.id});
+                                        if (!io.hasListeners("responseOrder")) {
+                                          io.on('responseOrder', (data) {
+                                            final jsonResponse =
                                             data as List<dynamic>;
-                                        List<Product> currentProducts =
+                                            List<Product> currentProducts =
                                             jsonResponse
                                                 .map((e) => Product.fromJson(e))
                                                 .toList();
-                                        for (var i in currentProducts) {
-                                          int length = currentProducts
-                                              .where((j) => j.name == i.name)
-                                              .length;
-                                          i.quantity = length;
+                                            for (var i in currentProducts) {
+                                              int length = currentProducts
+                                                  .where((j) =>
+                                              j.name == i.name)
+                                                  .length;
+                                              i.quantity = length;
+                                            }
+                                            prdBloc.add(GetListProductByIdTable(
+                                                currentProducts: currentProducts));
+                                          });
                                         }
-                                        prdBloc.add(
-                                            GetListProductByIdTable(
-                                                currentProducts:
-                                                    currentProducts));
-                                      });
-                                    }
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              CurrentBookingScreen(
-                                            tableID: table.id!,
-                                            tableName: table.name ?? "dđ",
-                                          ),
-                                        ));
-                                  }
-                                },
-                              )
-                                  .animate()
-                                  .moveX(
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CurrentBookingScreen(
+                                                    tableID: table.id!,
+                                                    tableName: table.name ??
+                                                        "dđ",
+                                                  ),
+                                            ));
+                                      }
+                                    },
+                                  )
+                                      .animate()
+                                      .moveX(
                                       begin: index % 2 != 0 ? -300 : -100,
                                       duration:
-                                          Duration(milliseconds: 500 * index),
+                                      Duration(milliseconds: 500 * index),
                                       curve: Curves.fastEaseInToSlowEaseOut)
-                                  .fade(duration: (500 * index).ms);
+                                      .fade(duration: (500 * index).ms);
+                                },
+                                itemCount: state.tablesFilter.length,
+                              );
                             },
-                            itemCount: state.tablesFilter.length,
-                          );
-                        },
+                          ),
+                          const SizedBox(
+                            height: 24,
+                          )
+                        ],
                       ),
-                      const SizedBox(
-                        height: 24,
-                      )
-                    ],
-                  ),
-                )),
+                    )),
               ),
             ),
             chatVisible
                 ? Positioned(
-                    bottom: 15,
-                    right: 90,
-                    child: Row(
-                      children: [
-                        Container(
-                            width: 380,
-                            height: 500,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                    color: colorScheme(context).tertiary)),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: ChatViewScreen(
-                                  onClose: () {
-                                    if (chatVisible) {
-                                      setState(() {
-                                        chatVisible = false;
-                                      });
-                                    }
-                                  },
-                                ))),
-                      ],
-                    ))
+                bottom: 15,
+                right: 90,
+                child: Row(
+                  children: [
+                    Container(
+                        width: 380,
+                        height: 500,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: colorScheme(context).tertiary)),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: ChatViewScreen(
+                              onClose: () {
+                                if (chatVisible) {
+                                  setState(() {
+                                    chatVisible = false;
+                                  });
+                                }
+                              },
+                            ))),
+                  ],
+                ))
                 : const SizedBox.shrink(),
             notificationVisible
                 ? Positioned(
-                    top: 85,
-                    right: 10,
-                    child: Row(
-                      children: [
-                        Container(
-                            width: 400,
-                            height: 700,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                    color: colorScheme(context)
-                                        .tertiary
-                                        .withOpacity(0.5))),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: NotificationScreen(
-                                  onClose: () {
-                                    if (notificationVisible) {
-                                      setState(() {
-                                        notificationVisible = false;
-                                      });
-                                    }
-                                  },
-                                ))),
-                      ],
-                    ))
+                top: 85,
+                right: 10,
+                child: Row(
+                  children: [
+                    Container(
+                        width: 400,
+                        height: 700,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                                color: colorScheme(context)
+                                    .tertiary
+                                    .withOpacity(0.5))),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: NotificationScreen(
+                              onClose: () {
+                                if (notificationVisible) {
+                                  setState(() {
+                                    notificationVisible = false;
+                                  });
+                                }
+                              },
+                            ))),
+                  ],
+                ))
                 : const SizedBox.shrink(),
           ],
         ),
@@ -457,8 +504,11 @@ class ToolbarHome extends StatelessWidget {
                         ZoomDrawer.of(context)!.open();
                       },
                     ),
-                  Text("Xin chào, ${profile.name ?? "".split(' ').last}",
-                      style: Theme.of(context)
+                  Text("Xin chào, ${profile.name ?? ""
+                      .split(' ')
+                      .last}",
+                      style: Theme
+                          .of(context)
                           .textTheme
                           .bodyLarge
                           ?.copyWith(color: Colors.white)),
@@ -466,12 +516,15 @@ class ToolbarHome extends StatelessWidget {
                     children: [
                       MyIconButtonBlur(
                         icon: Badge(
-                          label:  Text("9+", style: TextStyle(color: Colors.white,)),
+                          label: Text("9+",
+                              style: TextStyle(
+                                color: Colors.white,
+                              )),
                           backgroundColor: Colors.redAccent,
                           child: const Icon(Icons.chat, color: Colors.white)
                               .animate(
-                                onPlay: (controller) => controller.repeat(),
-                              )
+                            onPlay: (controller) => controller.repeat(),
+                          )
                               .shake(delay: 1.seconds),
                         ),
                         onTap: openChat ?? () {},
@@ -483,10 +536,10 @@ class ToolbarHome extends StatelessWidget {
                         icon: Badge(
                           backgroundColor: Colors.redAccent,
                           child: const Icon(Icons.notifications,
-                                  color: Colors.white)
+                              color: Colors.white)
                               .animate(
-                                onPlay: (controller) => controller.repeat(),
-                              )
+                            onPlay: (controller) => controller.repeat(),
+                          )
                               .shake(delay: 1.seconds),
                         ),
                         onTap: openNotification ?? () {},
@@ -554,7 +607,11 @@ class ToolbarProfile extends StatelessWidget {
                     children: [
                       Text(
                         profile.name ?? "",
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ).animate().shimmer(),
                       Text(
@@ -570,15 +627,19 @@ class ToolbarProfile extends StatelessWidget {
               FittedBox(
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 19),
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 19),
                   decoration: BoxDecoration(
                       border: Border(
                           left: BorderSide(
                               color:
-                                  const Color(0xFFD4D4D8).withOpacity(0.3)))),
+                              const Color(0xFFD4D4D8).withOpacity(0.3)))),
                   child: Text(
                     "NV00${profile.id}",
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(
                         fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ),

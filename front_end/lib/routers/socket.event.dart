@@ -6,9 +6,10 @@ class SocketEvent {
   static String initialMessage = 'client-msg-init-group';
 
   //from sever
-  static String onMsgGroup  = "sever-msg-group";
-  static String onMsgTypingGroup  = "sever-msg-typing-group";
-  static String onMsgTypedGroup  = "sever-msg-typed-group";
+  static String onMsgGroup = "sever-msg-group";
+  static String onMsgTypingGroup = "sever-msg-typing-group";
+  static String onMsgTypedGroup = "sever-msg-typed-group";
   static String onInitialMessage = 'sever-msg-init-group';
-}
 
+  static String onNotiMsgGroup = "sever-msg-noti";
+}

@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
-import { createUserListAsync, getStatusUserState, getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
+import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ export default function User() {
     const status: any = useSelector(getStatusUserState);
     const [users, setUsers] = useState<any[]>([]);
     const [modal1, setModal1] = useState(false);
+    const [isAdd, setisAdd] = useState(true);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
@@ -22,36 +23,58 @@ export default function User() {
     const [address, setAddress] = useState("");
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
+    const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
+    const [file, setFile] = useState<File>()
+    const [searchName, setSearchName] = useState("")
+    const [currentPage, setCurrentPage] = useState(1)
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
         toggle1();
     }
+
     useEffect(() => {
-        dispatch(getUserListAsync());
-    }, [dispatch]);
+        dispatch(getUserListAsync(currentPage));
+    }, [dispatch, currentPage]);
+
     useEffect(() => {
-        if (userList && userList.resultRaw) {
-            setUsers(userList.resultRaw);
+        if (userList && userList.data) {
+            setUsers(userList.data);
         }
     }, [userList]);
+
+    const totalPages = userList?.totalPages || 1;
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        dispatch(getUserListAsync(page));
+    };
+
     const handleAddUser = () => {
         const user = {
+            idUser,
             username,
             password,
             name,
             role,
-            phoneNumber
+            phoneNumber,
+            email,
+            address,
+            birtDay,
+            file
         }
+
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
-            showAlert("success", "Thâm nhân viên mới thành công ");
-            dispatch(getUserListAsync());
+            showAlert("success", "Thêm nhân viên mới thành công ");
+            dispatch(getUserListAsync(currentPage));
             openModal1();
+            setDataForm("");
+            setIsEdit(false);
         } else {
-            showAlert("error", "Thâm nhân viên mới  bại ");
+            showAlert("error", "Thêm nhân viên mới  bại ");
         }
     }
     const setDataForm = (item: any) => {
@@ -65,16 +88,42 @@ export default function User() {
             setBirtDay(item.birtDay);
             setIdUser(item.id);
             setIsEdit(true);
+            setImage(item.imgUrl)
+        }
+    }
+    const onSearchChange = (searchName: any) => {
+        setSearchName(searchName);
+        if (searchName.trim() !== '') {
+            dispatch(searchUserAsync(searchName));
+        } else {
+            handlePageChange(currentPage)
+        }
+    }
+    const handleChangeFile = (event: any) => {
+        if (event.target.files && event.target.files[0]) {
+            const selectedImage = event.target.files[0];
+            setFile(selectedImage);
+        }
+    }
+
+    const handleDeleteUser = (id: any) => {
+
+        dispatch(deleteUserAsync(id));
+        if (status == 'idle') {
+            showAlert("success", "Xoá nhân viên mới thành công ");
+            dispatch(getUserListAsync(currentPage));
+        } else {
+            showAlert("error", "Xoá nhân viên mới  bại ");
         }
     }
     return (
-        <>
-            <div className="main-header card" >
-                <div className="card-header">
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
+                <div className="">
                     <div className="container-fluid">
-                        <div className="row mb-2">
+                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                             <div className="col-sm-6">
-                                <h1>Danh sách Nhân viên</h1>
+                                <h1>Danh sách nhân viên</h1>
                             </div>
                             <div className="col-sm-6">
                                 <ol className="breadcrumb float-sm-right">
@@ -87,44 +136,48 @@ export default function User() {
                 </div>
 
                 <div className="content">
-
-                    <div className="card">
-                        <div className="card-header">
-                            <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
-
-                            <div className="card-tools">
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
+                    <div className="">
+                        <div className="card-header" style={{ border: 'none' }}>
+                            <button className="btn btn-success" onClick={() => {
+                                openModal1();
+                                setisAdd(true);
+                            }}>Thêm nhân viên</button>
+                            <div className="card-tools flex items-center">
+                                <form role="search">
+                                    <input
+                                        type="text"
+                                        value={searchName}
+                                        onChange={(e) => onSearchChange(e.target.value)}
+                                        placeholder="Tìm kiếm nhân viên..."
+                                        className='form-control'
+                                    />
+                                </form>
                             </div>
                         </div>
-                        <div className="card-body p-0">
+                        <div className="card card-body p-0 mt-3">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
                                         <th style={{ width: "1%" }}>
                                             STT
                                         </th>
-                                        <th style={{ width: "20%" }}>
-                                            Tên NV
+                                        <th style={{ width: "18%" }}>
+                                            Tên nhân viên
                                         </th>
                                         <th style={{ width: "10%" }}>
-                                            Hình Ảnh
+                                            Quyền
                                         </th>
-                                        <th>
+                                        <th style={{ width: "25%" }}>
                                             Địa chỉ
                                         </th>
-                                        <th>
-                                            Số điện thoại
+                                        <th style={{ width: "15%" }}>
+                                            STĐ
                                         </th>
-                                        <th>
+                                        <th style={{ width: "20%" }}>
                                             Email
                                         </th>
-                                        <th style={{ width: "15%" }} className="text-center">
-                                            actions
+                                        <th style={{ width: "10%" }} className="text-center">
+                                            Actions
                                         </th>
 
                                     </tr>
@@ -142,7 +195,8 @@ export default function User() {
                                                 <br />
                                             </td>
                                             <td>
-                                                <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
+                                                {/* <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} /> */}
+                                                {item && item.role ? item.role : null}
                                             </td>
                                             <td className="project_progress">
                                                 {item && item.address ? item.address : null}
@@ -159,18 +213,19 @@ export default function User() {
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a>
+                                                    </a> 
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
                                                         setIsEdit(true);
+                                                        setisAdd(false);
                                                     }}>
                                                         <i className="fas fa-pencil-alt"></i>
-
                                                         Edit
-
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" >
+                                                    <button className="btn btn-danger btn-sm" onClick={() => {
+                                                        handleDeleteUser(item.id);
+                                                    }}>
                                                         <i className="fas fa-trash"></i> Delete
                                                     </button>
                                                 </div>
@@ -187,7 +242,7 @@ export default function User() {
 
                 </div>
                 <Modal isOpen={modal1} toggle1={openModal1}>
-                    <ModalHeader toggle1={openModal1}>{"Thêm nhân viên mới"}</ModalHeader>
+                    <ModalHeader toggle1={openModal1}>{isAdd ? "Thêm tài khoản nhân viên" : "Sửa tài khoản nhân viên"}</ModalHeader>
                     <ModalBody>
                         <form className="form-horizontal">
                             <div className="form-group row">
@@ -202,8 +257,19 @@ export default function User() {
                                             setName(e.target.value)
                                         }}
                                     />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
+                                <div className="col-sm-8">
 
-
+                                    <input
+                                        className="form-control"
+                                        type='file'
+                                        id="image"
+                                        onChange={handleChangeFile}
+                                    />
+                                    <img src={image} alt="" width={80} height={80} />
                                 </div>
                             </div>
                             <div className="form-group row">
@@ -272,7 +338,7 @@ export default function User() {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Dia Chi</label>
+                                    <label className="col-sm-4 col-form-label">Địa chỉ</label>
                                     <div className="col-sm-8">
 
                                         <input
@@ -288,7 +354,7 @@ export default function User() {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Sinh nhat</label>
+                                    <label className="col-sm-4 col-form-label">Sinh nhật</label>
                                     <div className="col-sm-8">
 
                                         <input
@@ -303,6 +369,7 @@ export default function User() {
 
                                     </div>
                                 </div>
+
                             </> : ""}
 
 
@@ -317,7 +384,41 @@ export default function User() {
                         </Button>
                     </ModalFooter>
                 </Modal>
+                {/* Pagination */}
+                <div className="d-flex justify-content-center align-items-center">
+                    <ul className="pagination">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage - 1)}
+                            >
+                                &#60;
+                            </button>
+                        </li>
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <li
+                                className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                key={i + 1}
+                            >
+                                <button
+                                    className="page-link"
+                                    onClick={() => handlePageChange(i + 1)}
+                                >
+                                    {i + 1}
+                                </button>
+                            </li>
+                        ))}
+                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                            >
+                                &#62;
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </>
+        </div>
     )
 }

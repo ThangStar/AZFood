@@ -22,6 +22,7 @@ export default function Kho() {
     const [donGia, setDonGia] = useState("");
     const [dvtID, setDvtID] = useState("");
     const [productID, setProductID] = useState("");
+    const [searchName, setSearchName] = useState("")
 
 
     useEffect(() => {
@@ -40,7 +41,7 @@ export default function Kho() {
         if (ProductList) {
             setProducts(ProductList);
         }
-    }, [phieuNhapList]);
+    }, [phieuNhapList, dispatch]);
     const toggle = () => setModal(!modal);
     const openModal = (data: any = null) => {
         toggle();
@@ -55,14 +56,16 @@ export default function Kho() {
         dispatch(nhapHangAsync(data));
         dispatch(getPhieuNhapListAsync());
     }
+    const onSearchChange = (searchName: any) => {
 
+    }
 
     return (
-        <>
-            <div className="main-header card" >
-                <div className="card-header">
+        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px' }}>
+                <div className="card-header p-0" style={{ border: 'none' }}>
                     <div className="container-fluid">
-                        <div className="row mb-2">
+                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                             <div className="col-sm-6">
                                 <h1>Kho hàng</h1>
                             </div>
@@ -77,21 +80,22 @@ export default function Kho() {
                 </div>
 
                 <div className="content">
-
-                    <div className="card">
-                        <div className="card-header">
+                    <div >
+                        <div className="card-header" style={{ border: 'none' }}>
                             <button className="btn btn-success" onClick={() => { openModal() }}>Nhập hàng</button>
-
-                            <div className="card-tools">
-                                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i className="fas fa-minus"></i>
-                                </button>
-                                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                                    <i className="fas fa-times"></i>
-                                </button>
+                            <div className="card-tools flex items-center">
+                                <form role="search">
+                                    <input
+                                        type="text"
+                                        value={searchName}
+                                        onChange={(e) => onSearchChange(e.target.value)}
+                                        placeholder="Tìm kiếm..."
+                                        className='form-control'
+                                    />
+                                </form>
                             </div>
                         </div>
-                        <div className="card-body p-0">
+                        <div className="card mt-3 card-body p-0">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -239,6 +243,6 @@ export default function Kho() {
                     </Button>
                 </ModalFooter>
             </Modal>
-        </>
+        </div>
     )
 }

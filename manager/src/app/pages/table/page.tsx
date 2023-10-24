@@ -1,12 +1,13 @@
 'use client'
 import { getOrderList, getOrderListAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
-import { createTableListAsync, getStatusTableAsync, getTableList, getTableListAsync, getTableStatusList, updateStatusTableAsync } from '@/redux-store/table-reducer/tableSlice';
+import { createTableListAsync, deleteTableAsync, getStatusTableAsync, getTableList, getTableListAsync, getTableStatusList, updateStatusTableAsync } from '@/redux-store/table-reducer/tableSlice';
 import Link from 'next/link';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import formatMoney from '@/component/utils/formatMoney';
+import { showAlert } from '@/component/utils/alert/alert';
 
 export default function Table() {
     const dispatch: AppDispatch = useDispatch();
@@ -18,6 +19,7 @@ export default function Table() {
     const [statusTable, setStatusTable] = useState<any[]>([]);
     const [modal, setModal] = useState(false);
     const [modal1, setModal1] = useState(false);
+    const [modalDel, setModalDel] = useState(false);
     const [status, setStatus] = useState<number>(0);
     const [tableName, setTableName] = useState("");
     const [statusTableFilter, setStatusTableFilter] = useState("");
@@ -76,6 +78,7 @@ export default function Table() {
     };
     const toggle = () => setModal(!modal);
     const toggle1 = () => setModal1(!modal1);
+    const toggleDel = () => setModalDel(!modalDel);
     const openModal = (data: any = null) => {
         if (data) {
             setStatus(data.status);
@@ -88,6 +91,10 @@ export default function Table() {
     const openModal1 = () => {
         toggle1();
     }
+
+    const openModalDel = () => {
+        toggleDel()
+    }
     const handleChangeDataForm = (e: any) => {
         setStatus(e.target.value);
 
@@ -96,6 +103,7 @@ export default function Table() {
         setTableName(e.target.value);
 
     }
+
     const handleUpdate = async () => {
         try {
             dispatch(updateStatusTableAsync({ status, id }));
@@ -116,15 +124,26 @@ export default function Table() {
         }
 
     }
+
+    const handleDeleteTable = () => {
+        dispatch(deleteTableAsync(id)).then((response) => {
+            if (response?.meta?.requestStatus === 'fulfilled') {
+                dispatch(getTableListAsync())
+                openModalDel()
+                showAlert('success', 'Xóa bàn thành công')
+            } else {
+                showAlert('error', 'Có lỗi khi xóa bàn')
+            }
+        })
+    }
     const ban = "#DC3545";
     const trong = "#26A744";
-    const cho = "yellow";
+    const cho = "black";
     return (
-        <div className="content" >
-            <div className="main-header card" >
-
+        <div className="content scroll" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
+            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
                 <div className="container-fluid">
-                    <div className="row mb-2">
+                    <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                         <div className="col-sm-6">
                             <h1>Danh sách bàn</h1>
                         </div>
@@ -137,11 +156,11 @@ export default function Table() {
                     </div>
                 </div>
                 <div className="content">
-                    <div className="card">
-                        <div className="card-header">
+                    <div className="">
+                        <div className="card-header" style={{ border: 'none' }}>
                             <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn</button>
 
-                            <div className="card-tools" >
+                            <div className="card-tools" style={{ display: 'flex', width: '150px' }}>
                                 <select
                                     className="form-control"
                                     id="statusTable"
@@ -150,30 +169,34 @@ export default function Table() {
                                         setStatusTableFilter(e.target.value);
                                     }}
                                 >
+                                    <option>Bộ lọc </option>
                                     <option value='all' selected>Tất cả </option>
                                     <option value='trong' style={{ color: trong }}>Trống</option>
                                     <option value='ban' style={{ color: ban }}>Bận</option>
                                     <option value='cho' style={{ color: cho }}>Chờ</option>
                                     <option value='mangve' style={{ color: cho }}>Mang về</option>
-
-
-
                                 </select>
 
                             </div>
                         </div>
                     </div>
-                    <div className="container-fluid row wrap" style={{ paddingLeft: 80, paddingRight: 80 }}>
+                    <div className="container-fluid row wrap" style={{ paddingLeft: 80, paddingRight: 80, marginTop: '20px' }}>
                         {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
                             <div className="col-md-3 col-sm-8 col-12">
                                 <div className="info-box " style={{ backgroundColor: "#C3E4EA" }}>
-
-
                                     <div className="info-box-content">
-
-                                        <Link href={`table/table-details?tableID=${item.id}`}>{item.name}</Link>
+                                        <div className='flex'>
+                                            <Link className='w-100' href={`table/table-details?tableID=${item.id}`}>{item.name}</Link>
+                                            {item.status === 3 &&
+                                                <button className='text-danger' type="button"
+                                                    onClick={() => {
+                                                        setID(item.id)
+                                                        openModalDel()
+                                                    }}><i className="fas fa-trash"></i>
+                                                </button>
+                                            }
+                                        </div>
                                         <span className="info-box-number">Tổng tiền : {formatMoney(calculateTotalForTable(item.id))} đ</span>
-
                                         <button onClick={() => { openModal(item) }} className="info-box-text"
                                             style={{ color: item.status === 2 ? ban : item.status === 1 ? cho : trong }}>
                                             {item.status_name}
@@ -252,6 +275,30 @@ export default function Table() {
                         </Button>
                         <Button color="secondary" onClick={() => openModal1()}>
                             Hủy
+                        </Button>
+                    </ModalFooter>
+                </Modal>
+
+                <Modal isOpen={modalDel} toggle={openModalDel}>
+                    <ModalHeader toggle1={openModal1}>{"Xác nhận xóa bàn"}</ModalHeader>
+                    <ModalBody>
+                        <form className="form-horizontal">
+                            <div className="form-group row">
+                                <h4>Bạn có chắc chắn muốn xóa bàn này không? </h4>
+                                <div>Sau khi xóa bàn ăn sẽ bị xóa vĩnh viễn và không thể khôi phực lại được nữa</div>
+                            </div>
+                        </form>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="secondary" onClick={() => {
+                            openModalDel()
+                        }}>
+                            Hủy
+                        </Button>
+                        <Button color="danger" onClick={() => {
+                            handleDeleteTable()
+                        }}>
+                            Đồng ý xóa
                         </Button>
                     </ModalFooter>
                 </Modal>

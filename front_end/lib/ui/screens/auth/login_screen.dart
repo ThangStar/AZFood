@@ -20,7 +20,6 @@ import 'package:restaurant_manager_app/ui/widgets/my_button.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_check_box.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_text_field.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -40,12 +39,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool cbxSaveLogin = false;
   bool isValid = false;
   final _keyForm = GlobalKey<FormState>();
+  late AuthenticationBloc authBloc;
 
   @override
   void initState() {
     super.initState();
+    authBloc = BlocProvider.of<AuthenticationBloc>(context);
     isShowPass = false;
     _fillDataForm();
+    _rememberMe();
   }
 
   void _onChangeSaveLogin(bool value) {
@@ -82,9 +84,32 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void _rememberMe() async {
+    bool rememberMe = await MySharePreferences.getRememberMe() ?? false;
+    setState(() {
+      cbxSaveLogin = rememberMe;
+    });
+    print("rememberME: $rememberMe");
+
+    if (rememberMe) {
+      authBloc.add(LoginAutEvent(
+          username: usernameController.text,
+          password: passwordController.text));
+    }
+  }
+
+  void _btnLogin() {
+    print("cbxSaveLogin: $cbxSaveLogin");
+    MySharePreferences.setRememberMe(cbxSaveLogin);
+    if (_keyForm.currentState?.validate() ?? false) {
+      authBloc.add(LoginAutEvent(
+          username: usernameController.text,
+          password: passwordController.text));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    AuthenticationBloc authBloc = BlocProvider.of<AuthenticationBloc>(context);
     TextEditingController controllerIpv4 = TextEditingController();
 
     return BlocListener<AuthenticationBloc, AuthenticationState>(
@@ -303,18 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               child: MyButton(
                                                 disable: !isValid,
                                                 value: "Đăng nhập",
-                                                onPressed: () {
-                                                  if (_keyForm.currentState!
-                                                      .validate()) {
-                                                    authBloc.add(LoginAutEvent(
-                                                        username:
-                                                            usernameController
-                                                                .text,
-                                                        password:
-                                                            passwordController
-                                                                .text));
-                                                  }
-                                                },
+                                                onPressed: _btnLogin,
                                               )),
                                           const SizedBox(
                                             height: 16,

@@ -28,4 +28,15 @@ class MySharePreferences {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(key);
   }
+
+  static Future<bool?> getRememberMe() async {
+    String key = KeyStorages.rememberMe;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(key);
+  }
+  static Future<bool> setRememberMe(bool value) async {
+    String key = KeyStorages.rememberMe;
+    final prefs = await SharedPreferences.getInstance();
+    return await prefs.setBool(key, value);
+  }
 }

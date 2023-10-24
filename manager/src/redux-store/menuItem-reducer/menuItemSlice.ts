@@ -51,6 +51,21 @@ export const getSearchMenuListAsync = createAsyncThunk(
   }
 );
 
+export const getFilterCategoryListAsync = createAsyncThunk(
+  'menuItem/filter-category',
+  async (category: any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(serverUrl + '/api/products/filterData', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      params: { category }
+    });
+    return response.data;
+  }
+);
+
 export const createMenuItemAsync = createAsyncThunk(
   'product/create',
   async (data: any) => {
@@ -165,14 +180,26 @@ const menuItemSlice = createSlice({
       .addCase(deleteMenuItemAsync.rejected, (state) => {
         state.status = 'failed';
       })
+      .addCase(getSearchMenuListAsync.pending, (state) => {
+        state.status = 'loading';
+      })
       .addCase(getSearchMenuListAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.menuItemList = action.payload;
-        console.log(state.menuItemList);
       })
       .addCase(getSearchMenuListAsync.rejected, (state) => {
         state.status = 'failed';
-      });
+      })
+      .addCase(getFilterCategoryListAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(getFilterCategoryListAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.menuItemList = action.payload;
+      })
+      .addCase(getFilterCategoryListAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
   },
 });
 

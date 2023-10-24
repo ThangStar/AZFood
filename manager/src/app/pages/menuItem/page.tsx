@@ -75,6 +75,14 @@ export default function MunuItems() {
             setItemDVT(data.dvtID);
             setStatus(data.status);
             setImage(data.imgUrl);
+        } else {
+            setIdItem(0);
+            setItemName("");
+            setItemPrice("");
+            setItemCategory("");
+            setItemDVT("");
+            setStatus("");
+            setImage("");
         }
     }
 
@@ -393,7 +401,7 @@ export default function MunuItems() {
                         </form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="secondary" onClick={() => openModal()}>
+                        <Button color="secondary" onClick={() => { openModal(); setDataForm("") }}>
                             Hủy
                         </Button>
                         <Button color="primary" onClick={() => {

@@ -8,7 +8,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/bill_history.dart' as Model;
 import 'package:restaurant_manager_app/model/profile.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/history_bill_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -96,6 +98,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _controllerSearch = TextEditingController(text: "");
   final outerController = ScrollController();
   final innerController = ScrollController();
+  late ProfileBloc profileBloc;
+  Profile? profile;
+
+  @override
+  void initState() {
+    profileBloc = BlocProvider.of<ProfileBloc>(context);
+    MySharePreferences.loadProfile().then((value) {
+      profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
+    });
+    profile = profileBloc.state.profile;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -110,20 +124,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: colorScheme(context).onPrimary.withOpacity(0.92),
       appBar: AppBar(
+        automaticallyImplyLeading:
+            checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
         backgroundColor: Colors.transparent,
         scrolledUnderElevation: 0,
-        titleSpacing: -5.0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: colorScheme(context).scrim,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        titleSpacing: checkDevice(size.width, -5.0, 15.0, 15.0),
         title: Text(
-          'Client Profile',
+          'THÔNG TIN CÁ NHÂN',
           style: Theme.of(context)
               .textTheme
               .titleMedium
@@ -285,8 +292,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ClipOval(
               child: SizedBox.fromSize(
                 size: const Size.fromRadius(20.0),
-                child:
-                    Image.asset('assets/images/avatar.jpg', fit: BoxFit.fill),
+                child: BlocBuilder<ProfileBloc, ProfileState>(
+                    builder: (context, state) {
+                  if ((state.profile?.imgUrl ?? "") != "") {
+                    return Image.network(state.profile?.imgUrl ?? "",
+                        fit: BoxFit.cover);
+                  } else {
+                    return Image.asset('assets/images/avatar.jpg',
+                        fit: BoxFit.cover);
+                  }
+                }),
               ),
             ),
           ),
@@ -302,43 +317,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                builder: (context, state) {
-              Profile profile = state.profile ??
-                  Profile(
-                      id: 0,
-                      username: "nhuy123",
-                      password: "123456",
-                      name: "Đặng Đình Thiên Như Ý",
-                      role: "admin",
-                      phoneNumber: "9876543210",
-                      email: "email",
-                      imgUrl: "imgUrl",
-                      );
-              return Center(
-                  child: checkDevice(
-                size.width,
-                Center(
-                  child: Column(children: [
-                    FormProfile(profile: profile),
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                    ),
-                    _ListBill(
-                      bills: _bills,
-                      size: size,
-                      innerController: innerController,
-                      outerController: outerController,
-                    ),
-                  ]),
-                ),
-                Center(
-                  child: Row(
+            child: BlocBuilder<ProfileBloc, ProfileState>(
+              builder: (context, state) {
+                return Center(
+                    child: checkDevice(
+                  size.width * 0.6,
+                  Center(
+                    child: Column(children: [
+                      FormProfile(profile: state.profile),
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                      ),
+                      _ListBill(
+                        bills: _bills,
+                        size: size,
+                        innerController: innerController,
+                        outerController: outerController,
+                      ),
+                    ]),
+                  ),
+                  Center(
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FormProfile(profile: state.profile),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: _ListBill(
+                              bills: _bills,
+                              size: size,
+                              innerController: innerController,
+                              outerController: outerController,
+                            ),
+                          )
+                        ]),
+                  ),
+                  Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        FormProfile(profile: profile),
+                        FormProfile(profile: state.profile),
                         const SizedBox(width: 20),
                         Expanded(
                           child: _ListBill(
@@ -347,307 +367,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             innerController: innerController,
                             outerController: outerController,
                           ),
-                        )
-                      ]),
-                ),
-                Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      FormProfile(profile: profile),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: _ListBill(
-                          bills: _bills,
-                          size: size,
-                          innerController: innerController,
-                          outerController: outerController,
                         ),
-                      ),
-                    ]),
-              ));
-            }),
+                      ]),
+                ));
+              },
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-// class _FormProfile extends StatelessWidget {
-//   const _FormProfile({
-//     super.key,
-//     required this.size,
-//     required this.controllerPhone,
-//     required this.controllerEmail,
-//   });
-//   final Size size;
-//   final TextEditingController controllerPhone;
-//   final TextEditingController controllerEmail;
-//   @override
-//   Widget build(BuildContext context) {
-//     return ConstrainedBox(
-//       constraints: const BoxConstraints(maxWidth: 400.0),
-//       child: Container(
-//         padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
-//         decoration: BoxDecoration(
-//           color: colorScheme(context).onPrimary,
-//           borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-//           border: Border.all(
-//             color: Colors.white,
-//             width: 2.0,
-//           ),
-//           boxShadow: [
-//             BoxShadow(
-//               color: Colors.grey.withOpacity(0.5),
-//               spreadRadius: 0,
-//               blurRadius: 3,
-//               offset: const Offset(0, 3),
-//             ),
-//           ],
-//         ),
-//         child: Column(
-//           children: [
-//             Stack(
-//               alignment: Alignment(checkDevice(size.width, 1.5, 1.1, 1.1),
-//                   checkDevice(size.width, -1.2, -1.0, -1.0)),
-//               children: [
-//                 ClipOval(
-//                   child: SizedBox.fromSize(
-//                     size: Size.fromRadius(
-//                         50.0 * checkDevice(size.width, 1.0, 1.5, 1.6)),
-//                     child:
-//                         // changeImage
-//                         //     ? Image.file(
-//                         //         selectedImage!,
-//                         //         width: 250,
-//                         //         height: 250,
-//                         //         fit: BoxFit.cover,
-//                         //       )
-//                         //     :
-//                         Image.asset('assets/images/avatar.jpg',
-//                             fit: BoxFit.cover),
-//                   ),
-//                 ),
-//                 ElevatedButton(
-//                   onPressed: () {
-//                     // _showDialog();
-//                   },
-//                   style: ElevatedButton.styleFrom(
-//                     shape: const CircleBorder(),
-//                     padding: EdgeInsets.all(
-//                         15.0 * checkDevice(size.width, 1, 1.2, 1.2)),
-//                     surfaceTintColor: colorScheme(context).onSecondary,
-//                     backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-//                     foregroundColor: colorScheme(context).outlineVariant,
-//                   ),
-//                   child: const Icon(
-//                     Icons.create_outlined,
-//                     color: Color.fromRGBO(102, 103, 106, 1),
-//                     size: 20.0,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//             const SizedBox(height: 20),
-//             Text(
-//               "Nguyễn Văn A",
-//               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-//                   fontSize: 15.0 * checkDevice(size.width, 1.0, 1.2, 1.3),
-//                   fontWeight: FontWeight.bold,
-//                   color: colorScheme(context).scrim.withOpacity(0.8)),
-//             ),
-//             const SizedBox(height: 10),
-//             Container(
-//               padding:
-//                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 3.0),
-//               decoration: const BoxDecoration(
-//                 color: Color.fromRGBO(238, 245, 239, 1),
-//                 borderRadius: BorderRadius.all(Radius.circular(8.0)),
-//               ),
-//               child: Text(
-//                 "Admin",
-//                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-//                     fontSize: 15.0,
-//                     color: const Color.fromRGBO(94, 194, 129, 1)),
-//               ),
-//             ),
-//             const SizedBox(height: 50),
-//             Column(
-//               children: [
-//                 TextField(
-//                   style: TextStyle(color: colorScheme(context).scrim),
-//                   controller: controllerPhone,
-//                   decoration: InputDecoration(
-//                     enabledBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       borderSide: BorderSide(
-//                         width: 2,
-//                         color: colorScheme(context).outlineVariant,
-//                       ),
-//                     ),
-//                     focusedBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       borderSide: BorderSide(
-//                         width: 2,
-//                         color: colorScheme(context).outlineVariant,
-//                       ),
-//                     ),
-//                     hintStyle: TextStyle(
-//                         fontSize: 15, color: colorScheme(context).scrim),
-//                     hintText: 'Nhập địa chỉ email...',
-//                     labelText: 'Email',
-//                     labelStyle: TextStyle(
-//                       color: colorScheme(context).outline,
-//                     ),
-//                     contentPadding: const EdgeInsets.symmetric(
-//                         horizontal: 15.0, vertical: 20.0),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 10),
-//                 TextField(
-//                   style: TextStyle(color: colorScheme(context).scrim),
-//                   controller: controllerEmail,
-//                   decoration: InputDecoration(
-//                     enabledBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       borderSide: BorderSide(
-//                         width: 2,
-//                         color: colorScheme(context).outlineVariant,
-//                       ),
-//                     ),
-//                     focusedBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       borderSide: BorderSide(
-//                         width: 2,
-//                         color: colorScheme(context).outlineVariant,
-//                       ),
-//                     ),
-//                     hintStyle: TextStyle(
-//                         fontSize: 15, color: colorScheme(context).scrim),
-//                     hintText: 'Nhập số điện thoại...',
-//                     labelText: 'Số điện thoại',
-//                     labelStyle: TextStyle(
-//                       color: colorScheme(context).outline,
-//                     ),
-//                     contentPadding: const EdgeInsets.symmetric(
-//                         horizontal: 15.0, vertical: 20.0),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 10),
-//                 TextField(
-//                   readOnly: true,
-//                   enableInteractiveSelection: true,
-//                   style: TextStyle(color: colorScheme(context).scrim),
-//                   decoration: InputDecoration(
-//                     enabledBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       borderSide: BorderSide(
-//                         width: 2,
-//                         color: colorScheme(context).outlineVariant,
-//                       ),
-//                     ),
-//                     focusedBorder: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       borderSide: BorderSide(
-//                         width: 2,
-//                         color: colorScheme(context).outlineVariant,
-//                       ),
-//                     ),
-//                     hintStyle: TextStyle(
-//                         fontSize: 15, color: colorScheme(context).scrim),
-//                     hintText: '08/09/2001',
-//                     labelText: 'Ngày sinh',
-//                     labelStyle: TextStyle(
-//                       color: colorScheme(context).outline,
-//                     ),
-//                     contentPadding: const EdgeInsets.symmetric(
-//                         horizontal: 15.0, vertical: 20.0),
-//                     suffixIcon: Theme(
-//                       data: Theme.of(context).copyWith(
-//                         splashFactory: NoSplash.splashFactory,
-//                       ),
-//                       child: TextButton(
-//                         style: TextButton.styleFrom(
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 13.0, vertical: 20.0),
-//                           minimumSize: Size.zero,
-//                           shape: const RoundedRectangleBorder(
-//                             borderRadius:
-//                                 BorderRadius.all(Radius.circular(100.0)),
-//                           ),
-//                         ),
-//                         child: Icon(
-//                           Icons.calendar_month_outlined,
-//                           color: colorScheme(context).onSurfaceVariant,
-//                         ),
-//                         onPressed: () => {},
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 20),
-//                 Row(
-//                   children: [
-//                     const Spacer(),
-//                     ConstrainedBox(
-//                         constraints: const BoxConstraints(maxWidth: 350.0),
-//                         child: Container(
-//                           height: 45.0,
-//                           decoration: BoxDecoration(
-//                               borderRadius:
-//                                   const BorderRadius.all(Radius.circular(15.0)),
-//                               gradient: const LinearGradient(colors: [
-//                                 Color.fromRGBO(109, 92, 255, 1),
-//                                 Color.fromRGBO(160, 91, 255, 1)
-//                               ]),
-//                               boxShadow: [
-//                                 BoxShadow(
-//                                   color: const Color.fromARGB(255, 0, 0, 0)
-//                                       .withOpacity(0.2),
-//                                   spreadRadius: 4,
-//                                   blurRadius: 12,
-//                                   offset: const Offset(0, 5),
-//                                 )
-//                               ]),
-//                           child: ElevatedButton(
-//                             onPressed: () {
-//                               Navigator.push(
-//                                 context,
-//                                 MaterialPageRoute(
-//                                     builder: (context) =>
-//                                         const HistoryBillScreen()),
-//                               );
-//                             },
-//                             style: ElevatedButton.styleFrom(
-//                               backgroundColor: Colors.transparent,
-//                               shadowColor: Colors.transparent,
-//                               elevation: 0,
-//                               shape: RoundedRectangleBorder(
-//                                 borderRadius: BorderRadius.circular(15.0),
-//                               ),
-//                             ),
-//                             child: Text(
-//                               'LƯU THAY ĐỔI',
-//                               style: Theme.of(context)
-//                                   .textTheme
-//                                   .labelMedium
-//                                   ?.copyWith(
-//                                       fontSize: 14,
-//                                       color: colorScheme(context).background),
-//                             ),
-//                           ),
-//                         )),
-//                   ],
-//                 ),
-//               ],
-//             )
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class _ListCard extends StatelessWidget {
   const _ListCard({
@@ -777,8 +507,8 @@ class _ListBill extends StatelessWidget {
                           child: TabBar.secondary(
                             isScrollable: true,
                             tabs: const [
-                              Tab(text: 'Appointments'),
-                              Tab(text: 'Invoices'),
+                              Tab(text: 'Danh sách hóa đơn'),
+                              Tab(text: 'Khác'),
                             ],
                             labelColor: colorScheme(context).scrim,
                             dividerColor: Colors.transparent,
@@ -794,7 +524,8 @@ class _ListBill extends StatelessWidget {
                         ),
                       ])),
                   ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 500),
+                    constraints:
+                        const BoxConstraints(minWidth: 300.0, maxHeight: 500),
                     child: TabBarView(
                       children: [
                         // Nội dung của Tab 1

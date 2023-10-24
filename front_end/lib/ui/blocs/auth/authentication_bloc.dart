@@ -31,7 +31,7 @@ class AuthenticationBloc
       loginResult.password = event.password;
       try {
         await MySharePreferences.saveProfile(loginResult.toJson());
-        await _loadProfile(loginResult.id, loginResult.jwtToken, emit);
+        await _loadProfile(loginResult.id, emit);
       } catch (err) {
         print("err: $err");
       }
@@ -48,10 +48,10 @@ class AuthenticationBloc
   }
 
   Future<void> _loadProfile(
-      int id, String token, Emitter<AuthenticationState> emit) async {
-    print(token);
+      int id, Emitter<AuthenticationState> emit) async {
+    // print(token);
     try {
-      Object result = await ProfileApi.getProfile(id, token);
+      Object result = await ProfileApi.getProfile(id);
       if (result is Success) {
         print('sucess ${result.response}');
         Profile profile =

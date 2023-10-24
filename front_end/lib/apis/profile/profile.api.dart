@@ -7,10 +7,10 @@ import 'package:restaurant_manager_app/utils/dio.dart';
 import '../../utils/response.dart';
 
 class ProfileApi {
-  static Future<Object> getProfile(int id, String token) async {
+  static Future<Object> getProfile(int id) async {
     try {
       Response<dynamic> response = await http.get(Router.profileDetail,
-          options: Options(headers: {'Authorization': 'Bearer $token'}),
+          // options: Options(headers: {'Authorization': 'Bearer $token'}),
           data: {'id': id});
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
@@ -25,9 +25,11 @@ class ProfileApi {
     // return Http().dio.post(ApiPath.login);
   }
 
-  static Future<Object> updatePassword(String oldPassword, String newPassword) async {
+  static Future<Object> updatePassword(
+      String oldPassword, String newPassword) async {
     try {
-      Response<dynamic> response = await http.post(Router.updatePassword, data: {
+      Response<dynamic> response =
+          await http.post(Router.updatePassword, data: {
         'oldPassword': oldPassword,
         'password': newPassword,
       });
@@ -43,15 +45,25 @@ class ProfileApi {
       return Failure(response: err.response);
     }
   }
-  static Future<Object> updateProfiled(String email, String phoneNumber, File imgUrl) async {
+
+  static Future<Object> updateProfile(
+      String email, String phoneNumber, String imgUrl, String birtDay) async {
     try {
-      Response<dynamic> response = await http.post(Router.updatePassword, data: {
+      FormData formData = FormData.fromMap({
         'email': email,
         'phoneNumber': phoneNumber,
-        'imgUrl': imgUrl,
+        'birtDay' : birtDay,
       });
+      if (imgUrl.isNotEmpty) {
+        formData.files.add(MapEntry(
+          'file', await MultipartFile.fromFile(imgUrl),
+        ));
+      }
+      Response<dynamic> response =
+          await http.post(Router.updateProfile, data: formData);
 
       if (response.statusCode == 200) {
+        print("test change data ${response.data}");
         return Success(response: response, statusCode: response.statusCode);
       } else {
         print("failure ${response.data}");

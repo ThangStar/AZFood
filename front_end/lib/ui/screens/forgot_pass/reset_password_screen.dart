@@ -79,7 +79,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       child: Scaffold(
           appBar: AppBar(
             scrolledUnderElevation: 0,
-            backgroundColor: colorScheme(context).onSecondary,
+            backgroundColor: colorScheme(context).onPrimary,
             leading: IconButton(
               onPressed: () {
                 Navigator.push(

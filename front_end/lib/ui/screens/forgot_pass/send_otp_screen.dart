@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/forgot_pass/reset_password_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_email_screen.dart';
+import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 
 import '../../blocs/forgot_pass/forgot_password_bloc.dart';
 import '../../theme/color_schemes.dart';
@@ -20,30 +21,36 @@ class SendOTPScreen extends StatefulWidget {
 }
 
 class _SendOTPScreenState extends State<SendOTPScreen> {
-  final TextEditingController sendOTPController =
-      TextEditingController(text: "");
-
+  final TextEditingController sendOTPController = TextEditingController(text: "");
+  bool isValidOtp = false;
+  bool isEnable = false;
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is VerifyOtpSuccess) {
-          showMySnackBar(context,'Đã xác nhận OTP thành công',TypeSnackBar.success);
+           myAlert(context, checkDeviceType(size.width), AlertType.success,
+                  "Thông báo", "Đã xác nhận OTP thành công.")
+              .show(context);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
           );
         } else if (state is VerifyOtpFailed) {
-          showMySnackBar(context,'Mã OTP sai', TypeSnackBar.error);
+          setState(() {
+            isEnable = false;
+          });
         }else if (state is VerifyOtpErorr){
-          showMySnackBar(context,'Đã xảy ra lỗi, vui lòng thử lại', TypeSnackBar.error);
+               myAlert(context, checkDeviceType(size.width), AlertType.error,
+                  "Thông báo", "Đã xảy ra lỗi, vui lòng thử lại.")
+              .show(context);
         }
       },
       child: Scaffold(
           appBar: AppBar(
             scrolledUnderElevation: 0,
-            backgroundColor: colorScheme(context).onSecondary,
+            backgroundColor: colorScheme(context).onPrimary,
             leading: IconButton(
               onPressed: () {
                 Navigator.push(
@@ -57,6 +64,11 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                 color: colorScheme(context).scrim,
               ),
             ),
+            shape: Border(
+                bottom: BorderSide(
+              color: colorScheme(context).scrim.withAlpha(30),
+              width: 1,
+            )),
           ),
           body: Center(
             child: SingleChildScrollView(
@@ -145,15 +157,27 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                       "Mã OTP khôi phục mật khẩu"),
                                                 ),
                                                 MyTextField(
-                                                  validator: (value) {
-                                                    bool isValidOtp = RegExp(r"^\d{6}$").hasMatch(value!);
-                                                    return isValidOtp ? null : "Mã OTP phải là số và có 6 kí tự";
+                                                  onChanged: (p0){
+                                                    setState(() {
+                                                      isValidOtp;
+                                                      isEnable = true;
+                                                    });
                                                   },
+                                                  validator: (value) {
+                                                    isValidOtp = RegExp(r"^\d{6}$").hasMatch(value!);
+                                                    if(!isValidOtp){
+                                                      return "Mã OTP phải là số và có 6 kí tự.";
+                                                    }else if(!isEnable){
+                                                      return "Mã OTP không đúng, vui lòng thử lại.";
+                                                    }else{
+                                                      return null;
+                                                    }
+                                                  },
+                                                  
                                                   hintText:
                                                       "Nhập mã OTP của bạn",
                                                   icon: const Icon(
                                                       Icons.qr_code_2),
-                                                  label: "OTP từ email",
                                                   controller: sendOTPController,
                                                 ),
                                               ],
@@ -168,6 +192,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                 tag: "login_hero",
                                                 child: MyButton(
                                                   value: "Xác nhận OTP",
+                                                  disable: !(isValidOtp && isEnable),
                                                   onPressed: () {
                                                     BlocProvider.of<
                                                         ForgotPasswordBloc>(
@@ -176,7 +201,6 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                                                       VerifyOtpEvent(
                                                           otp: sendOTPController
                                                               .text),
-
                                                     );
                                                   },
                                                 )),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/info/change_password_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/info/profile_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/info/update_info_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -33,12 +34,12 @@ class _InfoScreenState extends State<InfoScreen> {
         titleSpacing: checkDevice(size.width, -5.0, 15.0, 15.0),
         automaticallyImplyLeading: checkDevice(size.width, true, false, false),
         title: Text(
-            'CÁ NHÂN',
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
-          ),
+          'CÁ NHÂN',
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
+        ),
         shape: Border(
             bottom: BorderSide(
                 color: colorScheme(context).outlineVariant, width: 1)),
@@ -439,7 +440,13 @@ class UtilitiesView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ));
+                  },
                 ),
               ),
             ],

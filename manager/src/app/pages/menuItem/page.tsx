@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLayoutEffect } from 'react';
 import Link from "next/link";
-import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { getDVTList, getDvtListAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
@@ -34,6 +34,7 @@ export default function MunuItems() {
     const [searchName, setSearchName] = useState("")
     const [isEdit, setIsEdit] = useState(false);
     const [image, setImage] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("0"); // Giá trị ban đầu là "0"
 
     const [file, setFile] = useState<File>();
     const totalPages = menuItemList.totalPages || 1;
@@ -113,6 +114,7 @@ export default function MunuItems() {
         setSearchName(searchName);
         if (searchName.trim() !== '') {
             dispatch(getSearchMenuListAsync(searchName));
+            setSelectedCategory('0')
         } else {
             handlePageChange(currentPage)
         }
@@ -122,6 +124,17 @@ export default function MunuItems() {
         if (event.target.files && event.target.files[0]) {
             const selectedImage = event.target.files[0];
             setFile(selectedImage);
+        }
+    }
+
+    const handleSelectedCategoryChange = (event: any) => {
+        const selectedValue = event.target.value;
+        setSelectedCategory(selectedValue);
+        setSearchName('')
+        if (selectedValue === '0') {
+            handlePageChange(currentPage)
+        } else {
+            dispatch(getFilterCategoryListAsync(selectedValue))
         }
     }
     return (
@@ -182,7 +195,13 @@ export default function MunuItems() {
                                             Giá
                                         </th>
                                         <th>
-                                            Loại Món
+                                            <select value={selectedCategory} onChange={handleSelectedCategoryChange}>
+                                                <option value="0">Loại Món</option>
+                                                {listCategory && listCategory.length > 0 &&
+                                                    listCategory.map((item: any) =>
+                                                        <option key={item.id} value={item.id}>{item.name}</option>
+                                                    )}
+                                            </select>
                                         </th>
                                         <th>
                                             Đv Tính

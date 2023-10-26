@@ -358,12 +358,31 @@ exports.delete = async (req, res) => {
 
 exports.filterCategory = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
-    const categoryID = req.body.category;
+    const categoryID = req.query.category;
     if (checkAuth) {
-        const queryRaw = "SELECT * FROM products WHERE category = ?;";
+        const queryRaw = `SELECT
+        p.id,
+        p.name ,
+        p.price,
+        p.category,
+        p.status,
+        k.quantity,
+        p.dvtID,
+        p.imgUrl,
+        c.name AS category_name,
+        d.tenDVT AS dvt_name
+    FROM
+        products p
+    JOIN
+        category c ON p.category = c.id
+    JOIN
+        donViTinh d ON p.dvtID = d.id
+    LEFT JOIN
+        kho k ON p.id = k.productID
+    WHERE p.category = ?`;
         const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, replacements: [categoryID], type: QueryTypes.SELECT });
         res.status(200);
-        res.send({ resultRaw });
+        res.send({ data: resultRaw });
     } else {
         res.status(401);
     }

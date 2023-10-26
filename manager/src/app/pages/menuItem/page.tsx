@@ -190,7 +190,7 @@ export default function MunuItems() {
                                         <th>
                                             Tồn Kho
                                         </th>
-                                        <th style={{ width: "20%" }} className="text-center">
+                                        <th style={{ width: "16%" }} className="text-center">
                                             Tùy Chỉnh
                                         </th>
                                     </tr>
@@ -320,10 +320,10 @@ export default function MunuItems() {
                                             onChange={handleChangeFile}
 
                                         />
-                                        {image &&
+                                        {image ? (<img src={image} alt="" width={80} height={80} />) : (
                                             <div className='ratio ratio-1x1 w-50 mt-2'>
                                                 <img src={image} alt="" style={{ objectFit: 'cover' }} />
-                                            </div>
+                                            </div>)
                                         }
                                     </div>
                                 </div>

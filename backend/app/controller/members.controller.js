@@ -179,33 +179,34 @@ exports.changePassUser = async (req, res) => {
 };
 
 exports.updateUserInfo = async (req, res) => {
-    const storage = getStorage();
-
+    const storage = getStorage();    
     try {
         const body = req.body;
+        const image = req.file;
         const user = Jwt.getCurrentLogin(req);
         const userID = user.userId;
-
         if (userID) {
-            const image = req.file;
-            const imageFileName = `${Date.now()}_${image.originalname}`;
+            let imgUrl = null;
+            let queryRaw = "UPDATE users SET email = ?, phoneNumber = ?, birtDay = ? WHERE id = ?";
+            if (image) {
+                const imageFileName = `${Date.now()}_${image.originalname}`;
 
-            const storageRef = ref(storage, `files/usersss/${imageFileName}`);
-            const metadata = {
-                contentType: req.file.mimetype,
-            };
-            const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
-            const imgUrl = await getDownloadURL(snapshot.ref);
-
-            const queryRaw = "UPDATE users SET email = ?, phoneNumber = ?, imgUrl = ? WHERE id = ?";
+                const storageRef = ref(storage, `files/usersss/${imageFileName}`);
+                const metadata = {
+                    contentType: req.file.mimetype,
+                };
+                const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+                imgUrl = await getDownloadURL(snapshot.ref);
+                queryRaw = "UPDATE users SET email = ?, phoneNumber = ?, imgUrl = ?, birtDay = ? WHERE id = ?";
+            }
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [body.email, body.phoneNumber, imgUrl, userID],
+                replacements: imgUrl ? [body.email, body.phoneNumber, imgUrl, body.birtDay, userID] : [body.email, body.phoneNumber, body.birtDay, userID],
                 type: QueryTypes.UPDATE
             });
-
             console.log("resultRaw ", resultRaw);
+            
             res.status(200).json({ message: 'User information updated successfully' });
         }
     } catch (error) {

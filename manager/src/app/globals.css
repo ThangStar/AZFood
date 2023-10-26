@@ -53,3 +53,7 @@
   -webkit-appearance: none;
   margin: 0;
 }
+
+select:focus {
+  outline: none;
+}

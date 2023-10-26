@@ -204,7 +204,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                         case PageNavRail.chart:
                           return ChartScreen(constraints: constraints);
                         case PageNavRail.profile:
-                          return const ProfileScreen();
+                          return ProfileScreen( constraints: constraints);
                         case PageNavRail.calendar:
                           return VerifyScreen(constraints: constraints);
                         default:

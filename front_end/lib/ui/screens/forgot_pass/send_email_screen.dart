@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/forgot_pass/send_otp_screen.dart';
+import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/my_snack_bar.dart';
 import '../../blocs/forgot_pass/forgot_password_bloc.dart';
 import '../../theme/color_schemes.dart';
@@ -20,9 +21,11 @@ class _SendEmailScreenState extends State<SendEmailScreen> {
   final TextEditingController fogetPassController =
       TextEditingController(text: "");
   bool _isDialogShown = false;
-
+  bool isEmail = false;
+  bool isEnable = false;
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
         if (state is SendEmailProgress && !_isDialogShown) {
@@ -47,25 +50,27 @@ class _SendEmailScreenState extends State<SendEmailScreen> {
             _isDialogShown = false;
           }
           if (state is SendEmailSuccess) {
-            showMySnackBar(context, state.response['message'].toString(),
-                TypeSnackBar.success);
+            myAlert(context, checkDeviceType(size.width), AlertType.success,
+                "Thông báo", state.response['message'].toString());
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const SendOTPScreen()),
             );
-          } else if (state is SendEmailFailed) {
-            showMySnackBar(context, state.response['message'].toString(),
-                TypeSnackBar.error);
+          } else if (state is SendEmailFailed) { 
+            setState(() {
+              isEnable = false;
+            });
           } else if (state is SendEmailErorr) {
-            showMySnackBar(
-                context, 'Có lỗi xảy ra, vui lòng thử lại', TypeSnackBar.error);
+            myAlert(context, checkDeviceType(size.width), AlertType.error,
+                    "Thông báo", "Có lỗi xảy ra, vui lòng thử lại.")
+                .show(context);
           }
         }
       },
       child: Scaffold(
           appBar: AppBar(
             scrolledUnderElevation: 0,
-            backgroundColor: colorScheme(context).onSecondary,
+            backgroundColor: colorScheme(context).onPrimary,
             leading: IconButton(
               onPressed: () {
                 Navigator.push(
@@ -78,6 +83,11 @@ class _SendEmailScreenState extends State<SendEmailScreen> {
                 color: colorScheme(context).scrim,
               ),
             ),
+            shape: Border(
+                bottom: BorderSide(
+              color: colorScheme(context).scrim.withAlpha(30),
+              width: 1,
+            )),
           ),
           body: Center(
             child: SingleChildScrollView(
@@ -166,17 +176,27 @@ class _SendEmailScreenState extends State<SendEmailScreen> {
                                                       "Email khôi phục tài khoản"),
                                                 ),
                                                 MyTextField(
+                                                  onChanged: (p0) {
+                                                    setState(() {
+                                                      isEmail;
+                                                      isEnable = true;
+                                                    });
+                                                  },
                                                   validator: (p0) {
-                                                    bool isEmail = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
+                                                    isEmail = RegExp(
+                                                            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
                                                         .hasMatch(p0!);
-                                                    return isEmail
-                                                        ? null
-                                                        : "Địa chỉ email không hợp lệ";
+                                                    if(!isEmail){
+                                                      return "Địa chỉ email không hợp lệ.";
+                                                    }else if(!isEnable){
+                                                      return "Địa chỉ email không tồn tại.";
+                                                    }else{
+                                                      return null;
+                                                    }
                                                   },
                                                   hintText:
-                                                      "Nhập email của bạn",
+                                                      "Nhập email của bạn...",
                                                   icon: const Icon(Icons.email),
-                                                  label: "email",
                                                   controller:
                                                       fogetPassController,
                                                 ),
@@ -191,6 +211,8 @@ class _SendEmailScreenState extends State<SendEmailScreen> {
                                             Hero(
                                                 tag: "login_hero",
                                                 child: MyButton(
+                                                  disable:
+                                                      !(isEmail && isEnable),
                                                   value: "Lấy mã xác nhận",
                                                   onPressed: () {
                                                     BlocProvider.of<

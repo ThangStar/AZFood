@@ -366,14 +366,14 @@ exports.payBill = async (req, res) => {
             // Lưu chi tiết hoá đơn vào bảng invoiceDetails
             for (const detail of billDetails) {
                 const createInvoiceDetailsQuery = `
-                    INSERT INTO invoiceDetails (invoiceID, poductName, quantity, totalAmount)
-                    VALUES (?, ?, ?, ?)
+                    INSERT INTO invoiceDetails (invoiceID, poductName, quantity, totalAmount , productID)
+                    VALUES (?, ?, ?, ?, ?)
                 `;
 
                 await sequelize.query(createInvoiceDetailsQuery, {
                     raw: true,
                     logging: false,
-                    replacements: [invoiceID, detail.productName, detail.quantity, detail.totalAmount],
+                    replacements: [invoiceID, detail.productName, detail.quantity, detail.totalAmount, detail.productID],
                     type: QueryTypes.INSERT
                 });
 

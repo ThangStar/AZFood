@@ -31,7 +31,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   FutureOr<void> _getProductsEvent(
       GetProductsEvent event, Emitter<ProductState> emit) async {
     final data = await getProduct(state.page);
-    print("data, ${data['data']}");
+    print("data, $data");
     ProductResponse productResponse = ProductResponse.fromJson(data);
     emit(state.copyWith(
         productResponse: productResponse,
@@ -111,6 +111,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   FutureOr<void> _changePageProductEvent(
       ChangePageProductEvent event, Emitter<ProductState> emit) async {
-    emit(state.copyWith(productResponse: await getProduct(2)));
+    final data =
+        await getProduct(event.isNext ? state.page + 1 : state.page - 1);
+    ProductResponse productResponse = ProductResponse.fromJson(data);
+    emit(state.copyWith(
+        productResponse: productResponse,
+        total: data['totalItems'],
+        totalPage: data['totalPages'],
+        page: data['currentPage']));
   }
 }

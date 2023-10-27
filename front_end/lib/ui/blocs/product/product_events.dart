@@ -43,5 +43,8 @@ class SearchProductEvent extends ProductEvent {
   SearchProductEvent({required this.query});
 }
 
-class ChangePageProductEvent extends ProductEvent{
+class ChangePageProductEvent extends ProductEvent {
+  final bool isNext;
+
+  ChangePageProductEvent({this.isNext = true});
 }

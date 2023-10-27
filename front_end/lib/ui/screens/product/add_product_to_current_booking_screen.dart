@@ -61,20 +61,42 @@ class _AddProductToCurrentBookingScreenState
               autofocus: true,
               child: Scaffold(
                 backgroundColor: colorScheme(context).background,
-                floatingActionButton: FloatingActionButton.extended(
-                    heroTag: "check_out",
-                    key: cartKey,
-                    backgroundColor: colorScheme(context).secondary,
-                    onPressed: () {
-                      productBloc.add(ChangePageProductEvent());
-                    },
-                    label: Badge(
-                      label: Text("${productsSelected.length}"),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: colorScheme(context).onPrimary,
-                      ),
-                    )),
+                floatingActionButton: BlocBuilder<ProductBloc, ProductState>(
+                    builder: (context, state) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      state.page != 1
+                          ? FloatingActionButton.extended(
+                              backgroundColor: colorScheme(context).error,
+                              onPressed: () {
+                                productBloc
+                                    .add(ChangePageProductEvent(isNext: false));
+                              },
+                              label: Icon(
+                                Icons.arrow_back,
+                                color: colorScheme(context).onPrimary,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      state.page < state.totalPage
+                          ? FloatingActionButton.extended(
+                              heroTag: "check_out",
+                              key: cartKey,
+                              backgroundColor: colorScheme(context).secondary,
+                              onPressed: () {
+                                productBloc.add(ChangePageProductEvent());
+                              },
+                              label: Icon(
+                                Icons.arrow_forward,
+                                color: colorScheme(context).onPrimary,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ],
+                  );
+                }),
                 appBar: AppBar(
                   shadowColor: colorScheme(context).background,
                   surfaceTintColor: colorScheme(context).background,

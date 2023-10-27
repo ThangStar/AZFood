@@ -12,8 +12,8 @@ class ProductState extends Equatable {
       this.productsFilter,
       this.productsSearchResults,
       this.page = 1,
-        this.totalPage = 1,
-      this.total = 0,
+        this.totalPage = 5,
+      this.total = 5,
       this.currentProducts});
 
   final ProductStatus? status;

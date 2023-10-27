@@ -25,18 +25,29 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<GetListProductByIdTable>(_getListProductByIdTable);
     on<GetListProductStatusEvent>(_getListProductStatusEvent);
     on<SearchProductEvent>(_searchProductEvent);
+    on<ChangePageProductEvent>(_changePageProductEvent);
   }
 
   FutureOr<void> _getProductsEvent(
       GetProductsEvent event, Emitter<ProductState> emit) async {
-    Object result = await ProductApi.getProduct(event.page);
+    final data = await getProduct(state.page);
+    print("data, ${data['data']}");
+    ProductResponse productResponse = ProductResponse.fromJson(data);
+    emit(state.copyWith(
+        productResponse: productResponse,
+        total: data['totalItems'],
+        totalPage: data['totalPages'],
+        page: data['currentPage']));
+  }
+
+  Future<dynamic> getProduct(int page) async {
+    Object result = await ProductApi.getProduct(page);
+    ProductResponse? productResponse;
     if (result is Success) {
-      print("Success ${result.response}");
-      ProductResponse productResponse =
-          ProductResponse.fromJson(jsonDecode(result.response.toString()));
-      emit(state.copyWith(productResponse: productResponse));
+      return result.response.data;
     } else if (result is Failure) {
       print("failure ${result.response}");
+      return null;
     }
   }
 
@@ -55,11 +66,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   FutureOr<void> _getProductFilterEvent(
       GetProductFilterEvent event, Emitter<ProductState> emit) async {
+    print('productsFilter, id cate ${event.idCategory}');
     Object result = await ProductApi.productsFilter(event.idCategory);
     if (result is Success) {
       print('productsFilter ${result.response}');
       List<dynamic> jsonProducts =
-          jsonDecode(result.response.toString())["resultRaw"] as List<dynamic>;
+          result.response.data["data"] as List<dynamic>;
       emit(state.copyWith(
           productResponse: ProductResponse(
         data: jsonProducts.map((e) => Product.fromJson(e)).toList(),
@@ -95,5 +107,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     } else if (result is Failure) {
       emit(state.copyWith(productsSearchResults: []));
     }
+  }
+
+  FutureOr<void> _changePageProductEvent(
+      ChangePageProductEvent event, Emitter<ProductState> emit) async {
+    emit(state.copyWith(productResponse: await getProduct(2)));
   }
 }

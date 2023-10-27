@@ -145,7 +145,7 @@ exports.getList = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
         try {
-            const PAGE_SIZE = 6;
+            const PAGE_SIZE = 4;
             const currentPage = parseInt(req.query.page) || 1;
             const offset = (currentPage - 1) * PAGE_SIZE;
 

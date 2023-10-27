@@ -36,9 +36,28 @@ import 'model/message.dart';
 
 late List<CameraDescription> cameras;
 
+isolateListen(ReceivePort port) {
+  port.listen((msg) {
+    MySharePreferences.loadProfile().then((value) {
+      Message ms = msg as Message;
+      print("Received message from isolate ${msg.message}");
+      if (value?.id != ms.sendBy) {
+        showNotiWindow(title: msg.profile?.name, body: msg.message);
+      }
+    });
+  });
+}
+
+isolateEnqueue(ReceivePort port) {
+  Isolate.spawn((message) {
+    onNotiMsgFromServer(message);
+  }, {'SOCKET_URL': Env.SOCKET_URL, "PORT": port.sendPort});
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  var port = ReceivePort();
   try {
     if (!kIsWeb) {
       if (Platform.isAndroid || Platform.isIOS) {
@@ -56,20 +75,9 @@ void main() async {
     print("object3");
     runApp(const MyApp());
 
-    var port = ReceivePort();
-    port.listen((msg) {
-      MySharePreferences.loadProfile().then((value) {
-        Message ms = msg as Message;
-        print("Received message from isolate ${msg.message}");
-        if (value?.id != ms.sendBy) {
-          showNotiWindow(title: msg.profile?.name, body: msg.message);
-        }
-      });
-    });
-
-    final isolate = Isolate.spawn((message) {
-      onNotiMsgFromServer(message);
-    }, {'SOCKET_URL': Env.SOCKET_URL, "PORT": port.sendPort});
+    //isolate
+    isolateListen(port);
+    isolateEnqueue(port);
   } catch (e) {
     print(e);
   }
@@ -86,7 +94,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _showPerformanceOverlay = false;
+  final bool _showPerformanceOverlay = false;
 
   @override
   void initState() {
@@ -156,7 +164,7 @@ class _MyAppState extends State<MyApp> {
                         textTheme: textTheme(context)),
                     darkTheme: ThemeData(
                         useMaterial3: true, colorScheme: darkColorScheme),
-                    home: VideoCallScreen()),
+                    home: LoginScreen()),
               ));
         });
   }

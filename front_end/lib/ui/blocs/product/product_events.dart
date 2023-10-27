@@ -42,3 +42,6 @@ class SearchProductEvent extends ProductEvent {
 
   SearchProductEvent({required this.query});
 }
+
+class ChangePageProductEvent extends ProductEvent{
+}

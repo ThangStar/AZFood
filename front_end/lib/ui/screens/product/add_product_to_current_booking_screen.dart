@@ -30,18 +30,18 @@ class _AddProductToCurrentBookingScreenState
   List<Product> productsSelected = [];
 
   GlobalKey cartKey = GlobalKey();
+  late ProductBloc productBloc;
 
   @override
   void initState() {
+    productBloc = BlocProvider.of(context);
+    productBloc.add(const GetProductsEvent());
+    productBloc.add(GetCategoryEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    ProductBloc productBloc = BlocProvider.of(context);
-    productBloc.add(const GetProductsEvent());
-    productBloc.add(GetCategoryEvent());
-
     return SafeArea(
       child: RefreshIndicator(
           onRefresh: () async {
@@ -66,12 +66,12 @@ class _AddProductToCurrentBookingScreenState
                     key: cartKey,
                     backgroundColor: colorScheme(context).secondary,
                     onPressed: () {
-                      Navigator.pop(context);
+                      productBloc.add(ChangePageProductEvent());
                     },
                     label: Badge(
                       label: Text("${productsSelected.length}"),
                       child: Icon(
-                        Icons.shopping_cart_rounded,
+                        Icons.arrow_forward,
                         color: colorScheme(context).onPrimary,
                       ),
                     )),
@@ -107,7 +107,10 @@ class _AddProductToCurrentBookingScreenState
                         child: const Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.search, size: 22,),
+                            Icon(
+                              Icons.search,
+                              size: 22,
+                            ),
                             Text(
                               " Tìm kiếm...  ",
                               style: TextStyle(fontSize: 14),

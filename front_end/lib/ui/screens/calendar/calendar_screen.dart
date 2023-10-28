@@ -8,13 +8,6 @@ import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import '../../blocs/calendar/calendar_bloc.dart';
 import '../../theme/color_schemes.dart';
 
-final event = CalendarEventData(
-  date: DateTime(2023, 8, 10),
-  endDate: DateTime(2023, 8, 15),
-  event: "Event 1",
-  title: 'c',
-);
-
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key, required this.constraints});
 
@@ -25,15 +18,10 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  tap() {
-    print("object");
-    final event = CalendarEventData(
-      date: DateTime(2023, 8, 10),
-      event: "Event 1",
-      title: '123',
-    );
+  EventController controller = EventController();
 
-    CalendarControllerProvider.of(context).controller.add(event);
+  initEvent() {
+    // CalendarControllerProvider.of(context).controller.add(event);
   }
 
   late CalendarBloc calendarBloc;
@@ -67,17 +55,43 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   .show(context);
             }
             break;
+          case InitAttendanceResultState:
+            {
+              if (state.status == CalendarStatus.success) {
+                print("LENGTH EVENT ${state.eventData?.length}");
+                CalendarControllerProvider.of(context)
+                    .controller
+                    .addAll(state.eventData ?? []);
+              }
+            }
         }
       },
       child: Scaffold(
-          floatingActionButton: FloatingActionButton.extended(
-              backgroundColor: colorScheme(context).primary,
-              onPressed: () =>
-                  context.read<CalendarBloc>().add(OnAttendanceEvent()),
-              label: Text(
-                "Điểm danh",
-                style: TextStyle(color: colorScheme(context).onPrimary),
-              )),
+          floatingActionButton: BlocBuilder<CalendarBloc, CalendarState>(
+            builder: (context, state) {
+              return FloatingActionButton.extended(
+                  backgroundColor: colorScheme(context).primary,
+                  onPressed: () {
+                    bool isToday = state
+                            .eventData
+                            .where((element) =>
+                                element.date.compareWithoutTime(DateTime.now()))
+                            .firstOrNull !=
+                        null;
+                    if(isToday){
+                      myAlert(context, checkDeviceType(widget.constraints.maxWidth),
+                          AlertType.info, "Thông tin", "Hôm nay bạn đã điểm danh rồi!")
+                          .show(context);
+                      return;
+                    }
+                    context.read<CalendarBloc>().add(OnAttendanceEvent());
+                  },
+                  label: Text(
+                    "Điểm danh",
+                    style: TextStyle(color: colorScheme(context).onPrimary),
+                  ));
+            },
+          ),
           appBar: AppBar(
             automaticallyImplyLeading:
                 checkDevice(widget.constraints.maxWidth, true, false, false),
@@ -88,85 +102,84 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           body: Stack(
             children: [
-              MonthView(
-                controller: EventController(
-                  eventFilter: (date, events) => [
-                    CalendarEventData(
-                      date: DateTime(2023, 8, 10),
-                      event: "Event 1",
-                      title: '123',
-                    )
-                  ],
-                ),
-                weekDayStringBuilder: (p0) {
-                  switch (p0) {
-                    case 0:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Thứ 2"
-                          : "T2";
-                    case 1:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Thứ 3"
-                          : "T2";
-
-                    case 2:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Thứ 4"
-                          : "T4";
-
-                    case 3:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Thứ 5"
-                          : "T5";
-
-                    case 4:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Thứ 6"
-                          : "T6";
-
-                    case 5:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Thứ 7"
-                          : "T7";
-
-                    case 6:
-                      return widget.constraints.maxWidth > mobileWidth
-                          ? "Chủ nhật"
-                          : "CN";
-                    default:
-                      return "Không xác định";
-                  }
-                },
-                headerStyle: HeaderStyle(
-                    leftIcon: Icon(
-                      Icons.arrow_back,
+              BlocBuilder<CalendarBloc, CalendarState>(
+                builder: (context, state) {
+                  return MonthView(
+                    controller: EventController(
+                      eventFilter: (date, events) => state.eventData ?? [],
                     ),
-                    rightIcon: Icon(Icons.arrow_forward),
-                    decoration:
-                        BoxDecoration(color: colorScheme(context).onPrimary)),
-                // to provide custom UI for month cells.
-                cellBuilder: (date, events, isToday, isInMonth) {
-                  // Return your widget to display as month cell.
-                  return CalendarItemDay(
-                      date: date,
-                      events: events,
-                      isToday: isToday,
-                      isInMonth: isInMonth);
+                    weekDayStringBuilder: (p0) {
+                      switch (p0) {
+                        case 0:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 2"
+                              : "T2";
+                        case 1:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 3"
+                              : "T2";
+
+                        case 2:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 4"
+                              : "T4";
+
+                        case 3:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 5"
+                              : "T5";
+
+                        case 4:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 6"
+                              : "T6";
+
+                        case 5:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 7"
+                              : "T7";
+
+                        case 6:
+                          return widget.constraints.maxWidth > mobileWidth
+                              ? "Chủ nhật"
+                              : "CN";
+                        default:
+                          return "Không xác định";
+                      }
+                    },
+                    headerStyle: HeaderStyle(
+                        leftIcon: Icon(
+                          Icons.arrow_back,
+                        ),
+                        rightIcon: Icon(Icons.arrow_forward),
+                        decoration: BoxDecoration(
+                            color: colorScheme(context).onPrimary)),
+                    // to provide custom UI for month cells.
+                    cellBuilder: (date, events, isToday, isInMonth) {
+                      // Return your widget to display as month cell.
+                      return CalendarItemDay(
+                          date: date,
+                          events: events,
+                          isToday: isToday,
+                          isInMonth: isInMonth);
+                    },
+                    minMonth: DateTime(2023),
+                    maxMonth: DateTime(2050),
+                    initialMonth: DateTime.now(),
+                    cellAspectRatio: 1,
+                    onPageChange: (date, pageIndex) =>
+                        print("$date, $pageIndex"),
+                    onCellTap: (events, date) {
+                      // Implement callback when user taps on a cell.
+                      print(events);
+                    },
+                    startDay: WeekDays.sunday,
+                    // To change the first day of the week.
+                    // This callback will only work if cellBuilder is null.
+                    onEventTap: (event, date) => print(event),
+                    onDateLongPress: (date) => print(date),
+                  );
                 },
-                minMonth: DateTime(2023),
-                maxMonth: DateTime(2050),
-                initialMonth: DateTime.now(),
-                cellAspectRatio: 1,
-                onPageChange: (date, pageIndex) => print("$date, $pageIndex"),
-                onCellTap: (events, date) {
-                  // Implement callback when user taps on a cell.
-                  print(events);
-                },
-                startDay: WeekDays.sunday,
-                // To change the first day of the week.
-                // This callback will only work if cellBuilder is null.
-                onEventTap: (event, date) => print(event),
-                onDateLongPress: (date) => print(date),
               ),
             ],
           )),
@@ -178,79 +191,65 @@ class CalendarItemDay extends StatelessWidget {
   const CalendarItemDay(
       {super.key,
       required this.date,
-      this.events,
+      required this.events,
       required this.isToday,
       this.isInMonth});
 
   final DateTime date;
-  final events;
+  final List<CalendarEventData<Object?>> events;
   final bool isToday;
   final isInMonth;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CalendarBloc, CalendarState>(
-      builder: (context, state) {
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: state.attendances.map((e) {
-              return Expanded(
-                child: Container(
-                    color: isToday &&
-                            !DateTime.parse(e.date ?? "")
-                                .compareWithoutTime(date)
-                        ? Colors.red
-                        : DateTime.parse(e.date ?? "")
-                                        .compareWithoutTime(date) &&
-                                    isToday ||
-                                DateTime.parse(e.date ?? "")
-                                    .compareWithoutTime(date)
-                            ? Colors.green
-                            : Colors.white,
-                    child: Column(children: [
-                      Column(children: [
-                        Text(
-                          "${date.day}",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: date.weekday == DateTime.sunday
-                                  ? Colors.red
-                                  : isToday
-                                      ? Colors.white
-                                      : null),
+    bool isChecked = events
+            .where((element) => element.date.compareWithoutTime(date))
+            .firstOrNull !=
+        null;
+    return Container(
+        color: isToday && !isChecked
+            ? Colors.red
+            : isChecked && isToday || isChecked
+                ? Colors.green[900]
+                : Colors.white,
+        child: Column(children: [
+          Column(children: [
+            Text(
+              "${date.day}",
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: date.weekday == DateTime.sunday
+                      ? Colors.red
+                      : isChecked
+                          ? Colors.white
+                          : null),
+            ),
+            events.where((element) {
+                      return element.date.compareWithoutTime(date);
+                    }).firstOrNull !=
+                    null
+                ?
+                // if (isToday && attendanceThisDay)
+                Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Icon(
+                          Ionicons.checkmark_circle,
+                          color: Colors.greenAccent,
                         ),
-                      ]),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          if (DateTime.parse(e.date ?? "")
-                              .compareWithoutTime(date))
-                            // if (isToday && attendanceThisDay)
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  const Icon(
-                                    Ionicons.checkmark_circle,
-                                    color: Colors.greenAccent,
-                                  ),
-                                  Text(
-                                    "Đã điểm danh",
-                                    style: TextStyle(
-                                        color: colorScheme(context).onPrimary),
-                                  ),
-                                ],
-                              ),
-                            )
-                        ],
-                      )
-                    ])),
-              );
-            }).toList());
-      },
-    );
+                        Text(
+                          "Đã điểm danh",
+                          style:
+                              TextStyle(color: colorScheme(context).onPrimary),
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ]),
+        ]));
   }
 }

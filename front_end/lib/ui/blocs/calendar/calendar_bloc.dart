@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:calendar_view/calendar_view.dart';
 import 'package:equatable/equatable.dart';
 import 'package:restaurant_manager_app/apis/calendar/calendar.api.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
@@ -44,6 +45,20 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       List<dynamic> json = result.response.data['resultRaw'] as List<dynamic>;
       emit(state.copyWith(
           attendances: json.map((e) => Attendance.fromJson(e)).toList()));
+
+
+      List<CalendarEventData> eventsData = [];
+      eventsData.addAll(state.attendances.map((e) => CalendarEventData(
+          title: "title", date: DateTime.parse(e.date ?? ""))));
+      emit(state.copyWith(eventData: eventsData));
+
+      print("length: ${state.eventData?.length}");
+
+      emit(InitAttendanceResultState(
+          status: CalendarStatus.success,
+          attendances: state.attendances,
+          eventData: state.eventData));
+
     } else {}
   }
 }

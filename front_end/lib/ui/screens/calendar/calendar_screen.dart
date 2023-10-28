@@ -8,6 +8,13 @@ import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import '../../blocs/calendar/calendar_bloc.dart';
 import '../../theme/color_schemes.dart';
 
+final event = CalendarEventData(
+  date: DateTime(2023, 8, 10),
+  endDate: DateTime(2023, 8, 15),
+  event: "Event 1",
+  title: 'c',
+);
+
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key, required this.constraints});
 
@@ -29,10 +36,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     CalendarControllerProvider.of(context).controller.add(event);
   }
 
-  bool attendanceThisDay = false;
+  late CalendarBloc calendarBloc;
+
+  initAttendance() {
+    calendarBloc.add(OnInitAttendanceEvent());
+  }
 
   @override
   void initState() {
+    calendarBloc = BlocProvider.of<CalendarBloc>(context);
+    initAttendance();
+
     // // TODO: implement initState
     // super.initState();
   }
@@ -42,18 +56,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return BlocListener<CalendarBloc, CalendarState>(
       listener: (context, state) {
         switch (state.runtimeType) {
-          case AttendanceSuccessState:
-            setState(() {
-              attendanceThisDay = true;
-            });
-            myAlert(context, checkDeviceType(widget.constraints.maxWidth),
-                    AlertType.info, "Thông báo", "Đã điểm danh")
-                .show(context);
+          case AttendanceResultState:
+            if (state.status == CalendarStatus.success) {
+              myAlert(context, checkDeviceType(widget.constraints.maxWidth),
+                      AlertType.info, "Thông báo", "Đã điểm danh")
+                  .show(context);
+            } else if (state.status == CalendarStatus.failed) {
+              myAlert(context, checkDeviceType(widget.constraints.maxWidth),
+                      AlertType.error, "Cảnh báo", "Địa chỉ wifi không hợp lệ!")
+                  .show(context);
+            }
             break;
-          case AttendanceFailedState:
-            myAlert(context, checkDeviceType(widget.constraints.maxWidth),
-                    AlertType.error, "Cảnh báo", "Địa chỉ wifi không hợp lệ!")
-                .show(context);
         }
       },
       child: Scaffold(
@@ -125,66 +138,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   }
                 },
                 headerStyle: HeaderStyle(
-                  leftIcon: Icon(Icons.arrow_back,),
-                  rightIcon: Icon(Icons.arrow_forward),
-                  decoration: BoxDecoration(
-                    color: colorScheme(context).onPrimary
-                  )
-                ),
+                    leftIcon: Icon(
+                      Icons.arrow_back,
+                    ),
+                    rightIcon: Icon(Icons.arrow_forward),
+                    decoration:
+                        BoxDecoration(color: colorScheme(context).onPrimary)),
                 // to provide custom UI for month cells.
                 cellBuilder: (date, events, isToday, isInMonth) {
                   // Return your widget to display as month cell.
-                  return Container(
-                    color: isToday
-                        ? Colors.indigo
-                        : isInMonth
-                            ? colorScheme(context).background
-                            : null,
-                    child: Column(
-                      children: [
-                        Text(
-                          "${date.day}",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: date.weekday == DateTime.sunday
-                                  ? Colors.red
-                                  : isToday
-                                      ? Colors.white
-                                      : null),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-
-                          children: [
-                            if (isToday && attendanceThisDay)
-                              Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    const Icon(
-                                      Ionicons.checkmark_circle,
-                                      color: Colors.greenAccent,
-                                    ),
-                                    Text(
-                                      "Đã điểm danh",
-                                      style: TextStyle(
-                                          color:
-                                              colorScheme(context).onPrimary),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            events[0].date == date
-                                ? Text(events[0].event!)
-                                : Container()
-                          ],
-                        )
-                      ],
-                    ),
-                  );
+                  return CalendarItemDay(
+                      date: date,
+                      events: events,
+                      isToday: isToday,
+                      isInMonth: isInMonth);
                 },
                 minMonth: DateTime(2023),
                 maxMonth: DateTime(2050),
@@ -203,6 +170,87 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ],
           )),
+    );
+  }
+}
+
+class CalendarItemDay extends StatelessWidget {
+  const CalendarItemDay(
+      {super.key,
+      required this.date,
+      this.events,
+      required this.isToday,
+      this.isInMonth});
+
+  final DateTime date;
+  final events;
+  final bool isToday;
+  final isInMonth;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CalendarBloc, CalendarState>(
+      builder: (context, state) {
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: state.attendances.map((e) {
+              return Expanded(
+                child: Container(
+                    color: isToday &&
+                            !DateTime.parse(e.date ?? "")
+                                .compareWithoutTime(date)
+                        ? Colors.red
+                        : DateTime.parse(e.date ?? "")
+                                        .compareWithoutTime(date) &&
+                                    isToday ||
+                                DateTime.parse(e.date ?? "")
+                                    .compareWithoutTime(date)
+                            ? Colors.green
+                            : Colors.white,
+                    child: Column(children: [
+                      Column(children: [
+                        Text(
+                          "${date.day}",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: date.weekday == DateTime.sunday
+                                  ? Colors.red
+                                  : isToday
+                                      ? Colors.white
+                                      : null),
+                        ),
+                      ]),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (DateTime.parse(e.date ?? "")
+                              .compareWithoutTime(date))
+                            // if (isToday && attendanceThisDay)
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  const Icon(
+                                    Ionicons.checkmark_circle,
+                                    color: Colors.greenAccent,
+                                  ),
+                                  Text(
+                                    "Đã điểm danh",
+                                    style: TextStyle(
+                                        color: colorScheme(context).onPrimary),
+                                  ),
+                                ],
+                              ),
+                            )
+                        ],
+                      )
+                    ])),
+              );
+            }).toList());
+      },
     );
   }
 }

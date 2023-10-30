@@ -60,7 +60,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
      try {
       Object result = await ProfileApi.getProfile(event.id);
       if (result is Success) {
-        print('sucess ${result.response}');
         Profile profile = Profile.fromJson(jsonDecode(result.response.toString()));
         emit(ProfileState(profile: profile));
 

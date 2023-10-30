@@ -4,8 +4,12 @@ class InvoiceEvent extends Equatable {
   const InvoiceEvent();
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
 class GetInvoiceEvent extends InvoiceEvent {}
+
+class GetInvoiceByIdUserEvent extends InvoiceEvent {
+  final int id;
+  const GetInvoiceByIdUserEvent({required this.id});
+}

@@ -351,7 +351,7 @@ exports.payBill = async (req, res) => {
 
             const createInvoiceQuery = `
             INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber )
-            VALUES (?, ?, ?,? , ?,?)
+            VALUES (?, ?, ?, ?, ?, ?)
             `;
             const invoiceNumber = getInvoiceNumber();
             const invoiceResult = await sequelize.query(createInvoiceQuery, {

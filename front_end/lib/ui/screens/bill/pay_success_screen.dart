@@ -230,12 +230,11 @@ class BodyBillSuccess extends StatelessWidget {
               child: MyButton(
                 value: "Xem hoá đơn",
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetailBillScreen(),
-                      ),
-                      (route) => false);
+                        builder: (context) => const DetailBillScreen(),
+                      ));
                 },
               ),
             ),

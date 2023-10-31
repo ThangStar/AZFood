@@ -1,6 +1,9 @@
 const {getOrdersForTable} = require('../controllers/product.controller')
 // [table]
 const listProductByIdTable = (socket, io) => {
+    socket.on('decreaseQuantity', (data)=> {
+        decreaseQuantity(socket, io, data)
+    });
     socket.on('listProductByIdTable', (data) => {
         console.log(data);
         // const authorization = socket.handshake.headers['Authorization'];
@@ -12,7 +15,7 @@ const listProductByIdTable = (socket, io) => {
             //passed => send table
  
                 getOrdersForTable(socket, io, data)
-          
+                
         
 
         // } else {

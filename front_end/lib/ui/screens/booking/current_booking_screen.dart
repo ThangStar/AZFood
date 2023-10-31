@@ -182,6 +182,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               Product product = state.currentProducts!
                                   .toSet()
                                   .elementAt(index);
+                              int quantityProdcut = product.quantity ?? 1;
                               return ItemProduct(
                                 product: product,
                                 subTitle:
@@ -209,7 +210,14 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                 borderRadius:
                                                 BorderRadius.circular(6),
                                                 child: InkWell(
-                                                  onTap: () {},
+                                                  onTap: () {
+                                                    setState(() {
+                                                      if (quantityProdcut > 1) {
+                                                        quantityProdcut -= 1;
+                                                        print(quantityProdcut);
+                                                      }
+                                                    });
+                                                  },
                                                   child: Container(
                                                     padding:
                                                     const EdgeInsets.all(2),
@@ -221,7 +229,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                 ),
                                               ),
                                               Text(
-                                                "${product.quantity}",
+                                                "$quantityProdcut",
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
@@ -234,7 +242,9 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                 borderRadius:
                                                 BorderRadius.circular(6),
                                                 child: InkWell(
-                                                  onTap: () {},
+                                                  onTap: () {
+
+                                                  },
                                                   child: Container(
                                                     padding:
                                                     const EdgeInsets.all(2),

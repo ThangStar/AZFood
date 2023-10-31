@@ -16,7 +16,7 @@ import { changePassAsync } from "@/redux-store/login-reducer/loginSlice";
 import { useState } from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { showAlert } from "../utils/alert/alert";
-
+import { useRouter } from 'next/router';
 type ButtonProps = {
     onLogout: () => void; // Định nghĩa kiểu cho prop onPress
 }
@@ -50,42 +50,46 @@ const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
     }
 
     return (
-        <div className="main-sidebar" style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <div style={{ backgroundColor: '#E3F6F5', padding: '0px', height: 'calc(100vh - 60px)', borderTop: '1.5px solid rgb(195 211 210)', borderRight: '1.5px solid rgb(195 211 210)' }}>
-                <div className="management mt-4" style={{ color: 'whitesmoke' }}>
-                    <div className="tittle ml-3" style={{ color: '#272343' }}>
+        <div className="p-3">
+            <div>
+                <div className="d-flex mb-3" style={{ alignItems: 'center', justifyContent: 'center'}}>
+                    <img src="\img\logo\chicken.png" alt="" style={{ height: '40px' }} />
+                    <span className="brand-text fs-4 col-sm-8 fw-bolder" style={{ color: '#272343' }}>AZFOOD</span>
+                </div>
+                <div className="management" style={{ color: 'whitesmoke', borderTop: '1.5px solid rgb(195 211 210)'}}>
+                    <div className="tittle mt-3" style={{ color: '#272343' }}>
                         QUẢN LÍ
                     </div>
-                    <nav className="mt-2 pl-3 pr-3">
+                    <nav>
                         <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <Link href="/pages/table" style={{ padding: '10px', borderRadius: '10px' }} className="link">
                                 <div className="d-flex" >
                                     <TableRestaurantSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
-                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Danh sách bàn</p>
+                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Bàn</p>
                                 </div>
                             </Link>
                             <Link href="/pages/users" style={{ padding: '10px', borderRadius: '10px' }} className="link">
                                 <div className="d-flex">
                                     <RecentActorsSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
-                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Danh sách nhân viên</p>
+                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Nhân viên</p>
                                 </div>
                             </Link>
                             <Link href="/pages/menuItem" style={{ padding: '10px', borderRadius: '10px' }} className="link">
                                 <div className="d-flex">
                                     <RamenDiningSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
-                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Danh sách món ăn</p>
+                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Sản phẩm</p>
                                 </div>
                             </Link>
                             <Link href="/pages/kho" style={{ padding: '10px', borderRadius: '10px' }} className="link">
                                 <div className="d-flex">
                                     <ReceiptLongSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
-                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Phiếu nhập hàng</p>
+                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Nhập hàng</p>
                                 </div>
                             </Link>
                             <Link href="/pages/invoice" style={{ padding: '10px', borderRadius: '10px' }} className="link">
                                 <div className="d-flex">
                                     <FactCheckSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
-                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Danh sách hóa đơn</p>
+                                    <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Hóa đơn</p>
                                 </div>
                             </Link>
                             <Link href="/" style={{ padding: '10px', borderRadius: '10px' }} className="link">
@@ -100,7 +104,7 @@ const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
                                 <div className="d-flex">
                                     <BackupTableSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
                                     <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>
-                                        Bảng chấm công
+                                        Chấm công
                                     </p>
                                 </div>
                             </Link>
@@ -108,11 +112,11 @@ const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
                     </nav>
                 </div>
                 <div className="line" style={{ borderBottom: '1.5px solid rgb(195 211 210)', padding: '10px' }}></div>
-                <div className="management mt-4" style={{ color: '#272343' }}>
-                    <div className="tittle ml-3">
+                <div className="management mt-3" style={{ color: '#272343' }}>
+                    <div>
                         CÀI ĐẶT
                     </div>
-                    <nav className="mt-2 pl-3 pr-3">
+                    <nav>
                         <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                             <div onClick={() => openModal()} style={{ padding: '10px', borderRadius: '10px', cursor: 'pointer' }} className="link">
                                 <div className="d-flex" >

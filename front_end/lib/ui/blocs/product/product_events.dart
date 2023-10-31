@@ -48,3 +48,10 @@ class ChangePageProductEvent extends ProductEvent {
 
   ChangePageProductEvent({this.isNext = true});
 }
+
+class DecreaseProductQuantity extends ProductEvent {
+  final int idProduct;
+
+  DecreaseProductQuantity(this.idProduct);
+
+}

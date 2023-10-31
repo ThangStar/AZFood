@@ -1,3 +1,28 @@
 .link:hover {
-    background-color: rgba(255, 255, 255, 0.697);
+  background-color: rgba(255, 255, 255, 0.697);
 }
+
+/* Đầu tiên, thiết lập kích thước và ẩn nội dung khi leftSideBar có lớp collapsed
+.management.collapsed {
+  width: 80px;
+  transition: width 0.3s ease;
+}
+
+.management.expanded {
+  width: 300px;
+  transition: width 0.3s ease;
+}
+
+.management.collapsed .nav .link {
+  display: flex;
+  align-items: center;
+}
+
+.management.collapsed .nav p {
+  display: none;
+  /* Ẩn văn bản trong mục */
+/* }
+
+.hidden-collapsed {
+  display: none;
+} */ 

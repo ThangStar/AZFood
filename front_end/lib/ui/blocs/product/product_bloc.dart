@@ -26,6 +26,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<GetListProductStatusEvent>(_getListProductStatusEvent);
     on<SearchProductEvent>(_searchProductEvent);
     on<ChangePageProductEvent>(_changePageProductEvent);
+    on<DecreaseProductQuantity>(_decreaseProductQuantity);
   }
 
   FutureOr<void> _getProductsEvent(
@@ -119,5 +120,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         total: data['totalItems'],
         totalPage: data['totalPages'],
         page: data['currentPage']));
+  }
+
+  FutureOr<void> _decreaseProductQuantity(
+      DecreaseProductQuantity event, Emitter<ProductState> emit) {
+
   }
 }

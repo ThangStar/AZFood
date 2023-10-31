@@ -31,3 +31,4 @@ exports.getOrdersForTable = async (socket, io, data) => {
         io.to(socket.id).emit('responseOrder', "error")
     }
 };
+

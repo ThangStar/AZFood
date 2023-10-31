@@ -292,14 +292,14 @@ class SubTitleProduct extends StatelessWidget {
         Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: quantity != 0 ? const Color(0xFF049C6B) : null,
+              color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? const Color(0xFF049C6B) : null,
             ),
-            padding: quantity != 0
+            padding: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1)
                 ? const EdgeInsets.symmetric(horizontal: 14, vertical: 4)
                 : null,
             child: Row(
               children: [
-                quantity != 0
+                (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1)
                     ? const SizedBox.shrink()
                     : const Icon(
                         Icons.error,
@@ -308,11 +308,11 @@ class SubTitleProduct extends StatelessWidget {
                 Text(
                   quantity != 0 && product.category != 1
                       ? "Kho: $quantity"
-                      : quantity == 0
+                      : product.status == 2 || (quantity == 0 && product.category != 1)
                           ? " Hết hàng "
                           : "Sẵn sàng",
                   style: TextStyle(
-                      color: quantity != 0 ? Colors.white : Colors.red),
+                      color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? Colors.white : Colors.red),
                 ),
               ],
             )),

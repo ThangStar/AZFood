@@ -34,7 +34,7 @@ export default function MunuItems() {
     const [searchName, setSearchName] = useState("")
     const [isEdit, setIsEdit] = useState(false);
     const [image, setImage] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("0"); // Giá trị ban đầu là "0"
+    const [selectedCategory, setSelectedCategory] = useState("0");
 
     const [file, setFile] = useState<File>();
     const totalPages = menuItemList.totalPages || 1;

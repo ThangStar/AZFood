@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -9,15 +10,12 @@ import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/bill_history.dart' as Model;
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
-import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
-import 'package:restaurant_manager_app/ui/screens/bill/history_bill_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/form_profile.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_card.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_button_gradient.dart';
-import 'package:restaurant_manager_app/ui/widgets/my_outline_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -33,87 +31,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final List<Model.BillHistory> _bills = [
-    Model.BillHistory(
-        id: "HD06748",
-        table: 01,
-        money: 10000,
-        dateTime: DateTime(2023, 09, 07),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD03814",
-        table: 02,
-        money: 230000,
-        dateTime: DateTime(2023, 09, 07),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD09573",
-        table: 04,
-        money: 150000,
-        dateTime: DateTime(2023, 09, 06),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD01157",
-        table: 06,
-        money: 80000,
-        dateTime: DateTime(2023, 09, 05),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD00576",
-        table: 03,
-        money: 92000,
-        dateTime: DateTime(2023, 09, 04),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD04628",
-        table: 01,
-        money: 392000,
-        dateTime: DateTime(2023, 09, 03),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD06748",
-        table: 06,
-        money: 912000,
-        dateTime: DateTime(2023, 09, 02),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD06748",
-        table: 06,
-        money: 912000,
-        dateTime: DateTime(2023, 09, 02),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD06748",
-        table: 06,
-        money: 912000,
-        dateTime: DateTime(2023, 09, 02),
-        status: "Đã hoàn thành"),
-    Model.BillHistory(
-        id: "HD06748",
-        table: 06,
-        money: 912000,
-        dateTime: DateTime(2023, 09, 02),
-        status: "Đã hoàn thành"),
-  ];
-  final _controllerSearch = TextEditingController(text: "");
+  final controllerSearch = TextEditingController(text: "");
   final outerController = ScrollController();
   final innerController = ScrollController();
   late ProfileBloc profileBloc;
+  late InvoiceBloc invoiceBloc;
   Profile? profile;
 
   @override
   void initState() {
     profileBloc = BlocProvider.of<ProfileBloc>(context);
+    invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
     MySharePreferences.loadProfile().then((value) {
       profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
+      invoiceBloc.add(GetInvoiceByIdUserEvent(id: value?.id ?? 0));
     });
     profile = profileBloc.state.profile;
+    print("TEST DATA: ${json.encode(profile)}");
     super.initState();
   }
 
   @override
   void dispose() {
-    _controllerSearch.dispose();
+    controllerSearch.dispose();
     super.dispose();
   }
 
@@ -122,11 +62,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: colorScheme(context).onPrimary.withOpacity(0.92),
+     
       appBar: AppBar(
         automaticallyImplyLeading:
             checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
-        backgroundColor: Colors.transparent,
+        backgroundColor: colorScheme(context).onPrimary.withOpacity(0.92),
         scrolledUnderElevation: 0,
         titleSpacing: checkDevice(size.width, -5.0, 15.0, 15.0),
         title: Text(
@@ -147,7 +87,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onChanged: (value) {
                   setState(() {});
                 },
-                controller: _controllerSearch,
+                controller: controllerSearch,
                 style: TextStyle(color: colorScheme(context).outline),
                 decoration: InputDecoration(
                   filled: true,
@@ -157,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Icons.search,
                     color: colorScheme(context).outline,
                   ),
-                  suffixIcon: _controllerSearch.text.isEmpty
+                  suffixIcon: controllerSearch.text.isEmpty
                       ? null
                       : TextButton(
                           style: ButtonStyle(
@@ -182,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _controllerSearch.clear();
+                              controllerSearch.clear();
                             });
                           },
                         ),
@@ -211,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onChanged: (value) {
                   setState(() {});
                 },
-                controller: _controllerSearch,
+                controller: controllerSearch,
                 style: TextStyle(color: colorScheme(context).outline),
                 decoration: InputDecoration(
                   filled: true,
@@ -221,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Icons.search,
                     color: colorScheme(context).outline,
                   ),
-                  suffixIcon: _controllerSearch.text.isEmpty
+                  suffixIcon: controllerSearch.text.isEmpty
                       ? null
                       : TextButton(
                           style: ButtonStyle(
@@ -246,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _controllerSearch.clear();
+                              controllerSearch.clear();
                             });
                           },
                         ),
@@ -294,7 +234,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 size: const Size.fromRadius(20.0),
                 child: BlocBuilder<ProfileBloc, ProfileState>(
                     builder: (context, state) {
-                  if ((state.profile?.imgUrl ?? "") != "") {
+                  if (state is GetProfileLoading) {
+                    return const Center(
+                      child: SizedBox(
+                        width: 10,
+                        height: 10,
+                        child: AspectRatio(
+                            aspectRatio: 1, child: CircularProgressIndicator()),
+                      ),
+                    );
+                  } else if ((state.profile?.imgUrl ?? "") != "") {
                     return Image.network(state.profile?.imgUrl ?? "",
                         fit: BoxFit.cover);
                   } else {
@@ -330,7 +279,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 20,
                       ),
                       _ListBill(
-                        bills: _bills,
                         size: size,
                         innerController: innerController,
                         outerController: outerController,
@@ -346,7 +294,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(width: 20),
                           Expanded(
                             child: _ListBill(
-                              bills: _bills,
                               size: size,
                               innerController: innerController,
                               outerController: outerController,
@@ -362,7 +309,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(width: 20),
                         Expanded(
                           child: _ListBill(
-                            bills: _bills,
                             size: size,
                             innerController: innerController,
                             outerController: outerController,
@@ -453,13 +399,11 @@ class _ListCard extends StatelessWidget {
 class _ListBill extends StatelessWidget {
   const _ListBill({
     super.key,
-    required this.bills,
     required this.size,
     required this.outerController,
     required this.innerController,
   });
   final Size size;
-  final List<Model.BillHistory> bills;
   final ScrollController outerController;
   final ScrollController innerController;
   @override
@@ -524,158 +468,199 @@ class _ListBill extends StatelessWidget {
                         ),
                       ])),
                   ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(minWidth: 300.0, maxHeight: 500),
+                    constraints: const BoxConstraints(minWidth: 300.0, maxHeight: 500),
                     child: TabBarView(
                       children: [
-                        // Nội dung của Tab 1
                         Column(
                           children: [
                             Expanded(
                               child: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    if (bills.isNotEmpty) ...[
-                                      ListView.separated(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: bills.length,
-                                        separatorBuilder: (_, __) =>
-                                            const Divider(),
-                                        itemBuilder: (context, int index) {
-                                          return Container(
-                                            padding: const EdgeInsets.all(5.0),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                            ),
-                                            child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        bills[index].id,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyLarge
-                                                            ?.copyWith(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: colorScheme(
-                                                                        context)
-                                                                    .scrim),
-                                                      ),
-                                                      Text(
-                                                        'BÀN: ${bills[index].table}',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                                fontSize: 12,
-                                                                color: colorScheme(
-                                                                        context)
-                                                                    .outlineVariant),
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 5.0,
-                                                      ),
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 6,
-                                                                vertical: 4),
-                                                        color: Colors
-                                                            .greenAccent
-                                                            .withOpacity(0.1),
-                                                        child: Text(
-                                                          bills[index].status,
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color: Colors
-                                                                      .green),
-                                                        ),
-                                                      ),
-                                                    ],
+                                child: BlocBuilder<InvoiceBloc, InvoiceState>(
+                                  builder: (context, state) {
+                                    if (state is InvoiceLoadingState) {
+                                      return const Center(
+                                        child: SizedBox(
+                                          width: 50,
+                                          height: 50,
+                                          child: AspectRatio(
+                                              aspectRatio: 1,
+                                              child:
+                                                  CircularProgressIndicator()),
+                                        ),
+                                      );
+                                    } else {
+                                      return Column(
+                                        children: [
+                                          if (state.invoices.isNotEmpty) ...[
+                                            ListView.separated(
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              itemCount: state.invoices.length,
+                                              separatorBuilder: (_, __) =>
+                                                  const Divider(),
+                                              itemBuilder:
+                                                  (context, int index) {
+                                                return Container(
+                                                  padding:
+                                                      const EdgeInsets.all(5.0),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0),
                                                   ),
-                                                  Column(
-                                                    children: [
-                                                      Text(
-                                                        "${NumberFormat("#######.000", "en_US").format(bills[index].money * 0.001)} đ",
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                                fontSize: 15,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: colorScheme(
-                                                                        context)
-                                                                    .scrim),
-                                                      ),
-                                                      Text(
-                                                        DateFormat("dd-MM-yyyy")
-                                                            .format(bills[index]
-                                                                .dateTime),
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                                fontSize: 12,
-                                                                color: colorScheme(
-                                                                        context)
-                                                                    .outlineVariant),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ]),
-                                          );
-                                        },
-                                      ),
-                                    ] else ...[
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 150),
-                                        child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              SvgPicture.asset(
-                                                'assets/svgs/icon_empty_bill.svg',
-                                                width: 100,
-                                                height: 100,
-                                              ),
-                                              Text(
-                                                "Hiện tại không có hóa đơn nào !",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyLarge
-                                                    ?.copyWith(
-                                                        fontSize: 15,
-                                                        color:
-                                                            colorScheme(context)
-                                                                .outline),
-                                              ),
-                                            ]),
-                                      )
-                                    ]
-                                  ],
+                                                  child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              "HD00${state.invoices[index].id}",
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyLarge
+                                                                  ?.copyWith(
+                                                                      fontSize:
+                                                                          15,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: colorScheme(
+                                                                              context)
+                                                                          .scrim),
+                                                            ),
+                                                            Text(
+                                                              '${state.invoices[index].tableName}',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.copyWith(
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: colorScheme(
+                                                                              context)
+                                                                          .outlineVariant),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 5.0,
+                                                            ),
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          6,
+                                                                      vertical:
+                                                                          4),
+                                                              color: Colors
+                                                                  .greenAccent
+                                                                  .withOpacity(
+                                                                      0.1),
+                                                              child: const Text(
+                                                                "Hoành thành",
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color: Colors
+                                                                        .green),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Column(
+                                                          children: [
+                                                            Text(
+                                                              "${NumberFormat("#,###.000", "en_US").format(state.invoices[index].total! * 0.001)} đ".replaceAll(',', '.'),
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.copyWith(
+                                                                      fontSize:
+                                                                          15,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: colorScheme(
+                                                                              context)
+                                                                          .scrim),
+                                                            ),
+                                                            Text(
+                                                              state
+                                                                          .invoices[
+                                                                              index]
+                                                                          .createAt !=
+                                                                      null
+                                                                  ? DateFormat(
+                                                                          "dd-MM-yyyy")
+                                                                      .format(state
+                                                                          .invoices[
+                                                                              index]
+                                                                          .createAt!)
+                                                                  : "",
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodySmall
+                                                                  ?.copyWith(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: colorScheme(
+                                                                            context)
+                                                                        .outlineVariant,
+                                                                  ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ]),
+                                                );
+                                              },
+                                            ),
+                                          ] else ...[
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 150),
+                                              child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      'assets/svgs/icon_empty_bill.svg',
+                                                      width: 100,
+                                                      height: 100,
+                                                    ),
+                                                    Text(
+                                                      "Hiện tại không có hóa đơn nào !",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge
+                                                          ?.copyWith(
+                                                              fontSize: 15,
+                                                              color: colorScheme(
+                                                                      context)
+                                                                  .outline),
+                                                    ),
+                                                  ]),
+                                            )
+                                          ]
+                                        ],
+                                      );
+                                    }
+                                  },
                                 ),
                               ),
                             ),
@@ -691,7 +676,6 @@ class _ListBill extends StatelessWidget {
                 ],
               ),
             )),
-        // ),
       ],
     );
   }

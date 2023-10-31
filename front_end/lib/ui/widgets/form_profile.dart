@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
 class FormProfile extends StatefulWidget {
   const FormProfile({
-    super.key, required this.profile,
+    super.key,
+    required this.profile,
   });
   final Profile? profile;
 
@@ -29,19 +31,12 @@ class _FormProfileState extends State<FormProfile> {
   String? errorPhone;
   DateTime selectedDate = DateTime.now();
   bool isValid = false;
-  late ProfileBloc profileBloc;
-  // Profile? profile;
 
   @override
   void initState() {
-    profileBloc = BlocProvider.of<ProfileBloc>(context);
-    // MySharePreferences.loadProfile().then((value) {
-    //   profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
-    // });
-    // profile = profileBloc.state.profile;
     controllerEmail.text = widget.profile?.email ?? "";
     controllerPhone.text = widget.profile?.phoneNumber ?? "";
-    if((widget.profile?.birtDay ?? "") != ""){
+    if ((widget.profile?.birtDay ?? "") != "") {
       controllerBirth.text = widget.profile?.birtDay ?? "";
     }
     super.initState();
@@ -79,7 +74,8 @@ class _FormProfileState extends State<FormProfile> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        controllerBirth.text = "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year.toString()}";
+        controllerBirth.text =
+            "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year.toString()}";
         isValid = true;
       });
     }
@@ -380,12 +376,19 @@ class _FormProfileState extends State<FormProfile> {
                             height: 300,
                             fit: BoxFit.cover,
                           );
-                        } else if ((widget.profile?.imgUrl ?? "" ) != "") {
+                        } else if ((widget.profile?.imgUrl ?? "") != "") {
                           return Image.network(widget.profile?.imgUrl ?? "",
                               width: 300, height: 300, fit: BoxFit.cover);
                         } else {
-                          return Image.asset('assets/images/avatar.jpg',
-                              width: 300, height: 300, fit: BoxFit.cover);
+                          return const Center(
+                            child: SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: CircularProgressIndicator()),
+                            ),
+                          );
                         }
                       })(),
                     ),
@@ -585,6 +588,7 @@ class _FormProfileState extends State<FormProfile> {
                           hintStyle: TextStyle(
                               fontSize: 15, color: colorScheme(context).scrim),
                           hintText: 'Chọn ngày sinh...',
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
                           labelText: 'Ngày sinh',
                           labelStyle: TextStyle(
                             color: colorScheme(context).outline,
@@ -647,11 +651,16 @@ class _FormProfileState extends State<FormProfile> {
                                           errorEmail == null &&
                                           errorPhone == null
                                       ? () {
-                                          profileBloc.add(UpdateProfileEvent(
-                                              email: controllerEmail.text,
-                                              phoneNumber: controllerPhone.text,
-                                              imgUrl: selectedImage != null? selectedImage!.path: "",
-                                              birtDay: controllerBirth.text));
+                                          BlocProvider.of<ProfileBloc>(context)
+                                              .add(UpdateProfileEvent(
+                                                  email: controllerEmail.text,
+                                                  phoneNumber:
+                                                      controllerPhone.text,
+                                                  imgUrl: selectedImage != null
+                                                      ? selectedImage!.path
+                                                      : "",
+                                                  birtDay:
+                                                      controllerBirth.text));
                                         }
                                       : null,
                                   style: ElevatedButton.styleFrom(

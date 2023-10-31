@@ -21,7 +21,10 @@ import '../../utils/size_config.dart';
 
 class CurrentBookingScreen extends StatefulWidget {
   const CurrentBookingScreen(
-      {super.key, required this.tableID, required this.tableName, this.constraints});
+      {super.key,
+      required this.tableID,
+      required this.tableName,
+      this.constraints});
 
   final int tableID;
   final String tableName;
@@ -32,8 +35,7 @@ class CurrentBookingScreen extends StatefulWidget {
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  int amount = 0;
-
+  String? selectedItem = 'Chọn phương thức...';
   @override
   void initState() {
     print("tableID change: ${widget.tableID} mounted $mounted");
@@ -43,7 +45,23 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomActionBill(tableId: widget.tableID),
+      bottomNavigationBar: BlocBuilder<ProductBloc, ProductState>(
+        builder: (context, state) {
+          if (state.status == ProductStatus.success) {
+            int amount = state.currentProducts?.length ?? 0;
+            return BottomActionBill(
+              tableId: widget.tableID,
+              selectedItem: selectedItem,
+              amount: amount,
+            );
+          }
+          return BottomActionBill(
+            tableId: widget.tableID,
+            selectedItem: selectedItem,
+            amount: 0,
+          );
+        },
+      ),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -97,30 +115,116 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                         .bodyLarge
                                         ?.copyWith(
                                             fontSize: 12,
-                                            color: Colors.white
-                                                .withOpacity(0.6)),
+                                            color:
+                                                Colors.white.withOpacity(0.6)),
                                   );
                                 },
                               ),
                             ],
                           ),
-                          MyButtonBlur(
-                            text: "Thêm mới",
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          AddProductToCurrentBookingScreen(
-                                              tableID: widget.tableID)));
-                            },
-                          )
+                          Row(
+                            children: [
+                              ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                      maxWidth: 250.0, maxHeight: 45.0),
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      canvasColor:
+                                          colorScheme(context).tertiary,
+                                      buttonTheme:
+                                          ButtonTheme.of(context).copyWith(
+                                        alignedDropdown: true,
+                                      ),
+                                    ),
+                                    child: DropdownButtonFormField(
+                                      isExpanded: true,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor:
+                                            Colors.white.withOpacity(0.1),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                          borderSide: BorderSide(
+                                              width: 1.0,
+                                              color: Colors.transparent),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10.0)),
+                                          borderSide: BorderSide(
+                                              width: 1.0,
+                                              color: Colors.transparent),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 5.0),
+                                      ),
+                                      value: 'Chọn phương thức...',
+                                      icon: const Icon(
+                                        Icons.arrow_drop_down,
+                                        color: Colors.white,
+                                      ),
+                                      iconSize: 24,
+                                      elevation: 16,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 15.0),
+                                      items: const [
+                                        DropdownMenuItem(
+                                          value: 'Chọn phương thức...',
+                                          child: Text('Chọn phương thức...'),
+                                        ),
+                                        DropdownMenuItem(
+                                            value: 'Tiền mặt',
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                    Icons
+                                                        .monetization_on_outlined,
+                                                    color: Colors.white),
+                                                SizedBox(width: 5.0),
+                                                Text('Tiền mặt'),
+                                              ],
+                                            )),
+                                        DropdownMenuItem(
+                                            value: 'Chuyển khoản',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.credit_card,
+                                                    color: Colors.white),
+                                                SizedBox(width: 5.0),
+                                                Text('Chuyển khoản'),
+                                              ],
+                                            )),
+                                      ],
+                                      onChanged: (item) => setState(() {
+                                        selectedItem = item;
+                                        print(item);
+                                      }),
+                                    ),
+                                  )),
+                              const SizedBox(
+                                width: 30.0,
+                              ),
+                              MyButtonBlur(
+                                text: "Thêm mới",
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              AddProductToCurrentBookingScreen(
+                                                  tableID: widget.tableID)));
+                                },
+                              )
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
+                  LayoutBuilder(builder:
+                      (BuildContext context, BoxConstraints constraints) {
                     double maxWidth = constraints.maxWidth;
                     int columns;
                     if (maxWidth > mobileWidth) {
@@ -169,23 +273,24 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               ),
                             );
                           }
-
                           return GridView.builder(
                             shrinkWrap: true,
                             primary: false,
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: columns,
-                              childAspectRatio: (maxWidth / columns) / 80, // Tùy chỉnh giá trị này
+                              childAspectRatio: (maxWidth / columns) / 80,
                             ),
                             itemCount: state.currentProducts!.toSet().length,
                             itemBuilder: (context, index) {
                               Product product = state.currentProducts!
                                   .toSet()
                                   .elementAt(index);
+                              int quantityProdcut = product.quantity ?? 1;
                               return ItemProduct(
                                 product: product,
                                 subTitle:
-                                SubTitleItemCurrentBill(product: product),
+                                    SubTitleItemCurrentBill(product: product),
                                 trailling: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -194,7 +299,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                       child: Container(
                                           decoration: BoxDecoration(
                                             borderRadius:
-                                            BorderRadius.circular(6),
+                                                BorderRadius.circular(6),
                                             border: Border.all(
                                                 color: colorScheme(context)
                                                     .primary
@@ -202,26 +307,33 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           ),
                                           child: Row(
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                                CrossAxisAlignment.center,
                                             children: [
                                               Material(
                                                 color: Colors.transparent,
                                                 borderRadius:
-                                                BorderRadius.circular(6),
+                                                    BorderRadius.circular(6),
                                                 child: InkWell(
-                                                  onTap: () {},
+                                                  onTap: () {
+                                                    setState(() {
+                                                      if (quantityProdcut > 1) {
+                                                        quantityProdcut -= 1;
+                                                        print(quantityProdcut);
+                                                      }
+                                                    });
+                                                  },
                                                   child: Container(
                                                     padding:
-                                                    const EdgeInsets.all(2),
+                                                        const EdgeInsets.all(2),
                                                     child: Icon(Icons.remove,
                                                         color:
-                                                        colorScheme(context)
-                                                            .primary),
+                                                            colorScheme(context)
+                                                                .primary),
                                                   ),
                                                 ),
                                               ),
                                               Text(
-                                                "${product.quantity}",
+                                                "$quantityProdcut",
                                                 style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
@@ -232,16 +344,18 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                               Material(
                                                 color: Colors.transparent,
                                                 borderRadius:
-                                                BorderRadius.circular(6),
+                                                    BorderRadius.circular(6),
                                                 child: InkWell(
-                                                  onTap: () {},
+                                                  onTap: () {
+
+                                                  },
                                                   child: Container(
                                                     padding:
-                                                    const EdgeInsets.all(2),
+                                                        const EdgeInsets.all(2),
                                                     child: Icon(Icons.add,
                                                         color:
-                                                        colorScheme(context)
-                                                            .primary),
+                                                            colorScheme(context)
+                                                                .primary),
                                                   ),
                                                 ),
                                               ),
@@ -257,9 +371,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                         return const CircularProgressIndicator();
                       },
                     );
-                  }
-
-                  )
+                  })
                 ],
               ),
             ),
@@ -271,9 +383,80 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
 }
 
 class BottomActionBill extends StatelessWidget {
-  const BottomActionBill({super.key, required this.tableId});
+  const BottomActionBill(
+      {super.key,
+      required this.tableId,
+      this.selectedItem,
+      required this.amount});
 
   final int tableId;
+  final String? selectedItem;
+  final int amount;
+
+  _showDialog(BuildContext context, String content) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            contentPadding: const EdgeInsets.all(20.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            backgroundColor: colorScheme(context).onPrimary.withOpacity(0.6),
+            surfaceTintColor: Colors.transparent,
+            title: const Center(
+              child: Icon(
+                Icons.report_gmailerrorred_outlined,
+                size: 60,
+                color: Colors.red,
+              ),
+            ),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  content,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontSize: 15),
+                ),
+              ],
+            ),
+            actions: [
+              ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.red),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50.0, vertical: 10.0),
+                        child: Text('ĐÓNG',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                      )),
+                ],
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -352,66 +535,90 @@ class BottomActionBill extends StatelessWidget {
             ),
             Row(
               children: isMobile
-                  ? [
-                Expanded(
-                  child: MyOutlineButton(
-                    text: 'Quay lại',
-                    onTap: () {},
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: MyButtonGradient(
-                    text: "Thanh toán",
-                    onTap: () {
-                      context.read<OrderBloc>().add(PayBillEvent(
-                          tableId: tableId,
-                          pushScreen: (payStatus, billData) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PaySuccessScreen(
-                                      payStatus: payStatus, billData: billData),
-                                ));
-                          }));
-                    },
-                  ),
-                ),
-              ]
-                  : [
-                const Spacer(),
-                SizedBox(
-                  width: 200,
-                  child: MyOutlineButton(
-                    text: 'Quay lại',
-                    onTap: () {},
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                SizedBox(
-                  width: 200,
-                  child: MyButtonGradient(
-                    text: "Thanh toán",
-                    onTap: () {
-                      context.read<OrderBloc>().add(PayBillEvent(
-                          tableId: tableId,
-                          pushScreen: (payStatus, billData) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PaySuccessScreen(
-                                      payStatus: payStatus, billData: billData),
-                                ));
-                          }));
-                    },
-                  ),
-                ),
-
-              ],
+                  ? <Widget>[
+                      Expanded(
+                        child: MyOutlineButton(
+                          text: 'Quay lại',
+                          onTap: () {},
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: MyButtonGradient(
+                          text: "Thanh toán",
+                          onTap: () {
+                            if (amount == 0) {
+                              _showDialog(context, 'Vui lòng chọn món.');
+                            } else if (selectedItem == 'Chọn phương thức...') {
+                              _showDialog(context,
+                                  'Vui lòng chọn phương thức thanh toán.');
+                            } else {
+                              context.read<OrderBloc>().add(PayBillEvent(
+                                    tableId: tableId,
+                                    pushScreen: (payStatus, billData) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              PaySuccessScreen(
+                                            payStatus: payStatus,
+                                            billData: billData,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ));
+                            }
+                          },
+                        ),
+                      ),
+                    ]
+                  : <Widget>[
+                      const Spacer(),
+                      SizedBox(
+                        width: 200,
+                        child: MyOutlineButton(
+                          text: 'Quay lại',
+                          onTap: () {},
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: MyButtonGradient(
+                          text: "Thanh toán",
+                          onTap: () {
+                            print(amount);
+                            if (amount == 0) {
+                              _showDialog(context, 'Vui lòng chọn món.');
+                            } else if (selectedItem == 'Chọn phương thức...') {
+                              _showDialog(context,
+                                  'Vui lòng chọn phương thức thanh toán.');
+                            } else {
+                              context.read<OrderBloc>().add(PayBillEvent(
+                                    tableId: tableId,
+                                    pushScreen: (payStatus, billData) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              PaySuccessScreen(
+                                            payStatus: payStatus,
+                                            billData: billData,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ));
+                            }
+                          },
+                        ),
+                      ),
+                    ],
             ),
           ],
         ));

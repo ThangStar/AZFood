@@ -1,21 +1,19 @@
 'use client'
+import '../table-details/page.css'
 import { showAlert } from '@/component/utils/alert/alert';
 import { formatDateTime } from '@/component/utils/formatDate';
 import formatMoney from '@/component/utils/formatMoney';
-import { getUserID } from '@/redux-store/login-reducer/loginSlice';
-import { getCategoryList, getCategoryListAsync, getItemtList, getMenuItemListAsync, getMenuItemtList, getMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { createOrderAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
-import { getTableList, getTableListAsync } from '@/redux-store/table-reducer/tableSlice';
-import { log } from 'console';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { useSocket } from "@/socket/io.init"
 
 export default function TableDetails() {
-
+    const socket = useSocket();
     const searchParams = useSearchParams()
     const url = `${searchParams}`
     const tableID = url ? url.split('tableID=')[1] : null;
@@ -25,16 +23,16 @@ export default function TableDetails() {
     const [isUpdate, setIsUpdate] = useState(false);
 
     const dispatch: AppDispatch = useDispatch();
+    const itemList: any = useSelector(getMenuItemtList);
     const orders: any = useSelector(getOrder);
     const menuItems: any = useSelector(getItemtList);
     const statusRD: any = useSelector(getStatus);
 
     const categoryList: any = useSelector(getCategoryList);
-
+    const [listItem, setlistItem] = useState<any[]>([]);
     const [order, setOrder] = useState<any[]>([]);
     const [itemMenus, setItemMenus] = useState<any[]>([]);
     const [itemCategory, setItemCategory] = useState("");
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [listCategory, setListCategory] = useState<string[]>([]);
 
     const [quantityOrder, setQuantityOrder] = useState();
@@ -44,16 +42,28 @@ export default function TableDetails() {
     const [idItemDelete, setIdDelete] = useState();
     const [nameUpdate, setNameUpdate] = useState("");
     const [itemOrder, setItemOrder] = useState<any>([]);
+
     const [payMethod, setPayMethod] = useState<number>(1)
+
+    const [currentPage, setCurrentPage] = useState(1)
+
+    useEffect(() => {
+        dispatch(getMenuListAsync());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (menuItems && menuItems.data) {
+            setlistItem(menuItems.data);
+        }
+    }, [menuItems]);
+
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (data: any = null) => {
         console.log(setProducID(data.id));
         console.log(setQuantityOrder(data.quantity));
-        if (data != null && data.id) {
-            // setProducID(data.id);
-            // setQuantityOrder(data.quantity);
-        } else if (data != null && data.orderID) {
+
+        if (data != null && data.orderID) {
             setNameUpdate(data.productName);
             setOrderID(data.orderID);
             setProducID(data.productID);
@@ -114,11 +124,6 @@ export default function TableDetails() {
             setListCategory(categoryList.resultRaw);
         }
     }, [orders, menuItems, categoryList]);
-
-    const handleOpenChoose = () => {
-        setIsDialogOpen(true);
-        dispatch(getCategoryListAsync());
-    }
     const caculatorTotal = () => {
         let totalAll = 0;
         order.forEach(item => {
@@ -174,20 +179,51 @@ export default function TableDetails() {
         toggle2();
     }
     return (
-        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
-                <div className='header'>
-                    <h1>AZFOOD</h1>
-                    <div className="col-md-10 flex justify-content-between mt-2 mb-4" >
-                        <div className="invoice-from">
-                            <small>Bill / Form</small>
-                            <div className=" m-b-5">
-                                <span style={{ fontWeight: "bold" }}>Địa chỉ: </span> 200 Hà Huy Tập - P.Tân Lợi - TP.BMT<br />
-                                <span style={{ fontWeight: "bold" }}>SĐT: </span> (123) 456-7890<br />
-                                <span style={{ fontWeight: "bold" }}>STK: </span> 236-090-151 VpBank Hoang Quoc Huy<br />
-                            </div>
-                        </div>
+        <div style={{ display: 'flex' }}>
+            <div style={{ width: '38%', padding: '10px', marginRight: '10px', height: '100%'}}>
+                <div className="row align-items-center">
+                    <div className="col-md-6">
+                        <input type="text" placeholder='Nhập tên món' style={{
+                            borderWidth: 1,
+                            borderRadius: 3,
+                            padding: 6,
+                            width: "100%",
+                            margin: 20,
+                        }} />
+                    </div>
+                    <div className="col-md-4 ml-2">
+                        <select
+                            className="form-control"
+                            id="dvt"
+                            value={itemCategory}
+                            onChange={(e) => {
+                                setItemCategory(e.target.value);
+                            }}
+                        >
+                            <option value="" selected>Chọn loại món</option>
+                            {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
+                                <option value={item.id} key={id}>{item.name}</option>
+                            )) : ""}
+                        </select>
+                    </div>
+                </div>
+                {listItem && listItem.length > 0 ? (
+                    <div className="grid-container" >
+                        {listItem.map((item, id) => (
+                            <div className="grid-item" key={id} style={{ backgroundImage: `url(${item.imgUrl})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end' }}>
 
+                                <div style={{ width: '100%', padding: '10px 0px 10px 0px', backgroundColor: 'white', opacity: '0.9' }}>
+                                    <h6 className='m-0'>{item.name}</h6>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : null}
+            </div>
+
+            <div style={{ marginRight: '15px', border: 'none', width: '62%' }}>
+                <div >
+                    <div className="col-md-10 flex justify-content-between mt-2 mb-4" >
                         <div className="invoice-date">
                             <small>Bill / Date</small>
                             <div className="date text-inverse m-t-5">
@@ -199,20 +235,6 @@ export default function TableDetails() {
                             <div className="invoice-detail" >
                                 <span style={{ fontWeight: "bold" }}>Tổng tiền : </span>  {formatMoney(caculatorTotal())} VND
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="card">
-                    <div className="card-header">
-                        <button className="btn btn-success" onClick={() => {
-                            handleOpenChoose()
-                        }}>Thêm món</button>
-
-                        <div className="card-tools">
-                            <button type="button" className="btn btn-warning" data-card-widget="collapse" title="Collapse" onClick={openModal2}>
-                                Thanh toán
-                            </button>
-
                         </div>
                     </div>
                 </div>
@@ -242,7 +264,6 @@ export default function TableDetails() {
                                         <td className="text-right">{formatMoney((item.price * item.quantity))}</td>
                                         <td className="project-actions text-right">
                                             <div className="d-flex justify-content-between " >
-
                                                 <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                     setIsUpdate(true)
                                                     openModal1(item)
@@ -263,6 +284,7 @@ export default function TableDetails() {
                             </tbody>
                         </table>
                     </div>
+
                     {isDialogOpen && (
                         <Modal isOpen={isDialogOpen} toggle={() => setIsDialogOpen(!isDialogOpen)}>
                             <ModalHeader toggle={() => setIsDialogOpen(!isDialogOpen)}>Thêm món ăn</ModalHeader>
@@ -339,6 +361,7 @@ export default function TableDetails() {
                             </ModalBody>
                         </Modal>
                     )}
+
                 </div>
             </div>
 

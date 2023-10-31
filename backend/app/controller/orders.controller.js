@@ -397,8 +397,10 @@ exports.payBill = async (req, res) => {
             // Lưu thông tin hoá đơn vào bảng invoice
 
             const createInvoiceQuery = `
+
             INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber ,payMethod )
             VALUES (?, ?, ?,? , ?,? ,?)
+
             `;
             const invoiceNumber = getInvoiceNumber();
             const invoiceResult = await sequelize.query(createInvoiceQuery, {

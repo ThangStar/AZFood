@@ -68,6 +68,10 @@ class ProductState extends Equatable {
 
 class CurrentProductLoading extends ProductState {}
 
+class PlusProducts extends ProductState {}
+class MinusProducts extends ProductState {}
+
+
 class CurrentProductSuccess extends ProductState {
   @override
   final List<Product>? currentProducts;

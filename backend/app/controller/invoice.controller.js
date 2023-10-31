@@ -5,9 +5,10 @@ const Auth = require('./checkAuth.controller')
 
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
+    
     if (isAuth) {
 
-        const PAGE_SIZE = 8;
+        const PAGE_SIZE = 25;
         const currentPage = parseInt(req.query.page) || 1;
         const offset = (currentPage - 1) * PAGE_SIZE;
 
@@ -39,6 +40,34 @@ exports.getList = async (req, res) => {
                 currentPage: currentPage,
                 totalPages: totalPages,
                 totalItems: totalCountResult[0].total
+            });
+        } catch (error) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(403).json({ message: 'Unauthorized' });
+    }
+};
+
+exports.getListByIdUser = async (req, res) => {
+    const body = req.body;
+    const isAuth = await Auth.checkAuth(req);
+    if (isAuth) {
+        const queryRaw = `SELECT invoice.id, invoice.total, invoice.createAt, invoice.username, invoice.tableID, invoice.invoiceNumber, invoice.userID, tables.name AS table_Name, tables.status
+        FROM invoice
+        INNER JOIN tables ON invoice.tableID = tables.id
+        WHERE invoice.userID = ?;`;
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.id],
+                type: QueryTypes.SELECT
+            });
+            res.status(200).json({
+                resultRaw: resultRaw,
             });
         } catch (error) {
             res.status(500);
@@ -135,5 +164,34 @@ exports.reportByDay = async (req, res) => {
 
     } else {
         res.status(403).json({ message: 'Unauthorized' });
+
+    }}
+exports.searchIvoiceByName = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (checkAuth) {
+        try {
+            const keysearch = req.body.keysearch;
+            console.log(req.body.keysearch);
+            const queryRaw = `SELECT * FROM invoice WHERE name LIKE :name`;
+
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: {
+                    name: `%${keysearch}%`
+                },
+                type: QueryTypes.SELECT
+            });
+            res.status(200).json({
+                data: resultRaw,
+
+            });
+        } catch (error) {
+            res.status(500).json({ error: 'Internal server error' });
+            console.log("error", error)
+        }
+    } else {
+        res.status(401).send('User is not admin');
+
     }
 };

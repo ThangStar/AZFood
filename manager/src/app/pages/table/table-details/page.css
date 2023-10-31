@@ -1,0 +1,20 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Mỗi hàng có 2 cột */
+    gap: 16px;
+    max-height: 600px; /* Đặt chiều cao tối đa */
+    overflow-y: auto;
+}
+
+.grid-item {
+    border: 1px solid #ddd;
+    padding: 16px;
+    text-align: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.grid-item img {
+    display: none; /* Ẩn ảnh bên trong */
+}

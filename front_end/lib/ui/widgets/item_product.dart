@@ -63,12 +63,12 @@ class _ItemProductState extends State<ItemProduct>
       builder: (context, snapshot) {
         return Opacity(
           opacity:
-              widget.product.quantity != 0 && widget.product.quantity != null
+          (widget.product.quantity != 0 && widget.product.quantity != null) || (widget.product.category == 1 && widget.product.status == 1)
                   ? 1
                   : 0.6,
           child: ListTile(
             enabled:
-                widget.product.quantity != 0 && widget.product.quantity != null,
+            (widget.product.quantity != 0 && widget.product.quantity != null) || (widget.product.category == 1 && widget.product.status == 1),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
             onTap: () {

@@ -29,13 +29,16 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: colorScheme(context).background,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         automaticallyImplyLeading:
             checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
-        title: Text("Hoá đơn", style: Theme.of(context)
+        title: Text(
+          "Hoá đơn",
+          style: Theme.of(context)
               .textTheme
               .bodyLarge
               ?.copyWith(fontSize: 25, fontWeight: FontWeight.bold),
-            ),
+        ),
       ),
       body: Column(
         children: [
@@ -60,54 +63,72 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          TabBar(
-              controller:
-                  TabController(length: 2, vsync: this, initialIndex: 0),
-              tabs: const [
-                Tab(
-                  child: Text("Gần đây"),
-                ),
-                Tab(
-                  child: Text("Tất cả"),
-                )
-              ]),
-          Expanded(
-            child: BlocBuilder<InvoiceBloc, InvoiceState>(
-              builder: (context, state) {
-                if (state is InvoiceLoadingState) {
-                  return const Center(
-                    child: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: AspectRatio(
-                          aspectRatio: 1, child: CircularProgressIndicator()),
+          DefaultTabController(
+              length: 2,
+              child: Container(
+                height: MediaQuery.of(context).size.height - 136,
+                child: Column(
+                  children: [
+                    TabBar.secondary(tabs: [
+                      Tab(
+                        child: Text("Tất cả"),
+                      ),
+                      Tab(
+                        child: Text("Gần đây"),
+                      )
+                    ]),
+                    Expanded(
+                      child: TabBarView(children: [
+                        BlocBuilder<InvoiceBloc, InvoiceState>(
+                          builder: (context, state) {
+                            if (state is InvoiceLoadingState) {
+                              return const Center(
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: CircularProgressIndicator()),
+                                ),
+                              );
+                            } else if (state.invoices.isNotEmpty) {
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                primary: false,
+                                itemBuilder: (context, index) {
+                                  Invoice invoice = state.invoices[index];
+                                  return ItemBill(
+                                    invoice: invoice,
+                                  ).animate().fade(duration: 1.seconds).moveY(
+                                      duration: 1.seconds,
+                                      begin: 50 * index.toDouble() ?? 0.0,
+                                      curve: Curves.fastOutSlowIn);
+                                },
+                                itemCount: state.invoices.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: checkDevice(
+                                            widget.constraints?.maxWidth ?? 0,
+                                            1,
+                                            2,
+                                            3),
+                                        mainAxisExtent: 95),
+                              );
+                            } else {
+                              return const Column(
+                                children: [Text("Không tìm thấy hoá đơn nào")],
+                              );
+                            }
+                          },
+                        ),
+                        Center(
+                          child: Text("tab2"),
+                        ),
+                      ]),
                     ),
-                  );
-                } else if (state.invoices.isNotEmpty) {
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemBuilder: (context, index) {
-                      Invoice invoice = state.invoices[index];
-                      return ItemBill(
-                        invoice: invoice,
-                      ).animate().fade(duration: 1.seconds).moveY(
-                          duration: 1.seconds,
-                          begin: 50 * index.toDouble() ?? 0.0,
-                          curve: Curves.fastOutSlowIn);
-                    },
-                    itemCount: state.invoices.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: checkDevice(widget.constraints?.maxWidth ?? 0, 1, 2, 3), mainAxisExtent: 95),
-                  );
-                } else {
-                  return const Column(
-                    children: [Text("Không tìm thấy hoá đơn nào")],
-                  );
-                }
-              },
-            ),
-          )
+                  ],
+                ),
+              )),
         ],
       ),
     );
@@ -167,7 +188,7 @@ class ItemBill extends StatelessWidget {
                         fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                   Text(
-                    "${invoice.createAt!.toLocal()}",
+                    DateFormat('HH:mm dd/MM/yyyy').format(invoice.createAt!),
                     style: TextStyle(
                         color: colorScheme(context).scrim.withOpacity(0.4)),
                   ),

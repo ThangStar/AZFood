@@ -18,3 +18,4 @@ class InvoiceState extends Equatable {
 }
 
 class InvoiceLoadingState extends InvoiceState {}
+class InvoiceLoadingByIdUserState extends InvoiceState {}

@@ -400,7 +400,7 @@ CREATE TABLE `statustable` (
 
 LOCK TABLES `statustable` WRITE;
 /*!40000 ALTER TABLE `statustable` DISABLE KEYS */;
-INSERT INTO `statustable` VALUES (2,'Đang bận'),(1,'Đang chờ'),(3,'Trống');
+INSERT INTO `statustable` VALUES (2,'Bàn đã thanh toán'),(1,'Bàn có khách'),(3,'Bàn đang trống');
 /*!40000 ALTER TABLE `statustable` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import formatMoney from '@/component/utils/formatMoney';
 import { showAlert } from '@/component/utils/alert/alert';
 import { useSocket } from "@/socket/io.init"
+import LeftSideBar from '@/component/LeftSideBar/LeftSideBar'
 
 export default function Table() {
     const socket = useSocket();
@@ -29,10 +30,11 @@ export default function Table() {
     const [id, setID] = useState<number>(0);
     const [filteredTables, setFilteredTables] = useState<any[]>([]);
 
+
     useEffect(() => {
         if (socket) {
             console.log('đã kết nối với socket');
-            
+
             socket.emit('table', statusTable);
             socket.on('response', (data) => {
                 console.log('đã nhận dữ liệu socket', data);
@@ -81,40 +83,10 @@ export default function Table() {
             setFilteredTables(filtered);
         }
     }, [statusTableFilter, tables]);
-    const calculateTotalForTable = (tableID: number) => {
-
-        const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
-        let totalAmount = ordersForTable.reduce((acc: number, order: any) => {
-            return acc + order.totalAmount;
-        }, 0);
-    
-        if (socket && tables) {
-            const tableData = tables.find((table: any) => table.id === tableID);
-            if (tableData && tableData.total_amount !== null) {
-                totalAmount = tableData.total_amount;
-            }
-
-            if(totalAmount == null){
-                totalAmount = 0;
-            }
-        }
-         
-        return totalAmount;
-    };
-    
     const toggle = () => setModal(!modal);
     const toggle1 = () => setModal1(!modal1);
     const toggleDel = () => setModalDel(!modalDel);
-    const openModal = (data: any = null) => {
-        if (data) {
-            setStatus(data.status);
-            setID(data.id)
-            
-        } else {
-            setStatus(0);
-        }
-        toggle();
-    }
+
     const openModal1 = () => {
         toggle1();
     }
@@ -131,16 +103,15 @@ export default function Table() {
 
     }
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (id: any) => {
         try {
-            dispatch(updateStatusTableAsync({ status, id }));
+            dispatch(updateStatusTableAsync({ id }));
             dispatch(getTableListAsync());
-            openModal();
         } catch (error) {
             console.log(" error : ", error);
         }
-
     }
+
     const addTable = () => {
         try {
             dispatch(createTableListAsync({ name: tableName }));
@@ -167,53 +138,84 @@ export default function Table() {
     const trong = "#26A744";
     const cho = "black";
     return (
-        <div className="content scroll" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
+        <div className="content scroll" style={{}}>
+            <div className="" style={{ marginRight: '15px', border: 'none' }}>
                 <div className="container-fluid">
-                    <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                        <div className="col-sm-6">
-                            <h1>Danh sách bàn</h1>
-                        </div>
-                        <div className="col-sm-6">
-                            <ol className="breadcrumb float-sm-right">
-                                <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Danh sách Bàn</li>
-                            </ol>
+                    <div style={{ borderBottom: '1.5px solid rgb(195 211 210)' }} className='p-3'>
+                        <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                            <h3 style={{ height: '40px', margin: '0px' }}>Danh sách bàn</h3>
+                            <div style={{ display: 'flex' }}>
+                                <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn mới</button>
+                                <div className="card-tools ml-4" style={{ display: 'flex', width: '230px' }}>
+                                    <select
+                                        className="form-control"
+                                        id="statusTable"
+                                        value={statusTableFilter}
+                                        onChange={(e) => {
+                                            setStatusTableFilter(e.target.value);
+                                        }}>
+                                        <option value='' disabled selected hidden>Tìm kiếm theo trạng thái bàn</option>
+                                        <option value='all'>Tất cả</option>
+                                        <option value='trong' style={{ color: trong }}>Bàn đang trống</option>
+                                        <option value='ban' style={{ color: ban }}>Bàn đã thanh toán</option>
+                                        <option value='cho' style={{ color: cho }}>Bàn có khách</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="content">
-                    <div className="">
-                        <div className="card-header" style={{ border: 'none' }}>
-                            <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn</button>
+                    <div className="container-fluid" style={{ paddingLeft: 20, paddingRight: 20, marginTop: '20px' }}>
+                        <table className="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: '15%' }}>Tên bàn</th>
+                                    <th style={{ width: '20%' }}>Trạng thái hoạt động</th>
+                                    <th style={{ width: '20%' }}>Nhân viên Order</th>
+                                    <th style={{ width: '15%' }}>Thêm món</th>
+                                    <th style={{ width: '5%' }}>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
+                                    <tr key={item.id}>
+                                        <td>
+                                            <div >
+                                                <Link href={`table/table-details?tableID=${item.id}`}>
+                                                    <h5 style={{marginTop: '8px'}}>
+                                                        {item.name}
+                                                    </h5>
+                                                </Link>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style={{ display: 'grid' }}>
+                                                <span className="badge" style={{ fontSize: '16px', color: item.status === 2 ? ban : item.status === 1 ? cho : trong }}>
+                                                    {item.status_name}
+                                                </span>
+                                                {item.status === 2 &&
+                                                    <button onClick={() => { handleUpdate(item.id) }} className="btn btn-outline-warning btn-sm">
+                                                        Chuyển về bàn trống
+                                                    </button>
+                                                }
+                                            </div>
 
-                            <div className="card-tools" style={{ display: 'flex', width: '150px' }}>
-                                <select
-                                    className="form-control"
-                                    id="statusTable"
-                                    value={statusTableFilter}
-                                    onChange={(e) => {
-                                        setStatusTableFilter(e.target.value);
-                                    }}
-                                >
-                                    <option>Bộ lọc </option>
-                                    <option value='all' selected>Tất cả </option>
-                                    <option value='trong' style={{ color: trong }}>Trống</option>
-                                    <option value='ban' style={{ color: ban }}>Bận</option>
-                                    <option value='cho' style={{ color: cho }}>Chờ</option>
-                                    <option value='mangve' style={{ color: cho }}>Mang về</option>
-                                </select>
-
-                            </div>
-                        </div>
-                    </div>
-                    <div className="container-fluid row wrap" style={{ paddingLeft: 80, paddingRight: 80, marginTop: '20px' }}>
-                        {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
-                            <div className="col-md-3 col-sm-8 col-12">
-                                <div className="info-box " style={{ backgroundColor: "#C3E4EA" }}>
-                                    <div className="info-box-content">
-                                        <div className='flex'>
-                                            <Link className='w-100' href={`table/table-details?tableID=${item.id}`}>{item.name}</Link>
+                                        </td>
+                                        <td><div><h6>Nguyễn Tấn Trung</h6></div></td>
+                                        <td>
+                                            {item.status === 3 && (
+                                                <Link href={`table/table-details?tableID=${item.id}`} className='btn btn-outline-primary'>
+                                                    Thêm món
+                                                </Link>
+                                            )}
+                                            {item.status === 1 && (
+                                                <Link href={`table/table-details?tableID=${item.id}`} className='btn btn-outline-primary'>
+                                                    Sửa món
+                                                </Link>
+                                            )}
+                                        </td>
+                                        <td style={{ display: 'grid', border: 'none' }}>
                                             {item.status === 3 &&
                                                 <button className='text-danger' type="button"
                                                     onClick={() => {
@@ -222,57 +224,14 @@ export default function Table() {
                                                     }}><i className="fas fa-trash"></i>
                                                 </button>
                                             }
-                                        </div>
-                                        <span className="info-box-number">Tổng tiền : {formatMoney(calculateTotalForTable(item.id))} đ</span>
-                                        <button onClick={() => { openModal(item) }} className="info-box-text"
-                                            style={{ color: item.status === 2 ? ban : item.status === 1 ? cho : trong }}>
-                                            {item.status_name}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        )) : ""}
+                                        </td>
 
+                                    </tr>
+                                )) : ""}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-
-                <Modal isOpen={modal} toggle={openModal}>
-                    <ModalHeader toggle={openModal}>{"Thay đổi trạng thái bàn"}</ModalHeader>
-                    <ModalBody>
-                        <form className="form-horizontal">
-                            <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Trạng thái</label>
-                                <div className="col-sm-8">
-
-                                    <select
-                                        className="form-control"
-                                        id="department"
-                                        value={status}
-                                        onChange={(e) => {
-                                            handleChangeDataForm(e);
-                                        }}
-                                    >
-                                        {statusTable && statusTable.length > 0 ? statusTable.map((item: any, id: number) => (
-                                            <option value={item.id}>{item.name}</option>
-
-
-                                        )) : ""}
-                                    </select>
-
-                                </div>
-                            </div>
-                        </form>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={handleUpdate}>
-                            Lưu
-                        </Button>
-                        <Button color="secondary" onClick={() => openModal()}>
-                            Hủy
-                        </Button>
-                    </ModalFooter>
-                </Modal>
 
                 <Modal isOpen={modal1} toggle1={openModal1}>
                     <ModalHeader toggle1={openModal1}>{"Thêm bàn mới"}</ModalHeader>
@@ -290,8 +249,6 @@ export default function Table() {
                                             handleChangeDataForm1(e);
                                         }}
                                     />
-
-
                                 </div>
                             </div>
                         </form>

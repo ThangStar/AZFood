@@ -291,6 +291,51 @@ exports.getOrdersForTable = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 };
+
+// exports.getOrdersForTable = async (req, res) => {
+//     try {
+
+//         const tableID = req.query.tableID;
+//         const isAuth = await Auth.checkAuth(req);
+//         if (isAuth) {
+//             const getOrdersQuery = `
+//             SELECT
+//             p.id AS productID,
+//             p.name AS productName,
+//             p.dvtID AS dvt,
+//             SUM(oi.quantity) AS totalQuantity,
+//             SUM(oi.subTotal) AS totalSubTotal,
+//             p.category,
+//             p.price,
+//             u.name AS userName,
+//             u.id AS userID
+//         FROM orders o
+//         INNER JOIN orderItems oi ON o.id = oi.orderID
+//         INNER JOIN products p ON oi.productID = p.id
+//         INNER JOIN users u ON o.userID = u.id
+//         WHERE o.tableID = ?
+//         GROUP BY productID, productName, dvt, category, price, userName, userID
+
+//         `;
+
+//             const orders = await sequelize.query(getOrdersQuery, {
+//                 raw: true,
+//                 logging: false,
+//                 replacements: [tableID || id],
+//                 type: QueryTypes.SELECT
+//             });
+
+//             res.status(200).json({ orders });
+//         }
+//         else {
+//             res.status(403).json({ message: 'you are not logned in' });
+//         }
+
+//     } catch (error) {
+//         console.error('Error getting orders:', error);
+//         res.status(500).json({ message: 'Internal server error', error: error.message });
+//     }
+// };
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
@@ -318,6 +363,8 @@ exports.getList = async (req, res) => {
 
 exports.payBill = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
+    const body = req.body;
+    console.log("body", body);
     if (isAuth) {
         const tableID = req.body.id;
 
@@ -350,14 +397,14 @@ exports.payBill = async (req, res) => {
             // Lưu thông tin hoá đơn vào bảng invoice
 
             const createInvoiceQuery = `
-            INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber )
-            VALUES (?, ?, ?,? , ?,?)
+            INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber ,payMethod )
+            VALUES (?, ?, ?,? , ?,? ,?)
             `;
             const invoiceNumber = getInvoiceNumber();
             const invoiceResult = await sequelize.query(createInvoiceQuery, {
                 raw: true,
                 logging: false,
-                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, billDetails[0].userID, invoiceNumber],
+                replacements: [tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, billDetails[0].userID, invoiceNumber, body.payMethod],
                 type: QueryTypes.INSERT
             });
 

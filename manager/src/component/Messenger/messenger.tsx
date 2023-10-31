@@ -14,9 +14,11 @@ const Messenger = () => {
     const messagesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const userLocal = localStorage.getItem('user');
-        if (userLocal) {
-            setUserID(JSON.parse(userLocal).userID);
+        const userObject = localStorage.getItem('user');
+        if (typeof userObject === 'object') {
+            localStorage.setItem('user', JSON.stringify(userObject));
+        } else {
+            console.error('Dữ liệu không phải là một đối tượng JSON.');
         }
     }, []);
 

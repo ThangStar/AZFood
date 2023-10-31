@@ -102,3 +102,38 @@ exports.searchByDate = async (req, res) => {
         res.status(403).json({ message: 'Unauthorized' });
     }
 };
+
+exports.reportByDay = async (req, res) => {
+    const isAuth = await Auth.checkAuth(req);
+    if (isAuth) {
+        const body = req.body;
+        console.log("body  ", body);
+        const queryRaw = `
+        SELECT 
+            poductName,
+            SUM(quantity) AS totalQuantity,
+            SUM(totalAmount) AS totalAmount
+        FROM invoicedetails
+        INNER JOIN invoice ON invoicedetails.invoiceID = invoice.id
+        WHERE  DAY(invoice.createAt) = ?  AND  MONTH(invoice.createAt) = ?
+       
+        GROUP BY poductName;
+    `;
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.day, body.month],
+                type: QueryTypes.SELECT
+            });
+            res.send({ resultRaw })
+            res.status(200);
+        } catch (error) {
+            res.status(500);
+            res.send(error)
+        }
+
+    } else {
+        res.status(403).json({ message: 'Unauthorized' });
+    }
+};

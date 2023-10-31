@@ -44,11 +44,12 @@ export default function TableDetails() {
     const [idItemDelete, setIdDelete] = useState();
     const [nameUpdate, setNameUpdate] = useState("");
     const [itemOrder, setItemOrder] = useState<any>([]);
+    const [payMethod, setPayMethod] = useState<number>(1)
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (data: any = null) => {
-        console.log(setProducID(data.id)); 
-        console.log(setQuantityOrder(data.quantity)); 
+        console.log(setProducID(data.id));
+        console.log(setQuantityOrder(data.quantity));
         if (data != null && data.id) {
             // setProducID(data.id);
             // setQuantityOrder(data.quantity);
@@ -160,10 +161,16 @@ export default function TableDetails() {
 
     }
 
-    const handleThanhToan = () => {
-        dispatch(payBillAsync(tableID));
+    const handleThanhToan = async () => {
+        const data = {
+            id: tableID,
+            payMethod
+        }
+        await dispatch(payBillAsync(data)); //step 1:  gọi hàm thêm xoá sửa thì cho await vô 
+
         showAlert("success", "Thanh toán thành công");
-        dispatch(getOrderInTableListAsync(tableID));
+
+        dispatch(getOrderInTableListAsync(tableID));//step 2: sau đó gọi hàm getList
         toggle2();
     }
     return (
@@ -321,7 +328,7 @@ export default function TableDetails() {
                                                             openModal1(item)
                                                             handleOrder();
                                                             console.log('check', itemOrder, quantityOrder);
-                                                            
+
                                                         }}>Chọn</button>
                                                     </div>
                                                 </div>

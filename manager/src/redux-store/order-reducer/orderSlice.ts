@@ -73,9 +73,12 @@ export const deleteOrderAsync = createAsyncThunk(
 
 export const payBillAsync = createAsyncThunk(
   'order/payBill',
-  async (id: any) => {
+  async (data: any) => {
+    console.log("data", data);
+
+    const { id, payMethod } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/payBill', { id }, {
+    const response = await axios.post(serverUrl + '/api/orders/payBill', { id, payMethod }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

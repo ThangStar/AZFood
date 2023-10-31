@@ -42,6 +42,9 @@ export default function TableDetails() {
     const [idItemDelete, setIdDelete] = useState();
     const [nameUpdate, setNameUpdate] = useState("");
     const [itemOrder, setItemOrder] = useState<any>([]);
+
+    const [payMethod, setPayMethod] = useState<number>(1)
+
     const [currentPage, setCurrentPage] = useState(1)
 
     useEffect(() => {
@@ -54,10 +57,12 @@ export default function TableDetails() {
         }
     }, [menuItems]);
 
+
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (data: any = null) => {
         console.log(setProducID(data.id));
         console.log(setQuantityOrder(data.quantity));
+
         if (data != null && data.orderID) {
             setNameUpdate(data.productName);
             setOrderID(data.orderID);
@@ -161,10 +166,16 @@ export default function TableDetails() {
 
     }
 
-    const handleThanhToan = () => {
-        dispatch(payBillAsync(tableID));
+    const handleThanhToan = async () => {
+        const data = {
+            id: tableID,
+            payMethod
+        }
+        await dispatch(payBillAsync(data)); //step 1:  gọi hàm thêm xoá sửa thì cho await vô 
+
         showAlert("success", "Thanh toán thành công");
-        dispatch(getOrderInTableListAsync(tableID));
+
+        dispatch(getOrderInTableListAsync(tableID));//step 2: sau đó gọi hàm getList
         toggle2();
     }
     return (
@@ -273,6 +284,84 @@ export default function TableDetails() {
                             </tbody>
                         </table>
                     </div>
+
+                    {isDialogOpen && (
+                        <Modal isOpen={isDialogOpen} toggle={() => setIsDialogOpen(!isDialogOpen)}>
+                            <ModalHeader toggle={() => setIsDialogOpen(!isDialogOpen)}>Thêm món ăn</ModalHeader>
+                            <ModalBody>
+                                <div className="form-horizontal" style={{
+                                    width: "100%",
+                                    maxHeight: 600,
+                                }}>
+                                    <div className="row align-items-center">
+                                        <div className="col-md-6">
+                                            <input type="text" placeholder='Nhập tên món' style={{
+                                                borderWidth: 1,
+                                                borderRadius: 3,
+                                                padding: 6,
+                                                width: "100%",
+                                                margin: 20,
+                                            }} />
+                                        </div>
+                                        <div className="col-md-4 ml-2">
+                                            <select
+                                                className="form-control"
+                                                id="dvt"
+                                                value={itemCategory}
+                                                onChange={(e) => {
+                                                    setItemCategory(e.target.value);
+                                                }}
+                                            >
+                                                <option value="" selected>Chọn loại món</option>
+                                                {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
+                                                    <option value={item.id} key={id}>{item.name}</option>
+                                                )) : ""}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {filteredItems && filteredItems.length > 0 ? (
+                                        <div>
+                                            {filteredItems.map((item, id) => (
+                                                <div className="row align-items-center pt-2 pb-3" >
+                                                    <div className="col-md-2">
+                                                        <img src={item.imgUrl || ""} alt="món ăn" className="img-fluid" />
+                                                    </div>
+                                                    <div className="col-md-3">
+                                                        <p className='m-0'>{item.name}</p>
+                                                    </div>
+                                                    <div className="col-md-2">
+                                                        <p className='m-0'>{formatMoney(item.price)}</p>
+                                                    </div>
+                                                    <div className="col-md-3">
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            value={itemOrder === item ? quantityOrder : 0}
+                                                            onChange={(e: any) => {
+                                                                setItemOrder(item);
+                                                                setQuantityOrder(e.target.value);
+                                                                setProducID(item.id);
+                                                            }}
+                                                            className='form-control'
+                                                        />
+                                                    </div>
+                                                    <div className="col-md-2">
+                                                        <button className="btn btn-primary" onClick={() => {
+                                                            openModal1(item)
+                                                            handleOrder();
+                                                            console.log('check', itemOrder, quantityOrder);
+
+                                                        }}>Chọn</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </ModalBody>
+                        </Modal>
+                    )}
+
                 </div>
             </div>
 

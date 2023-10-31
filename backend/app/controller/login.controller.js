@@ -13,34 +13,40 @@ exports.login = async (req, res) => {
   console.log("req.body", req.body)
 
   userPwd = sha1(userPwd);
+  try {
+    const queryRaw = "SELECT * FROM users WHERE username=? AND password = ?";
 
-  const queryRaw = "SELECT * FROM users WHERE username=? AND password = ?";
-    
-  const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false, 
-    replacements: [username, userPwd], type: QueryTypes.SELECT })
-    console.log("Result : " , resultRaw);
-  const checkMember = resultRaw && resultRaw.length && resultRaw.length > 0 ? resultRaw[0] : null;
+    const resultRaw = await sequelize.query(queryRaw, {
+      raw: true, logging: false,
+      replacements: [username, userPwd], type: QueryTypes.SELECT
+    })
+    console.log("Result : ", resultRaw);
+    const checkMember = resultRaw && resultRaw.length && resultRaw.length > 0 ? resultRaw[0] : null;
 
-  if (checkMember) {
-    const token = jwt.sign({ userId: checkMember.id, username: checkMember.username },constant.jwtSecret,
-      { expiresIn: constant.jwtSecretExp }
-    );
+    if (checkMember) {
+      const token = jwt.sign({ userId: checkMember.id, username: checkMember.username }, constant.jwtSecret,
+        { expiresIn: constant.jwtSecretExp }
+      );
 
-    //[note]: return data client: type is Json
-    res.send({
-      "connexion": true,
-      "jwtToken": token,
-      "id": checkMember.id,
-      "username": checkMember.username,
-      "role": checkMember.role
-    });
-    return  res.status(200);
-  } else {
-    console.log("ERROR - function login can not find member with username", username);
-    res.status(400).send({
-      "connexion": false
-    });
+      //[note]: return data client: type is Json
+      res.send({
+        "connexion": true,
+        "jwtToken": token,
+        "id": checkMember.id,
+        "username": checkMember.username,
+        "role": checkMember.role
+      });
+      return res.status(200);
+    } else {
+      console.log("ERROR - function login can not find member with username", username);
+      res.status(400).send({
+        "connexion": false
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
   }
+
 };
 
 exports.account = async (req, res) => {
@@ -48,9 +54,11 @@ exports.account = async (req, res) => {
   const curentLogin = Jwt.getCurrentLogin(req);
   // Check member exists?
   const queryRaw = "SELECT * FROM users WHERE id = ?";
-    
-  const resultRaw = await sequelize.query(queryRaw, { raw: true, logging: false,
-     replacements: [curentLogin.userId], type: QueryTypes.SELECT })
+
+  const resultRaw = await sequelize.query(queryRaw, {
+    raw: true, logging: false,
+    replacements: [curentLogin.userId], type: QueryTypes.SELECT
+  })
 
   const checkMember = resultRaw && resultRaw.length && resultRaw.length > 0 ? resultRaw[0] : null;
 

@@ -220,11 +220,11 @@ export default function User() {
                                             </td>
                                             <td className="project-actions text-right">
                                                 <div className="d-flex justify-content-between " >
-                                                    <a className="btn btn-primary btn-sm" href="#">
+                                                    {/* <a className="btn btn-primary btn-sm" href="#">
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a> 
+                                                    </a>  */}
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);

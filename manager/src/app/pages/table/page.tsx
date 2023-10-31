@@ -8,13 +8,16 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import formatMoney from '@/component/utils/formatMoney';
 import { showAlert } from '@/component/utils/alert/alert';
+import { useSocket } from "@/socket/io.init"
 
 export default function Table() {
+    const socket = useSocket();
     const dispatch: AppDispatch = useDispatch();
     const tableList: any = useSelector(getTableList);
     const orderList: any = useSelector(getOrderList);
     const statusList: any = useSelector(getTableStatusList);
     const [tables, setTables] = useState<any[]>([]);
+    const [money, setMoney] = useState<any[]>([]);
     const [orders, setOrders] = useState<any[]>([]);
     const [statusTable, setStatusTable] = useState<any[]>([]);
     const [modal, setModal] = useState(false);
@@ -27,7 +30,18 @@ export default function Table() {
     const [filteredTables, setFilteredTables] = useState<any[]>([]);
 
     useEffect(() => {
+        if (socket) {
+            console.log('đã kết nối với socket');
+            
+            socket.emit('table', statusTable);
+            socket.on('response', (data) => {
+                console.log('đã nhận dữ liệu socket', data);
+                setTables(data);
+            })
+        }
+    }, [socket]);
 
+    useEffect(() => {
         dispatch(getTableListAsync());
         dispatch(getOrderListAsync());
         dispatch(getStatusTableAsync());
@@ -68,14 +82,26 @@ export default function Table() {
         }
     }, [statusTableFilter, tables]);
     const calculateTotalForTable = (tableID: number) => {
-        const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
 
-        const totalAmount = ordersForTable.reduce((acc: number, order: any) => {
+        const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
+        let totalAmount = ordersForTable.reduce((acc: number, order: any) => {
             return acc + order.totalAmount;
         }, 0);
+    
+        if (socket && tables) {
+            const tableData = tables.find((table: any) => table.id === tableID);
+            if (tableData && tableData.total_amount !== null) {
+                totalAmount = tableData.total_amount;
+            }
 
+            if(totalAmount == null){
+                totalAmount = 0;
+            }
+        }
+         
         return totalAmount;
     };
+    
     const toggle = () => setModal(!modal);
     const toggle1 = () => setModal1(!modal1);
     const toggleDel = () => setModalDel(!modalDel);
@@ -83,6 +109,7 @@ export default function Table() {
         if (data) {
             setStatus(data.status);
             setID(data.id)
+            
         } else {
             setStatus(0);
         }

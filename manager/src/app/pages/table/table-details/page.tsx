@@ -13,9 +13,10 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { useSocket } from "@/socket/io.init"
 
 export default function TableDetails() {
-
+    const socket = useSocket();
     const searchParams = useSearchParams()
     const url = `${searchParams}`
     const tableID = url ? url.split('tableID=')[1] : null;
@@ -47,12 +48,9 @@ export default function TableDetails() {
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (data: any = null) => {
-        console.log(setProducID(data.id)); 
-        console.log(setQuantityOrder(data.quantity)); 
-        if (data != null && data.id) {
-            // setProducID(data.id);
-            // setQuantityOrder(data.quantity);
-        } else if (data != null && data.orderID) {
+        console.log(setProducID(data.id));
+        console.log(setQuantityOrder(data.quantity));
+        if (data != null && data.orderID) {
             setNameUpdate(data.productName);
             setOrderID(data.orderID);
             setProducID(data.productID);
@@ -321,7 +319,6 @@ export default function TableDetails() {
                                                             openModal1(item)
                                                             handleOrder();
                                                             console.log('check', itemOrder, quantityOrder);
-                                                            
                                                         }}>Chọn</button>
                                                     </div>
                                                 </div>

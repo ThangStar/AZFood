@@ -4,13 +4,15 @@ import { showAlert } from '@/component/utils/alert/alert';
 import { formatDateTime } from '@/component/utils/formatDate';
 import formatMoney from '@/component/utils/formatMoney';
 import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList } from '@/redux-store/menuItem-reducer/menuItemSlice';
-import { createOrderAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
+import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useSocket } from "@/socket/io.init"
+import { log } from 'console';
+
 
 export default function TableDetails() {
     const socket = useSocket();
@@ -35,7 +37,7 @@ export default function TableDetails() {
     const [itemCategory, setItemCategory] = useState("");
     const [listCategory, setListCategory] = useState<string[]>([]);
 
-    const [quantityOrder, setQuantityOrder] = useState();
+    const [quantityOrder, setQuantityOrder] = useState<number>(1);
     const [productID, setProducID] = useState();
     const [userID, setUserID] = useState();
     const [orderID, setOrderID] = useState();
@@ -48,6 +50,7 @@ export default function TableDetails() {
     const [currentPage, setCurrentPage] = useState(1)
 
     useEffect(() => {
+
         dispatch(getMenuListAsync());
     }, [dispatch]);
 
@@ -57,20 +60,7 @@ export default function TableDetails() {
         }
     }, [menuItems]);
 
-
     const toggle1 = () => setModal1(!modal1);
-    const openModal1 = (data: any = null) => {
-        console.log(setProducID(data.id));
-        console.log(setQuantityOrder(data.quantity));
-
-        if (data != null && data.orderID) {
-            setNameUpdate(data.productName);
-            setOrderID(data.orderID);
-            setProducID(data.productID);
-            setQuantityOrder(data.quantity);
-        }
-        toggle1();
-    }
     const toggle = () => setModal(!modal);
     const openModal = (data: any = null) => {
 
@@ -108,12 +98,15 @@ export default function TableDetails() {
     });
 
     useEffect(() => {
-        dispatch(getOrderInTableListAsync(tableID));
-        dispatch(getMenuListAsync());
-
-    }, [dispatch]);
+        const fetchData = async () => {
+            await dispatch(getOrderInTableListAsync(tableID));
+            await dispatch(getMenuListAsync());
+        }
+        fetchData();
+    }, []);
 
     useEffect(() => {
+
         if (orders && Array.isArray(orders.orders)) {
             setOrder(orders.orders);
         }
@@ -131,12 +124,12 @@ export default function TableDetails() {
         });
         return totalAll;
     }
-    const handleOrder = async () => {
-
+    const handleOrder = async (id: number) => {
+        console.log(id);
         const data = {
             userID: userID,
             tableID: tableID,
-            productID: productID,
+            productID: id,
             quantity: quantityOrder
         }
 
@@ -156,6 +149,20 @@ export default function TableDetails() {
         dispatch(getOrderInTableListAsync(tableID));
 
     }
+
+    const handleIncrement = async (id: number) => {
+        console.log('ttt', quantityOrder, id);
+        const data = {
+            quantity: quantityOrder + 1,
+            productID: id,
+        }
+
+        console.log('data', data);
+        await dispatch(incrementProductAsync({ data }));
+        dispatch(getOrderInTableListAsync(tableID));
+
+    }
+
     const deleteItem = async (id: any) => {
         await dispatch(deleteOrderAsync(id));
         if (statusRD === 'idle') {
@@ -172,15 +179,13 @@ export default function TableDetails() {
             payMethod
         }
         await dispatch(payBillAsync(data)); //step 1:  gọi hàm thêm xoá sửa thì cho await vô 
-
         showAlert("success", "Thanh toán thành công");
-
         dispatch(getOrderInTableListAsync(tableID));//step 2: sau đó gọi hàm getList
         toggle2();
     }
     return (
         <div style={{ display: 'flex' }}>
-            <div style={{ width: '38%', padding: '10px', marginRight: '10px', height: '100%'}}>
+            <div style={{ width: '38%', padding: '10px', marginRight: '10px', height: '100%' }}>
                 <div className="row align-items-center">
                     <div className="col-md-6">
                         <input type="text" placeholder='Nhập tên món' style={{
@@ -208,10 +213,16 @@ export default function TableDetails() {
                     </div>
                 </div>
                 {listItem && listItem.length > 0 ? (
-                    <div className="grid-container" >
+                    <div className="grid-container">
                         {listItem.map((item, id) => (
-                            <div className="grid-item" key={id} style={{ backgroundImage: `url(${item.imgUrl})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end' }}>
-
+                            <div
+                                className="grid-item"
+                                key={id}
+                                style={{ backgroundImage: `url(${item.imgUrl})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end' }}
+                                onClick={() => {
+                                    handleOrder(item.id);
+                                }}
+                            >
                                 <div style={{ width: '100%', padding: '10px 0px 10px 0px', backgroundColor: 'white', opacity: '0.9' }}>
                                     <h6 className='m-0'>{item.name}</h6>
                                 </div>
@@ -235,6 +246,11 @@ export default function TableDetails() {
                             <div className="invoice-detail" >
                                 <span style={{ fontWeight: "bold" }}>Tổng tiền : </span>  {formatMoney(caculatorTotal())} VND
                             </div>
+                            <button className="btn btn-danger btn-sm" onClick={() => {
+                                openModal2()
+                            }}>
+                                <i className="fas fa-trash"></i> thanh toán
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -244,124 +260,56 @@ export default function TableDetails() {
                         <table className="table table-invoice">
                             <thead>
                                 <tr>
-                                    <th style={{ fontSize: 18, fontWeight: "bold", color: "red" }}>Sản phẩm</th>
+                                    <th style={{ fontSize: 18, fontWeight: "bold", color: "red", width: '30%' }}>Sản phẩm</th>
                                     <th className="text-center" style={{ width: "10%" }}>Giá</th>
-                                    <th className="text-center" style={{ width: "20%" }}>Đơn vị tính</th>
-                                    <th className="text-center" style={{ width: "10%" }}>Số lượng</th>
-                                    <th className="text-right" style={{ width: "20%" }}>Tổng cộng</th>
-                                    <th className="text-left" style={{ width: "10%" }}>Hoạt động</th>
+                                    <th className="text-center" style={{ width: "20%" }}>Số lượng</th>
+                                    <th className="text-center" style={{ width: "20%" }}>Tổng cộng</th>
+                                    <th className="text-left" style={{ width: "10%" }}></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {order && order.map((item, index) => (
                                     <tr key={index}>
                                         <td style={{ color: "green", fontSize: 20 }}>
-                                            {item.productName} <br />
+                                            <h6>{item.productName} ({item.dvt})</h6>
                                         </td>
                                         <td className="text-center">{formatMoney(item.price)}</td>
-                                        <td className="text-center">{item.dvt}</td>
-                                        <td className="text-center">{item.quantity}</td>
-                                        <td className="text-right">{formatMoney((item.price * item.quantity))}</td>
-                                        <td className="project-actions text-right">
-                                            <div className="d-flex justify-content-between " >
-                                                <button className="btn btn-success btn-sm pd-5" onClick={() => {
-                                                    setIsUpdate(true)
-                                                    openModal1(item)
-                                                }}>
-                                                    <i className="fas fa-pencil-alt"></i>
-                                                    Sửa món
-                                                </button>
-                                                <button className="btn btn-danger btn-sm" onClick={() => {
-                                                    openModal(item.orderID)
-                                                }}>
-                                                    <i className="fas fa-trash"></i> Xóa
-                                                </button>
-                                            </div>
+                                        <td className="text-center">
+                                            <button className="btn btn-outline-dark mr-2">-</button>
+                                            {item.quantity}
+                                            <button className="btn btn-outline-dark ml-2" onClick={() => {
 
+                                                handleIncrement(item.productID)
+                                            }}>+</button>
+                                        </td>
+                                        <td className="text-center">{formatMoney((item.price * item.quantity))}</td>
+                                        <td className="project-actions text-left ">
+                                            <div className="d-flex justify-content-between">
+                                                <div className="btn-group">
+                                                    <button className="btn btn-secondary btn-sm">
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                    <div className="popup">
+                                                        <div className="popup-content">
+                                                            <button className="btn btn-sm" style={{ width: '100%' }} onClick={() => {
+                                                                openModal(item.orderID)
+                                                            }}>
+                                                                <i className="fas fa-trash"></i> Xóa sản phẩm
+                                                            </button>
+                                                            <br />
+                                                            <button className="btn btn-sm" style={{ width: '100%' }}>
+                                                                <i className="fa-solid fa-pencil-mechanical"></i> Ghi chú
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-
-                    {isDialogOpen && (
-                        <Modal isOpen={isDialogOpen} toggle={() => setIsDialogOpen(!isDialogOpen)}>
-                            <ModalHeader toggle={() => setIsDialogOpen(!isDialogOpen)}>Thêm món ăn</ModalHeader>
-                            <ModalBody>
-                                <div className="form-horizontal" style={{
-                                    width: "100%",
-                                    maxHeight: 600,
-                                }}>
-                                    <div className="row align-items-center">
-                                        <div className="col-md-6">
-                                            <input type="text" placeholder='Nhập tên món' style={{
-                                                borderWidth: 1,
-                                                borderRadius: 3,
-                                                padding: 6,
-                                                width: "100%",
-                                                margin: 20,
-                                            }} />
-                                        </div>
-                                        <div className="col-md-4 ml-2">
-                                            <select
-                                                className="form-control"
-                                                id="dvt"
-                                                value={itemCategory}
-                                                onChange={(e) => {
-                                                    setItemCategory(e.target.value);
-                                                }}
-                                            >
-                                                <option value="" selected>Chọn loại món</option>
-                                                {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
-                                                    <option value={item.id} key={id}>{item.name}</option>
-                                                )) : ""}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    {filteredItems && filteredItems.length > 0 ? (
-                                        <div>
-                                            {filteredItems.map((item, id) => (
-                                                <div className="row align-items-center pt-2 pb-3" >
-                                                    <div className="col-md-2">
-                                                        <img src={item.imgUrl || ""} alt="món ăn" className="img-fluid" />
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <p className='m-0'>{item.name}</p>
-                                                    </div>
-                                                    <div className="col-md-2">
-                                                        <p className='m-0'>{formatMoney(item.price)}</p>
-                                                    </div>
-                                                    <div className="col-md-3">
-                                                        <input
-                                                            type="number"
-                                                            min="1"
-                                                            value={itemOrder === item ? quantityOrder : 0}
-                                                            onChange={(e: any) => {
-                                                                setItemOrder(item);
-                                                                setQuantityOrder(e.target.value);
-                                                                setProducID(item.id);
-                                                            }}
-                                                            className='form-control'
-                                                        />
-                                                    </div>
-                                                    <div className="col-md-2">
-                                                        <button className="btn btn-primary" onClick={() => {
-                                                            openModal1(item)
-                                                            handleOrder();
-                                                            console.log('check', itemOrder, quantityOrder);
-
-                                                        }}>Chọn</button>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : null}
-                                </div>
-                            </ModalBody>
-                        </Modal>
-                    )}
-
                 </div>
             </div>
 

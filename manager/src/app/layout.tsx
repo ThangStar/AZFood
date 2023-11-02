@@ -72,13 +72,14 @@ export default function RootLayout({
         <Provider store={store}>
           {token ? (
             <>
-              <Messenger />
+              
               <div style={{ width: '100%', height: '100%', display: 'flex' }}>
                 <div style={{ width: '16%', overflowY: 'auto', backgroundColor: '#E3F6F5'}}>
                   <LeftSideBar onLogout={() => logout()}/>
                 </div>
-                <div style={{ width: '84%', overflowY: 'auto'}}>
+                <div style={{ width: '84%'}}>
                   {children}
+                  <Messenger />
                 </div>
               </div>
             </>

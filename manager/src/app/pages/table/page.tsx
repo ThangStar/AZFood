@@ -30,7 +30,6 @@ export default function Table() {
     const [id, setID] = useState<number>(0);
     const [filteredTables, setFilteredTables] = useState<any[]>([]);
 
-
     useEffect(() => {
         if (socket) {
             console.log('đã kết nối với socket');
@@ -44,6 +43,7 @@ export default function Table() {
     }, [socket]);
 
     useEffect(() => {
+       
         dispatch(getTableListAsync());
         dispatch(getOrderListAsync());
         dispatch(getStatusTableAsync());
@@ -105,7 +105,7 @@ export default function Table() {
 
     const handleUpdate = async (id: any) => {
         try {
-            dispatch(updateStatusTableAsync({ id }));
+            await dispatch(updateStatusTableAsync({ id }));
             dispatch(getTableListAsync());
         } catch (error) {
             console.log(" error : ", error);

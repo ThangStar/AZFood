@@ -6,6 +6,7 @@ module.exports = app => {
   
     
     router.post("/create",[jwt.checkJwt] , orders.createOrder );
+    router.post("/increment",[jwt.checkJwt] , orders.handleIncrement );
     router.post("/update",[jwt.checkJwt] , orders.updateOrder );
     router.post("/delete",[jwt.checkJwt] , orders.deleteOrder );
     router.post("/deleteAll",[jwt.checkJwt] , orders.deleteAllOrder );

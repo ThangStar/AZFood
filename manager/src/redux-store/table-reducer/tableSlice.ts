@@ -61,7 +61,7 @@ export const updateStatusTableAsync = createAsyncThunk(
   async ({id }: { id: number }) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.post(serverUrl + '/api/table/updateStatus', { id }, {
+    const response = await axios.post(serverUrl + '/api/table/updateStatus', { id}, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

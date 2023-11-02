@@ -312,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         for (var i in currentProducts) {
                                           print(i.imageUrl);
                                           int length = currentProducts
-                                              .where((j) => j.  name == i.name)
+                                              .where((j) => j.name == i.name)
                                               .length;
                                           i.quantity = length;
                                         }
@@ -321,25 +321,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       });
                                     }
                                     print("OPEN");
-                                    showDialog(
-                                      barrierDismissible: false,
-                                      context: context,
-                                      builder: (context) {
-                                        return CurrentBookingDrawer(
-                                            tableID: table.id ?? 0,
-                                            tableName: table.name ?? "--");
-                                      },
-                                    );
-                                    // widget.openCurrentBooking();
-                                    // Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //       builder: (context) =>
-                                    //           CurrentBookingScreen(
-                                    //         tableID: table.id!,
-                                    //         tableName: table.name ?? "dđ",
-                                    //       ),
-                                    //     ));
+                                    widget.constraints.maxWidth > mobileWidth
+                                        ? showDialog(
+                                            barrierDismissible: false,
+                                            context: context,
+                                            builder: (context) {
+                                              return CurrentBookingDrawer(
+                                                  tableID: table.id ?? 0,
+                                                  tableName:
+                                                      table.name ?? "--");
+                                            },
+                                          )
+                                        : Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CurrentBookingScreen(
+                                                tableID: table.id!,
+                                                tableName: table.name ?? "dđ",
+                                              ),
+                                            ));
                                   }
                                 },
                               )

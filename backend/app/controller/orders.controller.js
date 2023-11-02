@@ -56,7 +56,6 @@ exports.createOrder = async (req, res) => {
 
             const productID = body.productID;
             const quantityClient = body.quantity;
-
             const tableID = body.tableID;
 
             const priceQuery = 'SELECT price, status FROM products WHERE id = ?';
@@ -97,13 +96,18 @@ exports.createOrder = async (req, res) => {
                     const newQuantity = existingQuantity + quantityClient;
                     const newSubTotal = existingSubTotal + subTotal;
 
-                    const updateOrderItemQuery = 'UPDATE orderItems SET quantity = ?, subTotal = ? WHERE id = ?';
-                    await sequelize.query(updateOrderItemQuery, {
-                        raw: true,
-                        logging: false,
-                        replacements: [newQuantity, newSubTotal, existingOrderItemId],
-                        type: QueryTypes.UPDATE
-                    });
+                    if (newQuantity < 0) {
+                        res.status(201).json({ message: 'Sản phẩm erorr' });
+                        return
+                    } else {
+                        const updateOrderItemQuery = 'UPDATE orderItems SET quantity = ?, subTotal = ? WHERE id = ?';
+                        await sequelize.query(updateOrderItemQuery, {
+                            raw: true,
+                            logging: false,
+                            replacements: [newQuantity, newSubTotal, existingOrderItemId],
+                            type: QueryTypes.UPDATE
+                        });
+                    }
                 } else {
                     // Insert a new orderItem
                     const orderId = await sequelize.transaction(async transaction => {

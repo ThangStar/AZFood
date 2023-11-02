@@ -53,7 +53,6 @@ class _PainterPageState extends State<PainterPage>
     Tween<double> tween = Tween(begin: 0.0, end: sumFull.toDouble());
     percent = tween.animate(
         CurvedAnimation(parent: controllerOval, curve: Curves.fastOutSlowIn))
-      ..drive(CurveTween(curve: Curves.fastOutSlowIn))
       ..addListener(() {
         setState(() {});
       })

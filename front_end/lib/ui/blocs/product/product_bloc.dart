@@ -85,7 +85,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   FutureOr<void> _getListProductByIdTable(
       GetListProductByIdTable event, Emitter<ProductState> emit) async {
-    await Future.delayed(600.ms);
+    await Future.delayed(200.ms);
 
     emit(state.copyWith(
         currentProducts: event.currentProducts, status: ProductStatus.success));

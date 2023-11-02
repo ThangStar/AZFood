@@ -40,6 +40,7 @@ class _ItemProductState extends State<ItemProduct>
 
   @override
   void initState() {
+    print("URl${widget.product.imageUrl}");
     moveController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1000));
     moveYAnimation =
@@ -86,7 +87,6 @@ class _ItemProductState extends State<ItemProduct>
                 // print("X cart: ${pos.x} Y: ${pos.y}");
                 moveController.addStatusListener((status) {
                   if (status == AnimationStatus.forward) {
-                    print('started');
                     setState(() {
                       isShowClone = true;
                     });
@@ -121,6 +121,7 @@ class _ItemProductState extends State<ItemProduct>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
                           child: Image.network(
+
                             widget.product.imageUrl != null &&
                                     widget.product.imageUrl != ''
                                 ? widget.product.imageUrl!

@@ -13,9 +13,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useSocket } from "@/socket/io.init"
 import { log } from 'console';
 
-
 export default function TableDetails() {
-    const socket = useSocket();
     const searchParams = useSearchParams()
     const url = `${searchParams}`
     const tableID = url ? url.split('tableID=')[1] : null;
@@ -25,7 +23,6 @@ export default function TableDetails() {
     const [isUpdate, setIsUpdate] = useState(false);
 
     const dispatch: AppDispatch = useDispatch();
-    const itemList: any = useSelector(getMenuItemtList);
     const orders: any = useSelector(getOrder);
     const menuItems: any = useSelector(getItemtList);
     const statusRD: any = useSelector(getStatus);
@@ -38,19 +35,14 @@ export default function TableDetails() {
     const [listCategory, setListCategory] = useState<string[]>([]);
 
     const [quantityOrder, setQuantityOrder] = useState<number>(1);
+    const [minusQuantityOrder, setMinusQuantityOrder] = useState<number>(-1);
     const [productID, setProducID] = useState();
     const [userID, setUserID] = useState();
     const [orderID, setOrderID] = useState();
     const [idItemDelete, setIdDelete] = useState();
-    const [nameUpdate, setNameUpdate] = useState("");
-    const [itemOrder, setItemOrder] = useState<any>([]);
-
     const [payMethod, setPayMethod] = useState<number>(1)
 
-    const [currentPage, setCurrentPage] = useState(1)
-
     useEffect(() => {
-
         dispatch(getMenuListAsync());
     }, [dispatch]);
 
@@ -59,6 +51,7 @@ export default function TableDetails() {
             setlistItem(menuItems.data);
         }
     }, [menuItems]);
+
 
     const toggle1 = () => setModal1(!modal1);
     const toggle = () => setModal(!modal);
@@ -69,14 +62,15 @@ export default function TableDetails() {
         }
         toggle();
     }
-    const toggle2 = () => setModal2(!modal2);
-    const openModal2 = () => {
 
+    const toggle2 = () => setModal2(!modal2);
+
+    const openModal2 = () => {
         toggle2();
     }
+
     useEffect(() => {
         const userJSON = localStorage.getItem("user");
-
         if (userJSON) {
             const user = JSON.parse(userJSON);
             const userID = user.userID;
@@ -87,15 +81,6 @@ export default function TableDetails() {
     }, [userID]);
 
     const category = parseInt(itemCategory);
-    const filteredItems = itemMenus.filter((item) => {
-
-        if (category !== null) {
-            return item.category === category;;
-        } else {
-            return
-        }
-
-    });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -117,6 +102,7 @@ export default function TableDetails() {
             setListCategory(categoryList.resultRaw);
         }
     }, [orders, menuItems, categoryList]);
+
     const caculatorTotal = () => {
         let totalAll = 0;
         order.forEach(item => {
@@ -124,16 +110,15 @@ export default function TableDetails() {
         });
         return totalAll;
     }
+
     const handleOrder = async (id: number) => {
-        console.log(id);
         const data = {
             userID: userID,
             tableID: tableID,
             productID: id,
             quantity: quantityOrder
         }
-
-        console.log('data', data);
+        console.log('log data', data);
 
         if (isUpdate) {
             await dispatch(updateOrderAsync({ data, orderID }));
@@ -147,20 +132,29 @@ export default function TableDetails() {
             }
         }
         dispatch(getOrderInTableListAsync(tableID));
-
     }
 
-    const handleIncrement = async (id: number) => {
-        console.log('ttt', quantityOrder, id);
+    const handleMinusOrder = async (id: number) => {
         const data = {
-            quantity: quantityOrder + 1,
+            userID: userID,
+            tableID: tableID,
             productID: id,
+            quantity: minusQuantityOrder
         }
+        console.log('log data', data);
 
-        console.log('data', data);
-        await dispatch(incrementProductAsync({ data }));
+        if (isUpdate) {
+            await dispatch(updateOrderAsync({ data, orderID }));
+            if (statusRD == 'idle') {
+                toggle1();
+            }
+        } else {
+            await dispatch(createOrderAsync(data));
+            if (statusRD == 'idle') {
+                toggle1();
+            }
+        }
         dispatch(getOrderInTableListAsync(tableID));
-
     }
 
     const deleteItem = async (id: any) => {
@@ -170,7 +164,6 @@ export default function TableDetails() {
             dispatch(getOrderInTableListAsync(tableID));
             toggle();
         }
-
     }
 
     const handleThanhToan = async () => {
@@ -183,6 +176,7 @@ export default function TableDetails() {
         dispatch(getOrderInTableListAsync(tableID));//step 2: sau đó gọi hàm getList
         toggle2();
     }
+
     return (
         <div style={{ display: 'flex' }}>
             <div style={{ width: '38%', padding: '10px', marginRight: '10px', height: '100%' }}>
@@ -203,9 +197,8 @@ export default function TableDetails() {
                             value={itemCategory}
                             onChange={(e) => {
                                 setItemCategory(e.target.value);
-                            }}
-                        >
-                            <option value="" selected>Chọn loại món</option>
+                            }}>
+                            <option value="">Chọn loại món</option>
                             {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
                                 <option value={item.id} key={id}>{item.name}</option>
                             )) : ""}
@@ -268,19 +261,16 @@ export default function TableDetails() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {order && order.map((item, index) => (
+                                {order && order.map((item, index, id) => (
                                     <tr key={index}>
                                         <td style={{ color: "green", fontSize: 20 }}>
                                             <h6>{item.productName} ({item.dvt})</h6>
                                         </td>
                                         <td className="text-center">{formatMoney(item.price)}</td>
-                                        <td className="text-center">
-                                            <button className="btn btn-outline-dark mr-2">-</button>
+                                        <td className="text-center" style={{display: 'flex', justifyContent:'space-around', alignItems: 'center'}}>
+                                            <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item.productID)}>-</button>
                                             {item.quantity}
-                                            <button className="btn btn-outline-dark ml-2" onClick={() => {
-
-                                                handleIncrement(item.productID)
-                                            }}>+</button>
+                                            <button className='btn btn-outline-dark' onClick={() => handleOrder(item.productID)}>+</button>
                                         </td>
                                         <td className="text-center">{formatMoney((item.price * item.quantity))}</td>
                                         <td className="project-actions text-left ">

@@ -43,12 +43,32 @@ export default function Table() {
     }, [socket]);
 
     useEffect(() => {
-       
         dispatch(getTableListAsync());
         dispatch(getOrderListAsync());
         dispatch(getStatusTableAsync());
 
     }, [dispatch]);
+
+    // const calculateTotalForTable = (tableID: number) => {
+    //     const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
+    //     let totalAmount = ordersForTable.reduce((acc: number, order: any) => {
+    //         return acc + order.totalAmount;
+
+    //     }, 0);
+
+    //     if (socket && tables) {
+    //         const tableData = tables.find((table: any) => table.id === tableID);
+    //         if (tableData && tableData.total_amount !== null) {
+    //             totalAmount = tableData.total_amount;
+    //         }
+    //         if(totalAmount == null){
+    //             totalAmount = 0;
+    //         }
+    //     }
+
+    //     return totalAmount;
+    // };
+
 
     useEffect(() => {
         if (tableList && tableList.resultRaw) {
@@ -61,6 +81,9 @@ export default function Table() {
             setStatusTable(statusList.resultRaw);
         }
     }, [tableList, orderList, statusList]);
+
+    console.log('tableList', tableList);
+
 
     useEffect(() => {
         if (statusTableFilter === 'all') {
@@ -112,9 +135,9 @@ export default function Table() {
         }
     }
 
-    const addTable = () => {
+    const addTable = async () => {
         try {
-            dispatch(createTableListAsync({ name: tableName }));
+            await dispatch(createTableListAsync({ name: tableName }));
             dispatch(getTableListAsync());
             openModal1();
         } catch (error) {
@@ -165,72 +188,58 @@ export default function Table() {
                         </div>
                     </div>
                 </div>
-                <div className="content">
-                    <div className="container-fluid" style={{ paddingLeft: 20, paddingRight: 20, marginTop: '20px' }}>
-                        <table className="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th style={{ width: '15%' }}>Tên bàn</th>
-                                    <th style={{ width: '20%' }}>Trạng thái hoạt động</th>
-                                    <th style={{ width: '20%' }}>Nhân viên Order</th>
-                                    <th style={{ width: '15%' }}>Thêm món</th>
-                                    <th style={{ width: '5%' }}>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
-                                    <tr key={item.id}>
-                                        <td>
-                                            <div >
-                                                <Link href={`table/table-details?tableID=${item.id}`}>
-                                                    <h5 style={{marginTop: '8px'}}>
-                                                        {item.name}
-                                                    </h5>
-                                                </Link>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div style={{ display: 'grid' }}>
-                                                <span className="badge" style={{ fontSize: '16px', color: item.status === 2 ? ban : item.status === 1 ? cho : trong }}>
-                                                    {item.status_name}
-                                                </span>
-                                                {item.status === 2 &&
-                                                    <button onClick={() => { handleUpdate(item.id) }} className="btn btn-outline-warning btn-sm">
-                                                        Chuyển về bàn trống
-                                                    </button>
-                                                }
-                                            </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridGap: '10px', padding: '15px' }}>
+                    {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
+                        <div key={item.id} style={{ position: 'relative' }}>
+                            {item.status === 2 ? ( // Kiểm tra trạng thái của bàn
+                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #F39422', borderRadius: '20px', color: '#F39422' }}>
+                                    <div style={{ display: 'flex' }}>
+                                        <h5 style={{ marginRight: '5px' }}>{item.name}</h5>
+                                        <p>({item.status_name})</p>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <button onClick={() => { handleUpdate(item.id) }} className='btn btn-warning btn-sm'>
+                                            Chuyển về bàn trống
+                                        </button>
+                                    </div>
 
-                                        </td>
-                                        <td><div><h6>Nguyễn Tấn Trung</h6></div></td>
-                                        <td>
-                                            {item.status === 3 && (
-                                                <Link href={`table/table-details?tableID=${item.id}`} className='btn btn-outline-primary'>
-                                                    Thêm món
-                                                </Link>
-                                            )}
-                                            {item.status === 1 && (
-                                                <Link href={`table/table-details?tableID=${item.id}`} className='btn btn-outline-primary'>
-                                                    Sửa món
-                                                </Link>
-                                            )}
-                                        </td>
-                                        <td style={{ display: 'grid', border: 'none' }}>
-                                            {item.status === 3 &&
-                                                <button className='text-danger' type="button"
-                                                    onClick={() => {
-                                                        setID(item.id)
-                                                        openModalDel()
-                                                    }}><i className="fas fa-trash"></i>
-                                                </button>
-                                            }
-                                        </td>
+                                </div>
 
-                                    </tr>
-                                )) : ""}
-                            </tbody>
-                        </table>
-                    </div>
+                            ) : item.status === 1 ? (
+                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #26A744', borderRadius: '20px' }}>
+                                    <Link href={`table/table-details?tableID=${item.id}`}>
+                                        <h5 style={{ height: '40px', color: '#26A744'}}>{item.name}</h5>
+                                        <div style={{ display: 'grid' }}>
+                                            <span className="badge" style={{ fontSize: '16px', color: '#26A744' }}>
+                                                {item.status_name}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #007bff', borderRadius: '20px' }}>
+                                    <Link href={`table/table-details?tableID=${item.id}`}>
+                                        <h5 style={{ height: '40px' }}>{item.name}</h5>
+                                        <div style={{ display: 'grid' }}>
+                                            <span className="badge" style={{ fontSize: '16px', color: '#007bff'}}>
+                                                {item.status_name}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )}
+                            <div style={{ border: 'none', position: 'absolute', right: '15px', top: '15px', zIndex: '1' }}>
+                                {item.status === 3 && (
+                                    <button className='btn btn-outline-danger' type="button" onClick={() => {
+                                        setID(item.id)
+                                        openModalDel()
+                                    }}>
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )) : ""}
                 </div>
 
                 <Modal isOpen={modal1} toggle1={openModal1}>

@@ -3,15 +3,13 @@ import Header from '@/component/Header/Header'
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import LeftSideBar from '@/component/LeftSideBar/LeftSideBar'
+import LeftSideBar from '../component/LeftSideBar/LeftSideBar'
 import { store } from '@/redux-store/store'
 import { Provider } from 'react-redux';
 import { useEffect, useState } from 'react'
 import Login from '@/component/Login/login'
 import Messenger from '@/component/Messenger/messenger'
 const inter = Inter({ subsets: ['latin'] })
-
-
 
 export default function RootLayout({
   children,
@@ -31,6 +29,12 @@ export default function RootLayout({
       setToken(_token);
     }
   }, []);
+
+  const logout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    setToken(null)
+  }
 
   return (
     <html lang="en">
@@ -66,10 +70,14 @@ export default function RootLayout({
         <Provider store={store}>
           {token ? (
             <>
-              <Messenger />
-              <Header />
-              <LeftSideBar/>
-              {children}
+              <div style={{ width: '100%', height: '100%', display: 'flex' }}>
+                <div style={{ width: '16%', overflowY: 'auto', backgroundColor: '#E3F6F5'}}>
+                  <LeftSideBar onLogout={() => logout()}/>
+                </div>
+                <div style={{ width: '84%', overflowY: 'auto'}}>
+                  {children}
+                </div>
+              </div>
               
             </>
           ) : (

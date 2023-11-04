@@ -50,11 +50,11 @@ export default function User() {
         }
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
-            showAlert("success", "Thâm nhân viên mới thành công ");
+            showAlert("success", "Thêm nhân viên mới thành công ");
             dispatch(getUserListAsync());
             openModal1();
         } else {
-            showAlert("error", "Thâm nhân viên mới  bại ");
+            showAlert("error", "Thêm nhân viên mới  bại ");
         }
     }
     const setDataForm = (item: any) => {
@@ -71,30 +71,22 @@ export default function User() {
         }
     }
     return (
-        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header mr-2" style={{ paddingTop: '10px'}}>
-                <div className="" style={{ borderBottom:'1.5px solid rgb(195 211 210)'}}>
-                    <div className="container-fluid">
-                        <div className="row mb-2">
-                            <div className="col-sm-6">
-                                <h1>Danh sách Nhân viên</h1>
-                            </div>
-                            <div className="col-sm-6">
-                                <ol className="breadcrumb float-sm-right">
-                                    <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li className="breadcrumb-item active">Danh sách nhân viên</li>
-                                </ol>
-                            </div>
+        <div className='content scroll'>
+            <div style={{ border: 'none' }}>
+                <div className="container-fluid" style={{}}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)'}} className='p-3'>
+                        <div className="col-sm-6 p-0">
+                            <h3 style={{ height: '40px', margin: '0px' }}>Danh sách Nhân viên</h3>
+                        </div>
+                        <div className="">
+                            <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
                         </div>
                     </div>
                 </div>
 
-                <div className="content mr-2">
+                <div className="content m-3">
                     <div className="">
-                        <div className="card-header">
-                            <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
-                        </div>
-                        <div className="card card-body p-0 ">
+                        <div className="card card-body">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
@@ -102,10 +94,10 @@ export default function User() {
                                             STT
                                         </th>
                                         <th style={{ width: "20%" }}>
-                                            Tên NV
+                                            Tên nhân viên
                                         </th>
                                         <th style={{ width: "10%" }}>
-                                            Hình Ảnh
+                                            Hình ảnh
                                         </th>
                                         <th>
                                             Địa chỉ
@@ -117,7 +109,7 @@ export default function User() {
                                             Email
                                         </th>
                                         <th style={{ width: "15%" }} className="text-center">
-                                            actions
+                                            
                                         </th>
 
                                     </tr>
@@ -265,7 +257,7 @@ export default function User() {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Dia Chi</label>
+                                    <label className="col-sm-4 col-form-label">Địa chỉ</label>
                                     <div className="col-sm-8">
 
                                         <input
@@ -281,7 +273,7 @@ export default function User() {
                                     </div>
                                 </div>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Sinh nhat</label>
+                                    <label className="col-sm-4 col-form-label">Sinh nhật</label>
                                     <div className="col-sm-8">
 
                                         <input

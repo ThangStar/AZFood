@@ -1,6 +1,7 @@
 "use client"
+import { showAlert } from "@/component/utils/alert/alert";
 import formatMoney from "@/component/utils/formatMoney";
-import { getDVTList, getDvtListAsync, getPhieuNhapList, getPhieuNhapListAsync, getProductList, getProductListAsync, nhapHangAsync } from "@/redux-store/kho-reducer/nhapHangSlice";
+import { getDVTList, getDvtListAsync, getPhieuNhapList, getPhieuNhapListAsync,getProductState, getProductList, getProductListAsync, nhapHangAsync } from "@/redux-store/kho-reducer/nhapHangSlice";
 import { AppDispatch } from "@/redux-store/store";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ export default function Kho() {
     const phieuNhapList: any = useSelector(getPhieuNhapList);
     const DVTList: any = useSelector(getDVTList);
     const ProductList: any = useSelector(getProductList);
+    const status: any = useSelector(getProductState);
 
     const [phieuNhaps, setPhieuNhaps] = useState<any[]>([]);
     const [dvts, setDvts] = useState<any[]>([]);
@@ -46,115 +48,108 @@ export default function Kho() {
     const openModal = (data: any = null) => {
         toggle();
     }
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         const data = {
             productID: productID,
             soLuong: soLuong,
             donGia: donGia,
             dvtID: dvtID
         }
-        dispatch(nhapHangAsync(data));
-        dispatch(getPhieuNhapListAsync());
+        await dispatch(nhapHangAsync(data));
+        if (status == 'idle') {
+            showAlert("success", "Thêm số lượng sản phẩm thành công ");
+            dispatch(getPhieuNhapListAsync());
+            openModal();
+        } else {
+            showAlert("error", "Thêm số lượng sản phẩm thất bại ");
+        }
     }
     const onSearchChange = (searchName: any) => {
 
     }
 
     return (
-        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header" style={{ marginRight: '15px' }}>
-                <div className="card-header p-0" style={{ border: 'none' }}>
-                    <div className="container-fluid">
-                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                            <div className="col-sm-6">
-                                <h1>Kho hàng</h1>
-                            </div>
-                            <div className="col-sm-6">
-                                <ol className="breadcrumb float-sm-right">
-                                    <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li className="breadcrumb-item active">Kho hàng</li>
-                                </ol>
-                            </div>
-                        </div>
+        <>
+            <div>
+                <div className="container-fluid">
+                    <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                        <h3 className='m-0' style={{ height: '40px' }}>Hóa đơn nhập hàng</h3>
+                        <button className="btn btn-success" onClick={() => { openModal() }}>Nhập hàng</button>
                     </div>
                 </div>
 
-                <div className="content">
-                    <div >
-                        <div className="card-header" style={{ border: 'none' }}>
-                            <button className="btn btn-success" onClick={() => { openModal() }}>Nhập hàng</button>
-                            <div className="card-tools flex items-center">
-                                <form role="search">
-                                    <input
-                                        type="text"
-                                        value={searchName}
-                                        onChange={(e) => onSearchChange(e.target.value)}
-                                        placeholder="Tìm kiếm..."
-                                        className='form-control'
-                                    />
-                                </form>
-                            </div>
-                        </div>
-                        <div className="card mt-3 card-body p-0">
-                            <table className="table table-striped projects">
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: "1%" }}>
-                                            STT
-                                        </th>
-                                        <th style={{ width: "20%" }}>
-                                            Tên hàng
-                                        </th>
-                                        <th style={{ width: "10%" }}>
-                                            Số lượng
-                                        </th>
-                                        <th>
-                                            Đơn giá
-                                        </th>
-                                        <th>
-                                            Đơn vị tính
-                                        </th>
-                                        <th>
-                                            Ngày nhập
-                                        </th>
-
-
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {phieuNhaps && phieuNhaps.length > 0 ? phieuNhaps.map((item: any, i: number) => (
-                                        <tr key={item && item.id ? item.id : null}>
-                                            <td>
-                                                {i + 1}
-                                            </td>
-                                            <td>
-                                                <a>
-                                                    {item && item.name ? item.name : null}
-                                                </a>
-                                                <br />
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.soLuong ? item.soLuong : null}
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.donGia ? formatMoney(item.donGia) : ""}
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.tenDVT ? item.tenDVT : null}
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.ngayNhap ? item.ngayNhap : null}
-                                            </td>
-
-                                        </tr>
-                                    )) : ""}
-
-
-                                </tbody>
-                            </table>
+                <div className="content px-3">
+                    <div className="py-3" style={{ border: 'none', display: 'flex', justifyContent: 'end' }}>
+                        <div className="card-tools flex items-center">
+                            <form role="search">
+                                <input
+                                    type="text"
+                                    value={searchName}
+                                    onChange={(e) => onSearchChange(e.target.value)}
+                                    placeholder="Tìm kiếm..."
+                                    className='form-control'
+                                />
+                            </form>
                         </div>
                     </div>
+                    <div className="card p-0">
+                        <table className="table table-striped projects">
+                            <thead>
+                                <tr>
+                                    <th style={{ width: "1%" }}>
+                                        STT
+                                    </th>
+                                    <th style={{ width: "20%" }}>
+                                        Tên hàng
+                                    </th>
+                                    <th style={{ width: "10%" }}>
+                                        Số lượng
+                                    </th>
+                                    <th>
+                                        Đơn giá
+                                    </th>
+                                    <th>
+                                        Đơn vị tính
+                                    </th>
+                                    <th>
+                                        Ngày nhập
+                                    </th>
 
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {phieuNhaps && phieuNhaps.length > 0 ? phieuNhaps.map((item: any, i: number) => (
+                                    <tr key={item && item.id ? item.id : null}>
+                                        <td>
+                                            {i + 1}
+                                        </td>
+                                        <td>
+                                            <a>
+                                                {item && item.name ? item.name : null}
+                                            </a>
+                                            <br />
+                                        </td>
+                                        <td className="project_progress">
+                                            {item && item.soLuong ? item.soLuong : null}
+                                        </td>
+                                        <td className="project_progress">
+                                            {item && item.donGia ? formatMoney(item.donGia) : ""}
+                                        </td>
+                                        <td className="project_progress">
+                                            {item && item.tenDVT ? item.tenDVT : null}
+                                        </td>
+                                        <td className="project_progress">
+                                            {item && item.ngayNhap ? item.ngayNhap : null}
+                                        </td>
+
+                                    </tr>
+                                )) : ""}
+
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -222,7 +217,7 @@ export default function Kho() {
                                         setDvtID(e.target.value);
                                     }}
                                 >
-                                    <option value="">Chọn Đon vị tính</option>
+                                    <option value="">Chọn đơn vị tính</option>
                                     {dvts && dvts.length > 0 ? dvts.map((item: any, id: number) => (
                                         <option value={item.id}>{item.tenDVT}</option>
 
@@ -243,6 +238,6 @@ export default function Kho() {
                     </Button>
                 </ModalFooter>
             </Modal>
-        </div>
+        </>
     )
 }

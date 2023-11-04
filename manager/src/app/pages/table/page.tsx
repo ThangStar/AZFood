@@ -161,34 +161,37 @@ export default function Table() {
     const trong = "#26A744";
     const cho = "black";
     return (
-        <div className="content scroll" style={{}}>
-            <div className="" style={{ marginRight: '15px', border: 'none' }}>
+        <div className="content scroll">
+            <div style={{ marginRight: '15px', border: 'none' }}>
                 <div className="container-fluid">
                     <div style={{ borderBottom: '1.5px solid rgb(195 211 210)' }} className='p-3'>
                         <div style={{ justifyContent: 'space-between', display: 'flex' }}>
                             <h3 style={{ height: '40px', margin: '0px' }}>Danh sách bàn</h3>
-                            <div style={{ display: 'flex' }}>
-                                <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn mới</button>
-                                <div className="card-tools ml-4" style={{ display: 'flex', width: '230px' }}>
-                                    <select
-                                        className="form-control"
-                                        id="statusTable"
-                                        value={statusTableFilter}
-                                        onChange={(e) => {
-                                            setStatusTableFilter(e.target.value);
-                                        }}>
-                                        <option value='' disabled selected hidden>Tìm kiếm theo trạng thái bàn</option>
-                                        <option value='all'>Tất cả</option>
-                                        <option value='trong' style={{ color: trong }}>Bàn đang trống</option>
-                                        <option value='ban' style={{ color: ban }}>Bàn đã thanh toán</option>
-                                        <option value='cho' style={{ color: cho }}>Bàn có khách</option>
-                                    </select>
-                                </div>
-                            </div>
+                            <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn mới</button>
                         </div>
                     </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridGap: '10px', padding: '15px' }}>
+                <div style={{ display: 'flex', justifyContent: 'end', padding: '20px', alignItems: 'center' }}>
+                    <h6 style={{ margin: '0' }}>Bộ lọc:</h6>
+                    <div className="card-tools ml-2" style={{ display: 'flex', width: '230px' }}>
+                        <select
+                            className="form-control"
+                            id="statusTable"
+                            value={statusTableFilter}
+                            onChange={(e) => {
+                                setStatusTableFilter(e.target.value);
+                            }}>
+                            <option value='' disabled selected hidden>Lọc theo trạng thái bàn</option>
+                            <option value='all'>Tất cả</option>
+                            <option value='trong' style={{ color: trong }}>Bàn đang trống</option>
+                            <option value='ban' style={{ color: ban }}>Bàn đã thanh toán</option>
+                            <option value='cho' style={{ color: cho }}>Bàn có khách</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridGap: '10px', padding: '0px 15px' }}>
+
                     {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
                         <div key={item.id} style={{ position: 'relative' }}>
                             {item.status === 2 ? ( // Kiểm tra trạng thái của bàn
@@ -208,7 +211,7 @@ export default function Table() {
                             ) : item.status === 1 ? (
                                 <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #26A744', borderRadius: '20px' }}>
                                     <Link href={`table/table-details?tableID=${item.id}`}>
-                                        <h5 style={{ height: '40px', color: '#26A744'}}>{item.name}</h5>
+                                        <h5 style={{ height: '40px', color: '#26A744' }}>{item.name}</h5>
                                         <div style={{ display: 'grid' }}>
                                             <span className="badge" style={{ fontSize: '16px', color: '#26A744' }}>
                                                 {item.status_name}
@@ -221,7 +224,7 @@ export default function Table() {
                                     <Link href={`table/table-details?tableID=${item.id}`}>
                                         <h5 style={{ height: '40px' }}>{item.name}</h5>
                                         <div style={{ display: 'grid' }}>
-                                            <span className="badge" style={{ fontSize: '16px', color: '#007bff'}}>
+                                            <span className="badge" style={{ fontSize: '16px', color: '#007bff' }}>
                                                 {item.status_name}
                                             </span>
                                         </div>
@@ -241,6 +244,7 @@ export default function Table() {
                         </div>
                     )) : ""}
                 </div>
+
 
                 <Modal isOpen={modal1} toggle1={openModal1}>
                     <ModalHeader toggle1={openModal1}>{"Thêm bàn mới"}</ModalHeader>

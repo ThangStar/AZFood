@@ -127,5 +127,6 @@ const nhapHangSlice = createSlice({
 export const getPhieuNhapList = (state: RootState) => state.nhapHangState.nhapHangList;
 export const getDVTList = (state: RootState) => state.nhapHangState.dvtList;
 export const getProductList = (state: RootState) => state.nhapHangState.ProductList;
+export const getProductState = (state: RootState) => state.userState.status;
 
 export default nhapHangSlice.reducer;

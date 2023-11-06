@@ -3,7 +3,7 @@ import '../table-details/page.css'
 import { showAlert } from '@/component/utils/alert/alert';
 import { formatDateTime } from '@/component/utils/formatDate';
 import formatMoney from '@/component/utils/formatMoney';
-import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList, getFilterCategoryListAsync, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { useSearchParams } from 'next/navigation';
@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useSocket } from "@/socket/io.init"
 import { log } from 'console';
+import { getDVTList, getDvtListAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
 
 export default function TableDetails() {
     const searchParams = useSearchParams()
@@ -28,11 +29,14 @@ export default function TableDetails() {
     const statusRD: any = useSelector(getStatus);
 
     const categoryList: any = useSelector(getCategoryList);
+    const dvTinhList: any = useSelector(getDVTList)
     const [listItem, setlistItem] = useState<any[]>([]);
     const [order, setOrder] = useState<any[]>([]);
     const [itemMenus, setItemMenus] = useState<any[]>([]);
     const [itemCategory, setItemCategory] = useState("");
     const [listCategory, setListCategory] = useState<string[]>([]);
+    const [listDVTList, setListDVTList] = useState([]);
+    const [searchName, setSearchName] = useState("")
 
     const [quantityOrder, setQuantityOrder] = useState<number>(1);
     const [minusQuantityOrder, setMinusQuantityOrder] = useState<number>(-1);
@@ -44,6 +48,8 @@ export default function TableDetails() {
 
     useEffect(() => {
         dispatch(getMenuListAsync());
+        dispatch(getDvtListAsync());
+        dispatch(getCategoryListAsync())
     }, [dispatch]);
 
     useEffect(() => {
@@ -101,7 +107,10 @@ export default function TableDetails() {
         if (categoryList && categoryList.resultRaw) {
             setListCategory(categoryList.resultRaw);
         }
-    }, [orders, menuItems, categoryList]);
+        if (dvTinhList && dvTinhList.resultRaw) {
+            setListDVTList(dvTinhList.resultRaw);
+        }
+    }, [orders, menuItems, categoryList, dvTinhList]);
 
     const caculatorTotal = () => {
         let totalAll = 0;
@@ -177,28 +186,55 @@ export default function TableDetails() {
         toggle2();
     }
 
+    const findTenDVT = (idDVT: any) => {
+        if (listDVTList && listDVTList.length > 0) {
+            const dvt: any = listDVTList.find((item: any) => item.id === idDVT);
+            if (dvt) {
+                return dvt.tenDVT
+            } else {
+                return idDVT
+            }
+        } else {
+            return idDVT
+        }
+    }
+
+    const handleSelectedCategoryChange = (event: any) => {
+        const selectedValue = event.target.value;
+        setItemCategory(selectedValue);
+        setSearchName('')
+        if (selectedValue === '0') {
+            dispatch(getMenuListAsync());
+        } else {
+            dispatch(getFilterCategoryListAsync(selectedValue))
+        }
+    }
+
+    const onSearchChange = (searchName: any) => {
+        setSearchName(searchName);
+        if (searchName.trim() !== '') {
+            dispatch(getSearchMenuListAsync(searchName));
+            setItemCategory('0')
+        } else {
+            dispatch(getMenuListAsync());
+        }
+    }
     return (
         <div style={{ display: 'flex' }}>
             <div style={{ width: '38%', padding: '10px', marginRight: '10px', height: '100%' }}>
-                <div className="row align-items-center">
+                <div className="row align-items-center my-4">
                     <div className="col-md-6">
-                        <input type="text" placeholder='Nhập tên món' style={{
-                            borderWidth: 1,
-                            borderRadius: 3,
-                            padding: 6,
-                            width: "100%",
-                            margin: 20,
-                        }} />
+                        <input type="text"
+                          value={searchName}
+                          onChange={(e) => onSearchChange(e.target.value)} placeholder='Nhập tên món' className='form-control' />
                     </div>
                     <div className="col-md-4 ml-2">
                         <select
                             className="form-control"
                             id="dvt"
                             value={itemCategory}
-                            onChange={(e) => {
-                                setItemCategory(e.target.value);
-                            }}>
-                            <option value="">Chọn loại món</option>
+                            onChange={handleSelectedCategoryChange}>
+                            <option value="0">Chọn loại món</option>
                             {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
                                 <option value={item.id} key={id}>{item.name}</option>
                             )) : ""}
@@ -264,10 +300,10 @@ export default function TableDetails() {
                                 {order && order.map((item, index, id) => (
                                     <tr key={index}>
                                         <td style={{ color: "green", fontSize: 20 }}>
-                                            <h6>{item.productName} ({item.dvt})</h6>
+                                            <h6>{item.productName} ({findTenDVT(item.dvt)})</h6>
                                         </td>
                                         <td className="text-center">{formatMoney(item.price)}</td>
-                                        <td className="text-center" style={{display: 'flex', justifyContent:'space-around', alignItems: 'center'}}>
+                                        <td className="text-center" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                             <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item.productID)}>-</button>
                                             {item.quantity}
                                             <button className='btn btn-outline-dark' onClick={() => handleOrder(item.productID)}>+</button>

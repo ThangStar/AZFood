@@ -60,4 +60,22 @@ class OrderApi {
       return Failure(response: err.response);
     }
   }
+  static Future<Object> increment(int quantity, int productId) async {
+    try {
+      Response<dynamic> response =
+      await http.post(Router.incrementOrder, data: {
+        "quantity": quantity,
+        "productID": productId
+      });
+      if (response.statusCode == 200) {
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure  ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error  ${err.response}");
+      return Failure(response: err.response);
+    }
+  }
 }

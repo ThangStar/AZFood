@@ -34,3 +34,7 @@ class PayBillEvent extends OrderEvent {
 
   PayBillEvent({required this.tableId, required this.pushScreen});
 }
+
+class OnIncrementProduct extends OrderEvent{
+
+}

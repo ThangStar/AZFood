@@ -24,6 +24,7 @@ import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/set_beauty_effect/set_beauty_effect.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -61,10 +62,8 @@ void main() async {
   try {
     if (!kIsWeb) {
       if (Platform.isAndroid || Platform.isIOS) {
-        print("object1");
         cameras = await availableCameras();
       } else if (Platform.isWindows) {
-        print("object2");
         await localNotifier.setup(
           appName: 'AZFood',
           // The parameter shortcutPolicy only works on Windows
@@ -164,7 +163,7 @@ class _MyAppState extends State<MyApp> {
                         textTheme: textTheme(context)),
                     darkTheme: ThemeData(
                         useMaterial3: true, colorScheme: darkColorScheme),
-                    home: LoginScreen()),
+                    home: const LoginScreen()),
               ));
         });
   }

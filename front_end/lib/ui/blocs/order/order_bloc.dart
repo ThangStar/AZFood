@@ -7,6 +7,7 @@ import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/invoice.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
 import 'package:restaurant_manager_app/utils/io_client.dart';
 import 'package:restaurant_manager_app/utils/response.dart';
@@ -23,6 +24,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<CreateOrderEvent>(_createOrderEvent);
     on<GetOrderInTableEvent>(_getOrderInTableEvent);
     on<PayBillEvent>(_payBillEvent);
+    on<OnIncrementProduct>(_onIncrementProduct);
   }
 
   FutureOr<void> _createOrderEvent(
@@ -68,6 +70,17 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     } else if (result is Failure) {
       print("pay failure ${result.response} ");
       event.pushScreen(PayStatus.failed, null);
+    }
+  }
+
+  FutureOr<void> _onIncrementProduct(
+      OnIncrementProduct event, Emitter<OrderState> emit) async {
+    print("object");
+    Object result = await OrderApi.increment(100,22);
+    if (result is Success) {
+      io.emit("listProductByIdTable", {"id": 1});
+    } else if (result is Failure) {
+      print(result.response);
     }
   }
 }

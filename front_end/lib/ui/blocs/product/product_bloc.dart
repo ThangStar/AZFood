@@ -27,6 +27,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<SearchProductEvent>(_searchProductEvent);
     on<ChangePageProductEvent>(_changePageProductEvent);
     on<DecreaseProductQuantity>(_decreaseProductQuantity);
+    on<OnChangeTableId>(_onChangeTableId);
   }
 
   FutureOr<void> _getProductsEvent(
@@ -125,5 +126,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   FutureOr<void> _decreaseProductQuantity(
       DecreaseProductQuantity event, Emitter<ProductState> emit) {
 
+  }
+
+  FutureOr<void> _onChangeTableId(OnChangeTableId event, Emitter<ProductState> emit) {
+    emit(state.copyWith(tableId: event.id));
   }
 }

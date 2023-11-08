@@ -297,14 +297,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             "Không thể order bàn đang bận")
                                         .show(context);
                                   } else {
+
                                     prdBloc.add(const GetListProductStatusEvent(
                                         status: ProductStatus.loading));
                                     io.emit('listProductByIdTable',
                                         {"id": table.id});
                                     if (!io.hasListeners("responseOrder")) {
                                       io.on('responseOrder', (data) {
+                                        print("TBID: ${data['tableID']}");
+                                        prdBloc.add(
+                                            OnChangeTableId(id: data['tableID'] ?? 0));
                                         final jsonResponse =
-                                            data as List<dynamic>;
+                                            data['order'] as List<dynamic>;
                                         List<Product> currentProducts =
                                             jsonResponse
                                                 .map((e) => Product.fromJson(e))
@@ -320,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             currentProducts: currentProducts));
                                       });
                                     }
-                                    print("OPEN");
+
                                     widget.constraints.maxWidth > mobileWidth
                                         ? showDialog(
                                             barrierDismissible: false,

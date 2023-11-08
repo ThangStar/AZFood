@@ -15,9 +15,10 @@ const getInvoiceNumber = (min = 0, max = 500000) => {
 };
 
 exports.handleIncrement = async (req, res) => {
+    console.log("AAAAAA");
     try {
-        const quantity = req.quantity;
-        const productID = req.productID;
+        const quantity = req.body.quantity;
+        const productID = req.body.productID;
         console.log('test body', quantity, productID);
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {

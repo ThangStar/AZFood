@@ -20,18 +20,22 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
 
   FutureOr<void> _onAttendanceEvent(
       OnAttendanceEvent event, Emitter<CalendarState> emit) async {
-    emit(state.copyWith(status: CalendarStatus.progress));
+    // emit(state.copyWith(status: CalendarStatus.progress));
     Object result = await CalendarApi.attendance();
     if (result is Success) {
       if (result.response.data['isWifi']) {
         print("Verified!");
         emit(AttendanceResultState(
-            status: CalendarStatus.success, attendances: state.attendances));
-        add(OnInitAttendanceEvent());
+            eventData: state.eventData,
+            status: CalendarStatus.success,
+            attendances: state.attendances));
       } else {
         print("Wrong wifi!");
         emit(AttendanceResultState(
-            status: CalendarStatus.failed, attendances: state.attendances));
+            eventData: state.eventData,
+            status: CalendarStatus.failed,
+            attendances: state.attendances));
+        add(OnInitAttendanceEvent());
       }
     }
   }
@@ -46,7 +50,6 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       emit(state.copyWith(
           attendances: json.map((e) => Attendance.fromJson(e)).toList()));
 
-
       List<CalendarEventData> eventsData = [];
       eventsData.addAll(state.attendances.map((e) => CalendarEventData(
           title: "title", date: DateTime.parse(e.date ?? ""))));
@@ -58,7 +61,6 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
           status: CalendarStatus.success,
           attendances: state.attendances,
           eventData: state.eventData));
-
     } else {}
   }
 }

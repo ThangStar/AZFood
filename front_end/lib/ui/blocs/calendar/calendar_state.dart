@@ -29,7 +29,7 @@ class CalendarState extends Equatable {
 }
 
 class AttendanceResultState extends CalendarState {
-  const AttendanceResultState({super.status, super.attendances});
+  const AttendanceResultState({super.status, super.attendances, super.eventData});
 }
 
 class InitAttendanceResultState extends CalendarState {

@@ -24,7 +24,7 @@ exports.getOrdersForTable = async (socket, io, data) => {
             type: QueryTypes.SELECT
         });
         console.log("OK! refresh orders");
-        io.emit('responseOrder', orders)
+        io.emit('responseOrder', { order: orders, tableID: tableID })
         getList(socket, io)
 
     } catch (error) {

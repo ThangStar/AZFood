@@ -37,9 +37,11 @@ class CurrentBookingScreen extends StatefulWidget {
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   String? selectedItem = 'Chọn phương thức...';
+  late ProductBloc prdBloc;
 
   @override
   void initState() {
+    prdBloc = BlocProvider.of<ProductBloc>(context);
     print("tableID change: ${widget.tableID} mounted $mounted");
     super.initState();
   }
@@ -233,6 +235,10 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                     columns = 1; // Mobile
                   }
                   return BlocBuilder<ProductBloc, ProductState>(
+                    buildWhen: (previous, current) {
+                      print("has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
+                      return widget.tableID == prdBloc.state.tableId;
+                    },
                     builder: (context, state) {
                       if (state.status == ProductStatus.loading) {
                         return Container(
@@ -340,7 +346,10 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(6),
                                               child: InkWell(
-                                                onTap: () {},
+                                                onTap: () {
+                                                  context.read<OrderBloc>().add(
+                                                      OnIncrementProduct());
+                                                },
                                                 child: Container(
                                                   padding:
                                                       const EdgeInsets.all(2),

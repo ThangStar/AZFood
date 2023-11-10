@@ -236,7 +236,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                   }
                   return BlocBuilder<ProductBloc, ProductState>(
                     buildWhen: (previous, current) {
-                      print("has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
+                      print(
+                          "has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
                       return widget.tableID == prdBloc.state.tableId;
                     },
                     builder: (context, state) {
@@ -538,7 +539,7 @@ class BottomActionBill extends StatelessWidget {
                       Expanded(
                         child: MyOutlineButton(
                           text: 'Quay lại',
-                          onTap: () {},
+                          onTap: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(
@@ -580,7 +581,7 @@ class BottomActionBill extends StatelessWidget {
                         width: 200,
                         child: MyOutlineButton(
                           text: 'Quay lại',
-                          onTap: () {},
+                          onTap: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(

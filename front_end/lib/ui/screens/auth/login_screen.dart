@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     authBloc = BlocProvider.of<AuthenticationBloc>(context);
-    isShowPass = false;
+    isShowPass = true;
     _fillDataForm();
     _rememberMe();
   }

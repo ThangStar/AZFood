@@ -214,6 +214,8 @@ class _ZoomState extends State<HomeMenuScreen> {
                             : constraints.maxWidth,
                         height: constraints.maxHeight,
                         child: (() {
+                          print("${pages[selectedNavRail]}");
+
                           switch (pages[selectedNavRail]) {
                             case PageNavRail.table:
                               return HomeScreen(
@@ -224,14 +226,12 @@ class _ZoomState extends State<HomeMenuScreen> {
                               );
                             case PageNavRail.bill:
                               return BillScreen(constraints: constraints);
-                            case PageNavRail.check:
-                              return CalendarScreen(constraints: constraints);
                             case PageNavRail.chart:
-                              return ChartScreen(constraints: constraints);
-                            case PageNavRail.profile:
                               return ProfileScreen(constraints: constraints);
                             case PageNavRail.calendar:
-                              return VerifyScreen(constraints: constraints);
+                              return ChartScreen(constraints: constraints);
+                            case PageNavRail.check:
+                              return CalendarScreen(constraints: constraints);
                             default:
                               return HomeScreen(
                                 constraints: constraints,

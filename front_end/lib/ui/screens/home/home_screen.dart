@@ -70,8 +70,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     io.emit('table', {"name": "thang"});
     if (!io.hasListeners("response")) {
       io.on('response', (data) {
-        print("table change: $data");
-
         final jsonResponse = data as List<dynamic>;
         List<Model.Table> tables =
             jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
@@ -314,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         {"id": table.id});
                                     if (!io.hasListeners("responseOrder")) {
                                       io.on('responseOrder', (data) {
-                                        print("TBID: ${data['tableID']}");
+                                        print("data order ${data}");
                                         prdBloc.add(OnChangeTableId(
                                             id: data['tableID'] ?? 0));
                                         final jsonResponse =
@@ -323,13 +321,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             jsonResponse
                                                 .map((e) => Product.fromJson(e))
                                                 .toList();
-                                        for (var i in currentProducts) {
-                                          print(i.imageUrl);
-                                          int length = currentProducts
-                                              .where((j) => j.name == i.name)
-                                              .length;
-                                          i.quantity = length;
-                                        }
                                         prdBloc.add(GetListProductByIdTable(
                                             currentProducts: currentProducts));
                                       });

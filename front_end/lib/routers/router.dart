@@ -17,7 +17,7 @@ class Router {
   static String createOrder = '/api/orders/create';
   static String getOrderInTable = '/api/orders/getOrder';
   static String payBill = '/api/orders/payBill';
-  static String incrementOrder = '/api/orders/increment';
+  static String updateQuantity = '/api/orders/updateQuantity';
 
   //invoice
   static String getAllInvoice = '/api/invoice/list';

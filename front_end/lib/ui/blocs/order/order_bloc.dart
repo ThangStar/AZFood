@@ -24,7 +24,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<CreateOrderEvent>(_createOrderEvent);
     on<GetOrderInTableEvent>(_getOrderInTableEvent);
     on<PayBillEvent>(_payBillEvent);
-    on<OnIncrementProduct>(_onIncrementProduct);
+    on<OnUpdateProductQuantity>(_onUpdateProductQuantity);
   }
 
   FutureOr<void> _createOrderEvent(
@@ -73,13 +73,15 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  FutureOr<void> _onIncrementProduct(
-      OnIncrementProduct event, Emitter<OrderState> emit) async {
+  FutureOr<void> _onUpdateProductQuantity(
+      OnUpdateProductQuantity event, Emitter<OrderState> emit) async {
     print("object");
-    Object result = await OrderApi.increment(100,22);
+    Object result = await OrderApi.updateQuantity(productId: event.productID, tableId: event.tableID, type: event.type);
     if (result is Success) {
-      io.emit("listProductByIdTable", {"id": 1});
+      io.emit("listProductByIdTable", {"id": event.tableID});
+      print('OK');
     } else if (result is Failure) {
+      print('FAILED');
       print(result.response);
     }
   }

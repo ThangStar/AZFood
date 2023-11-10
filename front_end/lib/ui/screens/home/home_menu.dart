@@ -214,8 +214,6 @@ class _ZoomState extends State<HomeMenuScreen> {
                             : constraints.maxWidth,
                         height: constraints.maxHeight,
                         child: (() {
-                          print("${pages[selectedNavRail]}");
-
                           switch (pages[selectedNavRail]) {
                             case PageNavRail.table:
                               return HomeScreen(

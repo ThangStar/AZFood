@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
@@ -286,8 +287,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           ),
                           itemCount: state.currentProducts!.toSet().length,
                           itemBuilder: (context, index) {
-                            Product product =
-                                state.currentProducts!.toSet().elementAt(index);
+                            Product product = state.currentProducts![index];
                             int quantityProduct = product.quantity ?? 1;
                             return ItemProduct(
                               product: product,
@@ -317,11 +317,14 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                   BorderRadius.circular(6),
                                               child: InkWell(
                                                 onTap: () {
-                                                  setState(() {
-                                                    if (quantityProduct > 1) {
-                                                      quantityProduct -= 1;
-                                                    }
-                                                  });
+                                                  context.read<OrderBloc>().add(
+                                                      OnUpdateProductQuantity(
+                                                          productID: product.id,
+                                                          type:
+                                                              TypeUpdateQuantity
+                                                                  .decrement,
+                                                          tableID:
+                                                              widget.tableID));
                                                 },
                                                 child: Container(
                                                   padding:
@@ -334,7 +337,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                               ),
                                             ),
                                             Text(
-                                              "$quantityProduct",
+                                              "${product.quantity}",
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -348,8 +351,16 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                   BorderRadius.circular(6),
                                               child: InkWell(
                                                 onTap: () {
+                                                  print(
+                                                      "PRD ID: ${product.id}");
                                                   context.read<OrderBloc>().add(
-                                                      OnIncrementProduct());
+                                                      OnUpdateProductQuantity(
+                                                          productID: product.id,
+                                                          type:
+                                                              TypeUpdateQuantity
+                                                                  .increment,
+                                                          tableID:
+                                                              widget.tableID));
                                                 },
                                                 child: Container(
                                                   padding:

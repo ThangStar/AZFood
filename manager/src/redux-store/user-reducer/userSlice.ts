@@ -18,9 +18,12 @@ const initialState: UserState = {
 
 export const getUserListAsync = createAsyncThunk(
   'user/get-list',
-  async () => {
+  async (page: number = 1) => {  
     const token = localStorage.getItem('token');
     const response = await axios.get(serverUrl + '/api/user/list', {
+      params: {
+        page,
+      },
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -47,6 +50,21 @@ export const createUserListAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const deleteUserAsync = createAsyncThunk(
+  'user/delete',
+  async (id: number) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/user/delete', { id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+
 const TableSlice = createSlice({
   name: 'table',
   initialState,

@@ -67,24 +67,24 @@ export default function MunuItems() {
         toggle();
     }
     const setDataForm = (data: any) => {
-        if (data) {
-            setIdItem(data.id);
-            setItemName(data.name);
-            setItemPrice(data.price);
-            setItemCategory(data.category);
-            setItemDVT(data.dvtID);
-            setStatus(data.status);
-            setImage(data.imgUrl);
-        } else {
-            setIdItem(0);
-            setItemName("");
-            setItemPrice("");
-            setItemCategory("");
-            setItemDVT("");
-            setStatus("");
-            setImage("");
-        }
+        setIdItem(data.id);
+        setItemName(data.name);
+        setItemPrice(data.price);
+        setItemCategory(data.category);
+        setItemDVT(data.dvtID);
+        setStatus(data.status);
+        setImage(data.imgUrl);
     }
+
+    const handleCancel = () => {
+        setIdItem(0);
+        setItemName("");
+        setItemPrice("");
+        setItemCategory("");
+        setItemDVT("");
+        setStatus("");
+        setImage("");
+    };
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = (id: any = null) => {
@@ -156,155 +156,155 @@ export default function MunuItems() {
             </div>
 
             <div className="content">
-                    <div className='row' style={{ padding: '20px 8px 20px 25px', width: "100%", justifyContent: 'space-between' }}>
-                        <div className="col-sm-9 p-0">
-                            <div className="input-group">
-                                <input
-                                    type="text"
-                                    value={searchName}
-                                    onChange={(e) => onSearchChange(e.target.value)}
-                                    placeholder="Tìm kiếm món ăn..."
-                                    className='form-control'
-                                />
-                                <span className='input-group-text bg-success text-bg-success'><i className="fas fa-search"></i></span>
-                            </div>
-                        </div>
-                        <div className="col-sm-2" style={{ display: 'flex', padding: '0' }}>
-                            <select
+                <div className='row' style={{ padding: '20px 8px 20px 25px', width: "100%", justifyContent: 'space-between' }}>
+                    <div className="col-sm-9 p-0">
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                value={searchName}
+                                onChange={(e) => onSearchChange(e.target.value)}
+                                placeholder="Tìm kiếm món ăn..."
                                 className='form-control'
-                                value={selectedCategory}
-                                onChange={handleSelectedCategoryChange}
-                            >
-                                {listCategory && listCategory.length > 0 &&
-                                    listCategory.map((item: any) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </option>
-                                    ))
-                                }
-                            </select>
+                            />
+                            <span className='input-group-text bg-success text-bg-success'><i className="fas fa-search"></i></span>
                         </div>
-
                     </div>
-                    {/* table */}
-                    <div className="card card-body border-0 p-0 mx-3">
-                        <table className="table table-striped projects">
-                            <thead >
-                                <tr >
-                                    <th style={{ width: "1%" }}>
-                                        STT
-                                    </th>
-                                    <th style={{ width: "20%" }}>
-                                        Tên Món
-                                    </th>
-                                    <th>
-                                        Giá
-                                    </th>
-                                    <th>
-                                        Đơn vị Tính
-                                    </th>
-                                    <th style={{ width: "10%" }}>
-                                        Loại món
-                                    </th>
-                                    <th>
-                                        Tồn Kho
-                                    </th>
-                                    <th style={{ width: "16%" }} className="text-center">
-                                        Tùy Chỉnh
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {menuItems && menuItems.length > 0 ? menuItems.map((item: any, i: number) => (
-                                    <tr key={item && item.id ? item.id : null}>
-                                        <td>
-                                            {i + 1}
-                                        </td>
-                                        <td style={{ display: 'flex', alignItems: 'center' }}>
-                                            {item && item.imgUrl ?
-                                                <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
-                                                :
-                                                <img src="" alt=" món ăn" style={{ height: 40 }} />
-                                            }
-                                            <div style={{ marginLeft: '10px' }}>
-                                                {item && item.name ? item.name : null}
-                                            </div>
+                    <div className="col-sm-2" style={{ display: 'flex', padding: '0' }}>
+                        <select
+                            className='form-control'
+                            value={selectedCategory}
+                            onChange={handleSelectedCategoryChange}
+                        >
+                            {listCategory && listCategory.length > 0 &&
+                                listCategory.map((item: any) => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.name}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                    </div>
 
-                                        </td>
-                                        <td className="project_progress" style={{}}>
-                                            {item && item.price ? `${formatMoney(item.price)} ₫` : null}
-                                        </td>
-                                        <td className="project_progress">
-                                            {item && item.dvt_name ? item.dvt_name : null}
-                                        </td>
-                                        <td className="project_progress">
-                                            {item && item.category_name ? item.category_name : ""}
-                                        </td>
+                </div>
+                {/* table */}
+                <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh' }}>
+                    <table className="table table-striped projects">
+                        <thead >
+                            <tr >
+                                <th style={{ width: "5vh" }}>
+                                    MSP
+                                </th>
+                                <th style={{ width: "20%" }}>
+                                    Tên Món
+                                </th>
+                                <th>
+                                    Giá
+                                </th>
+                                <th>
+                                    Đơn vị Tính
+                                </th>
+                                <th style={{ width: "10%" }}>
+                                    Loại món
+                                </th>
+                                <th>
+                                    Tồn Kho
+                                </th>
+                                <th style={{ width: "16%" }} className="text-center">
+                                    Tùy Chỉnh
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {menuItems && menuItems.length > 0 ? menuItems.map((item: any, i: number) => (
+                                <tr key={item && item.id ? item.id : null}>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {item.id}
+                                    </td>
+                                    <td style={{ display: 'flex', alignItems: 'center' }}>
+                                        {item && item.imgUrl ?
+                                            <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
+                                            :
+                                            <img src="" alt=" món ăn" style={{ height: 40 }} />
+                                        }
+                                        <div style={{ marginLeft: '10px' }}>
+                                            {item && item.name ? item.name : null}
+                                        </div>
 
-                                        <td className="project_progress">
-                                            {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
-                                        </td>
-                                        <td className="project-actions text-right">
-                                            <div className="d-flex justify-content-between " >
-                                                {/* <a className="btn btn-primary btn-sm" href="#">
+                                    </td>
+                                    <td className="project_progress" style={{}}>
+                                        {item && item.price ? `${formatMoney(item.price)} ₫` : null}
+                                    </td>
+                                    <td className="project_progress">
+                                        {item && item.dvt_name ? item.dvt_name : null}
+                                    </td>
+                                    <td className="project_progress">
+                                        {item && item.category_name ? item.category_name : ""}
+                                    </td>
+
+                                    <td className="project_progress">
+                                        {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
+                                    </td>
+                                    <td className="project-actions text-right">
+                                        <div className="d-flex justify-content-between " >
+                                            {/* <a className="btn btn-primary btn-sm" href="#">
                                                         <i className="fas fa-folder mr-1"></i> View
                                                     </a> */}
-                                                <button className="btn btn-success btn-sm pd-5" onClick={() => {
-                                                    openModal();
-                                                    setIsEdit(true);
-                                                    setDataForm(item);
-                                                }}>
-                                                    <i className="fas fa-pencil-alt"></i> Sửa
-                                                </button>
-                                                <button className="btn btn-danger btn-sm me-2" onClick={() => {
-                                                    openModal1(item.id)
-                                                    setItemName(item?.name)
-                                                }}>
-                                                    <i className="fas fa-trash"></i> Xóa
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )) : ""}
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* pagination */}
-                    <div className="card-footer bg-white p-0">
-                        <div className="d-flex justify-content-center align-items-center">
-                            <ul className="pagination">
-                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                            <button className="btn btn-success btn-sm pd-5" onClick={() => {
+                                                openModal();
+                                                setIsEdit(true);
+                                                setDataForm(item);
+                                            }}>
+                                                <i className="fas fa-pencil-alt"></i> Sửa
+                                            </button>
+                                            <button className="btn btn-danger btn-sm me-2" onClick={() => {
+                                                openModal1(item.id)
+                                                setItemName(item?.name)
+                                            }}>
+                                                <i className="fas fa-trash"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )) : ""}
+                        </tbody>
+                    </table>
+                </div>
+                {/* pagination */}
+                <div className="card-footer bg-white p-0">
+                    <div className="d-flex justify-content-center align-items-center">
+                        <ul className="pagination">
+                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                >
+                                    &#60;
+                                </button>
+                            </li>
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <li
+                                    className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                    key={i + 1}
+                                >
                                     <button
                                         className="page-link"
-                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        onClick={() => handlePageChange(i + 1)}
                                     >
-                                        &#60;
+                                        {i + 1}
                                     </button>
                                 </li>
-                                {Array.from({ length: totalPages }, (_, i) => (
-                                    <li
-                                        className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                                        key={i + 1}
-                                    >
-                                        <button
-                                            className="page-link"
-                                            onClick={() => handlePageChange(i + 1)}
-                                        >
-                                            {i + 1}
-                                        </button>
-                                    </li>
-                                ))}
-                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                    <button
-                                        className="page-link"
-                                        onClick={() => handlePageChange(currentPage + 1)}
-                                    >
-                                        &#62;
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+                            ))}
+                            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                <button
+                                    className="page-link"
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                >
+                                    &#62;
+                                </button>
+                            </li>
+                        </ul>
                     </div>
+                </div>
             </div>
             {/* modal add and edit */}
             <Modal isOpen={modal} toggle={openModal}>
@@ -394,7 +394,7 @@ export default function MunuItems() {
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="secondary" onClick={() => { openModal(); setDataForm("") }}>
+                    <Button color="secondary" onClick={() => { openModal(); handleCancel() }}>
                         Hủy
                     </Button>
                     <Button color="primary" onClick={() => {

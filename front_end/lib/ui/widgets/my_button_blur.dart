@@ -25,7 +25,7 @@ class MyButtonBlur extends StatelessWidget {
               filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
               child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.white.withOpacity(0.1),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

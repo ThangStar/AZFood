@@ -476,7 +476,7 @@ class BottomActionBill extends StatelessWidget {
     bool isMobile = checkDevice(widthOfScreen, true, false, false);
     return Container(
         decoration: BoxDecoration(
-          color: Colors.yellow[100],
+          color: colorScheme(context).onPrimary,
           boxShadow: [
             BoxShadow(
               blurRadius: 1.0,

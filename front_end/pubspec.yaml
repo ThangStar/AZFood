@@ -65,6 +65,7 @@ dependencies:
       url: https://github.com/AgoraIO-Extensions/RawDataPluginSample.git
       path: frameworks/flutter/video_raw_data
       ref: 51dde78706a015743a993368f25a06df7960378e
+  blur: ^3.1.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0

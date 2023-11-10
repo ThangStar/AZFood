@@ -460,7 +460,7 @@ exports.payBill = async (req, res) => {
             const createInvoiceQuery = `
 
             INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber ,payMethod )
-            VALUES (?, ?, ?,? , ?,? ,1)
+            VALUES (?, ?, ?,? , ?,? ,?)
 
             `;
             const invoiceNumber = getInvoiceNumber();

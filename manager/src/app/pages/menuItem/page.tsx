@@ -92,7 +92,7 @@ export default function MunuItems() {
         toggle1();
     }
 
-    const addMenuItem = () => {
+    const addMenuItem = async () => {
         const data = {
             name: itemName,
             price: itemPrice,

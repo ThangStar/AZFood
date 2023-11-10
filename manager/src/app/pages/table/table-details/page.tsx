@@ -13,6 +13,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useSocket } from "@/socket/io.init"
 import { log } from 'console';
 import { getDVTList, getDvtListAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 export default function TableDetails() {
     const searchParams = useSearchParams()
@@ -39,6 +40,7 @@ export default function TableDetails() {
     const [searchName, setSearchName] = useState("")
 
     const [quantityOrder, setQuantityOrder] = useState<number>(1);
+    const [plusQuantityOrder, setPlusQuantityOrder] = useState<number>(1);
     const [minusQuantityOrder, setMinusQuantityOrder] = useState<number>(-1);
     const [productID, setProducID] = useState();
     const [userID, setUserID] = useState();
@@ -120,12 +122,12 @@ export default function TableDetails() {
         return totalAll;
     }
 
-    const handleOrder = async (id: number) => {
+    const handlePlusOrder = async (id: number) => {
         const data = {
             userID: userID,
             tableID: tableID,
             productID: id,
-            quantity: quantityOrder
+            quantity: plusQuantityOrder
         }
         console.log('log data', data);
 
@@ -221,14 +223,14 @@ export default function TableDetails() {
     }
     return (
         <div style={{ display: 'flex' }}>
-            <div style={{ width: '38%', padding: '10px', marginRight: '10px', height: '100%' }}>
-                <div className="row align-items-center my-4">
-                    <div className="col-md-6">
+            <div style={{ width: '38%', padding: '10px', height: '100vh' }}>
+                <div className="my-3" style={{ display: "flex", justifyContent: 'space-between' }}>
+                    <div style={{ width: '60%' }}>
                         <input type="text"
-                          value={searchName}
-                          onChange={(e) => onSearchChange(e.target.value)} placeholder='Nhập tên món' className='form-control' />
+                            value={searchName}
+                            onChange={(e) => onSearchChange(e.target.value)} placeholder='Nhập tên món' className='form-control' />
                     </div>
-                    <div className="col-md-4 ml-2">
+                    <div style={{ width: '35%' }}>
                         <select
                             className="form-control"
                             id="dvt"
@@ -247,12 +249,12 @@ export default function TableDetails() {
                             <div
                                 className="grid-item"
                                 key={id}
-                                style={{ backgroundImage: `url(${item.imgUrl})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end' }}
+                                style={{ backgroundImage: `url(${item.imgUrl})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
                                 onClick={() => {
-                                    handleOrder(item.id);
+                                    handlePlusOrder(item.id);
                                 }}
                             >
-                                <div style={{ width: '100%', padding: '10px 0px 10px 0px', backgroundColor: 'white', opacity: '0.9' }}>
+                                <div style={{ width: '100%', padding: '10px 0px 10px 0px', backgroundColor: 'white', opacity: '0.9', borderRadius: "0px 0px 10px 10px" }}>
                                     <h6 className='m-0'>{item.name}</h6>
                                 </div>
                             </div>
@@ -261,30 +263,54 @@ export default function TableDetails() {
                 ) : null}
             </div>
 
-            <div style={{ marginRight: '15px', border: 'none', width: '62%' }}>
+            <div style={{ height: "100vh", width: '1px', backgroundColor: '#dad9d9' }}></div>
+
+            <div style={{ marginRight: '15px', border: 'none', width: '62%', height: '100vh', padding: '10px' }}>
                 <div >
-                    <div className="col-md-10 flex justify-content-between mt-2 mb-4" >
-                        <div className="invoice-date">
+                    <div className="row py-3">
+                        <div className="col-sm-5">
                             <small>Bill / Date</small>
                             <div className="date text-inverse m-t-5">
                                 <span style={{ fontWeight: "bold" }}>Giờ Vào : </span>{order && order.length > 0 ? `${formatDateTime(order[0].orderDate)}` : ""}
                             </div>
+                        </div>
+                        <div className="col-sm-5">
                             <div className="invoice-detail">
                                 <span style={{ fontWeight: "bold" }}>Tên nhân viên : </span> {order && order.length > 0 ? order[0].userName : ""}
                             </div>
                             <div className="invoice-detail" >
                                 <span style={{ fontWeight: "bold" }}>Tổng tiền : </span>  {formatMoney(caculatorTotal())} VND
                             </div>
-                            <button className="btn btn-danger btn-sm" onClick={() => {
-                                openModal2()
-                            }}>
-                                <i className="fas fa-trash"></i> thanh toán
-                            </button>
                         </div>
                     </div>
+                    {order.length > 0 ? (
+                        <div className='card p-3 mt-2'>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <h6 className='m-0'>Phương thức thanh toán: </h6>
+                                    <select
+                                        style={{ width: '110px', padding: "3px 3px", height: "30px" }}
+                                        className="form-control ml-1"
+                                        id="paymentMethod"
+                                        value={payMethod}
+                                        onChange={(e) => setPayMethod(Number(e.target.value))}
+                                    >
+                                        <option value="1">Tiền mặt</option>
+                                        <option value="2">Chuyển khoản</option>
+                                    </select>
+                                </div>
+
+                                <button className="btn btn-outline-warning" onClick={() => {
+                                    openModal2()
+                                }}>
+                                    <MonetizationOnIcon /> Thanh toán
+                                </button>
+                            </div>
+                        </div>
+                    ) : (null)}
                 </div>
 
-                <div className="invoice-content d-flex" style={{ marginTop: 20 }}>
+                <div className="card invoice-content d-flex scroll-2" style={{ marginTop: 20 }}>
                     <div className="table-responsive">
                         <table className="table table-invoice">
                             <thead>
@@ -296,43 +322,32 @@ export default function TableDetails() {
                                     <th className="text-left" style={{ width: "10%" }}></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {order && order.map((item, index, id) => (
-                                    <tr key={index}>
-                                        <td style={{ color: "green", fontSize: 20 }}>
-                                            <h6>{item.productName} ({findTenDVT(item.dvt)})</h6>
-                                        </td>
-                                        <td className="text-center">{formatMoney(item.price)}</td>
-                                        <td className="text-center" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                                            <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item.productID)}>-</button>
-                                            {item.quantity}
-                                            <button className='btn btn-outline-dark' onClick={() => handleOrder(item.productID)}>+</button>
-                                        </td>
-                                        <td className="text-center">{formatMoney((item.price * item.quantity))}</td>
-                                        <td className="project-actions text-left ">
-                                            <div className="d-flex justify-content-between">
-                                                <div className="btn-group">
-                                                    <button className="btn btn-secondary btn-sm">
-                                                        <i className="fas fa-trash"></i>
-                                                    </button>
-                                                    <div className="popup">
-                                                        <div className="popup-content">
-                                                            <button className="btn btn-sm" style={{ width: '100%' }} onClick={() => {
-                                                                openModal(item.orderID)
-                                                            }}>
-                                                                <i className="fas fa-trash"></i> Xóa sản phẩm
-                                                            </button>
-                                                            <br />
-                                                            <button className="btn btn-sm" style={{ width: '100%' }}>
-                                                                <i className="fa-solid fa-pencil-mechanical"></i> Ghi chú
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                            <tbody >
+                                {order && order.length > 0 ? (
+                                    order.map((item, index, id) => (
+                                        <tr key={index}>
+                                            <td style={{ color: "green", fontSize: 20 }}>
+                                                <h6>{item.productName} ({findTenDVT(item.dvt)})</h6>
+                                            </td>
+                                            <td className="text-center">{formatMoney(item.price)}</td>
+                                            <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center'}}>
+                                                <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item.productID)}>-</button>
+                                                {item.quantity}
+                                                <button className='btn btn-outline-dark' onClick={() => handlePlusOrder(item.productID)}>+</button>
+                                            </td>
+                                            <td className="text-center">{formatMoney((item.price * item.quantity))}</td>
+                                            <td className="project-actions text-left ">
+                                                <button className="btn btn-outline-danger" onClick={() => {
+                                                    openModal(item.orderID)
+                                                }}>
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <div style={{ position: 'relative', left: '100%' }}><img src="\img\empty-cart.png" alt="" /></div>
+                                )}
                             </tbody>
                         </table>
                     </div>

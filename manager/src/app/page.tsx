@@ -22,53 +22,48 @@ export default function Home() {
   ]
   const years = [2021, 2022, 2023];
   return (
-    <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-      <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
-        <div className="container-fluid">
-        <div className="row mb-2" style={{borderBottom: '1.5px solid rgb(195 211 210)'}}>
-            <div className="col-sm-6">
-              <h1>Thống kê doanh thu</h1>
+    <>
+      <div className="row container-fluid mr-3">
+        <div style={{ borderBottom: '1.5px solid rgb(195 211 210)'}} className='p-3'>
+          <h3 style={{ height: '40px', margin: '0px' }}>Thống kê doanh thu</h3>
+        </div>
+        <div>
+          <ol className="breadcrumb float-sm-right" style={{ backgroundColor: 'white' }}>
+            <div className="card-tools flex items-center" style={{ alignItems: "center" }}>
+              <select
+                style={{ fontSize: '17px', fontWeight: '500', border: 'none' }}
+                value={optionsChart}
+                onChange={(e) => {
+                  setOptionsChart(e.target.value);
+                }}
+              >
+                <option >Thống kê theo</option>
+                <option value="all" selected>Tổng quát</option>
+                <option value="month">Tháng</option>
+              </select>
+
             </div>
-            <div className="col-sm-6">
-              <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'white'}}>
-                <div className="card-tools flex items-center" style={{ alignItems: "center" }}>
-                  <select
-                  style={{fontSize: '17px', fontWeight: '500', border: 'none'}}
-                    value={optionsChart}
-                    onChange={(e) => {
-                      setOptionsChart(e.target.value);
-                    }}
-                  >
-                    <option >Thống kê theo</option>
-                    <option value="all" selected>Tổng quát</option>
-                    <option value="month">Tháng</option>
+            <div className="card-tools flex items-center" style={{ alignItems: "center" }}>
+
+              {optionsChart === 'month' ? (
+                <div>
+                  <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+                    <option value="">Chọn tháng</option>
+                    {month.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {item.name}
+                      </option>
+                    ))}
                   </select>
 
                 </div>
-                <div className="card-tools flex items-center" style={{ alignItems: "center" }}>
-
-                  {optionsChart === 'month' ? (
-                    <div>
-                      <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
-                        <option value="">Chọn tháng</option>
-                        {month.map((item) => (
-                          <option key={item.value} value={item.value}>
-                            {item.name}
-                          </option>
-                        ))}
-                      </select>
-
-                    </div>
-                  ) : ""}
-                </div>
-              </ol>
+              ) : ""}
             </div>
-          </div>
+          </ol>
         </div>
-        {optionsChart === 'month' ? <ReportDay selectedYear={selectedMonth as string} /> : <ReportMonth />}
-
       </div>
-    </div>
+      {optionsChart === 'month' ? <ReportDay selectedYear={selectedMonth as string} /> : <ReportMonth />}
+    </>
   )
 }
 

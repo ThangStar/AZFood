@@ -1,0 +1,37 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Mỗi hàng có 2 cột */
+    gap: 16px;
+    max-height: 700px; /* Đặt chiều cao tối đa */
+    overflow-y: auto;
+}
+
+.grid-item {
+    border: 1px solid #ddd;
+    padding: 16px;
+    text-align: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.grid-item img {
+    display: none; /* Ẩn ảnh bên trong */
+}
+
+.popup {
+    display: none;
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    z-index: 1;
+    right: 0;
+    top: 30px;
+    width: 135px;
+    height: auto;
+}
+
+.btn-group:hover .popup {
+    display: block;
+}
+

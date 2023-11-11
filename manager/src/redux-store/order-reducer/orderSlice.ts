@@ -29,6 +29,21 @@ export const createOrderAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const incrementProductAsync = createAsyncThunk(
+  'order/increment',
+  async (data: any) => {
+    const {quantity, productID } = data;
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/orders/increment', {quantity, productID}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 export const updateOrderAsync = createAsyncThunk(
   'order/update',
   async ({ data, orderID }: { data: any; orderID: any }) => {
@@ -73,9 +88,12 @@ export const deleteOrderAsync = createAsyncThunk(
 
 export const payBillAsync = createAsyncThunk(
   'order/payBill',
-  async (id: any) => {
+  async (data: any) => {
+    console.log("data", data);
+
+    const { id, payMethod } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/payBill', { id }, {
+    const response = await axios.post(serverUrl + '/api/orders/payBill', { id, payMethod }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -140,6 +158,20 @@ const OrderSlice = createSlice({
       .addCase(createOrderAsync.rejected, (state) => {
         state.status = 'failed';
       })
+
+
+      .addCase(incrementProductAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(incrementProductAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.orderList = action.payload;
+      })
+      .addCase(incrementProductAsync.rejected, (state) => {
+        state.status = 'failed';
+      })
+
+
       .addCase(getOrderListAsync.pending, (state) => {
         state.status = 'loading';
       })

@@ -1,8 +1,10 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
@@ -36,8 +38,11 @@ class CurrentBookingScreen extends StatefulWidget {
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   String? selectedItem = 'Chọn phương thức...';
+  late ProductBloc prdBloc;
+
   @override
   void initState() {
+    prdBloc = BlocProvider.of<ProductBloc>(context);
     print("tableID change: ${widget.tableID} mounted $mounted");
     super.initState();
   }
@@ -45,6 +50,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: colorScheme(context).background,
       bottomNavigationBar: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
           int amount = state.status == ProductStatus.success
@@ -60,328 +66,321 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
       body: SingleChildScrollView(
         child: Stack(
           children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Column(
-                children: [
-                  MyToolbar(
-                    title: "Hôm nay",
-                    leading: MyIconButtonBlur(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white.withOpacity(0.8),
-                      ),
-                      onTap: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-                      },
+            Column(
+              children: [
+                MyToolbar(
+                  title: "Hôm nay",
+                  leading: MyIconButtonBlur(
+                    icon: Icon(
+                      Icons.close_sharp,
+                      color: Colors.white.withOpacity(0.8),
                     ),
-                    trailling: [
-                      MyIconButtonBlur(
-                        icon: Icon(Icons.more_horiz_sharp,
-                            color: Colors.white.withOpacity(0.8)),
-                        onTap: () {},
-                      )
-                    ],
-                    content: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.tableName,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(
-                                        fontSize: 20, color: Colors.white),
-                              ),
-                              BlocBuilder<ProductBloc, ProductState>(
-                                builder: (context, state) {
-                                  return Text(
-                                    state.currentProducts != null
-                                        ? "Số lượng ${state.currentProducts!.length}"
-                                        : "đang tải..",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge
-                                        ?.copyWith(
-                                            fontSize: 12,
-                                            color:
-                                                Colors.white.withOpacity(0.6)),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                        maxWidth:
-                                            (MediaQuery.of(context).size.width *
-                                                    0.399)
-                                                .clamp(100.0, 300.0),
-                                        maxHeight: 45.0),
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        canvasColor:
-                                            colorScheme(context).tertiary,
-                                        buttonTheme:
-                                            ButtonTheme.of(context).copyWith(
-                                          alignedDropdown: true,
-                                        ),
+                    onTap: () {
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                  ),
+                  trailling: [
+                    MyIconButtonBlur(
+                      icon: Icon(Icons.more_horiz_sharp,
+                          color: Colors.white.withOpacity(0.8)),
+                      onTap: () {},
+                    )
+                  ],
+                  content: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 18),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.tableName,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(fontSize: 20, color: Colors.white),
+                            ),
+                            BlocBuilder<ProductBloc, ProductState>(
+                              builder: (context, state) {
+                                return Text(
+                                  state.currentProducts != null
+                                      ? "Số lượng ${state.currentProducts!.length}"
+                                      : "đang tải..",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                          fontSize: 12,
+                                          color: Colors.white.withOpacity(0.6)),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                    maxWidth: 250.0, maxHeight: 45.0),
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    canvasColor: colorScheme(context).tertiary,
+                                    buttonTheme:
+                                        ButtonTheme.of(context).copyWith(
+                                      alignedDropdown: true,
+                                    ),
+                                  ),
+                                  child: DropdownButtonFormField(
+                                    isExpanded: true,
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.white.withOpacity(0.1),
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                        borderSide: BorderSide(
+                                            width: 1.0,
+                                            color: Colors.transparent),
                                       ),
-                                      child: DropdownButtonFormField(
-                                        isExpanded: true,
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor:
-                                              Colors.white.withOpacity(0.1),
-                                          enabledBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10.0)),
-                                            borderSide: BorderSide(
-                                                width: 1.0,
-                                                color: Colors.transparent),
-                                          ),
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10.0)),
-                                            borderSide: BorderSide(
-                                                width: 1.0,
-                                                color: Colors.transparent),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                  horizontal: 5.0),
-                                        ),
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(10.0)),
+                                        borderSide: BorderSide(
+                                            width: 1.0,
+                                            color: Colors.transparent),
+                                      ),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                    ),
+                                    value: 'Chọn phương thức...',
+                                    icon: const Icon(
+                                      Icons.arrow_drop_down,
+                                      color: Colors.white,
+                                    ),
+                                    iconSize: 24,
+                                    elevation: 16,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 15.0),
+                                    items: const [
+                                      DropdownMenuItem(
                                         value: 'Chọn phương thức...',
-                                        icon: const Icon(
-                                          Icons.arrow_drop_down,
-                                          color: Colors.white,
-                                        ),
-                                        iconSize: 24,
-                                        elevation: 16,
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15.0),
-                                        items: const [
-                                          DropdownMenuItem(
-                                            value: 'Chọn phương thức...',
-                                            child: Text(
-                                              'Chọn phương thức...',
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          DropdownMenuItem(
-                                              value: 'Tiền mặt',
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                      Icons
-                                                          .monetization_on_outlined,
-                                                      color: Colors.white),
-                                                  SizedBox(width: 5.0),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Tiền mặt',
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  )
-                                                ],
-                                              )),
-                                          DropdownMenuItem(
-                                              value: 'Chuyển khoản',
-                                              child: Row(
-                                                children: [
-                                                  Icon(Icons.credit_card,
-                                                      color: Colors.white),
-                                                  SizedBox(width: 5.0),
-                                                  Flexible(
-                                                    child: Text('Chuyển khoản',
-                                                        overflow: TextOverflow
-                                                            .ellipsis),
-                                                  ),
-                                                ],
-                                              )),
-                                        ],
-                                        onChanged: (item) => setState(() {
-                                          selectedItem = item;
-                                          print(item);
-                                        }),
+                                        child: Text('Chọn phương thức...'),
                                       ),
-                                    )),
-                                const SizedBox(
-                                  width: 10.0,
+                                      DropdownMenuItem(
+                                          value: 'Tiền mặt',
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                  Icons
+                                                      .monetization_on_outlined,
+                                                  color: Colors.white),
+                                              SizedBox(width: 5.0),
+                                              Text('Tiền mặt'),
+                                            ],
+                                          )),
+                                      DropdownMenuItem(
+                                          value: 'Chuyển khoản',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.credit_card,
+                                                  color: Colors.white),
+                                              SizedBox(width: 5.0),
+                                              Text('Chuyển khoản'),
+                                            ],
+                                          )),
+                                    ],
+                                    onChanged: (item) => setState(() {
+                                      selectedItem = item;
+                                    }),
+                                  ),
+                                )),
+                            const SizedBox(
+                              width: 30.0,
+                            ),
+                            MyButtonBlur(
+                              text: "Thêm mới",
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddProductToCurrentBookingScreen(
+                                                tableID: widget.tableID)));
+                              },
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
+                  double maxWidth = constraints.maxWidth;
+                  int columns;
+                  if (maxWidth > mobileWidth) {
+                    if (maxWidth > tabletWidth) {
+                      columns = 3; // PC
+                    } else {
+                      columns = 2; // Tablet
+                    }
+                  } else {
+                    columns = 1; // Mobile
+                  }
+                  return BlocBuilder<ProductBloc, ProductState>(
+                    buildWhen: (previous, current) {
+                      print(
+                          "has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
+                      return widget.tableID == prdBloc.state.tableId;
+                    },
+                    builder: (context, state) {
+                      if (state.status == ProductStatus.loading) {
+                        return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: const CircularProgressIndicator());
+                      }
+                      if (state.currentProducts != null &&
+                          state.status == ProductStatus.success) {
+                        if (state.currentProducts!.isEmpty) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 24),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Icon(
+                                  Icons.no_food_outlined,
+                                  size: 64,
+                                  color: colorScheme(context)
+                                      .scrim
+                                      .withOpacity(0.3),
                                 ),
-                                MyButtonBlur(
-                                  text: "Thêm mới",
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddProductToCurrentBookingScreen(
-                                                    tableID: widget.tableID)));
-                                  },
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                                Text(
+                                  "Hiện tại chưa có sản phẩm nào",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: colorScheme(context)
+                                          .scrim
+                                          .withOpacity(0.3)),
                                 )
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  LayoutBuilder(builder:
-                      (BuildContext context, BoxConstraints constraints) {
-                    double maxWidth = constraints.maxWidth;
-                    int columns;
-                    if (maxWidth > mobileWidth) {
-                      if (maxWidth > tabletWidth) {
-                        columns = 3; // PC
-                      } else {
-                        columns = 2; // Tablet
-                      }
-                    } else {
-                      columns = 1; // Mobile
-                    }
-                    return BlocBuilder<ProductBloc, ProductState>(
-                      builder: (context, state) {
-                        if (state.status == ProductStatus.loading) {
-                          return Container(
-                              padding: const EdgeInsets.symmetric(vertical: 24),
-                              child: const CircularProgressIndicator());
+                          );
                         }
-                        if (state.currentProducts != null &&
-                            state.status == ProductStatus.success) {
-                          if (state.currentProducts!.isEmpty) {
-                            return Container(
-                              padding: const EdgeInsets.symmetric(vertical: 24),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          primary: false,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: columns,
+                            childAspectRatio: (maxWidth / columns) / 80,
+                          ),
+                          itemCount: state.currentProducts!.toSet().length,
+                          itemBuilder: (context, index) {
+                            Product product = state.currentProducts![index];
+                            int quantityProduct = product.quantity ?? 1;
+                            return ItemProduct(
+                              product: product,
+                              subTitle:
+                                  SubTitleItemCurrentBill(product: product),
+                              trailling: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(
-                                    Icons.no_food_outlined,
-                                    size: 64,
-                                    color: colorScheme(context)
-                                        .scrim
-                                        .withOpacity(0.3),
+                                  Center(
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                          border: Border.all(
+                                              color: colorScheme(context)
+                                                  .primary
+                                                  .withOpacity(0.3)),
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Material(
+                                              color: Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  context.read<OrderBloc>().add(
+                                                      OnUpdateProductQuantity(
+                                                          productID: product.id,
+                                                          type:
+                                                              TypeUpdateQuantity
+                                                                  .decrement,
+                                                          tableID:
+                                                              widget.tableID));
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2),
+                                                  child: Icon(Icons.remove,
+                                                      color:
+                                                          colorScheme(context)
+                                                              .primary),
+                                                ),
+                                              ),
+                                            ),
+                                            Text(
+                                              "${product.quantity}",
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: colorScheme(context)
+                                                      .scrim
+                                                      .withOpacity(0.8)),
+                                            ),
+                                            Material(
+                                              color: Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  print(
+                                                      "PRD ID: ${product.id}");
+                                                  context.read<OrderBloc>().add(
+                                                      OnUpdateProductQuantity(
+                                                          productID: product.id,
+                                                          type:
+                                                              TypeUpdateQuantity
+                                                                  .increment,
+                                                          tableID:
+                                                              widget.tableID));
+                                                },
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2),
+                                                  child: Icon(Icons.add,
+                                                      color:
+                                                          colorScheme(context)
+                                                              .primary),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        )),
                                   ),
-                                  const SizedBox(
-                                    height: 24,
-                                  ),
-                                  Text(
-                                    "Hiện tại chưa có sản phẩm nào",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: colorScheme(context)
-                                            .scrim
-                                            .withOpacity(0.3)),
-                                  )
                                 ],
                               ),
                             );
-                          }
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: columns,
-                              childAspectRatio: (maxWidth / columns) / 80,
-                            ),
-                            itemCount: state.currentProducts!.toSet().length,
-                            itemBuilder: (context, index) {
-                              Product product = state.currentProducts!
-                                  .toSet()
-                                  .elementAt(index);
-                              return ItemProduct(
-                                product: product,
-                                subTitle:
-                                    SubTitleItemCurrentBill(product: product),
-                                trailling: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Center(
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                            border: Border.all(
-                                                color: colorScheme(context)
-                                                    .primary
-                                                    .withOpacity(0.3)),
-                                          ),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Material(
-                                                color: Colors.transparent,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                                child: InkWell(
-                                                  onTap: () {},
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(2),
-                                                    child: Icon(Icons.remove,
-                                                        color:
-                                                            colorScheme(context)
-                                                                .primary),
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                "${product.quantity}",
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: colorScheme(context)
-                                                        .scrim
-                                                        .withOpacity(0.8)),
-                                              ),
-                                              Material(
-                                                color: Colors.transparent,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                                child: InkWell(
-                                                  onTap: () {},
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(2),
-                                                    child: Icon(Icons.add,
-                                                        color:
-                                                            colorScheme(context)
-                                                                .primary),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          )),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        }
-                        return const CircularProgressIndicator();
-                      },
-                    );
-                  })
-                ],
-              ),
+                          },
+                        );
+                      }
+                      return const CircularProgressIndicator();
+                    },
+                  );
+                })
+              ],
             ),
           ],
         ),
@@ -473,17 +472,16 @@ class BottomActionBill extends StatelessWidget {
     int price = 0;
     return Container(
         decoration: BoxDecoration(
-          color: colorScheme(context).background,
+          color: colorScheme(context).onPrimary,
           boxShadow: [
             BoxShadow(
-              color: colorScheme(context).primary.withOpacity(0.6),
-              blurRadius: 6.0,
+              blurRadius: 1.0,
               spreadRadius: 0.0,
               offset: const Offset(0, 1.0), // shadow direction: bottom right
             )
           ],
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -540,7 +538,7 @@ class BottomActionBill extends StatelessWidget {
               ],
             ),
             const SizedBox(
-              height: 6,
+              height: 4,
             ),
             Row(
               children: isMobile
@@ -548,7 +546,7 @@ class BottomActionBill extends StatelessWidget {
                       Expanded(
                         child: MyOutlineButton(
                           text: 'Quay lại',
-                          onTap: () {},
+                          onTap: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(
@@ -591,7 +589,7 @@ class BottomActionBill extends StatelessWidget {
                         width: 200,
                         child: MyOutlineButton(
                           text: 'Quay lại',
-                          onTap: () {},
+                          onTap: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(

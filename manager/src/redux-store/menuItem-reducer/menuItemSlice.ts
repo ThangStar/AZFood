@@ -186,6 +186,7 @@ const menuItemSlice = createSlice({
       .addCase(getSearchMenuListAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.menuItemList = action.payload;
+        state.menuList = action.payload;
       })
       .addCase(getSearchMenuListAsync.rejected, (state) => {
         state.status = 'failed';
@@ -196,6 +197,7 @@ const menuItemSlice = createSlice({
       .addCase(getFilterCategoryListAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.menuItemList = action.payload;
+        state.menuList = action.payload;
       })
       .addCase(getFilterCategoryListAsync.rejected, (state) => {
         state.status = 'failed';

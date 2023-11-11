@@ -8,13 +8,17 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import formatMoney from '@/component/utils/formatMoney';
 import { showAlert } from '@/component/utils/alert/alert';
+import { useSocket } from "@/socket/io.init"
+import LeftSideBar from '@/component/LeftSideBar/LeftSideBar'
 
 export default function Table() {
+    const socket = useSocket();
     const dispatch: AppDispatch = useDispatch();
     const tableList: any = useSelector(getTableList);
     const orderList: any = useSelector(getOrderList);
     const statusList: any = useSelector(getTableStatusList);
     const [tables, setTables] = useState<any[]>([]);
+    const [money, setMoney] = useState<any[]>([]);
     const [orders, setOrders] = useState<any[]>([]);
     const [statusTable, setStatusTable] = useState<any[]>([]);
     const [modal, setModal] = useState(false);
@@ -27,12 +31,44 @@ export default function Table() {
     const [filteredTables, setFilteredTables] = useState<any[]>([]);
 
     useEffect(() => {
+        if (socket) {
+            console.log('đã kết nối với socket');
 
+            socket.emit('table', statusTable);
+            socket.on('response', (data) => {
+                console.log('đã nhận dữ liệu socket', data);
+                setTables(data);
+            })
+        }
+    }, [socket]);
+
+    useEffect(() => {
         dispatch(getTableListAsync());
         dispatch(getOrderListAsync());
         dispatch(getStatusTableAsync());
 
     }, [dispatch]);
+
+    // const calculateTotalForTable = (tableID: number) => {
+    //     const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
+    //     let totalAmount = ordersForTable.reduce((acc: number, order: any) => {
+    //         return acc + order.totalAmount;
+
+    //     }, 0);
+
+    //     if (socket && tables) {
+    //         const tableData = tables.find((table: any) => table.id === tableID);
+    //         if (tableData && tableData.total_amount !== null) {
+    //             totalAmount = tableData.total_amount;
+    //         }
+    //         if(totalAmount == null){
+    //             totalAmount = 0;
+    //         }
+    //     }
+
+    //     return totalAmount;
+    // };
+
 
     useEffect(() => {
         if (tableList && tableList.resultRaw) {
@@ -45,6 +81,9 @@ export default function Table() {
             setStatusTable(statusList.resultRaw);
         }
     }, [tableList, orderList, statusList]);
+
+    console.log('tableList', tableList);
+
 
     useEffect(() => {
         if (statusTableFilter === 'all') {
@@ -67,27 +106,10 @@ export default function Table() {
             setFilteredTables(filtered);
         }
     }, [statusTableFilter, tables]);
-    const calculateTotalForTable = (tableID: number) => {
-        const ordersForTable: any[] = orders.filter((order: any) => order.tableID === tableID);
-
-        const totalAmount = ordersForTable.reduce((acc: number, order: any) => {
-            return acc + order.totalAmount;
-        }, 0);
-
-        return totalAmount;
-    };
     const toggle = () => setModal(!modal);
     const toggle1 = () => setModal1(!modal1);
     const toggleDel = () => setModalDel(!modalDel);
-    const openModal = (data: any = null) => {
-        if (data) {
-            setStatus(data.status);
-            setID(data.id)
-        } else {
-            setStatus(0);
-        }
-        toggle();
-    }
+
     const openModal1 = () => {
         toggle1();
     }
@@ -104,19 +126,18 @@ export default function Table() {
 
     }
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (id: any) => {
         try {
-            dispatch(updateStatusTableAsync({ status, id }));
+            await dispatch(updateStatusTableAsync({ id }));
             dispatch(getTableListAsync());
-            openModal();
         } catch (error) {
             console.log(" error : ", error);
         }
-
     }
-    const addTable = () => {
+
+    const addTable = async () => {
         try {
-            dispatch(createTableListAsync({ name: tableName }));
+            await dispatch(createTableListAsync({ name: tableName }));
             dispatch(getTableListAsync());
             openModal1();
         } catch (error) {
@@ -140,112 +161,90 @@ export default function Table() {
     const trong = "#26A744";
     const cho = "black";
     return (
-        <div className="content scroll" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
+        <div className="content scroll">
+            <div style={{ marginRight: '15px', border: 'none' }}>
                 <div className="container-fluid">
-                    <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                        <div className="col-sm-6">
-                            <h1>Danh sách bàn</h1>
-                        </div>
-                        <div className="col-sm-6">
-                            <ol className="breadcrumb float-sm-right">
-                                <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                <li className="breadcrumb-item active">Danh sách Bàn</li>
-                            </ol>
+                    <div style={{ borderBottom: '1.5px solid rgb(195 211 210)' }} className='p-3'>
+                        <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                            <h3 style={{ height: '40px', margin: '0px' }}>Danh sách bàn</h3>
+                            <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn mới</button>
                         </div>
                     </div>
                 </div>
-                <div className="content">
-                    <div className="">
-                        <div className="card-header" style={{ border: 'none' }}>
-                            <button className="btn btn-success" onClick={() => { openModal1() }}>Thêm bàn</button>
-
-                            <div className="card-tools" style={{ display: 'flex', width: '150px' }}>
-                                <select
-                                    className="form-control"
-                                    id="statusTable"
-                                    value={statusTableFilter}
-                                    onChange={(e) => {
-                                        setStatusTableFilter(e.target.value);
-                                    }}
-                                >
-                                    <option>Bộ lọc </option>
-                                    <option value='all' selected>Tất cả </option>
-                                    <option value='trong' style={{ color: trong }}>Trống</option>
-                                    <option value='ban' style={{ color: ban }}>Bận</option>
-                                    <option value='cho' style={{ color: cho }}>Chờ</option>
-                                    <option value='mangve' style={{ color: cho }}>Mang về</option>
-                                </select>
-
-                            </div>
-                        </div>
+                <div style={{ display: 'flex', justifyContent: 'end', padding: '20px', alignItems: 'center' }}>
+                    <h6 style={{ margin: '0' }}>Bộ lọc:</h6>
+                    <div className="card-tools ml-2" style={{ display: 'flex', width: '230px' }}>
+                        <select
+                            className="form-control"
+                            id="statusTable"
+                            value={statusTableFilter}
+                            onChange={(e) => {
+                                setStatusTableFilter(e.target.value);
+                            }}>
+                            <option value='' disabled selected hidden>Lọc theo trạng thái bàn</option>
+                            <option value='all'>Tất cả</option>
+                            <option value='trong' style={{ color: trong }}>Bàn đang trống</option>
+                            <option value='ban' style={{ color: ban }}>Bàn đã thanh toán</option>
+                            <option value='cho' style={{ color: cho }}>Bàn có khách</option>
+                        </select>
                     </div>
-                    <div className="container-fluid row wrap" style={{ paddingLeft: 80, paddingRight: 80, marginTop: '20px' }}>
-                        {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
-                            <div className="col-md-3 col-sm-8 col-12">
-                                <div className="info-box " style={{ backgroundColor: "#C3E4EA" }}>
-                                    <div className="info-box-content">
-                                        <div className='flex'>
-                                            <Link className='w-100' href={`table/table-details?tableID=${item.id}`}>{item.name}</Link>
-                                            {item.status === 3 &&
-                                                <button className='text-danger' type="button"
-                                                    onClick={() => {
-                                                        setID(item.id)
-                                                        openModalDel()
-                                                    }}><i className="fas fa-trash"></i>
-                                                </button>
-                                            }
-                                        </div>
-                                        <span className="info-box-number">Tổng tiền : {formatMoney(calculateTotalForTable(item.id))} đ</span>
-                                        <button onClick={() => { openModal(item) }} className="info-box-text"
-                                            style={{ color: item.status === 2 ? ban : item.status === 1 ? cho : trong }}>
-                                            {item.status_name}
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridGap: '10px', padding: '0px 15px' }}>
+
+                    {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
+                        <div key={item.id} style={{ position: 'relative' }}>
+                            {item.status === 2 ? ( // Kiểm tra trạng thái của bàn
+                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #F39422', borderRadius: '20px', color: '#F39422' }}>
+                                    <div style={{ display: 'flex' }}>
+                                        <h5 style={{ marginRight: '5px' }}>{item.name}</h5>
+                                        <p>({item.status_name})</p>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <button onClick={() => { handleUpdate(item.id) }} className='btn btn-warning btn-sm'>
+                                            Chuyển về bàn trống
                                         </button>
                                     </div>
-                                </div>
-                            </div>
-                        )) : ""}
 
-                    </div>
+                                </div>
+
+                            ) : item.status === 1 ? (
+                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #26A744', borderRadius: '20px' }}>
+                                    <Link href={`table/table-details?tableID=${item.id}`}>
+                                        <h5 style={{ height: '40px', color: '#26A744' }}>{item.name}</h5>
+                                        <div style={{ display: 'grid' }}>
+                                            <span className="badge" style={{ fontSize: '16px', color: '#26A744' }}>
+                                                {item.status_name}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #007bff', borderRadius: '20px' }}>
+                                    <Link href={`table/table-details?tableID=${item.id}`}>
+                                        <h5 style={{ height: '40px' }}>{item.name}</h5>
+                                        <div style={{ display: 'grid' }}>
+                                            <span className="badge" style={{ fontSize: '16px', color: '#007bff' }}>
+                                                {item.status_name}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )}
+                            <div style={{ border: 'none', position: 'absolute', right: '15px', top: '15px', zIndex: '1' }}>
+                                {item.status === 3 && (
+                                    <button className='btn btn-outline-danger' type="button" onClick={() => {
+                                        setID(item.id)
+                                        openModalDel()
+                                    }}>
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )) : ""}
                 </div>
 
-
-                <Modal isOpen={modal} toggle={openModal}>
-                    <ModalHeader toggle={openModal}>{"Thay đổi trạng thái bàn"}</ModalHeader>
-                    <ModalBody>
-                        <form className="form-horizontal">
-                            <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Trạng thái</label>
-                                <div className="col-sm-8">
-
-                                    <select
-                                        className="form-control"
-                                        id="department"
-                                        value={status}
-                                        onChange={(e) => {
-                                            handleChangeDataForm(e);
-                                        }}
-                                    >
-                                        {statusTable && statusTable.length > 0 ? statusTable.map((item: any, id: number) => (
-                                            <option value={item.id}>{item.name}</option>
-
-
-                                        )) : ""}
-                                    </select>
-
-                                </div>
-                            </div>
-                        </form>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={handleUpdate}>
-                            Lưu
-                        </Button>
-                        <Button color="secondary" onClick={() => openModal()}>
-                            Hủy
-                        </Button>
-                    </ModalFooter>
-                </Modal>
 
                 <Modal isOpen={modal1} toggle1={openModal1}>
                     <ModalHeader toggle1={openModal1}>{"Thêm bàn mới"}</ModalHeader>
@@ -263,8 +262,6 @@ export default function Table() {
                                             handleChangeDataForm1(e);
                                         }}
                                     />
-
-
                                 </div>
                             </div>
                         </form>

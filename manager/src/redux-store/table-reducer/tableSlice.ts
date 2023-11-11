@@ -58,10 +58,10 @@ export const getStatusTableAsync = createAsyncThunk(
 );
 export const updateStatusTableAsync = createAsyncThunk(
   'table/update-status',
-  async ({ status, id }: { status: number, id: number }) => {
+  async ({id }: { id: number }) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.post(serverUrl + '/api/table/updateStatus', { status, id }, {
+    const response = await axios.post(serverUrl + '/api/table/updateStatus', { id}, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

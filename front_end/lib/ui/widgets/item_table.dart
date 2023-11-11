@@ -162,9 +162,9 @@ class _ItemTableState extends State<ItemTable> {
                                                   status: 3 ));
                                         },
                                         child: const Icon(
-                                          Ionicons.flash,
+                                          Ionicons.arrow_forward,
                                           size: 38,
-                                          color: Colors.blue,
+                                          color: Colors.black45,
                                         ))
                                     : const SizedBox.shrink()
                               ],

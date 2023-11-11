@@ -7,12 +7,13 @@ exports.getOrdersForTable = async (socket, io, data) => {
         const tableID = data.id;
         console.log('check');
         const getOrdersQuery = `
-            SELECT o.id AS id, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS name ,
-             oi.quantity, oi.subTotal , p.category , p.price , u.name As userName
+            SELECT o.orderDate, o.totalAmount,p.id AS id,o.orderDate , p.name AS name ,
+             oi.quantity, oi.subTotal , p.category , p.price , u.name As userName, p.imgUrl, d.tenDVT as "dvt_name"
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id
             INNER JOIN users u ON o.userID = u.id
+            INNER JOIN donvitinh d ON p.dvtID = d.id
             WHERE o.tableID = ?
         `;
 
@@ -23,7 +24,7 @@ exports.getOrdersForTable = async (socket, io, data) => {
             type: QueryTypes.SELECT
         });
         console.log("OK! refresh orders");
-        io.emit('responseOrder', orders)
+        io.emit('responseOrder', { order: orders, tableID: tableID })
         getList(socket, io)
 
     } catch (error) {
@@ -31,3 +32,4 @@ exports.getOrdersForTable = async (socket, io, data) => {
         io.to(socket.id).emit('responseOrder', "error")
     }
 };
+

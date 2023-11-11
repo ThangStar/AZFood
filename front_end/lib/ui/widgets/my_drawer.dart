@@ -41,10 +41,6 @@ final List<ItemDrawer> itemsDrawer = [
       icon: Icons.free_cancellation_sharp,
       typeDrawer: TypeDrawer.home),
   ItemDrawer(
-      label: "Lịch đi làm",
-      icon: Icons.calendar_month,
-      typeDrawer: TypeDrawer.calendar),
-  ItemDrawer(
       label: "Thống kê",
       icon: Icons.analytics,
       typeDrawer: TypeDrawer.analytics),

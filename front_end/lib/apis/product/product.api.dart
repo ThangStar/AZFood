@@ -40,7 +40,7 @@ class ProductApi {
   static Future<Object> productsFilter(int idCategory) async {
     try {
       Response<dynamic> response = await http.get(Router.productsFilter,
-          data: {"category": idCategory},
+          queryParameters: {"category": idCategory},
           options: Options(responseType: ResponseType.json));
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);

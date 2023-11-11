@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
-import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
+import { createUserListAsync, getStatusUserState, getUserList, getUserListAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,6 @@ export default function User() {
     const status: any = useSelector(getStatusUserState);
     const [users, setUsers] = useState<any[]>([]);
     const [modal1, setModal1] = useState(false);
-    const [isAdd, setisAdd] = useState(true);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
@@ -23,56 +22,37 @@ export default function User() {
     const [address, setAddress] = useState("");
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
-    const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [file, setFile] = useState<File>()
-    const [searchName, setSearchName] = useState("")
-    const [currentPage, setCurrentPage] = useState(1)
     const role = 'user';
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
         toggle1();
     }
-
     useEffect(() => {
-        dispatch(getUserListAsync(currentPage));
-    }, [dispatch, currentPage]);
-
+        dispatch(getUserListAsync());
+    }, [dispatch]);
     useEffect(() => {
-        if (userList && userList.data) {
-            setUsers(userList.data);
+        if (userList && userList.resultRaw) {
+            setUsers(userList.resultRaw);
         }
     }, [userList]);
-
-    const totalPages = userList?.totalPages || 1;
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-        dispatch(getUserListAsync(page));
-    };
-
     const handleAddUser = () => {
         const user = {
-            idUser,
             username,
             password,
             name,
             role,
             phoneNumber,
-            email,
-            address,
             birtDay,
-            file
+            address,
+            email
         }
-
         dispatch(createUserListAsync(user));
         if (status == 'idle') {
             showAlert("success", "Thêm nhân viên mới thành công ");
-            dispatch(getUserListAsync(currentPage));
+            dispatch(getUserListAsync());
             openModal1();
-            setDataForm("");
-            setIsEdit(false);
         } else {
             showAlert("error", "Thêm nhân viên mới  bại ");
         }
@@ -88,96 +68,48 @@ export default function User() {
             setBirtDay(item.birtDay);
             setIdUser(item.id);
             setIsEdit(true);
-            setImage(item.imgUrl)
-        }
-    }
-    const onSearchChange = (searchName: any) => {
-        setSearchName(searchName);
-        if (searchName.trim() !== '') {
-            dispatch(searchUserAsync(searchName));
-        } else {
-            handlePageChange(currentPage)
-        }
-    }
-    const handleChangeFile = (event: any) => {
-        if (event.target.files && event.target.files[0]) {
-            const selectedImage = event.target.files[0];
-            setFile(selectedImage);
-        }
-    }
-
-    const handleDeleteUser = (id: any) => {
-
-        dispatch(deleteUserAsync(id));
-        if (status == 'idle') {
-            showAlert("success", "Xoá nhân viên mới thành công ");
-            dispatch(getUserListAsync(currentPage));
-        } else {
-            showAlert("error", "Xoá nhân viên mới  bại ");
         }
     }
     return (
-        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
-                <div className="">
-                    <div className="container-fluid">
-                        <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                            <div className="col-sm-6">
-                                <h1>Danh sách nhân viên</h1>
-                            </div>
-                            <div className="col-sm-6">
-                                <ol className="breadcrumb float-sm-right">
-                                    <li className="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li className="breadcrumb-item active">Danh sách nhân viên</li>
-                                </ol>
-                            </div>
+        <div className='content scroll'>
+            <div style={{ border: 'none' }}>
+                <div className="container-fluid" style={{}}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)'}} className='p-3'>
+                        <div className="col-sm-6 p-0">
+                            <h3 style={{ height: '40px', margin: '0px' }}>Danh sách Nhân viên</h3>
+                        </div>
+                        <div className="">
+                            <button className="btn btn-success" onClick={openModal1}>Thêm nhân viên</button>
                         </div>
                     </div>
                 </div>
 
-                <div className="content">
+                <div className="content m-3">
                     <div className="">
-                        <div className="card-header" style={{ border: 'none' }}>
-                            <button className="btn btn-success" onClick={() => {
-                                openModal1();
-                                setisAdd(true);
-                            }}>Thêm nhân viên</button>
-                            <div className="card-tools flex items-center">
-                                <form role="search">
-                                    <input
-                                        type="text"
-                                        value={searchName}
-                                        onChange={(e) => onSearchChange(e.target.value)}
-                                        placeholder="Tìm kiếm nhân viên..."
-                                        className='form-control'
-                                    />
-                                </form>
-                            </div>
-                        </div>
-                        <div className="card card-body p-0 mt-3">
+                        <div className="card card-body">
                             <table className="table table-striped projects">
                                 <thead>
                                     <tr>
                                         <th style={{ width: "1%" }}>
                                             STT
                                         </th>
-                                        <th style={{ width: "18%" }}>
+                                        <th style={{ width: "20%" }}>
                                             Tên nhân viên
                                         </th>
                                         <th style={{ width: "10%" }}>
-                                            Quyền
+                                            Hình ảnh
                                         </th>
-                                        <th style={{ width: "25%" }}>
+                                        <th>
                                             Địa chỉ
                                         </th>
-                                        <th style={{ width: "15%" }}>
-                                            STĐ
+                                        <th>
+                                            Số điện thoại
                                         </th>
-                                        <th style={{ width: "20%" }}>
+                                        <th>
                                             Email
                                         </th>
-                                        <th style={{ width: "10%" }} className="text-center">
-                                            Actions
+                                        <th style={{ width: "15%" }} className="text-center">
+                                            
                                         </th>
 
                                     </tr>
@@ -195,8 +127,7 @@ export default function User() {
                                                 <br />
                                             </td>
                                             <td>
-                                                {/* <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} /> */}
-                                                {item && item.role ? item.role : null}
+                                                <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} />
                                             </td>
                                             <td className="project_progress">
                                                 {item && item.address ? item.address : null}
@@ -213,19 +144,18 @@ export default function User() {
                                                         <i className="fas fa-folder">
                                                         </i>
                                                         View
-                                                    </a> 
+                                                    </a>
                                                     <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                         openModal1();
                                                         setDataForm(item);
                                                         setIsEdit(true);
-                                                        setisAdd(false);
                                                     }}>
                                                         <i className="fas fa-pencil-alt"></i>
+
                                                         Edit
+
                                                     </button>
-                                                    <button className="btn btn-danger btn-sm" onClick={() => {
-                                                        handleDeleteUser(item.id);
-                                                    }}>
+                                                    <button className="btn btn-danger btn-sm" >
                                                         <i className="fas fa-trash"></i> Delete
                                                     </button>
                                                 </div>
@@ -242,7 +172,7 @@ export default function User() {
 
                 </div>
                 <Modal isOpen={modal1} toggle1={openModal1}>
-                    <ModalHeader toggle1={openModal1}>{isAdd ? "Thêm tài khoản nhân viên" : "Sửa tài khoản nhân viên"}</ModalHeader>
+                    <ModalHeader toggle1={openModal1}>{"Thêm nhân viên mới"}</ModalHeader>
                     <ModalBody>
                         <form className="form-horizontal">
                             <div className="form-group row">
@@ -257,19 +187,8 @@ export default function User() {
                                             setName(e.target.value)
                                         }}
                                     />
-                                </div>
-                            </div>
-                            <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
-                                <div className="col-sm-8">
 
-                                    <input
-                                        className="form-control"
-                                        type='file'
-                                        id="image"
-                                        onChange={handleChangeFile}
-                                    />
-                                    <img src={image} alt="" width={80} height={80} />
+
                                 </div>
                             </div>
                             <div className="form-group row">
@@ -369,7 +288,6 @@ export default function User() {
 
                                     </div>
                                 </div>
-
                             </> : ""}
 
 
@@ -384,40 +302,6 @@ export default function User() {
                         </Button>
                     </ModalFooter>
                 </Modal>
-                {/* Pagination */}
-                <div className="d-flex justify-content-center align-items-center">
-                    <ul className="pagination">
-                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(currentPage - 1)}
-                            >
-                                &#60;
-                            </button>
-                        </li>
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <li
-                                className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                                key={i + 1}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => handlePageChange(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            </li>
-                        ))}
-                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => handlePageChange(currentPage + 1)}
-                            >
-                                &#62;
-                            </button>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
     )

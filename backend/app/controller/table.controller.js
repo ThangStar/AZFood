@@ -51,18 +51,18 @@ exports.updateStatusTable = async (req, res) => {
     try {
         const body = req.body;
         console.log(body);
-        // const isAuth = await Auth.checkAuth(req);
-        // if (isAuth) {
+        const isAuth = await Auth.checkAuth(req);
+        if (isAuth) {
             console.log("id ", body.id);
-            const queryRaw = "UPDATE tables SET status = ? WHERE id = ?";
+            const queryRaw = "UPDATE tables SET status = 3 WHERE id = ?";
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [body.status, body.id],
+                replacements: [ body.id],
                 type: QueryTypes.UPDATE
             });
             res.status(200).json({ message: 'tables updated successfully' });
-        // }
+        }
 
     } catch (error) {
         res.status(500).json({ message: 'Internal server error', error });

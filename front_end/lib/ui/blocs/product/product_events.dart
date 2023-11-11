@@ -40,5 +40,23 @@ class GetListProductStatusEvent extends ProductEvent {
 class SearchProductEvent extends ProductEvent {
   final String query;
 
-  SearchProductEvent({required this.query});
+  const SearchProductEvent({required this.query});
+}
+
+class ChangePageProductEvent extends ProductEvent {
+  final bool isNext;
+
+  const ChangePageProductEvent({this.isNext = true});
+}
+
+class DecreaseProductQuantity extends ProductEvent {
+  final int idProduct;
+
+  const DecreaseProductQuantity(this.idProduct);
+}
+
+class OnChangeTableId extends ProductEvent {
+  final int id;
+
+  const OnChangeTableId({required this.id});
 }

@@ -11,6 +11,10 @@ class ProductState extends Equatable {
       this.categoryResponse,
       this.productsFilter,
       this.productsSearchResults,
+      this.page = 1,
+      this.totalPage = 5,
+      this.total = 5,
+      this.tableId = 0,
       this.currentProducts});
 
   final ProductStatus? status;
@@ -20,6 +24,10 @@ class ProductState extends Equatable {
   final List<Product>? productsFilter;
   final List<Product>? currentProducts;
   final List<Product>? productsSearchResults;
+  final int page;
+  final int total;
+  final int totalPage;
+  final int tableId;
 
   @override
   List<Object?> get props => [
@@ -29,7 +37,8 @@ class ProductState extends Equatable {
         categoryResponse,
         productsFilter,
         currentProducts,
-        productsSearchResults
+        productsSearchResults,
+        tableId
       ];
 
   ProductState copyWith({
@@ -40,6 +49,10 @@ class ProductState extends Equatable {
     List<Product>? productsFilter,
     List<Product>? currentProducts,
     List<Product>? productsSearchResults,
+    int? page,
+    int? total,
+    int? totalPage,
+    int? tableId,
   }) {
     return ProductState(
       status: status ?? this.status,
@@ -50,11 +63,19 @@ class ProductState extends Equatable {
       currentProducts: currentProducts ?? this.currentProducts,
       productsSearchResults:
           productsSearchResults ?? this.productsSearchResults,
+      page: page ?? this.page,
+      total: total ?? this.total,
+      totalPage: totalPage ?? this.totalPage,
+      tableId: tableId ?? this.tableId,
     );
   }
 }
 
 class CurrentProductLoading extends ProductState {}
+
+class PlusProducts extends ProductState {}
+
+class MinusProducts extends ProductState {}
 
 class CurrentProductSuccess extends ProductState {
   @override

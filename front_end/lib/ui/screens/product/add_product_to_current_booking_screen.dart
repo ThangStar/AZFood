@@ -30,18 +30,18 @@ class _AddProductToCurrentBookingScreenState
   List<Product> productsSelected = [];
 
   GlobalKey cartKey = GlobalKey();
+  late ProductBloc productBloc;
 
   @override
   void initState() {
+    productBloc = BlocProvider.of(context);
+    productBloc.add(const GetProductsEvent());
+    productBloc.add(GetCategoryEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    ProductBloc productBloc = BlocProvider.of(context);
-    productBloc.add(const GetProductsEvent());
-    productBloc.add(GetCategoryEvent());
-
     return SafeArea(
       child: RefreshIndicator(
           onRefresh: () async {
@@ -61,20 +61,42 @@ class _AddProductToCurrentBookingScreenState
               autofocus: true,
               child: Scaffold(
                 backgroundColor: colorScheme(context).background,
-                floatingActionButton: FloatingActionButton.extended(
-                    heroTag: "check_out",
-                    key: cartKey,
-                    backgroundColor: colorScheme(context).secondary,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    label: Badge(
-                      label: Text("${productsSelected.length}"),
-                      child: Icon(
-                        Icons.shopping_cart_rounded,
-                        color: colorScheme(context).onPrimary,
-                      ),
-                    )),
+                floatingActionButton: BlocBuilder<ProductBloc, ProductState>(
+                    builder: (context, state) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      state.page != 1
+                          ? FloatingActionButton.extended(
+                              backgroundColor: colorScheme(context).error,
+                              onPressed: () {
+                                productBloc
+                                    .add(ChangePageProductEvent(isNext: false));
+                              },
+                              label: Icon(
+                                Icons.arrow_back,
+                                color: colorScheme(context).onPrimary,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                      state.page < state.totalPage
+                          ? FloatingActionButton.extended(
+                              heroTag: "check_out",
+                              key: cartKey,
+                              backgroundColor: colorScheme(context).secondary,
+                              onPressed: () {
+                                productBloc.add(ChangePageProductEvent());
+                              },
+                              label: Icon(
+                                Icons.arrow_forward,
+                                color: colorScheme(context).onPrimary,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ],
+                  );
+                }),
                 appBar: AppBar(
                   shadowColor: colorScheme(context).background,
                   surfaceTintColor: colorScheme(context).background,
@@ -107,7 +129,10 @@ class _AddProductToCurrentBookingScreenState
                         child: const Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(Icons.search, size: 22,),
+                            Icon(
+                              Icons.search,
+                              size: 22,
+                            ),
                             Text(
                               " Tìm kiếm...  ",
                               style: TextStyle(fontSize: 14),
@@ -267,14 +292,14 @@ class SubTitleProduct extends StatelessWidget {
         Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: quantity != 0 ? const Color(0xFF049C6B) : null,
+              color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? const Color(0xFF049C6B) : null,
             ),
-            padding: quantity != 0
+            padding: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1)
                 ? const EdgeInsets.symmetric(horizontal: 14, vertical: 4)
                 : null,
             child: Row(
               children: [
-                quantity != 0
+                (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1)
                     ? const SizedBox.shrink()
                     : const Icon(
                         Icons.error,
@@ -283,11 +308,11 @@ class SubTitleProduct extends StatelessWidget {
                 Text(
                   quantity != 0 && product.category != 1
                       ? "Kho: $quantity"
-                      : quantity == 0
+                      : product.status == 2 || (quantity == 0 && product.category != 1)
                           ? " Hết hàng "
                           : "Sẵn sàng",
                   style: TextStyle(
-                      color: quantity != 0 ? Colors.white : Colors.red),
+                      color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? Colors.white : Colors.red),
                 ),
               ],
             )),

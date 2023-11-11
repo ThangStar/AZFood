@@ -17,6 +17,7 @@ class Router {
   static String createOrder = '/api/orders/create';
   static String getOrderInTable = '/api/orders/getOrder';
   static String payBill = '/api/orders/payBill';
+  static String updateQuantity = '/api/orders/updateQuantity';
 
   //invoice
   static String getAllInvoice = '/api/invoice/list';
@@ -26,6 +27,7 @@ class Router {
 
   //calendar
   static String attendance = '/api/attendance/attendance';
+  static String history = '/api/attendance/details';
 
   //forgot_pass
   static String sendEmail = '/api/auth/checkAndSendOtpToEmail';

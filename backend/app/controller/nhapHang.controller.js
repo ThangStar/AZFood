@@ -16,7 +16,7 @@ exports.nhapHang = async (req, res) => {
                 replacements: [body.productID, body.soLuong, body.donGia, new Date(), body.dvtID],
                 type: QueryTypes.INSERT
             });
-            
+
 
             const checkExitsQuery = "SELECT productID FROM kho WHERE productID = ?;";
             const checkExits = await sequelize.query(checkExitsQuery, {
@@ -71,20 +71,22 @@ exports.getList = async (req, res) => {
 
     if (isAdmin) {
         const queryRaw = `SELECT 
-            nh.id,
-            nh.productID,
-            p.name,
-           nh.soLuong,
-           d.tenDVT,
-            nh.donGia,
-            nh.ngayNhap,
-            nh.dvtID
-        FROM 
-            nhapHang nh
-        JOIN
-            products p ON nh.productID = p.id
-            JOIN
-            donViTinh d ON d.id = nh.dvtID
+        nh.id,
+        nh.productID,
+        p.name,
+        nh.soLuong,
+        d.tenDVT,
+        nh.donGia,
+        nh.ngayNhap,
+        nh.dvtID
+    FROM 
+        nhapHang nh
+    JOIN
+        products p ON nh.productID = p.id
+    JOIN
+        donViTinh d ON d.id = nh.dvtID
+    ORDER BY nh.ngayNhap DESC;
+    
         `;
 
         try {

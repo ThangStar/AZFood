@@ -61,24 +61,6 @@ class _EnableVirtualBackgroundState extends State<EnableVirtualBackground>
     _leaveChannel();
   }
 
-  // Future<void> _updateScreenShareChannelMediaOptions() async {
-  //   final shareShareUid = int.tryParse(_screenShareUidController.text);
-  //   if (shareShareUid == null) return;
-  //   await _engine.updateChannelMediaOptionsEx(
-  //     options: const ChannelMediaOptions(
-  //       publishScreenTrack: true,
-  //       publishSecondaryScreenTrack: true,
-  //       publishCameraTrack: false,
-  //       publishMicrophoneTrack: false,
-  //       publishScreenCaptureAudio: true,
-  //       publishScreenCaptureVideo: true,
-  //       clientRoleType: ClientRoleType.clientRoleBroadcaster,
-  //     ),
-  //     connection:
-  //         RtcConnection(channelId: _controller.text, localUid: shareShareUid),
-  //   );
-  // }
-
   Future<void> _initEngine() async {
     _engine = createAgoraRtcEngineEx();
     await _engine.initialize(RtcEngineContext(

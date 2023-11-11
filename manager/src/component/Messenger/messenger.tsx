@@ -14,9 +14,14 @@ const Messenger = () => {
     const messagesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const userLocal = localStorage.getItem('user');
-        if (userLocal) {
-            setUserID(JSON.parse(userLocal).userID);
+        const userObject = localStorage.getItem('user');
+        console.log('testMess', userObject);
+        
+        if (typeof userObject === 'object') {
+            localStorage.setItem('user', JSON.stringify(userObject));
+            // setUserID(JSON.parse(userObject.toString()).userID);
+        } else {
+            console.error('Dữ liệu không phải là một đối tượng JSON.');
         }
     }, []);
 
@@ -61,7 +66,7 @@ const Messenger = () => {
             message: textMessage,
             raw: null,
             imageUrl: null,
-            sendBy: userID,
+            sendBy: 4,
         }
         socket?.emit('client-msg-group', data)
         setTextMessage('')

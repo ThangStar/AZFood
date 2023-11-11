@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:restaurant_manager_app/courses/face_detector/camera_view.dart';
 
-import '../my_custom_painter.dart';
+import 'my_custom_painter.dart';
+
 
 class FaceMain extends StatefulWidget {
   const FaceMain({super.key});

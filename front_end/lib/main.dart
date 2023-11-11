@@ -24,6 +24,7 @@ import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/table/table_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/video_call/video_call_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/examples/advanced/set_beauty_effect/set_beauty_effect.dart';
 import 'package:restaurant_manager_app/ui/screens/video_call/video_call_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -36,16 +37,33 @@ import 'model/message.dart';
 
 late List<CameraDescription> cameras;
 
+isolateListen(ReceivePort port) {
+  port.listen((msg) {
+    MySharePreferences.loadProfile().then((value) {
+      Message ms = msg as Message;
+      print("Received message from isolate ${msg.message}");
+      if (value?.id != ms.sendBy) {
+        showNotiWindow(title: msg.profile?.name, body: msg.message);
+      }
+    });
+  });
+}
+
+isolateEnqueue(ReceivePort port) {
+  Isolate.spawn((message) {
+    onNotiMsgFromServer(message);
+  }, {'SOCKET_URL': Env.SOCKET_URL, "PORT": port.sendPort});
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  var port = ReceivePort();
   try {
     if (!kIsWeb) {
       if (Platform.isAndroid || Platform.isIOS) {
-        print("object1");
         cameras = await availableCameras();
       } else if (Platform.isWindows) {
-        print("object2");
         await localNotifier.setup(
           appName: 'AZFood',
           // The parameter shortcutPolicy only works on Windows
@@ -56,20 +74,9 @@ void main() async {
     print("object3");
     runApp(const MyApp());
 
-    var port = ReceivePort();
-    port.listen((msg) {
-      MySharePreferences.loadProfile().then((value) {
-        Message ms = msg as Message;
-        print("Received message from isolate ${msg.message}");
-        if (value?.id != ms.sendBy) {
-          showNotiWindow(title: msg.profile?.name, body: msg.message);
-        }
-      });
-    });
-
-    final isolate = Isolate.spawn((message) {
-      onNotiMsgFromServer(message);
-    }, {'SOCKET_URL': Env.SOCKET_URL, "PORT": port.sendPort});
+    //isolate
+    isolateListen(port);
+    isolateEnqueue(port);
   } catch (e) {
     print(e);
   }
@@ -86,7 +93,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _showPerformanceOverlay = false;
+  final bool _showPerformanceOverlay = false;
 
   @override
   void initState() {
@@ -156,7 +163,7 @@ class _MyAppState extends State<MyApp> {
                         textTheme: textTheme(context)),
                     darkTheme: ThemeData(
                         useMaterial3: true, colorScheme: darkColorScheme),
-                    home: VideoCallScreen()),
+                    home: const LoginScreen()),
               ));
         });
   }

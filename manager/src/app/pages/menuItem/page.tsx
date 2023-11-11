@@ -34,7 +34,7 @@ export default function MunuItems() {
     const [searchName, setSearchName] = useState("")
     const [isEdit, setIsEdit] = useState(false);
     const [image, setImage] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("0"); // Giá trị ban đầu là "0"
+    const [selectedCategory, setSelectedCategory] = useState("0");
 
     const [file, setFile] = useState<File>();
     const totalPages = menuItemList.totalPages || 1;
@@ -75,6 +75,14 @@ export default function MunuItems() {
             setItemDVT(data.dvtID);
             setStatus(data.status);
             setImage(data.imgUrl);
+        } else {
+            setIdItem(0);
+            setItemName("");
+            setItemPrice("");
+            setItemCategory("");
+            setItemDVT("");
+            setStatus("");
+            setImage("");
         }
     }
 
@@ -103,7 +111,6 @@ export default function MunuItems() {
 
     const deleteItem = (id: number) => {
         dispatch(deleteMenuItemAsync(id));
-
         showAlert("success", "Xóa món ăn thành công");
         handlePageChange(currentPage);
         toggle1();
@@ -138,298 +145,291 @@ export default function MunuItems() {
         }
     }
     return (
-        <div className="content scroll" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header mr-md-3 border-0">
-                <div className="card-header p-0 border-0">
-                    <div className="container-fluid">
-                        <div className="row mb-2 align-items-center" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                            <div className="col-sm-6 p-0">
-                                <h1>Danh sách món</h1>
-                            </div>
-                            <div className="col-sm-6 p-0">
-                                <ol className="breadcrumb p-2 float-sm-right">
-                                    <li className="breadcrumb-item"><a href="#">Trang chủ</a></li>
-                                    <li className="breadcrumb-item active">Danh sách món</li>
-                                </ol>
-                            </div>
-                        </div>
-                    </div>
+        <>
+            <div className="container-fluid">
+                <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                    <h3 className='m-0' style={{ height: '40px' }}>Danh sách món</h3>
+                    <button className="btn btn-success" onClick={() => {
+                        openModal()
+                    }}><i className="fas fa-plus-circle mx-0"></i>Thêm món ăn</button>
                 </div>
+            </div>
 
-                <div className="content">
-                    <div>
-                        {/* add and search */}
-                        <div className="card-header border-0 px-0">
-                            <button className="btn btn-success" onClick={() => {
-                                openModal()
-                            }}><i className="fas fa-plus-circle mx-0"></i>Thêm món ăn</button>
-
-                            <div className="card-tools m-0 pt-1">
-                                <div className="input-group">
-                                    <input
-                                        type="text"
-                                        value={searchName}
-                                        onChange={(e) => onSearchChange(e.target.value)}
-                                        placeholder="Tìm kiếm món ăn..."
-                                        className='form-control'
-                                    />
-                                    <span className='input-group-text bg-success text-bg-success'><i className="fas fa-search"></i></span>
-                                </div>
+            <div className="content">
+                    <div className='row' style={{ padding: '20px 8px 20px 25px', width: "100%", justifyContent: 'space-between' }}>
+                        <div className="col-sm-9 p-0">
+                            <div className="input-group">
+                                <input
+                                    type="text"
+                                    value={searchName}
+                                    onChange={(e) => onSearchChange(e.target.value)}
+                                    placeholder="Tìm kiếm món ăn..."
+                                    className='form-control'
+                                />
+                                <span className='input-group-text bg-success text-bg-success'><i className="fas fa-search"></i></span>
                             </div>
                         </div>
-                        {/* table */}
-                        <div className="card card-body border-0 p-0 mt-3">
-                            <table className="table table-striped projects">
-                                <thead>
-                                    <tr>
-                                        <th style={{ width: "1%" }}>
-                                            STT
-                                        </th>
-                                        <th style={{ width: "20%" }}>
-                                            Tên Món
-                                        </th>
-                                        <th style={{ width: "10%" }}>
-                                            Hình Ảnh
-                                        </th>
-                                        <th>
-                                            Giá
-                                        </th>
-                                        <th>
-                                            <select value={selectedCategory} onChange={handleSelectedCategoryChange}>
-                                                <option value="0">Loại Món</option>
-                                                {listCategory && listCategory.length > 0 &&
-                                                    listCategory.map((item: any) =>
-                                                        <option key={item.id} value={item.id}>{item.name}</option>
-                                                    )}
-                                            </select>
-                                        </th>
-                                        <th>
-                                            Đv Tính
-                                        </th>
-                                        <th>
-                                            Tồn Kho
-                                        </th>
-                                        <th style={{ width: "20%" }} className="text-center">
-                                            Tùy Chỉnh
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {menuItems && menuItems.length > 0 ? menuItems.map((item: any, i: number) => (
-                                        <tr key={item && item.id ? item.id : null}>
-                                            <td>
-                                                {i + 1}
-                                            </td>
-                                            <td>
+                        <div className="col-sm-2" style={{ display: 'flex', padding: '0' }}>
+                            <select
+                                className='form-control'
+                                value={selectedCategory}
+                                onChange={handleSelectedCategoryChange}
+                            >
+                                {listCategory && listCategory.length > 0 &&
+                                    listCategory.map((item: any) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                    {/* table */}
+                    <div className="card card-body border-0 p-0 mx-3">
+                        <table className="table table-striped projects">
+                            <thead >
+                                <tr >
+                                    <th style={{ width: "1%" }}>
+                                        STT
+                                    </th>
+                                    <th style={{ width: "20%" }}>
+                                        Tên Món
+                                    </th>
+                                    <th>
+                                        Giá
+                                    </th>
+                                    <th>
+                                        Đơn vị Tính
+                                    </th>
+                                    <th style={{ width: "10%" }}>
+                                        Loại món
+                                    </th>
+                                    <th>
+                                        Tồn Kho
+                                    </th>
+                                    <th style={{ width: "16%" }} className="text-center">
+                                        Tùy Chỉnh
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {menuItems && menuItems.length > 0 ? menuItems.map((item: any, i: number) => (
+                                    <tr key={item && item.id ? item.id : null}>
+                                        <td>
+                                            {i + 1}
+                                        </td>
+                                        <td style={{ display: 'flex', alignItems: 'center' }}>
+                                            {item && item.imgUrl ?
+                                                <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
+                                                :
+                                                <img src="" alt=" món ăn" style={{ height: 40 }} />
+                                            }
+                                            <div style={{ marginLeft: '10px' }}>
                                                 {item && item.name ? item.name : null}
-                                            </td>
-                                            <td>
-                                                {item && item.imgUrl ?
-                                                    <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
-                                                    :
-                                                    <img src="" alt=" món ăn" style={{ height: 40 }} />
-                                                }
-                                            </td>
-                                            <td className="project_progress" style={{}}>
-                                                {item && item.price ? `${formatMoney(item.price)} ₫` : null}
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.category_name ? item.category_name : ""}
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.dvt_name ? item.dvt_name : null}
-                                            </td>
-                                            <td className="project_progress">
-                                                {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
-                                            </td>
-                                            <td className="project-actions text-right">
-                                                <div className="d-flex justify-content-between " >
-                                                    {/* <a className="btn btn-primary btn-sm" href="#">
+                                            </div>
+
+                                        </td>
+                                        <td className="project_progress" style={{}}>
+                                            {item && item.price ? `${formatMoney(item.price)} ₫` : null}
+                                        </td>
+                                        <td className="project_progress">
+                                            {item && item.dvt_name ? item.dvt_name : null}
+                                        </td>
+                                        <td className="project_progress">
+                                            {item && item.category_name ? item.category_name : ""}
+                                        </td>
+
+                                        <td className="project_progress">
+                                            {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
+                                        </td>
+                                        <td className="project-actions text-right">
+                                            <div className="d-flex justify-content-between " >
+                                                {/* <a className="btn btn-primary btn-sm" href="#">
                                                         <i className="fas fa-folder mr-1"></i> View
                                                     </a> */}
-                                                    <button className="btn btn-success btn-sm pd-5" onClick={() => {
-                                                        openModal();
-                                                        setIsEdit(true);
-                                                        setDataForm(item);
-                                                    }}>
-                                                        <i className="fas fa-pencil-alt"></i> Sửa
-                                                    </button>
-                                                    <button className="btn btn-danger btn-sm me-2" onClick={() => {
-                                                        openModal1(item.id)
-                                                        setItemName(item?.name)
-                                                    }}>
-                                                        <i className="fas fa-trash"></i> Xóa
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )) : ""}
-                                </tbody>
-                            </table>
-                        </div>
-                        {/* pagination */}
-                        <div className="card-footer bg-white p-0">
-                            <div className="d-flex justify-content-center align-items-center">
-                                <ul className="pagination">
-                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                <button className="btn btn-success btn-sm pd-5" onClick={() => {
+                                                    openModal();
+                                                    setIsEdit(true);
+                                                    setDataForm(item);
+                                                }}>
+                                                    <i className="fas fa-pencil-alt"></i> Sửa
+                                                </button>
+                                                <button className="btn btn-danger btn-sm me-2" onClick={() => {
+                                                    openModal1(item.id)
+                                                    setItemName(item?.name)
+                                                }}>
+                                                    <i className="fas fa-trash"></i> Xóa
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )) : ""}
+                            </tbody>
+                        </table>
+                    </div>
+                    {/* pagination */}
+                    <div className="card-footer bg-white p-0">
+                        <div className="d-flex justify-content-center align-items-center">
+                            <ul className="pagination">
+                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                    <button
+                                        className="page-link"
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                    >
+                                        &#60;
+                                    </button>
+                                </li>
+                                {Array.from({ length: totalPages }, (_, i) => (
+                                    <li
+                                        className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
+                                        key={i + 1}
+                                    >
                                         <button
                                             className="page-link"
-                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            onClick={() => handlePageChange(i + 1)}
                                         >
-                                            &#60;
+                                            {i + 1}
                                         </button>
                                     </li>
-                                    {Array.from({ length: totalPages }, (_, i) => (
-                                        <li
-                                            className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}
-                                            key={i + 1}
-                                        >
-                                            <button
-                                                className="page-link"
-                                                onClick={() => handlePageChange(i + 1)}
-                                            >
-                                                {i + 1}
-                                            </button>
-                                        </li>
-                                    ))}
-                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                        <button
-                                            className="page-link"
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                        >
-                                            &#62;
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
+                                ))}
+                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                    <button
+                                        className="page-link"
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                    >
+                                        &#62;
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                </div>
-                {/* modal add and edit */}
-                <Modal isOpen={modal} toggle={openModal}>
-                    <ModalHeader toggle={openModal}>{"Thêm Món Mới"}</ModalHeader>
-                    <ModalBody>
-                        <form className="form-horizontal">
+            </div>
+            {/* modal add and edit */}
+            <Modal isOpen={modal} toggle={openModal}>
+                <ModalHeader toggle={openModal}>{"Thêm Món Mới"}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <label className="col-sm-4 col-form-label">Loại món </label>
+                            <div className="col-sm-8">
+                                <select
+                                    className="form-control"
+                                    id="dvt"
+                                    value={itemCategory}
+                                    onChange={(e) => {
+                                        setItemCategory(e.target.value)
+                                    }}
+                                >
+                                    <option value="" selected>Chọn loại món</option>
+                                    {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
+                                        <option value={item.id} key={id}>{item.name}</option>
+                                    )) : ""}
+                                </select>
+                            </div>
+                        </div>
+                        <>
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Loại món </label>
+                                <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        type='file'
+                                        id="image"
+                                        onChange={handleChangeFile}
+
+                                    />
+                                    {image ? (<img src={image} alt="" width={80} height={80} />) : (
+                                        <div className='ratio ratio-1x1 w-50 mt-2'>
+                                            <img src={image} alt="" style={{ objectFit: 'cover' }} />
+                                        </div>)
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Tên món ăn </label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="name"
+                                        value={itemName}
+                                        onChange={(e) => {
+                                            setItemName(e.target.value)
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Giá</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="name"
+                                        value={itemPrice}
+                                        onChange={(e) => {
+                                            setItemPrice(e.target.value)
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Đơn vị tính</label>
                                 <div className="col-sm-8">
                                     <select
                                         className="form-control"
                                         id="dvt"
-                                        value={itemCategory}
+                                        value={itemDVT}
                                         onChange={(e) => {
-                                            setItemCategory(e.target.value)
+                                            setItemDVT(e.target.value)
                                         }}
                                     >
-                                        <option value="" selected>Chọn loại món</option>
-                                        {listCategory && listCategory.length > 0 ? listCategory.map((item: any, id: number) => (
-                                            <option value={item.id} key={id}>{item.name}</option>
+                                        <option value=" ">Chọn đơn vị tính</option>
+                                        {listDvt && listDvt.length > 0 ? listDvt.map((item: any, id: number) => (
+                                            <option value={item.id}>{item.tenDVT}</option>
                                         )) : ""}
                                     </select>
                                 </div>
-                            </div>
-                            <>
-                                <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
-                                    <div className="col-sm-8">
-                                        <input
-                                            className="form-control"
-                                            type='file'
-                                            id="image"
-                                            onChange={handleChangeFile}
+                            </div></>
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="secondary" onClick={() => { openModal(); setDataForm("") }}>
+                        Hủy
+                    </Button>
+                    <Button color="primary" onClick={() => {
+                        addMenuItem();
+                    }}>
+                        Lưu
+                    </Button>
+                </ModalFooter>
+            </Modal>
+            {/* modal delete */}
+            <Modal isOpen={modal1} toggle={openModal1}>
+                <ModalHeader toggle1={openModal1}>{"Xác nhận xóa món ăn"}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <h4>Bạn có chắc chắn muốn xóa {itemName} không? </h4>
+                            <div>Sau khi xóa món ăn sẽ bị xóa vĩnh viễn khỏi thực đơn không thể khôi phực lại được nữa</div>
+                        </div>
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="secondary" onClick={() => {
+                        openModal1()
+                        setDataForm(" ");
+                    }}>
+                        Hủy
+                    </Button>
+                    <Button color="danger" onClick={() => {
+                        deleteItem(idItemDelete);
+                    }}>
+                        Đồng ý xóa
+                    </Button>
+                </ModalFooter>
+            </Modal>
 
-                                        />
-                                        {image &&
-                                            <div className='ratio ratio-1x1 w-50 mt-2'>
-                                                <img src={image} alt="" style={{ objectFit: 'cover' }} />
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                                <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Tên món ăn </label>
-                                    <div className="col-sm-8">
-                                        <input
-                                            className="form-control"
-                                            id="name"
-                                            value={itemName}
-                                            onChange={(e) => {
-                                                setItemName(e.target.value)
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Giá</label>
-                                    <div className="col-sm-8">
-                                        <input
-                                            className="form-control"
-                                            id="name"
-                                            value={itemPrice}
-                                            onChange={(e) => {
-                                                setItemPrice(e.target.value)
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Đơn vị tính</label>
-                                    <div className="col-sm-8">
-                                        <select
-                                            className="form-control"
-                                            id="dvt"
-                                            value={itemDVT}
-                                            onChange={(e) => {
-                                                setItemDVT(e.target.value)
-                                            }}
-                                        >
-                                            <option value=" ">Chọn đơn vị tính</option>
-                                            {listDvt && listDvt.length > 0 ? listDvt.map((item: any, id: number) => (
-                                                <option value={item.id}>{item.tenDVT}</option>
-                                            )) : ""}
-                                        </select>
-                                    </div>
-                                </div></>
-                        </form>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="secondary" onClick={() => openModal()}>
-                            Hủy
-                        </Button>
-                        <Button color="primary" onClick={() => {
-                            addMenuItem();
-                        }}>
-                            Lưu
-                        </Button>
-                    </ModalFooter>
-                </Modal>
-                {/* modal delete */}
-                <Modal isOpen={modal1} toggle={openModal1}>
-                    <ModalHeader toggle1={openModal1}>{"Xác nhận xóa món ăn"}</ModalHeader>
-                    <ModalBody>
-                        <form className="form-horizontal">
-                            <div className="form-group row">
-                                <h4>Bạn có chắc chắn muốn xóa {itemName} không? </h4>
-                                <div>Sau khi xóa món ăn sẽ bị xóa vĩnh viễn khỏi thực đơn không thể khôi phực lại được nữa</div>
-                            </div>
-                        </form>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="secondary" onClick={() => {
-                            openModal1()
-                            setDataForm(" ");
-                        }}>
-                            Hủy
-                        </Button>
-                        <Button color="danger" onClick={() => {
-                            deleteItem(idItemDelete);
-                        }}>
-                            Đồng ý xóa
-                        </Button>
-                    </ModalFooter>
-                </Modal>
-
-            </div>
-        </div>
+        </>
     )
 }

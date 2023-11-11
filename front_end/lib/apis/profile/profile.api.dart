@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:restaurant_manager_app/routers/router.dart';
 import 'package:restaurant_manager_app/utils/dio.dart';

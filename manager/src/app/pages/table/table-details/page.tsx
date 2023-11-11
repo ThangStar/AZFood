@@ -49,9 +49,12 @@ export default function TableDetails() {
     const [payMethod, setPayMethod] = useState<number>(1)
 
     useEffect(() => {
-        dispatch(getMenuListAsync());
-        dispatch(getDvtListAsync());
-        dispatch(getCategoryListAsync())
+        const fetchData = async () => {
+            await dispatch(getMenuListAsync());
+            await dispatch(getDvtListAsync());
+            await dispatch(getCategoryListAsync())
+        }
+        fetchData();
     }, [dispatch]);
 
     useEffect(() => {
@@ -249,7 +252,7 @@ export default function TableDetails() {
                             <div
                                 className="grid-item"
                                 key={id}
-                                style={{ backgroundImage: `url(${item.imgUrl})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
+                                style={{ backgroundImage: `url(${item && item.imgUrl ? item.imgUrl : ''})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
                                 onClick={() => {
                                     handlePlusOrder(item.id);
                                 }}
@@ -330,7 +333,7 @@ export default function TableDetails() {
                                                 <h6>{item.productName} ({findTenDVT(item.dvt)})</h6>
                                             </td>
                                             <td className="text-center">{formatMoney(item.price)}</td>
-                                            <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center'}}>
+                                            <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                                 <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item.productID)}>-</button>
                                                 {item.quantity}
                                                 <button className='btn btn-outline-dark' onClick={() => handlePlusOrder(item.productID)}>+</button>

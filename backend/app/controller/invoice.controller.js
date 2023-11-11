@@ -8,7 +8,7 @@ exports.getList = async (req, res) => {
 
     if (isAuth) {
 
-        const PAGE_SIZE = 10;
+        const PAGE_SIZE = 25;
         const currentPage = parseInt(req.query.page) || 1;
         const offset = (currentPage - 1) * PAGE_SIZE;
 
@@ -19,21 +19,10 @@ exports.getList = async (req, res) => {
             type: QueryTypes.SELECT
         });
 
-        const queryRaw = `SELECT 
-        ic.id,
-        ic.invoiceNumber,
-        ic.total,
-        ic.createAt,
-        ic.userName,
-        ic.tableID,
-        t.name AS table_Name
-        FROM 
-        invoice ic
-        JOIN
-        tables t ON t.id = ic.tableID
-        ORDER BY ic.createAt DESC
-        LIMIT :limit OFFSET :offset;
-    `;
+        const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
+        FROM invoice ic 
+        JOIN tables t ON t.id = ic.tableID 
+        LIMIT :limit OFFSET :offset;`;
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
@@ -184,35 +173,6 @@ exports.reportByDay = async (req, res) => {
 
     }
 }
-exports.searchIvoiceByName = async (req, res) => {
-    const checkAuth = Auth.checkAuth(req);
-    if (checkAuth) {
-        try {
-            const keysearch = req.body.keysearch;
-            console.log(req.body.keysearch);
-            const queryRaw = `SELECT * FROM invoice WHERE name LIKE :name`;
-
-            const resultRaw = await sequelize.query(queryRaw, {
-                raw: true,
-                logging: false,
-                replacements: {
-                    name: `%${keysearch}%`
-                },
-                type: QueryTypes.SELECT
-            });
-            res.status(200).json({
-                data: resultRaw,
-
-            });
-        } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
-            console.log("error", error)
-        }
-    } else {
-        res.status(401).send('User is not admin');
-
-    }
-};
 
 exports.getDetailsById = async (req, res) => {
     const body = req.body;

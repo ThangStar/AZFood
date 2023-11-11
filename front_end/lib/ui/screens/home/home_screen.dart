@@ -70,8 +70,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     io.emit('table', {"name": "thang"});
     if (!io.hasListeners("response")) {
       io.on('response', (data) {
-        print("table change: $data");
-
         final jsonResponse = data as List<dynamic>;
         List<Model.Table> tables =
             jsonResponse.map((e) => Model.Table.fromJson(e)).toList();
@@ -150,28 +148,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                                   },
                                                 )));
                                   },
-                            openNotification:
-                                widget.constraints.maxWidth > mobileWidth
-                                    ? () {
-                                        setState(() {
-                                          notificationVisible =
-                                              !notificationVisible;
-                                        });
-                                      }
-                                    : () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    NotificationScreen(
-                                                      onClose: () {
-                                                        setState(() {
-                                                          notificationVisible =
-                                                              !notificationVisible;
-                                                        });
-                                                      },
-                                                    )));
-                                      },
                             profile: profile,
                             showDrawer: checkDevice(widget.constraints.maxWidth,
                                 true, false, false),
@@ -186,15 +162,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             const SizedBox(
                               height: 16,
                             ),
-                            Text(
-                              "Danh sách bàn",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                            ).animate().moveY(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Danh sách bàn",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
+                                ).animate().moveY(),
+                                Column(
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          width: 10,
+                                          height: 10,
+                                          color: Colors.green,
+                                        ),
+                                        Text(" Đang hoạt động "),
+                                        Container(
+                                          width: 10,
+                                          height: 10,
+                                          color: Colors.grey,
+                                        ),
+                                        Text(" Trống "),
+                                        Container(
+                                          width: 10,
+                                          height: 10,
+                                          color: Colors.redAccent,
+                                        ),
+                                        Text(" Đang chờ"),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                             const PageIndex(),
                           ],
                         ),
@@ -297,29 +306,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             "Không thể order bàn đang bận")
                                         .show(context);
                                   } else {
-
                                     prdBloc.add(const GetListProductStatusEvent(
                                         status: ProductStatus.loading));
                                     io.emit('listProductByIdTable',
                                         {"id": table.id});
                                     if (!io.hasListeners("responseOrder")) {
                                       io.on('responseOrder', (data) {
-                                        print("TBID: ${data['tableID']}");
-                                        prdBloc.add(
-                                            OnChangeTableId(id: data['tableID'] ?? 0));
+                                        print("data order ${data}");
+                                        prdBloc.add(OnChangeTableId(
+                                            id: data['tableID'] ?? 0));
                                         final jsonResponse =
                                             data['order'] as List<dynamic>;
                                         List<Product> currentProducts =
                                             jsonResponse
                                                 .map((e) => Product.fromJson(e))
                                                 .toList();
-                                        for (var i in currentProducts) {
-                                          print(i.imageUrl);
-                                          int length = currentProducts
-                                              .where((j) => j.name == i.name)
-                                              .length;
-                                          i.quantity = length;
-                                        }
                                         prdBloc.add(GetListProductByIdTable(
                                             currentProducts: currentProducts));
                                       });
@@ -412,15 +413,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         .withOpacity(0.5))),
                             child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: NotificationScreen(
-                                  onClose: () {
-                                    if (notificationVisible) {
-                                      setState(() {
-                                        notificationVisible = false;
-                                      });
-                                    }
-                                  },
-                                ))),
+
+                                )),
                       ],
                     ))
                 : const SizedBox.shrink(),
@@ -437,13 +431,11 @@ class ToolbarHome extends StatelessWidget {
     required this.profile,
     this.showDrawer = true,
     this.openChat,
-    this.openNotification,
   });
 
   final Profile profile;
   final bool showDrawer;
   final VoidCallback? openChat;
-  final VoidCallback? openNotification;
 
   @override
   Widget build(BuildContext context) {
@@ -505,18 +497,6 @@ class ToolbarHome extends StatelessWidget {
                       ),
                       const SizedBox(
                         width: 12,
-                      ),
-                      MyIconButtonBlur(
-                        icon: Badge(
-                          backgroundColor: Colors.redAccent,
-                          child: const Icon(Icons.notifications,
-                                  color: Colors.white)
-                              .animate(
-                                onPlay: (controller) => controller.repeat(),
-                              )
-                              .shake(delay: 1.seconds),
-                        ),
-                        onTap: openNotification ?? () {},
                       ),
                     ],
                   )

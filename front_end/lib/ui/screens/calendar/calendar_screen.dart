@@ -88,7 +88,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   },
                   label: Text(
                     "Điểm danh",
-                    style: TextStyle(color: colorScheme(context).onPrimary),
+                    style: TextStyle(color: Colors.white),
                   ));
             },
           ),
@@ -155,6 +155,55 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         decoration: BoxDecoration(
                             color: colorScheme(context).onPrimary)),
                     // to provide custom UI for month cells.
+                    weekDayBuilder: (day){
+                      String strDate = "";
+                      switch (day) {
+                        case 0:
+                      strDate = widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 2"
+                              : "T2";
+                        case 1:
+                          strDate= widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 3"
+                              : "T2";
+
+                        case 2:
+                          strDate = widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 4"
+                              : "T4";
+
+                        case 3:
+                          strDate = widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 5"
+                              : "T5";
+
+                        case 4:
+                          strDate = widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 6"
+                              : "T6";
+
+                        case 5:
+                          strDate = widget.constraints.maxWidth > mobileWidth
+                              ? "Thứ 7"
+                              : "T7";
+
+                        case 6:
+                          strDate = widget.constraints.maxWidth > mobileWidth
+                              ? "Chủ nhật"
+                              : "CN";
+                        default:
+                          strDate = "Không xác định";
+
+                      }
+                      return Center(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 18),
+                          child: Text(strDate, style: TextStyle(
+                            fontSize: 14
+                          ),),
+                        ),
+                      );
+                    },
                     cellBuilder: (date, events, isToday, isInMonth) {
                       // Return your widget to display as month cell.
                       return CalendarItemDay(
@@ -178,6 +227,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     // This callback will only work if cellBuilder is null.
                     onEventTap: (event, date) => print(event),
                     onDateLongPress: (date) => print(date),
+                    borderColor: colorScheme(context).background,
                   );
                 },
               ),
@@ -211,7 +261,7 @@ class CalendarItemDay extends StatelessWidget {
             ? Colors.red
             : isChecked && isToday || isChecked
                 ? Colors.green[900]
-                : Colors.white,
+                : colorScheme(context).onPrimary,
         child: Column(children: [
           Column(children: [
             Text(
@@ -243,7 +293,7 @@ class CalendarItemDay extends StatelessWidget {
                         Text(
                           "Đã điểm danh",
                           style:
-                              TextStyle(color: colorScheme(context).onPrimary),
+                              TextStyle(color: Colors.white),
                         ),
                       ],
                     ),

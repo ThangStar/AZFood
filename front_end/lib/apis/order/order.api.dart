@@ -6,7 +6,8 @@ import 'package:restaurant_manager_app/utils/dio.dart';
 import '../../utils/response.dart';
 
 class OrderApi {
-  static Future<Object> create(ProductCheckOut productCheckOuts, int userID) async {
+  static Future<Object> create(
+      ProductCheckOut productCheckOuts, int userID) async {
     try {
       Response<dynamic> response = await http.post(Router.createOrder, data: {
         "productID": productCheckOuts.productID,
@@ -45,8 +46,7 @@ class OrderApi {
 
   static Future<Object> payBill(tableID) async {
     try {
-      Response<dynamic> response =
-      await http.post(Router.payBill, data: {
+      Response<dynamic> response = await http.post(Router.payBill, data: {
         "id": tableID,
       });
       if (response.statusCode == 200) {
@@ -60,12 +60,19 @@ class OrderApi {
       return Failure(response: err.response);
     }
   }
-  static Future<Object> increment(int quantity, int productId) async {
+
+  static Future<Object> updateQuantity(
+      {int? quantity,
+      required int productId,
+      required int tableId,
+      required TypeUpdateQuantity type}) async {
     try {
       Response<dynamic> response =
-      await http.post(Router.incrementOrder, data: {
+          await http.post(Router.updateQuantity, data: {
         "quantity": quantity,
-        "productID": productId
+        "productID": productId,
+        "tableID": tableId,
+        "type": type.name,
       });
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
@@ -79,3 +86,5 @@ class OrderApi {
     }
   }
 }
+
+enum TypeUpdateQuantity { increment, decrement, set }

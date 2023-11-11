@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
@@ -236,7 +237,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                   }
                   return BlocBuilder<ProductBloc, ProductState>(
                     buildWhen: (previous, current) {
-                      print("has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
+                      print(
+                          "has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
                       return widget.tableID == prdBloc.state.tableId;
                     },
                     builder: (context, state) {
@@ -285,8 +287,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           ),
                           itemCount: state.currentProducts!.toSet().length,
                           itemBuilder: (context, index) {
-                            Product product =
-                                state.currentProducts!.toSet().elementAt(index);
+                            Product product = state.currentProducts![index];
                             int quantityProduct = product.quantity ?? 1;
                             return ItemProduct(
                               product: product,
@@ -316,11 +317,14 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                   BorderRadius.circular(6),
                                               child: InkWell(
                                                 onTap: () {
-                                                  setState(() {
-                                                    if (quantityProduct > 1) {
-                                                      quantityProduct -= 1;
-                                                    }
-                                                  });
+                                                  context.read<OrderBloc>().add(
+                                                      OnUpdateProductQuantity(
+                                                          productID: product.id,
+                                                          type:
+                                                              TypeUpdateQuantity
+                                                                  .decrement,
+                                                          tableID:
+                                                              widget.tableID));
                                                 },
                                                 child: Container(
                                                   padding:
@@ -333,7 +337,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                               ),
                                             ),
                                             Text(
-                                              "$quantityProduct",
+                                              "${product.quantity}",
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -347,8 +351,16 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                   BorderRadius.circular(6),
                                               child: InkWell(
                                                 onTap: () {
+                                                  print(
+                                                      "PRD ID: ${product.id}");
                                                   context.read<OrderBloc>().add(
-                                                      OnIncrementProduct());
+                                                      OnUpdateProductQuantity(
+                                                          productID: product.id,
+                                                          type:
+                                                              TypeUpdateQuantity
+                                                                  .increment,
+                                                          tableID:
+                                                              widget.tableID));
                                                 },
                                                 child: Container(
                                                   padding:
@@ -464,7 +476,7 @@ class BottomActionBill extends StatelessWidget {
     bool isMobile = checkDevice(widthOfScreen, true, false, false);
     return Container(
         decoration: BoxDecoration(
-          color: Colors.yellow[100],
+          color: colorScheme(context).onPrimary,
           boxShadow: [
             BoxShadow(
               blurRadius: 1.0,
@@ -538,7 +550,7 @@ class BottomActionBill extends StatelessWidget {
                       Expanded(
                         child: MyOutlineButton(
                           text: 'Quay lại',
-                          onTap: () {},
+                          onTap: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(
@@ -580,7 +592,7 @@ class BottomActionBill extends StatelessWidget {
                         width: 200,
                         child: MyOutlineButton(
                           text: 'Quay lại',
-                          onTap: () {},
+                          onTap: () => Navigator.pop(context),
                         ),
                       ),
                       const SizedBox(

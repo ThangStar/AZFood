@@ -14,28 +14,75 @@ const getInvoiceNumber = (min = 0, max = 500000) => {
     return num.toString();
 };
 
-exports.handleIncrement = async (req, res) => {
-    console.log("AAAAAA");
+exports.updateQuantity = async (req, res) => {
+    // [+]: {type: increment, productID: 0, tableID: 0}
+    // [-]: {type: decrement, productID: 0, tableID: 0}
+    // [set]: {type: set, quantity: 10, productID: 0, tableID: 0}
     try {
-        const quantity = req.body.quantity;
-        const productID = req.body.productID;
-        console.log('test body', quantity, productID);
-        const isAuth = await Auth.checkAuth(req);
-        if (isAuth) {
-            console.log('test cong', quantity, productID);
-            const incrementQuery = `UPDATE orderItems SET quantity = ? WHERE productID = ?`;
-            const increment = await sequelize.query(incrementQuery, {
+
+        console.log("BODY", req.body);
+
+        const { type, quantity, productID, tableID } = req.body
+        const isIncrement = type == 'increment';
+        const isDecrement = type == 'decrement';
+        const isSet = type == 'set';
+        if (isIncrement) {
+            //handle plus
+            console.log('plus');
+
+            const query = `UPDATE orderItems as o1 
+        INNER JOIN orders as o2 
+        ON o1.orderID = o2.id 
+        SET o1.quantity = o1.quantity + 1
+        WHERE o1.productID = ? AND o2.tableID = ?`;
+
+            const increment = await sequelize.query(query, {
                 raw: true,
                 logging: false,
-                replacements: [quantity, productID],
+                replacements: [productID, tableID],
                 type: QueryTypes.UPDATE
             });
 
             res.status(200).json({ increment });
+        } else if (isDecrement) {
+            //handle minus
+            console.log('minus');
+
+            const query = `UPDATE orderItems as o1 
+            INNER JOIN orders as o2 
+            ON o1.orderID = o2.id 
+            SET o1.quantity = o1.quantity - 1
+            WHERE o1.productID = ? AND o2.tableID = ?`;
+            const decrement = await sequelize.query(query, {
+                raw: true,
+                logging: false,
+                replacements: [productID, tableID],
+                type: QueryTypes.UPDATE
+            });
+
+            res.status(200).json({ decrement });
+        } else if (isSet) {
+            //handle set
+            console.log("set");
+
+            const query = `UPDATE orderItems as o1 
+            INNER JOIN orders as o2 
+            ON o1.orderID = o2.id 
+            SET o1.quantity = ?
+            WHERE o1.productID = ? AND o2.tableID = ?`;
+            const set = await sequelize.query(query, {
+                raw: true,
+                logging: false,
+                replacements: [quantity, productID, tableID],
+                type: QueryTypes.UPDATE
+            });
+
+            res.status(200).json({ set });
         }
-        else {
-            res.status(403).json({ message: 'you are not logned in' });
-        }
+
+
+
+
 
     } catch (error) {
         console.error('Error getting orders:', error);
@@ -48,7 +95,6 @@ exports.createOrder = async (req, res) => {
 
     try {
         const body = req.body;
-        console.log(body);
 
         const isAuth = await Auth.checkAuth(req);
 

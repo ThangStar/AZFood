@@ -7,7 +7,7 @@ exports.getOrdersForTable = async (socket, io, data) => {
         const tableID = data.id;
         console.log('check');
         const getOrdersQuery = `
-            SELECT o.id AS id, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS name ,
+            SELECT o.orderDate, o.totalAmount,p.id AS id,o.orderDate , p.name AS name ,
              oi.quantity, oi.subTotal , p.category , p.price , u.name As userName, p.imgUrl, d.tenDVT as "dvt_name"
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID

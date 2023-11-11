@@ -21,6 +21,8 @@ class Router {
   //invoice
   static String getAllInvoice = '/api/invoice/list';
   static String getInvoiceByIdUser = '/api/invoice/listbyiduser';
+  static String getInvoiceById = '/api/invoice/detailbyid';
+
 
   //calendar
   static String attendance = '/api/attendance/attendance';

@@ -6,7 +6,8 @@ module.exports = app => {
     var router = require("express").Router();
   
     router.get("/list",[jwt.checkJwt] , invoice.getList );
-    router.get("/listbyiduser",[jwt.checkJwt] , invoice.getListByIdUser);
+    router.get("/listbyiduser",[jwt.checkJwt] , invoice.getListByIdUser );
+    router.get("/detailbyid",[jwt.checkJwt] , invoice.getDetailsById );
     router.get("/details",[jwt.checkJwt] , invoice.getDetails );
     router.get("/search",[jwt.checkJwt] , invoice.searchByDate );
   

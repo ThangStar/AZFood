@@ -142,15 +142,17 @@ class _ZoomState extends State<HomeMenuScreen> {
                                         label: Text(e.label));
                                   }).toList(),
                                   NavigationRailDestination(
-                                      icon: Icon(Icons.logout),
+                                      icon: const Icon(Icons.logout),
                                       label: GestureDetector(
                                           onTap: () {
                                             logout(context);
                                           },
-                                          child: Text("Đăng xuất"))),
+                                          child: const Text("Đăng xuất"))),
                                   NavigationRailDestination(
                                       icon: Switch(
                                         value: isDarkTheme,
+                                        activeColor: const Color.fromRGBO(43, 43, 53, 1),
+                                        activeTrackColor: const Color.fromRGBO(62, 62, 77, 1),
                                         onChanged: (value) async {
                                           await MySharePreferences
                                               .setIsDarkTheme(value);

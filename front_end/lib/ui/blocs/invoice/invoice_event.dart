@@ -9,7 +9,14 @@ class InvoiceEvent extends Equatable {
 
 class GetInvoiceEvent extends InvoiceEvent {}
 
-class GetInvoiceByIdUserEvent extends InvoiceEvent {
+class GetInvoiceByIdEvent extends InvoiceEvent {
   final int id;
-  const GetInvoiceByIdUserEvent({required this.id});
+  const GetInvoiceByIdEvent({required this.id});
 }
+
+class GetInvoiceByIdUserEvent extends InvoiceEvent {
+  final int userID;
+  final String keysearch;
+  const GetInvoiceByIdUserEvent({required this.userID, required this.keysearch});
+}
+

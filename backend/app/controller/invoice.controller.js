@@ -5,7 +5,7 @@ const Auth = require('./checkAuth.controller')
 
 exports.getList = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
-    
+
     if (isAuth) {
 
         const PAGE_SIZE = 25;
@@ -56,19 +56,25 @@ exports.getListByIdUser = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
         const queryRaw = `SELECT invoice.id, invoice.total, invoice.createAt, invoice.username, invoice.tableID, invoice.invoiceNumber, invoice.userID, tables.name AS table_Name, tables.status
-        FROM invoice
-        INNER JOIN tables ON invoice.tableID = tables.id
-        WHERE invoice.userID = ?;`;
+        FROM invoice 
+        INNER JOIN tables ON invoice.tableID = tables.id 
+        WHERE invoice.userID = :userID AND (invoice.id LIKE :id OR invoice.createAt LIKE :createAt OR tables.name LIKE :name)`;
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [body.id],
+                replacements: {
+                    userID: body.userID,
+                    id: `%${body.keysearch}%`,
+                    createAt: `%${body.keysearch}%`,
+                    name: `%${body.keysearch}%`
+                },
                 type: QueryTypes.SELECT
             });
             res.status(200).json({
                 resultRaw: resultRaw,
             });
+            console.log(resultRaw);
         } catch (error) {
             res.status(500);
             res.send(error)
@@ -131,31 +137,29 @@ exports.searchByDate = async (req, res) => {
         res.status(403).json({ message: 'Unauthorized' });
     }
 };
-exports.searchIvoiceByName = async (req, res) => {
-    const checkAuth = Auth.checkAuth(req);
-    if (checkAuth) {
-        try {
-            const keysearch = req.body.keysearch;
-            console.log(req.body.keysearch);
-            const queryRaw = `SELECT * FROM invoice WHERE name LIKE :name`;
 
+exports.getDetailsById = async (req, res) => {
+    const body = req.body;
+    const isAuth = await Auth.checkAuth(req);
+    if (isAuth) {
+        const queryRaw = `SELECT invoice.id, invoice.total, invoice.createAt, invoice.username, invoice.tableID, invoice.invoiceNumber, invoice.userID, tables.name AS table_Name, tables.status
+        FROM invoice 
+        INNER JOIN tables ON invoice.tableID = tables.id 
+        WHERE invoice.id = ?`;
+        try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: {
-                    name: `%${keysearch}%`
-                },
+                replacements: [body.id],
                 type: QueryTypes.SELECT
             });
-            res.status(200).json({
-                data: resultRaw,
-
-            });
+            res.status(200).send(resultRaw[0]);
+            console.log(resultRaw);
         } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
-            console.log("error", error)
+            res.status(500).send(error);
         }
+
     } else {
-        res.status(401).send('User is not admin');
+        res.status(403).json({ message: 'Unauthorized' });
     }
 };

@@ -1,104 +1,138 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
 class DetailBillScreen extends StatefulWidget {
-  const DetailBillScreen({super.key});
+  const DetailBillScreen({super.key, required this.id});
+
+  final int id;
 
   @override
   State<DetailBillScreen> createState() => _detailBillState();
 }
 
 class _detailBillState extends State<DetailBillScreen> {
+  late InvoiceBloc invoiceBloc;
+  @override
+  void initState() {
+    invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
+    invoiceBloc.add(GetInvoiceByIdEvent(id: widget.id));
+    print(invoiceBloc.state.invoice);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40.0),
-          child:AppBar(
-          scrolledUnderElevation: 0,
-          backgroundColor: colorScheme(context).onSecondary,
-          leading: IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.arrow_back,
-              color: colorScheme(context).scrim,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(40.0),
+          child: AppBar(
+            scrolledUnderElevation: 0,
+            backgroundColor: colorScheme(context).onPrimary,
+            titleSpacing: -5.0,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back,
+                color: colorScheme(context).scrim,
+              ),
+            ),
+            title: Text(
+              'CHI TIẾT HÓA ĐƠN',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(fontSize: 16, fontWeight: FontWeight.w900),
             ),
           ),
-          title: Text(
-            'CHI TIẾT HÓA ĐƠN',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16,fontWeight: FontWeight.w900),
+        ),
+        body: Container(
+          decoration: BoxDecoration(
+            color: colorScheme(context).onPrimary,
           ),
-        ),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(15.0),
-        decoration: BoxDecoration(
-          color: colorScheme(context).onTertiary,
-        ),
-        child: Column(
-          children: [
-            Stack(
-                children: <Widget>[      
-                  const Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      HeaderBill(),
-                      BodyBill(),
-                      FooterBill(),
-                    ],
-                  ),
-                  Positioned(
-                    top: 55,
-                    right: -1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(100),
-                            topLeft: Radius.circular(100)
-                            ),
-                            color: colorScheme(context).onTertiary,
-                            shape: BoxShape.rectangle,
+          child: Center(
+            child: ScrollConfiguration(
+              behavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  width: checkDevice(size.width, 500.0, 600.0, 1000.0),
+                  child: Center(
+                    child: Stack(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: Column(
+                            children: [
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  HeaderBill(),
+                                  BodyBill(),
+                                  FooterBill(),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        height: 45,
-                        width: 25,
+                        Positioned(
+                          top: 55,
+                          right: 14,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(100),
+                                  topLeft: Radius.circular(100)),
+                              color: colorScheme(context).onPrimary,
+                              shape: BoxShape.rectangle,
+                            ),
+                            height: 45,
+                            width: 25,
+                          ),
+                        ),
+                        Positioned(
+                          top: 55,
+                          left: 14,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(100),
+                                  bottomRight: Radius.circular(100)),
+                              color: colorScheme(context).onPrimary,
+                              shape: BoxShape.rectangle,
+                            ),
+                            height: 45,
+                            width: 25,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    top: 55,
-                    left: -1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(100),
-                            bottomRight: Radius.circular(100)
-                            ),
-                            color: colorScheme(context).onTertiary,
-                            shape: BoxShape.rectangle,
-                        ),
-                        height: 45,
-                        width: 25,
-                    ),
-                  ),
-                ]
+                ),
               ),
-          ],
-        ),
-      ),
-    );
+            ),
+          ),
+        ));
   }
 }
 
-class FooterBill extends StatelessWidget{
+class FooterBill extends StatelessWidget {
   const FooterBill({
-  super.key,
+    super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal:15.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       decoration: const BoxDecoration(
         color: Colors.black12,
         borderRadius: BorderRadius.only(
@@ -106,41 +140,44 @@ class FooterBill extends StatelessWidget{
           bottomRight: Radius.circular(15.0),
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Tổng tiền:',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
-              ),
-              Text(
-                '1.200.000 đ',
-                style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue),
-              ),
-            ],
-          ),
-          TextButton(
-            onPressed: () {},
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.black,
-              backgroundColor: Colors.white, // Màu chữ đen
+      child: BlocBuilder<InvoiceBloc, InvoiceState>
+      (builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Tổng tiền:',
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                ),
+                Text(
+                  '${NumberFormat.decimalPattern().format(state.invoice?.total ?? 0).replaceAll(',', '.')} đ',
+                  style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                ),
+              ],
             ),
-            child: const Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              child: Text(
-                'In hóa đơn',
-                style: TextStyle(fontSize: 17, color: Colors.black54),
+            TextButton(
+              onPressed: () {},
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+                backgroundColor: Colors.white, // Màu chữ đen
+              ),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: Text(
+                  'In hóa đơn',
+                  style: TextStyle(fontSize: 17, color: Colors.black54),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        );
+      }
       ),
     );
   }
@@ -156,10 +193,6 @@ class BodyBill extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0XFFD4D4D8).withOpacity(0.3),
-        // borderRadius: const BorderRadius.only(
-        //   bottomLeft: Radius.circular(15.0),
-        //   bottomRight: Radius.circular(15.0),
-        // ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -179,127 +212,132 @@ class BodyBill extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.black54),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              children: [
-                SizedBox(width: double.infinity, height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Mã hóa đơn',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                    Text(
-                      'HD100',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                  ],
-                ),
-                SizedBox(width: double.infinity, height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Số bàn',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                    Text(
-                      'Bàn 2',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                  ],
-                ),
-                SizedBox(width: double.infinity, height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Số lượng món',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                    Text(
-                      '12',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                  ],
-                ),
-                SizedBox(width: double.infinity, height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Khuyến mãi',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                    Text(
-                      '3%',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54),
-                    ),
-                  ],
-                ),
-                SizedBox(width: double.infinity, height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Đã vào bàn lúc',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black45),
-                    ),
-                    Text(
-                      '3h40p, ngày 25/8/2023',
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
-                    ),
-                  ],
-                ),
-                SizedBox(width: double.infinity, height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Đã xuất hóa đơn lúc',
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black45),
-                    ),
-                    Text(
-                      '5h40p, ngày 25/8/2023',
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
-                    ),
-                  ],
-                ),
-                SizedBox(width: double.infinity, height: 15),    
-              ],
-            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: BlocBuilder<InvoiceBloc, InvoiceState>(
+                builder: (context, state) {
+              return Column(
+                children: [
+                  const SizedBox(width: double.infinity, height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Mã hóa đơn',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                      Text(
+                        "HD00${state.invoice?.id ?? 0}",
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: double.infinity, height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Số bàn',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                      Text(
+                        state.invoice?.tableName ?? "",
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: double.infinity, height: 15),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Số lượng món',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                      Text(
+                        '12',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: double.infinity, height: 15),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Khuyến mãi',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                      Text(
+                        '3%',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: double.infinity, height: 30),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Đã vào bàn lúc',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black45),
+                      ),
+                      Text(
+                        '3h40p, ngày 25/8/2023',
+                        style: TextStyle(fontSize: 14, color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: double.infinity, height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Đã xuất hóa đơn lúc',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black45),
+                      ),
+                      Text(
+                        DateFormat("HH'h'mm'p,' 'ngày' dd/MM/yyyy")
+                            .format(state.invoice?.createAt ?? DateTime.now()),
+                        style: const TextStyle(
+                            fontSize: 14, color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: double.infinity, height: 15),
+                ],
+              );
+            }),
           ),
         ],
       ),

@@ -21,9 +21,24 @@ class InvoiceApi {
     }
     // return Http().dio.post(ApiPath.login);
   }
-  static Future<Object> getByIdUser(int id) async {
+  static Future<Object> getByIdUser(int userID, String keysearch) async {
     try {
-      Response<dynamic> response = await http.get(Router.getInvoiceByIdUser, data: {'id': id});
+      Response<dynamic> response = await http.get(Router.getInvoiceByIdUser, data: {'userID': userID, 'keysearch': keysearch});
+      if (response.statusCode == 200) {
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure invoice ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error invoice ${err.response}");
+      return Failure(response: err.response);
+    }
+  }
+
+  static Future<Object> getById(int id) async {
+    try {
+      Response<dynamic> response = await http.get(Router.getInvoiceById, data: {'id': id});
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
       } else {

@@ -8,7 +8,7 @@ import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
-import 'package:restaurant_manager_app/ui/screens/info/info_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/info/profile_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_tabbar_theme.dart';
 
@@ -212,7 +212,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                   Navigator.push(context,
                                                       MaterialPageRoute(
                                                     builder: (context) {
-                                                      return const InfoScreen();
+                                                      return const ProfileScreen();
                                                     },
                                                   ));
                                                   break;
@@ -227,6 +227,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                   ));
                                                   break;
                                                 default:
+                                                  // ignore: use_build_context_synchronously
                                                   Navigator.push(context,
                                                       MaterialPageRoute(
                                                     builder: (context) {

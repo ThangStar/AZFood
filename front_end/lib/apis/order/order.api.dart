@@ -44,10 +44,10 @@ class OrderApi {
     }
   }
 
-  static Future<Object> payBill(tableID) async {
+  static Future<Object> payBill(tableID, payMethod) async {
     try {
       Response<dynamic> response = await http.post(Router.payBill, data: {
-        "id": tableID,
+        "id": tableID, "payMethod": payMethod
       });
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);

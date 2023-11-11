@@ -475,7 +475,6 @@ exports.payBill = async (req, res) => {
     if (isAuth) {
         const tableID = req.body.id;
 
-
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
@@ -506,7 +505,7 @@ exports.payBill = async (req, res) => {
             const createInvoiceQuery = `
 
             INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber ,payMethod )
-            VALUES (?, ?, ?,? , ?,? ,1)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
 
             `;
             const invoiceNumber = getInvoiceNumber();

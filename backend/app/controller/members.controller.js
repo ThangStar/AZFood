@@ -179,7 +179,7 @@ exports.changePassUser = async (req, res) => {
 };
 
 exports.updateUserInfo = async (req, res) => {
-    const storage = getStorage();    
+    const storage = getStorage();
     try {
         const body = req.body;
         const image = req.file;
@@ -206,7 +206,7 @@ exports.updateUserInfo = async (req, res) => {
                 type: QueryTypes.UPDATE
             });
             console.log("resultRaw ", resultRaw);
-            
+
             res.status(200).json({ message: 'User information updated successfully' });
         }
     } catch (error) {

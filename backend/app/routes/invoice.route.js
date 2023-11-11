@@ -12,7 +12,7 @@ module.exports = app => {
     router.get("/listbyiduser",[jwt.checkJwt] , invoice.getListByIdUser);
     router.get("/details",[jwt.checkJwt] , invoice.getDetails );
     router.get("/search",[jwt.checkJwt] , invoice.searchByDate );
-  router.get("/report-day", [jwt.checkJwt], invoice.reportByDay);
+    router.get("/report-day", [jwt.checkJwt], invoice.reportByDay);
 
   app.use('/api/invoice', router);
 };

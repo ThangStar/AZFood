@@ -171,6 +171,8 @@ class _ZoomState extends State<HomeMenuScreen> {
                                       NavigationRailDestination(
                                           icon: Switch(
                                             value: isDarkTheme,
+                                            activeColor: const Color.fromRGBO(43, 43, 53, 1),
+                                            activeTrackColor: const Color.fromRGBO(62, 62, 77, 1),
                                             onChanged: (value) async {
                                               await MySharePreferences
                                                   .setIsDarkTheme(value);

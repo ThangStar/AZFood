@@ -30,9 +30,10 @@ class GetOrderInTableEvent extends OrderEvent {
 
 class PayBillEvent extends OrderEvent {
   final int tableId;
+  final int payMethod;
   final Function(PayStatus, BillData?) pushScreen;
 
-  const PayBillEvent({required this.tableId, required this.pushScreen});
+  const PayBillEvent({required this.tableId, required this.pushScreen, required this.payMethod});
 }
 
 class OnUpdateProductQuantity extends OrderEvent {

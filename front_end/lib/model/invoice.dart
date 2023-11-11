@@ -29,7 +29,7 @@ class Invoice {
     id: json["id"],
     total: json["total"],
     createAt: json["createAt"] == null ? null : DateTime.parse(json["createAt"]),
-    userName: json["userName"],
+    userName: json["username"],
     tableId: json["tableID"],
     tableName: json["table_Name"],
   );
@@ -38,7 +38,7 @@ class Invoice {
     "id": id,
     "total": total,
     "createAt": createAt?.toIso8601String(),
-    "userName": userName,
+    "username": userName,
     "tableID": tableId,
     "table_Name": tableName,
   };

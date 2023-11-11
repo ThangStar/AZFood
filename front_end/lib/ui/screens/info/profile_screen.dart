@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:restaurant_manager_app/model/bill_history.dart' as Model;
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
@@ -44,10 +42,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
     MySharePreferences.loadProfile().then((value) {
       profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
-      invoiceBloc.add(GetInvoiceByIdUserEvent(id: value?.id ?? 0));
+      invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
     });
     profile = profileBloc.state.profile;
-    print("TEST DATA: ${json.encode(profile)}");
     super.initState();
   }
 
@@ -62,7 +59,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-     
       appBar: AppBar(
         automaticallyImplyLeading:
             checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
@@ -84,10 +80,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 300,
               height: 40.0,
               child: TextField(
-                onChanged: (value) {
-                  setState(() {});
-                },
                 controller: controllerSearch,
+                onChanged: (value) {
+                  setState(() {
+                    controllerSearch.text = value;
+                    if(controllerSearch.text.isNotEmpty && !RegExp(r'^\s*$').hasMatch(controllerSearch.text)){
+                       MySharePreferences.loadProfile().then((value) {
+                        invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: controllerSearch.text));
+                      });
+                    }
+                  });
+                },
                 style: TextStyle(color: colorScheme(context).outline),
                 decoration: InputDecoration(
                   filled: true,
@@ -148,10 +151,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 300,
               height: 40.0,
               child: TextField(
-                onChanged: (value) {
-                  setState(() {});
-                },
                 controller: controllerSearch,
+                onChanged: (value) {
+                   setState(() {
+                     MySharePreferences.loadProfile().then((value) {
+                        invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: controllerSearch.text));
+                      });
+                  });
+                },
                 style: TextStyle(color: colorScheme(context).outline),
                 decoration: InputDecoration(
                   filled: true,
@@ -187,6 +194,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPressed: () {
                             setState(() {
                               controllerSearch.clear();
+                                MySharePreferences.loadProfile().then((value) {
+                                  invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ' '));
+                                });
                             });
                           },
                         ),
@@ -282,6 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         size: size,
                         innerController: innerController,
                         outerController: outerController,
+                        controllerSearch: controllerSearch,
                       ),
                     ]),
                   ),
@@ -297,6 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               size: size,
                               innerController: innerController,
                               outerController: outerController,
+                              controllerSearch: controllerSearch,
                             ),
                           )
                         ]),
@@ -312,6 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             size: size,
                             innerController: innerController,
                             outerController: outerController,
+                            controllerSearch: controllerSearch,
                           ),
                         ),
                       ]),
@@ -402,10 +415,12 @@ class _ListBill extends StatelessWidget {
     required this.size,
     required this.outerController,
     required this.innerController,
+    required this.controllerSearch,
   });
   final Size size;
   final ScrollController outerController;
   final ScrollController innerController;
+  final TextEditingController controllerSearch;
   @override
   Widget build(BuildContext context) {
     return Column(

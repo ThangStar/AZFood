@@ -53,14 +53,9 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
       backgroundColor: colorScheme(context).background,
       bottomNavigationBar: BlocBuilder<ProductBloc, ProductState>(
         builder: (context, state) {
-          if (state.status == ProductStatus.success) {
-            int amount = state.currentProducts?.length ?? 0;
-            return BottomActionBill(
-              tableId: widget.tableID,
-              selectedItem: selectedItem,
-              amount: amount, prdBloc: prdBloc,
-            );
-          }
+          int amount = state.status == ProductStatus.success
+              ? (state.currentProducts?.length ?? 0)
+              : 0;
           return BottomActionBill(
             tableId: widget.tableID,
             selectedItem: selectedItem,
@@ -476,6 +471,7 @@ class BottomActionBill extends StatelessWidget {
   Widget build(BuildContext context) {
     double widthOfScreen = MediaQuery.of(context).size.width;
     bool isMobile = checkDevice(widthOfScreen, true, false, false);
+    int price = 0;
     return Container(
         decoration: BoxDecoration(
           color: colorScheme(context).onPrimary,
@@ -505,7 +501,7 @@ class BottomActionBill extends StatelessWidget {
                     BlocBuilder<ProductBloc, ProductState>(
                       buildWhen: (previous, current) => tableId == prdBloc.state.tableId,
                       builder: (context, state) {
-                        int price = 0;
+                        price = 0;
                         for (Product i in state.currentProducts ?? []) {
                           price += i.price * i.amountCart;
                         }
@@ -579,6 +575,7 @@ class BottomActionBill extends StatelessWidget {
                                               PaySuccessScreen(
                                             payStatus: payStatus,
                                             billData: billData,
+                                            price: price,
                                           ),
                                         ),
                                       );
@@ -623,6 +620,7 @@ class BottomActionBill extends StatelessWidget {
                                               PaySuccessScreen(
                                             payStatus: payStatus,
                                             billData: billData,
+                                            price: price,
                                           ),
                                         ),
                                       );

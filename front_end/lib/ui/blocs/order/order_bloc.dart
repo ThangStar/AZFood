@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:restaurant_manager_app/apis/invoice/invoice.api.dart';
+import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/invoice.dart';
 import 'package:restaurant_manager_app/model/login_response.dart';
@@ -64,7 +64,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           idInvoice: result.response.data['invoiceID'],
           sumPrice: 999999,
           username: loginResponse?.username ?? "username",
-          time: DateTime.now().toIso8601String());
+          time: (DateFormat('HH:mm dd/MM/yyyy').format(DateTime.now()).toString()));
       io.emit("listProductByIdTable", {"id": event.tableId});
       event.pushScreen(PayStatus.success, billData);
     } else if (result is Failure) {

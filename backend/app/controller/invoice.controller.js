@@ -67,19 +67,25 @@ exports.getListByIdUser = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
         const queryRaw = `SELECT invoice.id, invoice.total, invoice.createAt, invoice.username, invoice.tableID, invoice.invoiceNumber, invoice.userID, tables.name AS table_Name, tables.status
-        FROM invoice
-        INNER JOIN tables ON invoice.tableID = tables.id
-        WHERE invoice.userID = ?;`;
+        FROM invoice 
+        INNER JOIN tables ON invoice.tableID = tables.id 
+        WHERE invoice.userID = :userID AND (invoice.id LIKE :id OR invoice.createAt LIKE :createAt OR tables.name LIKE :name)`;
         try {
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [body.id],
+                replacements: {
+                    userID: body.userID,
+                    id: `%${body.keysearch}%`,
+                    createAt: `%${body.keysearch}%`,
+                    name: `%${body.keysearch}%`
+                },
                 type: QueryTypes.SELECT
             });
             res.status(200).json({
                 resultRaw: resultRaw,
             });
+            console.log(resultRaw);
         } catch (error) {
             res.status(500);
             res.send(error)
@@ -205,5 +211,31 @@ exports.searchIvoiceByName = async (req, res) => {
     } else {
         res.status(401).send('User is not admin');
 
+    }
+};
+
+exports.getDetailsById = async (req, res) => {
+    const body = req.body;
+    const isAuth = await Auth.checkAuth(req);
+    if (isAuth) {
+        const queryRaw = `SELECT invoice.id, invoice.total, invoice.createAt, invoice.username, invoice.tableID, invoice.invoiceNumber, invoice.userID, tables.name AS table_Name, tables.status
+        FROM invoice 
+        INNER JOIN tables ON invoice.tableID = tables.id 
+        WHERE invoice.id = ?`;
+        try {
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.id],
+                type: QueryTypes.SELECT
+            });
+            res.status(200).send(resultRaw[0]);
+            console.log(resultRaw);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+
+    } else {
+        res.status(403).json({ message: 'Unauthorized' });
     }
 };

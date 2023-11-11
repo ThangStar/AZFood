@@ -85,6 +85,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if(checkDevice(widget.constraints.maxWidth, false, true, true)){
+       ZoomDrawer.of(context)!.close();
+    }
     return GestureDetector(
       onTap: () {
         if (notificationVisible) {

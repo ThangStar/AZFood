@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:restaurant_manager_app/ui/screens/bill/detail_bill_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -65,11 +67,11 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
           ),
           DefaultTabController(
               length: 2,
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height - 136,
                 child: Column(
                   children: [
-                    TabBar.secondary(tabs: [
+                    const TabBar.secondary(tabs: [
                       Tab(
                         child: Text("Tất cả"),
                       ),
@@ -115,8 +117,26 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
                                         mainAxisExtent: 95),
                               );
                             } else {
-                              return const Column(
-                                children: [Text("Không tìm thấy hoá đơn nào")],
+                              return Center(
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/svgs/icon_empty_bill.svg',
+                                        width: 100,
+                                        height: 100,
+                                      ),
+                                      Text(
+                                        "Hiện tại không có hóa đơn nào !",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(
+                                                fontSize: 15,
+                                                color: colorScheme(context)
+                                                    .outline),
+                                      ),
+                                    ]),
                               );
                             }
                           },
@@ -145,7 +165,15 @@ class ItemBill extends StatelessWidget {
     return Material(
       shape: Border.all(color: colorScheme(context).scrim.withOpacity(0.1)),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => DetailBillScreen(
+                      id: invoice.id ?? 0,
+                    )),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(

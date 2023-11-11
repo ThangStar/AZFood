@@ -22,11 +22,14 @@ class BillData {
 
 class PaySuccessScreen extends StatelessWidget {
   const PaySuccessScreen(
-      {super.key, required this.payStatus, required this.billData});
+      {super.key,
+      required this.payStatus,
+      required this.billData,
+      required this.price});
 
   final PayStatus payStatus;
-
   final BillData? billData;
+  final int price;
 
   @override
   Widget build(BuildContext context) {
@@ -85,18 +88,28 @@ class PaySuccessScreen extends StatelessWidget {
                     ),
                   )))),
         ),
-        body: billData != null
-            ? BodyBillSuccess(
-                billData: billData,
-              )
-            : const SizedBox.shrink());
+        body: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+                child: billData != null
+                    ? BodyBillSuccess(
+                        billData: billData,
+                        price: price,
+                      )
+                    : const SizedBox.shrink(),
+                    ),
+                  ),
+                );
   }
 }
 
 class BodyBillSuccess extends StatelessWidget {
-  const BodyBillSuccess({super.key, required this.billData});
+  const BodyBillSuccess(
+      {super.key, required this.billData, required this.price});
 
   final BillData? billData;
+  final int price;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +119,7 @@ class BodyBillSuccess extends StatelessWidget {
         Column(
           children: [
             Container(
+              margin: const EdgeInsets.only(top: 14.0),
               color: colorScheme(context).onPrimary,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -131,6 +145,7 @@ class BodyBillSuccess extends StatelessWidget {
               height: 14,
             ),
             Container(
+              margin: const EdgeInsets.only(bottom: 14.0),
               color: colorScheme(context).onPrimary,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -150,7 +165,7 @@ class BodyBillSuccess extends StatelessWidget {
                         ),
                         Flexible(
                           child: Text(
-                            "${NumberFormat.decimalPattern().format(billData?.sumPrice ?? 0)} đ",
+                            "${NumberFormat.decimalPattern().format(price)} đ",
                             style: const TextStyle(fontSize: 18),
                           ),
                         ),
@@ -202,8 +217,8 @@ class BodyBillSuccess extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(
-          height: 12,
+        SizedBox(
+          height: MediaQuery.of(context).size.height-628 <= 0 ? 0 : MediaQuery.of(context).size.height-628,
         ),
         Column(
           children: [
@@ -216,7 +231,7 @@ class BodyBillSuccess extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomeMenuScreen(),
+                        builder: (context) => const HomeMenuScreen(),
                       ),
                       (route) => false);
                 },
@@ -233,7 +248,7 @@ class BodyBillSuccess extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const DetailBillScreen(),
+                        builder: (context) => DetailBillScreen(id: billData?.idInvoice ?? 0),
                       ));
                 },
               ),

@@ -68,6 +68,7 @@ class _ItemProductState extends State<ItemProduct>
                   ? 1
                   : 0.6,
           child: ListTile(
+            isThreeLine: true,
             enabled:
             (widget.product.quantity != 0 && widget.product.quantity != null) || (widget.product.category == 1 && widget.product.status == 1),
             contentPadding:
@@ -233,12 +234,24 @@ class SubTitleItemCurrentBill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.only(top: 6),
-        child: Text(
-          "${NumberFormat.decimalPattern().format(product.price)} đ",
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(color: colorScheme(context).scrim),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${NumberFormat.decimalPattern().format(product.price)} đ",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: colorScheme(context).scrim),
+            ),
+            RichText(text: TextSpan(text: "Ghi chú: ",style: TextStyle(
+              color: colorScheme(context).scrim.withOpacity(0.5),
+              fontWeight: FontWeight.bold
+            ),children: [
+              TextSpan(text: "d", style: TextStyle(
+                fontWeight: FontWeight.normal
+              ))
+            ]))
+          ],
         ));
   }
 }

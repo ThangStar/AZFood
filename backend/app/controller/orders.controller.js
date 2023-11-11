@@ -471,11 +471,9 @@ exports.getList = async (req, res) => {
 exports.payBill = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     const body = req.body;
-    console.log("body", body);
+    console.log("bodsssssssssssy", body);
     if (isAuth) {
         const tableID = req.body.id;
-
-
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
@@ -510,6 +508,7 @@ exports.payBill = async (req, res) => {
 
             `;
             const invoiceNumber = getInvoiceNumber();
+            console.log(tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, billDetails[0].userID, invoiceNumber, body.payMethod);
             const invoiceResult = await sequelize.query(createInvoiceQuery, {
                 raw: true,
                 logging: false,

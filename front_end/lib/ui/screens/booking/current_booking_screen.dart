@@ -279,7 +279,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: columns,
-                            childAspectRatio: (maxWidth / columns) / 80,
+                            childAspectRatio: (maxWidth / columns) / 100,
                           ),
                           itemCount: state.currentProducts!.toSet().length,
                           itemBuilder: (context, index) {

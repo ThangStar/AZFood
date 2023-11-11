@@ -119,6 +119,20 @@ class _ZoomState extends State<HomeMenuScreen> {
                                       MediaQuery.of(context).size.height),
                               child: IntrinsicHeight(
                                 child: NavigationRail(
+                                  onDestinationSelected: (value) {
+                                    print(value);
+                                    print(itemsDrawer.length);
+                                    if (value != itemsDrawer.length + 1) {
+                                      if (value == itemsDrawer.length) {
+                                        logout(context);
+                                        return;
+                                      }
+                                      setState(() {
+                                        selectedNavRail = value;
+                                      });
+                                    }
+                                  },
+            selectedIndex: selectedNavRail,
                                     trailing: const Text("AZFood.vn"),
                                     backgroundColor: colorScheme(context)
                                         .tertiary
@@ -190,56 +204,7 @@ class _ZoomState extends State<HomeMenuScreen> {
                                     ],
                                   ),
                                 ),
-                                labelType: NavigationRailLabelType.all,
-                                destinations: [
-                                  ...itemsDrawer.map((e) {
-                                    return NavigationRailDestination(
-                                        icon: Icon(e.icon),
-                                        label: Text(e.label));
-                                  }).toList(),
-                                  NavigationRailDestination(
-                                      icon: const Icon(Icons.logout),
-                                      label: GestureDetector(
-                                          onTap: () {
-                                            logout(context);
-                                          },
-                                          child: const Text("Đăng xuất"))),
-                                  NavigationRailDestination(
-                                      icon: Switch(
-                                        value: isDarkTheme,
-                                        activeColor: const Color.fromRGBO(43, 43, 53, 1),
-                                        activeTrackColor: const Color.fromRGBO(62, 62, 77, 1),
-                                        onChanged: (value) async {
-                                          await MySharePreferences
-                                              .setIsDarkTheme(value);
-                                          if (value) {
-                                            MyApp.themeNotifier.value =
-                                                ThemeMode.dark;
-                                          } else {
-                                            MyApp.themeNotifier.value =
-                                                ThemeMode.light;
-                                          }
-                                          setState(() {
-                                            isDarkTheme = value;
-                                          });
-                                        },
-                                      ),
-                                      label: const Text("Chế độ tối"))
-                                ],
-                                onDestinationSelected: (value) {
-                                  print(value);
-                                  print(itemsDrawer.length);
-                                  if (value != itemsDrawer.length + 1) {
-                                    if (value == itemsDrawer.length) {
-                                      logout(context);
-                                      return;
-                                    }
-                                    setState(() {
-                                      selectedNavRail = value;
-                                    });
-                                  }
-                                },
-                                selectedIndex: selectedNavRail),
+                                ),
                           ),
                           const VerticalDivider(width: 1),
                         ],

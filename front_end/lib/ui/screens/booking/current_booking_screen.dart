@@ -59,7 +59,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
           return BottomActionBill(
             tableId: widget.tableID,
             selectedItem: selectedItem,
-            amount: 0, prdBloc: prdBloc,
+            amount: amount, prdBloc: prdBloc,
           );
         },
       ),

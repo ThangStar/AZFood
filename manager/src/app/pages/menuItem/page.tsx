@@ -102,7 +102,7 @@ export default function MunuItems() {
             id: idItem,
             file
         }
-        dispatch(createMenuItemAsync(data));
+        await dispatch(createMenuItemAsync(data));
         setDataForm("");
         handlePageChange(currentPage);
         showAlert("success", " Thêm món thành công");

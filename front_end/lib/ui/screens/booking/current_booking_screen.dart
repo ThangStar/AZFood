@@ -58,13 +58,13 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
             return BottomActionBill(
               tableId: widget.tableID,
               selectedItem: selectedItem,
-              amount: amount,
+              amount: amount, prdBloc: prdBloc,
             );
           }
           return BottomActionBill(
             tableId: widget.tableID,
             selectedItem: selectedItem,
-            amount: 0,
+            amount: 0, prdBloc: prdBloc,
           );
         },
       ),
@@ -108,6 +108,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                   ?.copyWith(fontSize: 20, color: Colors.white),
                             ),
                             BlocBuilder<ProductBloc, ProductState>(
+                              buildWhen: (previous, current) => widget.tableID == prdBloc.state.tableId,
                               builder: (context, state) {
                                 return Text(
                                   state.currentProducts != null
@@ -399,11 +400,12 @@ class BottomActionBill extends StatelessWidget {
       {super.key,
       required this.tableId,
       this.selectedItem,
-      required this.amount});
+      required this.amount, required this.prdBloc});
 
   final int tableId;
   final String? selectedItem;
   final int amount;
+  final ProductBloc prdBloc;
 
   _showDialog(BuildContext context, String content) {
     showDialog(
@@ -501,6 +503,7 @@ class BottomActionBill extends StatelessWidget {
                       style: TextStyle(fontSize: 14),
                     ),
                     BlocBuilder<ProductBloc, ProductState>(
+                      buildWhen: (previous, current) => tableId == prdBloc.state.tableId,
                       builder: (context, state) {
                         int price = 0;
                         for (Product i in state.currentProducts ?? []) {

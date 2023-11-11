@@ -34,9 +34,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     calendarBloc = BlocProvider.of<CalendarBloc>(context);
     initAttendance();
-
-    // // TODO: implement initState
-    // super.initState();
   }
 
   @override
@@ -58,7 +55,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
           case InitAttendanceResultState:
             {
               if (state.status == CalendarStatus.success) {
-                print("LENGTH EVENT ${state.eventData?.length}");
                 CalendarControllerProvider.of(context)
                     .controller
                     .addAll(state.eventData ?? []);
@@ -72,15 +68,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
               return FloatingActionButton.extended(
                   backgroundColor: colorScheme(context).primary,
                   onPressed: () {
-                    bool isToday = state
-                            .eventData
+                    bool isToday = state.eventData
                             .where((element) =>
                                 element.date.compareWithoutTime(DateTime.now()))
                             .firstOrNull !=
                         null;
-                    if(isToday){
-                      myAlert(context, checkDeviceType(widget.constraints.maxWidth),
-                          AlertType.info, "Thông tin", "Hôm nay bạn đã điểm danh rồi!")
+                    if (isToday) {
+                      myAlert(
+                              context,
+                              checkDeviceType(widget.constraints.maxWidth),
+                              AlertType.info,
+                              "Thông tin",
+                              "Hôm nay bạn đã điểm danh rồi!")
                           .show(context);
                       return;
                     }
@@ -155,15 +154,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         decoration: BoxDecoration(
                             color: colorScheme(context).onPrimary)),
                     // to provide custom UI for month cells.
-                    weekDayBuilder: (day){
+                    weekDayBuilder: (day) {
                       String strDate = "";
                       switch (day) {
                         case 0:
-                      strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = widget.constraints.maxWidth > mobileWidth
                               ? "Thứ 2"
                               : "T2";
                         case 1:
-                          strDate= widget.constraints.maxWidth > mobileWidth
+                          strDate = widget.constraints.maxWidth > mobileWidth
                               ? "Thứ 3"
                               : "T2";
 
@@ -193,14 +192,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               : "CN";
                         default:
                           strDate = "Không xác định";
-
                       }
                       return Center(
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 18),
-                          child: Text(strDate, style: TextStyle(
-                            fontSize: 14
-                          ),),
+                          child: Text(
+                            strDate,
+                            style: TextStyle(fontSize: 14),
+                          ),
                         ),
                       );
                     },
@@ -292,8 +291,7 @@ class CalendarItemDay extends StatelessWidget {
                         ),
                         Text(
                           "Đã điểm danh",
-                          style:
-                              TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ],
                     ),

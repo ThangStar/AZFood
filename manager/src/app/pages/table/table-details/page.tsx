@@ -4,7 +4,7 @@ import { showAlert } from '@/component/utils/alert/alert';
 import { formatDateTime } from '@/component/utils/formatDate';
 import formatMoney from '@/component/utils/formatMoney';
 import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList, getFilterCategoryListAsync, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
-import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync } from '@/redux-store/order-reducer/orderSlice';
+import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync, deleteAllOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -21,6 +21,7 @@ export default function TableDetails() {
     const tableID = url ? url.split('tableID=')[1] : null;
     const [modal1, setModal1] = useState(false);
     const [modal, setModal] = useState(false);
+    const [modalDelAll, setmodalDelAll] = useState(false);
     const [modal2, setModal2] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
 
@@ -66,12 +67,17 @@ export default function TableDetails() {
 
     const toggle1 = () => setModal1(!modal1);
     const toggle = () => setModal(!modal);
+    const toggleDelAll = () => setmodalDelAll(!modalDelAll);
     const openModal = (data: any = null) => {
 
         if (data != null) {
             setIdDelete(data);
         }
         toggle();
+    }
+
+    const openModalDel = () => {
+        toggleDelAll();
     }
 
     const toggle2 = () => setModal2(!modal2);
@@ -176,7 +182,16 @@ export default function TableDetails() {
         if (statusRD === 'idle') {
             showAlert("success", "Đã xóa món khỏi order");
             dispatch(getOrderInTableListAsync(tableID));
-            toggle();
+
+        }
+    }
+
+    const deleteAllItem = async () => {
+        await dispatch(deleteAllOrderAsync(tableID));
+        if (statusRD === 'idle') {
+            showAlert("success", "Đã xóa món khỏi order");
+            dispatch(getOrderInTableListAsync(tableID));
+            toggleDelAll();
         }
     }
 
@@ -271,13 +286,7 @@ export default function TableDetails() {
             <div style={{ marginRight: '15px', border: 'none', width: '62%', height: '100vh', padding: '10px' }}>
                 <div >
                     <div className="row py-3">
-                        <div className="col-sm-5">
-                            <small>Bill / Date</small>
-                            <div className="date text-inverse m-t-5">
-                                <span style={{ fontWeight: "bold" }}>Giờ Vào : </span>{order && order.length > 0 ? `${formatDateTime(order[0].orderDate)}` : ""}
-                            </div>
-                        </div>
-                        <div className="col-sm-5">
+                        <div className="col-sm-7">
                             <div className="invoice-detail">
                                 <span style={{ fontWeight: "bold" }}>Tên nhân viên : </span> {order && order.length > 0 ? order[0].userName : ""}
                             </div>
@@ -285,35 +294,23 @@ export default function TableDetails() {
                                 <span style={{ fontWeight: "bold" }}>Tổng tiền : </span>  {formatMoney(caculatorTotal())} VND
                             </div>
                         </div>
-                    </div>
-                    {order.length > 0 ? (
-                        <div className='card p-3 mt-2'>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <h6 className='m-0'>Phương thức thanh toán: </h6>
-                                    <select
-                                        style={{ width: '110px', padding: "3px 3px", height: "30px" }}
-                                        className="form-control ml-1"
-                                        id="paymentMethod"
-                                        value={payMethod}
-                                        onChange={(e) => setPayMethod(Number(e.target.value))}
-                                    >
-                                        <option value="1">Tiền mặt</option>
-                                        <option value="2">Chuyển khoản</option>
-                                    </select>
-                                </div>
-
-                                <button className="btn btn-outline-warning" onClick={() => {
-                                    openModal2()
-                                }}>
-                                    <MonetizationOnIcon /> Thanh toán
-                                </button>
+                        <div className="col-sm-5">
+                            <div className="date text-inverse m-t-5">
+                                <span style={{ fontWeight: "bold" }}>Giờ Vào : </span>{order && order.length > 0 ? `${formatDateTime(order[0].orderDate)}` : ""}
                             </div>
+                            {order.length > 0 ? (
+                                <button className="btn btn-warning btn-sm" onClick={() => {
+                                    toggleDelAll();
+                                }}>Xóa tất cả
+                                </button>
+                            ) : (null)}
                         </div>
-                    ) : (null)}
+
+                    </div>
+
                 </div>
 
-                <div className="card invoice-content d-flex scroll-2" style={{ marginTop: 20 }}>
+                <div className="card invoice-content d-flex scroll-2">
                     <div className="table-responsive">
                         <table className="table table-invoice">
                             <thead>
@@ -355,6 +352,32 @@ export default function TableDetails() {
                         </table>
                     </div>
                 </div>
+
+                {order.length > 0 ? (
+                    <div className='card p-3 mt-1' style={{ backgroundColor: '#cddfdf5c' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <h6 className='m-0'>Phương thức thanh toán: </h6>
+                                <select
+                                    style={{ width: '110px', padding: "3px 3px", height: "30px" }}
+                                    className="form-control ml-1"
+                                    id="paymentMethod"
+                                    value={payMethod}
+                                    onChange={(e) => setPayMethod(Number(e.target.value))}
+                                >
+                                    <option value="1">Tiền mặt</option>
+                                    <option value="2">Chuyển khoản</option>
+                                </select>
+                            </div>
+
+                            <button className="btn btn-warning" onClick={() => {
+                                openModal2()
+                            }}>
+                                <MonetizationOnIcon /> Thanh toán
+                            </button>
+                        </div>
+                    </div>
+                ) : (null)}
             </div>
 
             <Modal isOpen={modal} toggle={openModal}>
@@ -374,6 +397,28 @@ export default function TableDetails() {
                         Xóa
                     </Button>
                     <Button color="secondary" onClick={() => openModal()}>
+                        Hủy
+                    </Button>
+                </ModalFooter>
+            </Modal>
+
+            <Modal isOpen={modalDelAll} toggle={openModalDel}>
+                <ModalHeader toggle={openModalDel}>{"Xác nhận xóa tất cả! "}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <p>Bạn muốn xóa tất cả món ăn này khỏi danh sách order này?</p>
+                        </div>
+
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={() => {
+                        deleteAllItem();
+                    }}>
+                        Xóa
+                    </Button>
+                    <Button color="secondary" onClick={() => openModalDel()}>
                         Hủy
                     </Button>
                 </ModalFooter>

@@ -23,12 +23,13 @@ export default function User() {
     const [address, setAddress] = useState("");
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
+    const [roleUser, setRoleUser] = useState("");
     const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState<File>()
     const [searchName, setSearchName] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const role = 'user';
+    const [isFormDirty, setIsFormDirty] = useState(false);
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
@@ -52,29 +53,36 @@ export default function User() {
         dispatch(getUserListAsync(page));
     };
 
-    const handleAddUser = async () => {
-        const user = {
-            idUser,
-            username,
-            password,
-            name,
-            role,
-            phoneNumber,
-            email,
-            address,
-            birtDay,
-            file
-        }
+    const handleInputChange = (e: any) => {
+        setIsFormDirty(true);
+    };
 
-        await dispatch(createUserListAsync(user));
-        if (status == 'idle') {
-            showAlert("success", "Thêm nhân viên mới thành công ");
-            dispatch(getUserListAsync(currentPage));
-            openModal1();
-            setDataForm("");
-            setIsEdit(false);
-        } else {
-            showAlert("error", "Thêm nhân viên mới  bại ");
+    const handleAddUser = async () => {
+        if (isFormDirty) {
+            const user = {
+                idUser,
+                username,
+                password,
+                name,
+                roleUser,
+                phoneNumber,
+                email,
+                address,
+                birtDay,
+                file
+            }
+            await dispatch(createUserListAsync(user));
+            if (status == 'idle') {
+                showAlert("success", "Thành công");
+                dispatch(getUserListAsync(currentPage));
+                openModal1();
+                setDataForm("");
+                setIsEdit(false);
+            } else {
+                showAlert("error", "Thất bại");
+            }
+
+            setIsFormDirty(false);
         }
     }
     const setDataForm = (item: any) => {
@@ -90,6 +98,7 @@ export default function User() {
             setIdUser(item.id);
             setIsEdit(true);
             setImage(item.imgUrl)
+            setRoleUser(item.role)
         } else {
             setUsername("");
             setPassword("");
@@ -121,10 +130,10 @@ export default function User() {
 
         dispatch(deleteUserAsync(id));
         if (status == 'idle') {
-            showAlert("success", "Xoá nhân viên mới thành công ");
+            showAlert("success", "Xoá nhân viên thành công ");
             dispatch(getUserListAsync(currentPage));
         } else {
-            showAlert("error", "Xoá nhân viên mới  bại ");
+            showAlert("error", "Xoá nhân viên không thành công");
         }
     }
     return (
@@ -170,7 +179,7 @@ export default function User() {
                             <th style={{ width: "30vh" }}>
                                 Email
                             </th>
-                            <th style={{ width: "15vh" }} className="text-center">
+                            <th style={{ width: "15%" }} className="text-center">
                             </th>
                         </tr>
                     </thead>
@@ -194,7 +203,7 @@ export default function User() {
                                     {item && item.phoneNumber ? item.phoneNumber : "Chưa xác định"}
                                 </td>
                                 <td className="project_progress">
-                                    {item && item.email ? item.email : "Chưa xác định"}
+                                    {item && item.email && item.email !== "null" ? item.email : "Chưa xác định"}
                                 </td>
                                 <td className="project-actions text-right">
                                     <div className="d-flex justify-content-between " >
@@ -218,14 +227,13 @@ export default function User() {
                     </tbody>
                 </table>
             </div>
-            <Modal size='lg' isOpen={modal1} toggle1={openModal1} style={{ backgroundColor: 'red' }}>
+            <Modal size='lg' isOpen={modal1} toggle1={openModal1}>
                 <ModalHeader toggle1={openModal1}>{isEdit == false ? 'Thêm nhân viên mới' : 'Chỉnh sửa thông tin nhân viên'}</ModalHeader>
                 <ModalBody>
                     <form className="form-horizontal row d-flex justify-content-between" >
                         <div className='col-sm-5'>
-                            <div className="form-group row" style={{display: 'flex', border: '1px solid gray', justifyContent: 'center', padding: '10px', borderRadius: '20px'}}>
-                                {/* <label className="col-sm-4 col-form-label">Ảnh đại diện</label> */}
-                                <img src={image ? image : '/img/user.png'} alt="" style={{ width: '200px', height:'200px', borderRadius: '20px'}} />
+                            <div className="form-group row" style={{ display: 'flex', border: '1px solid gray', justifyContent: 'center', padding: '10px', borderRadius: '20px' }}>
+                                <img src={image ? image : '/img/user.png'} alt="" style={{ width: '200px', height: '200px', borderRadius: '20px' }} />
                                 <div className="col-sm-8">
                                     <input
                                         className="form-control mt-2"
@@ -235,15 +243,15 @@ export default function User() {
                                     />
                                 </div>
                             </div>
-                            <div className="form-group row" style={{display: 'flex', justifyContent: 'center'}}>
-                                {/* <label className="col-sm-4 col-form-label">Tên nhân viên</label> */}
-                                <div className="col-sm-8">
+                            <div className="form-group " style={{ display: 'flex', justifyContent: 'center' }}>
+                                <div style={{ width: '100%' }}>
                                     <input
                                         className="form-control p-0"
-                                        style={{fontSize: '20px', fontWeight: 'bold', textAlign:'center', }}
+                                        style={{ fontSize: '20px', fontWeight: 'bold', textAlign: 'center', }}
                                         id="name"
                                         value={name}
                                         onChange={(e) => {
+                                            handleInputChange(e);
                                             setName(e.target.value)
                                         }}
                                     />
@@ -259,7 +267,22 @@ export default function User() {
                                         id="username"
                                         value={username}
                                         onChange={(e) => {
+                                            handleInputChange(e);
                                             setUsername(e.target.value)
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Mật khẩu</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="password"
+                                        placeholder={isEdit && isEdit == true ? 'Cập nhật mật khẩu mới' : 'Tạo mật khẩu'}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            setPassword(e.target.value)
                                         }}
                                     />
                                 </div>
@@ -273,9 +296,29 @@ export default function User() {
                                         id="name"
                                         value={phoneNumber}
                                         onChange={(e) => {
+                                            handleInputChange(e);
                                             setPhoneNumber(e.target.value)
                                         }}
                                     />
+                                </div>
+                            </div>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Cấp quyền</label>
+                                <div className="col-sm-8">
+                                    <select
+                                        style={{ width: '100%', padding: "3px 10px", height: "100%" }}
+                                        className="form-control"
+                                        id="roleUser"
+                                        value={roleUser}
+                                        onChange={(e) => { 
+                                            handleInputChange(e); 
+                                            setRoleUser(e.target.value) }}
+                                    >
+                                        <option value="admin">Admin</option>
+                                        <option value="user">Nhân viên</option>
+                                    </select>
+
+
                                 </div>
                             </div>
                             {isEdit && isEdit === true ? <>
@@ -288,11 +331,10 @@ export default function User() {
                                             id="email"
                                             value={email}
                                             onChange={(e) => {
+                                                handleInputChange(e); 
                                                 setEmail(e.target.value)
                                             }}
                                         />
-
-
                                     </div>
                                 </div>
                                 <div className="form-group row">
@@ -304,6 +346,7 @@ export default function User() {
                                             id="address"
                                             value={address}
                                             onChange={(e) => {
+                                                handleInputChange(e); 
                                                 setAddress(e.target.value)
                                             }}
                                         />
@@ -320,11 +363,10 @@ export default function User() {
                                             id="birthDay"
                                             value={birtDay}
                                             onChange={(e) => {
+                                                handleInputChange(e); 
                                                 setBirtDay(e.target.value)
                                             }}
                                         />
-
-
                                     </div>
                                 </div>
                             </> : ""}
@@ -333,7 +375,7 @@ export default function User() {
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={handleAddUser}>
+                    <Button color="primary" onClick={handleAddUser} disabled={!isFormDirty}>
                         Lưu
                     </Button>
                     <Button color="secondary" onClick={() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { getJWTToken, getUserFullname, getUserID, loginAsync } from '@/redux-store/login-reducer/loginSlice';
+import { getJWTToken, getUserFullname, getUserID, loginAsync, getRole } from '@/redux-store/login-reducer/loginSlice';
 import { AppDispatch, RootState } from '@/redux-store/store';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +21,7 @@ const Login = () => {
     const jwtToken = useSelector(getJWTToken);
     const userFullname = useSelector(getUserFullname);
     const userID: any = useSelector(getUserID);
+    const userRole: any = useSelector(getRole);
 
     const dispatch: AppDispatch = useDispatch();
     const [username, setUsername] = useState('');
@@ -39,7 +40,7 @@ const Login = () => {
         await dispatch(loginAsync({ username, password }));
     };
     useEffect(() => {
-        if (status === 'success') {
+        if (status === 'success' && userRole ==='admin') {
             if (jwtToken != null && jwtToken !== "") {
                 const user: any = {
                     userFullname,
@@ -50,11 +51,12 @@ const Login = () => {
                 localStorage.setItem("user", userJSON);
                 showAlert("success", "Đăng nhập thành công");
                 window.location.reload();
+            }else{
             }
-
-
         } else if (status === 'failed') {
-            showAlert("error", "Đăng nhập thất bại");
+            showAlert("error", "Sai thông tin tài khoản");
+        }else if (userRole ==='user') {
+            showAlert("error", "Tài khoản không được cấp quyền");
         }
     }, [status, jwtToken, userFullname]);
     console.log(" sttus ", status);

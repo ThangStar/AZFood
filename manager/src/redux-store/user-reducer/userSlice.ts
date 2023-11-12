@@ -36,7 +36,7 @@ export const createUserListAsync = createAsyncThunk(
   'user/create',
   async (user: any) => {
 
-    const { idUser, name, username, password, role, phoneNumber, email, address, birtDay, file } = user;
+    const { idUser, name, username, password, roleUser, phoneNumber, email, address, birtDay, file } = user;
 
 
     const formData = new FormData();
@@ -44,7 +44,7 @@ export const createUserListAsync = createAsyncThunk(
     formData.append('name', name);
     formData.append('username', username);
     formData.append('password', password);
-    formData.append('role', role);
+    formData.append('role', roleUser);
     formData.append('phoneNumber', phoneNumber);
     formData.append('email', email);
     formData.append('address', address);

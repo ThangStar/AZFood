@@ -37,7 +37,7 @@ class CurrentBookingScreen extends StatefulWidget {
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  String? selectedItem = 'Chọn phương thức...';
+  int? selectedItem = 2;
   late ProductBloc prdBloc;
 
   @override
@@ -156,7 +156,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                           const EdgeInsets.symmetric(
                                               horizontal: 5.0),
                                     ),
-                                    value: 'Chọn phương thức...',
+                                    value: 2,
                                     icon: const Icon(
                                       Icons.arrow_drop_down,
                                       color: Colors.white,
@@ -167,11 +167,11 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                         color: Colors.white, fontSize: 15.0),
                                     items: const [
                                       DropdownMenuItem(
-                                        value: 'Chọn phương thức...',
+                                        value: 2,
                                         child: Text('Chọn phương thức...'),
                                       ),
                                       DropdownMenuItem(
-                                          value: 'Tiền mặt',
+                                          value: 0,
                                           child: Row(
                                             children: [
                                               Icon(
@@ -183,7 +183,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                             ],
                                           )),
                                       DropdownMenuItem(
-                                          value: 'Chuyển khoản',
+                                          value: 1,
                                           child: Row(
                                             children: [
                                               Icon(Icons.credit_card,
@@ -279,7 +279,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: columns,
-                            childAspectRatio: (maxWidth / columns) / 80,
+                            childAspectRatio: (maxWidth / columns) / 100,
                           ),
                           itemCount: state.currentProducts!.toSet().length,
                           itemBuilder: (context, index) {
@@ -398,7 +398,7 @@ class BottomActionBill extends StatelessWidget {
       required this.amount, required this.prdBloc});
 
   final int tableId;
-  final String? selectedItem;
+  final int? selectedItem;
   final int amount;
   final ProductBloc prdBloc;
 
@@ -561,12 +561,13 @@ class BottomActionBill extends StatelessWidget {
                           onTap: () {
                             if (amount == 0) {
                               _showDialog(context, 'Vui lòng chọn món.');
-                            } else if (selectedItem == 'Chọn phương thức...') {
+                            } else if (selectedItem == 2) {
                               _showDialog(context,
                                   'Vui lòng chọn phương thức thanh toán.');
                             } else {
                               context.read<OrderBloc>().add(PayBillEvent(
                                     tableId: tableId,
+                                    payMethod: selectedItem ?? 0,
                                     pushScreen: (payStatus, billData) {
                                       Navigator.push(
                                         context,
@@ -603,15 +604,15 @@ class BottomActionBill extends StatelessWidget {
                         child: MyButtonGradient(
                           text: "Thanh toán",
                           onTap: () {
-                            print(amount);
                             if (amount == 0) {
                               _showDialog(context, 'Vui lòng chọn món.');
-                            } else if (selectedItem == 'Chọn phương thức...') {
+                            } else if (selectedItem == 2) {
                               _showDialog(context,
                                   'Vui lòng chọn phương thức thanh toán.');
                             } else {
                               context.read<OrderBloc>().add(PayBillEvent(
                                     tableId: tableId,
+                                    payMethod: selectedItem ?? 0,
                                     pushScreen: (payStatus, billData) {
                                       Navigator.push(
                                         context,

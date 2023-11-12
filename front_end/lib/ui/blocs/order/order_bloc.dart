@@ -54,7 +54,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   FutureOr<void> _payBillEvent(
       PayBillEvent event, Emitter<OrderState> emit) async {
-    Object result = await OrderApi.payBill(event.tableId);
+    Object result = await OrderApi.payBill(event.tableId, event.payMethod);
 
     if (result is Success) {
       print("pay success ${result.response}");

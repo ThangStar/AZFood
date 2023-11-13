@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/leading_item_status.dart';
@@ -68,7 +69,6 @@ class _ItemProductState extends State<ItemProduct>
                   ? 1
                   : 0.6,
           child: ListTile(
-            isThreeLine: true,
             enabled:
             (widget.product.quantity != 0 && widget.product.quantity != null) || (widget.product.category == 1 && widget.product.status == 1),
             contentPadding:
@@ -122,7 +122,6 @@ class _ItemProductState extends State<ItemProduct>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
                           child: Image.network(
-
                             widget.product.imageUrl != null &&
                                     widget.product.imageUrl != ''
                                 ? widget.product.imageUrl!
@@ -227,9 +226,9 @@ class SubTitleItemProduct extends StatelessWidget {
 }
 
 class SubTitleItemCurrentBill extends StatelessWidget {
-  const SubTitleItemCurrentBill({super.key, required this.product});
+  const SubTitleItemCurrentBill({super.key, required this.product, this.bottom});
   final Product product;
-
+  final Widget? bottom;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -243,14 +242,7 @@ class SubTitleItemCurrentBill extends StatelessWidget {
                   .bodyLarge
                   ?.copyWith(color: colorScheme(context).scrim),
             ),
-            RichText(text: TextSpan(text: "Ghi chú: ",style: TextStyle(
-              color: colorScheme(context).scrim.withOpacity(0.5),
-              fontWeight: FontWeight.bold
-            ),children: [
-              TextSpan(text: "d", style: TextStyle(
-                fontWeight: FontWeight.normal
-              ))
-            ]))
+            bottom ?? SizedBox.shrink()
           ],
         ));
   }

@@ -4,6 +4,7 @@ import { AppDispatch } from '@/redux-store/store';
 import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
+import { it } from 'node:test';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
@@ -46,6 +47,9 @@ export default function User() {
         }
     }, [userList]);
 
+    console.log('check userLsit', userList.data);
+    
+
     const totalPages = userList?.totalPages || 1;
 
     const handlePageChange = (page: number) => {
@@ -71,7 +75,48 @@ export default function User() {
                 birtDay,
                 file
             }
-            await dispatch(createUserListAsync(user));
+            
+            if (name === "") {
+                showAlert("error", "Không được để trống tên người dùng");
+                return;
+            }
+            
+            // Kiểm tra name không chứa kí tự đặc biệt
+            const nameRegex = /^[a-zA-Z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹ ]*$/;
+            if (!nameRegex.test(name)) {
+                showAlert("error", "Tên người dùng không được chứa kí tự đặc biệt hoặc kí tự không hỗ trợ");
+                return;
+            }
+            
+            // Kiểm tra username có ít nhất 6 kí tự và không chứa kí tự đặc biệt
+            const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
+            if (!usernameRegex.test(username)) {
+                showAlert("error", "Username phải có ít nhất 6 kí tự và không chứa kí tự đặc biệt");
+                return;
+            }
+            
+            // Kiểm tra password có ít nhất 6 kí tự
+            if (password.length < 6) {
+                showAlert("error", "Password phải có ít nhất 6 kí tự");
+                return;
+            }
+
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phoneNumber)) {
+                showAlert("error", "Số điện thoại phải chứa đúng 10 số và chỉ chứa kí tự số");
+                return;
+            }
+            
+            // Kiểm tra định dạng email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert("error", "Định dạng email không hợp lệ");
+                return;
+            }
+            
+            const resp =  await dispatch(createUserListAsync(user));
+            console.log('check lifecycle', resp.payload.message);
+            
             if (status == 'idle') {
                 showAlert("success", "Thành công");
                 dispatch(getUserListAsync(currentPage));
@@ -86,7 +131,7 @@ export default function User() {
         }
     }
     const setDataForm = (item: any) => {
-
+        
         if (item) {
             setUsername(item.username);
             setPassword(item.password);
@@ -160,7 +205,7 @@ export default function User() {
                     />
                 </form>
             </div>
-            <div className="card card-body border-0 p-0 mx-3" style={{ height: '72vh', overflowY: 'auto' }}>
+            <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh', overflowY: 'auto' }}>
                 <table className="table table-striped projects">
                     <thead>
                         <tr>
@@ -250,6 +295,7 @@ export default function User() {
                                         style={{ fontSize: '20px', fontWeight: 'bold', textAlign: 'center', }}
                                         id="name"
                                         value={name}
+                                        placeholder='Tên người dùng'
                                         onChange={(e) => {
                                             handleInputChange(e);
                                             setName(e.target.value)
@@ -288,16 +334,16 @@ export default function User() {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Số điện thoại</label>
+                                <label className="col-sm-4 col-form-label">Email</label>
                                 <div className="col-sm-8">
 
                                     <input
                                         className="form-control"
-                                        id="name"
-                                        value={phoneNumber}
+                                        id="email"
+                                        value={email}
                                         onChange={(e) => {
                                             handleInputChange(e);
-                                            setPhoneNumber(e.target.value)
+                                            setEmail(e.target.value)
                                         }}
                                     />
                                 </div>
@@ -310,33 +356,34 @@ export default function User() {
                                         className="form-control"
                                         id="roleUser"
                                         value={roleUser}
-                                        onChange={(e) => { 
-                                            handleInputChange(e); 
-                                            setRoleUser(e.target.value) }}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            setRoleUser(e.target.value)
+                                        }}
                                     >
                                         <option value="admin">Admin</option>
                                         <option value="user">Nhân viên</option>
                                     </select>
-
-
                                 </div>
                             </div>
-                            {isEdit && isEdit === true ? <>
-                                <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Email</label>
+
+                            <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Số điện thoại</label>
                                     <div className="col-sm-8">
 
                                         <input
                                             className="form-control"
-                                            id="email"
-                                            value={email}
+                                            id="name"
+                                            value={phoneNumber}
                                             onChange={(e) => {
-                                                handleInputChange(e); 
-                                                setEmail(e.target.value)
+                                                handleInputChange(e);
+                                                setPhoneNumber(e.target.value)
                                             }}
                                         />
                                     </div>
                                 </div>
+
+                            {isEdit && isEdit === true ? <>
                                 <div className="form-group row">
                                     <label className="col-sm-4 col-form-label">Địa chỉ</label>
                                     <div className="col-sm-8">
@@ -346,7 +393,7 @@ export default function User() {
                                             id="address"
                                             value={address}
                                             onChange={(e) => {
-                                                handleInputChange(e); 
+                                                handleInputChange(e);
                                                 setAddress(e.target.value)
                                             }}
                                         />
@@ -363,7 +410,7 @@ export default function User() {
                                             id="birthDay"
                                             value={birtDay}
                                             onChange={(e) => {
-                                                handleInputChange(e); 
+                                                handleInputChange(e);
                                                 setBirtDay(e.target.value)
                                             }}
                                         />

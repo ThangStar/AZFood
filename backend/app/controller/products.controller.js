@@ -80,13 +80,13 @@ exports.createProduct = async (req, res) => {
                         };
                         const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
                         const imgUrl = await getDownloadURL(snapshot.ref);
-
+console.log(imgUrl);
                         // Tiếp tục xử lý và lưu dữ liệu vào MySQL
-                        const queryRaw = "INSERT INTO products (name, price, category, status, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END, ?, ?);";
+                        const queryRaw = "INSERT INTO products (name, price, category, status = CASE WHEN category = 1 THEN 1 ELSE null END, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END, ?, ?);";
                         const resultRaw = await sequelize.query(queryRaw, {
                             raw: true,
                             logging: false,
-                            replacements: [body.name, body.price, body.category, body.status, body.dvtID, imgUrl],
+                            replacements: [body.name, body.price, body.category, body.dvtID, imgUrl],
                             type: QueryTypes.INSERT
                         });
 

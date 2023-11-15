@@ -4,6 +4,7 @@ import { AppDispatch } from '@/redux-store/store';
 import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
+import { it } from 'node:test';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
@@ -23,12 +24,13 @@ export default function User() {
     const [address, setAddress] = useState("");
     const [birtDay, setBirtDay] = useState("");
     const [idUser, setIdUser] = useState("");
+    const [roleUser, setRoleUser] = useState("");
     const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
     const [file, setFile] = useState<File>()
     const [searchName, setSearchName] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const role = 'user';
+    const [isFormDirty, setIsFormDirty] = useState(false);
 
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
@@ -45,6 +47,9 @@ export default function User() {
         }
     }, [userList]);
 
+    console.log('check userLsit', userList.data);
+    
+
     const totalPages = userList?.totalPages || 1;
 
     const handlePageChange = (page: number) => {
@@ -52,33 +57,81 @@ export default function User() {
         dispatch(getUserListAsync(page));
     };
 
-    const handleAddUser = async () => {
-        const user = {
-            idUser,
-            username,
-            password,
-            name,
-            role,
-            phoneNumber,
-            email,
-            address,
-            birtDay,
-            file
-        }
+    const handleInputChange = (e: any) => {
+        setIsFormDirty(true);
+    };
 
-        await dispatch(createUserListAsync(user));
-        if (status == 'idle') {
-            showAlert("success", "Thêm nhân viên mới thành công ");
-            dispatch(getUserListAsync(currentPage));
-            openModal1();
-            setDataForm("");
-            setIsEdit(false);
-        } else {
-            showAlert("error", "Thêm nhân viên mới  bại ");
+    const handleAddUser = async () => {
+        if (isFormDirty) {
+            const user = {
+                idUser,
+                username,
+                password,
+                name,
+                roleUser,
+                phoneNumber,
+                email,
+                address,
+                birtDay,
+                file
+            }
+            
+            if (name === "") {
+                showAlert("error", "Không được để trống tên người dùng");
+                return;
+            }
+            
+            // Kiểm tra name không chứa kí tự đặc biệt
+            const nameRegex = /^[a-zA-Z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹ ]*$/;
+            if (!nameRegex.test(name)) {
+                showAlert("error", "Tên người dùng không được chứa kí tự đặc biệt hoặc kí tự không hỗ trợ");
+                return;
+            }
+            
+            // Kiểm tra username có ít nhất 6 kí tự và không chứa kí tự đặc biệt
+            const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
+            if (!usernameRegex.test(username)) {
+                showAlert("error", "Username phải có ít nhất 6 kí tự và không chứa kí tự đặc biệt");
+                return;
+            }
+            
+            // Kiểm tra password có ít nhất 6 kí tự
+            if (password.length < 6) {
+                showAlert("error", "Password phải có ít nhất 6 kí tự");
+                return;
+            }
+
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phoneNumber)) {
+                showAlert("error", "Số điện thoại phải chứa đúng 10 số và chỉ chứa kí tự số");
+                return;
+            }
+            
+            // Kiểm tra định dạng email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert("error", "Định dạng email không hợp lệ");
+                return;
+            }
+            
+            const resp =  await dispatch(createUserListAsync(user));
+            console.log('check lifecycle', resp.payload.message);
+            
+            if (status == 'idle') {
+                showAlert("success", "Thành công");
+                dispatch(getUserListAsync(currentPage));
+                openModal1();
+                setDataForm("");
+                setIsEdit(false);
+            } else {
+                showAlert("error", "Thất bại");
+            }
+
+            setIsFormDirty(false);
         }
     }
     const setDataForm = (item: any) => {
-
+        
         if (item) {
             setUsername(item.username);
             setPassword(item.password);
@@ -90,6 +143,7 @@ export default function User() {
             setIdUser(item.id);
             setIsEdit(true);
             setImage(item.imgUrl)
+            setRoleUser(item.role)
         } else {
             setUsername("");
             setPassword("");
@@ -121,10 +175,10 @@ export default function User() {
 
         dispatch(deleteUserAsync(id));
         if (status == 'idle') {
-            showAlert("success", "Xoá nhân viên mới thành công ");
+            showAlert("success", "Xoá nhân viên thành công ");
             dispatch(getUserListAsync(currentPage));
         } else {
-            showAlert("error", "Xoá nhân viên mới  bại ");
+            showAlert("error", "Xoá nhân viên không thành công");
         }
     }
     return (
@@ -134,7 +188,7 @@ export default function User() {
                     <h3 className='m-0' style={{ height: '40px' }}>Danh sách nhân viên</h3>
                     <button className="btn btn-success" onClick={() => {
                         openModal1();
-                        setisAdd(true);
+                        setIsEdit(false);
                     }}><i className="fas fa-plus-circle mx-0"></i>Thêm nhân viên</button>
                 </div>
             </div>
@@ -151,26 +205,23 @@ export default function User() {
                     />
                 </form>
             </div>
-            <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh' }}>
+            <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh', overflowY: 'auto' }}>
                 <table className="table table-striped projects">
                     <thead>
                         <tr>
-                            <th style={{ width: "1%" }}>
-                                STT
+                            <th style={{ width: "5vh" }}>
+                                MNV
                             </th>
-                            <th style={{ width: "20%" }}>
+                            <th style={{ width: "30vh" }}>
                                 Tên nhân viên
                             </th>
-                            <th style={{ width: "10%" }}>
-                                Role
+                            <th style={{ width: "20vh" }}>
+                                Tên đăng nhập
                             </th>
-                            <th>
-                                Địa chỉ
-                            </th>
-                            <th>
+                            <th style={{ width: "20vh" }}>
                                 SĐT
                             </th>
-                            <th>
+                            <th style={{ width: "30vh" }}>
                                 Email
                             </th>
                             <th style={{ width: "15%" }} className="text-center">
@@ -181,7 +232,7 @@ export default function User() {
                         {users && users.length > 0 ? users.map((item: any, i: number) => (
                             <tr key={item && item.id ? item.id : null}>
                                 <td>
-                                    {i + 1}
+                                    {item && item.id ? item.id : "Chưa xác định"}
                                 </td>
                                 <td>
                                     <a>
@@ -191,16 +242,13 @@ export default function User() {
                                 </td>
                                 <td>
                                     {/* <img alt="user" style={{ width: 60, height: 60 }} src={item && item.imgUrl ? item.imgUrl : ""} /> */}
-                                    {item && item.role ? item.role : "Chưa xác định"}
-                                </td>
-                                <td className="project_progress">
-                                    {item && item.address ? item.address : "Chưa xác định"}
+                                    {item && item.username ? item.username : "Chưa xác định"}
                                 </td>
                                 <td className="project_progress">
                                     {item && item.phoneNumber ? item.phoneNumber : "Chưa xác định"}
                                 </td>
                                 <td className="project_progress">
-                                    {item && item.email ? item.email : "Chưa xác định"}
+                                    {item && item.email && item.email !== "null" ? item.email : "Chưa xác định"}
                                 </td>
                                 <td className="project-actions text-right">
                                     <div className="d-flex justify-content-between " >
@@ -210,10 +258,12 @@ export default function User() {
                                             setIsEdit(true);
                                         }}>
                                             <i className="fas fa-pencil-alt"></i>
-                                            Edit
+                                            Sửa
                                         </button>
-                                        <button className="btn btn-danger btn-sm" >
-                                            <i className="fas fa-trash"></i> Delete
+                                        <button className="btn btn-danger btn-sm" onClick={() => {
+                                            handleDeleteUser(item.id)
+                                        }}>
+                                            <i className="fas fa-trash"></i> Xóa
                                         </button>
                                     </div>
                                 </td>
@@ -222,80 +272,67 @@ export default function User() {
                     </tbody>
                 </table>
             </div>
-            <Modal isOpen={modal1} toggle1={openModal1}>
-                <ModalHeader toggle1={openModal1}>{isAdd ? "Thêm tài khoản nhân viên" : "Sửa tài khoản nhân viên"}</ModalHeader>
+            <Modal size='lg' isOpen={modal1} toggle1={openModal1}>
+                <ModalHeader toggle1={openModal1}>{isEdit == false ? 'Thêm nhân viên mới' : 'Chỉnh sửa thông tin nhân viên'}</ModalHeader>
                 <ModalBody>
-                    <form className="form-horizontal">
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Tên nhân viên</label>
-                            <div className="col-sm-8">
-
-                                <input
-                                    className="form-control"
-                                    id="name"
-                                    value={name}
-                                    onChange={(e) => {
-                                        setName(e.target.value)
-                                    }}
-                                />
+                    <form className="form-horizontal row d-flex justify-content-between" >
+                        <div className='col-sm-5'>
+                            <div className="form-group row" style={{ display: 'flex', border: '1px solid gray', justifyContent: 'center', padding: '10px', borderRadius: '20px' }}>
+                                <img src={image ? image : '/img/user.png'} alt="" style={{ width: '200px', height: '200px', borderRadius: '20px' }} />
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control mt-2"
+                                        type='file'
+                                        id="image"
+                                        onChange={handleChangeFile}
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group " style={{ display: 'flex', justifyContent: 'center' }}>
+                                <div style={{ width: '100%' }}>
+                                    <input
+                                        className="form-control p-0"
+                                        style={{ fontSize: '20px', fontWeight: 'bold', textAlign: 'center', }}
+                                        id="name"
+                                        value={name}
+                                        placeholder='Tên người dùng'
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            setName(e.target.value)
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
-                            <div className="col-sm-8">
-
-                                <input
-                                    className="form-control"
-                                    type='file'
-                                    id="image"
-                                    onChange={handleChangeFile}
-                                />
-                                <img src={image} alt="" width={80} height={80} />
+                        <div className='col-sm-7 px-5'>
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Tên tài khoản</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="username"
+                                        value={username}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            setUsername(e.target.value)
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Tên tài khoản</label>
-                            <div className="col-sm-8">
-
-                                <input
-                                    className="form-control"
-                                    id="username"
-                                    value={username}
-                                    onChange={(e) => {
-                                        setUsername(e.target.value)
-                                    }}
-                                />
+                            <div className="form-group row">
+                                <label className="col-sm-4 col-form-label">Mật khẩu</label>
+                                <div className="col-sm-8">
+                                    <input
+                                        className="form-control"
+                                        id="password"
+                                        placeholder={isEdit && isEdit == true ? 'Cập nhật mật khẩu mới' : 'Tạo mật khẩu'}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            setPassword(e.target.value)
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Mật khẩu</label>
-                            <div className="col-sm-8">
-
-                                <input
-                                    className="form-control"
-                                    id="name"
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Số điện thoại</label>
-                            <div className="col-sm-8">
-
-                                <input
-                                    className="form-control"
-                                    id="name"
-                                    value={phoneNumber}
-                                    onChange={(e) => {
-                                        setPhoneNumber(e.target.value)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                        {isEdit && isEdit === true ? <>
                             <div className="form-group row">
                                 <label className="col-sm-4 col-form-label">Email</label>
                                 <div className="col-sm-8">
@@ -305,53 +342,87 @@ export default function User() {
                                         id="email"
                                         value={email}
                                         onChange={(e) => {
+                                            handleInputChange(e);
                                             setEmail(e.target.value)
                                         }}
                                     />
-
-
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Địa chỉ</label>
+                                <label className="col-sm-4 col-form-label">Cấp quyền</label>
                                 <div className="col-sm-8">
-
-                                    <input
+                                    <select
+                                        style={{ width: '100%', padding: "3px 10px", height: "100%" }}
                                         className="form-control"
-                                        id="address"
-                                        value={address}
+                                        id="roleUser"
+                                        value={roleUser}
                                         onChange={(e) => {
-                                            setAddress(e.target.value)
+                                            handleInputChange(e);
+                                            setRoleUser(e.target.value)
                                         }}
-                                    />
-
-
+                                    >
+                                        <option value="admin">Admin</option>
+                                        <option value="user">Nhân viên</option>
+                                    </select>
                                 </div>
                             </div>
+
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Sinh nhật</label>
-                                <div className="col-sm-8">
+                                    <label className="col-sm-4 col-form-label">Số điện thoại</label>
+                                    <div className="col-sm-8">
 
-                                    <input
-                                        className="form-control"
-                                        id="birthDay"
-                                        value={birtDay}
-                                        onChange={(e) => {
-                                            setBirtDay(e.target.value)
-                                        }}
-                                    />
-
-
+                                        <input
+                                            className="form-control"
+                                            id="name"
+                                            value={phoneNumber}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                                setPhoneNumber(e.target.value)
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
 
-                        </> : ""}
+                            {isEdit && isEdit === true ? <>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Địa chỉ</label>
+                                    <div className="col-sm-8">
 
+                                        <input
+                                            className="form-control"
+                                            id="address"
+                                            value={address}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                                setAddress(e.target.value)
+                                            }}
+                                        />
+
+
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Sinh nhật</label>
+                                    <div className="col-sm-8">
+
+                                        <input
+                                            className="form-control"
+                                            id="birthDay"
+                                            value={birtDay}
+                                            onChange={(e) => {
+                                                handleInputChange(e);
+                                                setBirtDay(e.target.value)
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </> : ""}
+                        </div>
 
                     </form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={handleAddUser}>
+                    <Button color="primary" onClick={handleAddUser} disabled={!isFormDirty}>
                         Lưu
                     </Button>
                     <Button color="secondary" onClick={() => {

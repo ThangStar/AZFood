@@ -1,8 +1,13 @@
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Mỗi hàng có 2 cột */
-    gap: 16px;
-    max-height: 700px; /* Đặt chiều cao tối đa */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    height: 90%;
+    overflow-y: auto;
+}
+
+.scroll-2 {
+    height: 75%;
     overflow-y: auto;
 }
 
@@ -16,7 +21,8 @@
 }
 
 .grid-item img {
-    display: none; /* Ẩn ảnh bên trong */
+    display: none;
+    /* Ẩn ảnh bên trong */
 }
 
 .popup {
@@ -34,4 +40,3 @@
 .btn-group:hover .popup {
     display: block;
 }
-

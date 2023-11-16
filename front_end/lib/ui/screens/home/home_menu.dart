@@ -119,6 +119,20 @@ class _ZoomState extends State<HomeMenuScreen> {
                                       MediaQuery.of(context).size.height),
                               child: IntrinsicHeight(
                                 child: NavigationRail(
+                                  onDestinationSelected: (value) {
+                                    print(value);
+                                    print(itemsDrawer.length);
+                                    if (value != itemsDrawer.length + 1) {
+                                      if (value == itemsDrawer.length) {
+                                        logout(context);
+                                        return;
+                                      }
+                                      setState(() {
+                                        selectedNavRail = value;
+                                      });
+                                    }
+                                  },
+            selectedIndex: selectedNavRail,
                                     trailing: const Text("AZFood.vn"),
                                     backgroundColor: colorScheme(context)
                                         .tertiary
@@ -190,22 +204,9 @@ class _ZoomState extends State<HomeMenuScreen> {
                                           ),
                                           label: const Text("Chế độ tối"))
                                     ],
-                                    onDestinationSelected: (value) {
-                                      print(value);
-                                      print(itemsDrawer.length);
-                                      if (value != itemsDrawer.length + 1) {
-                                        if (value == itemsDrawer.length) {
-                                          logout(context);
-                                          return;
-                                        }
-                                        setState(() {
-                                          selectedNavRail = value;
-                                        });
-                                      }
-                                    },
-                                    selectedIndex: selectedNavRail),
-                              ),
-                            ),
+                                  ),
+                                ),
+                                ),
                           ),
                           const VerticalDivider(width: 1),
                         ],

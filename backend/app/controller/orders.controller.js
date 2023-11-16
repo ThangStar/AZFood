@@ -505,7 +505,7 @@ exports.payBill = async (req, res) => {
             const createInvoiceQuery = `
 
             INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber ,payMethod )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?,? , ?,? ,?)
 
             `;
             const invoiceNumber = getInvoiceNumber();

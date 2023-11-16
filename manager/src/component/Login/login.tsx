@@ -34,6 +34,8 @@ const Login = () => {
 
     const router = useRouter()
     const handleLogin = async () => {
+        console.log("ststtt ", status);
+
         await dispatch(loginAsync({ username, password }));
     };
     useEffect(() => {
@@ -55,6 +57,7 @@ const Login = () => {
             showAlert("error", "Đăng nhập thất bại");
         }
     }, [status, jwtToken, userFullname]);
+    console.log(" sttus ", status);
 
     useEffect(() => {
         // check hanhle forgot password

@@ -15,7 +15,6 @@ exports.login = async (req, res) => {
   userPwd = sha1(userPwd);
   try {
     const queryRaw = "SELECT * FROM users WHERE username=? AND password = ?";
-
     const resultRaw = await sequelize.query(queryRaw, {
       raw: true, logging: false,
       replacements: [username, userPwd], type: QueryTypes.SELECT

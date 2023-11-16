@@ -74,7 +74,7 @@ export default function RootLayout({
                 <div style={{ width: '16%', overflowY: 'auto', backgroundColor: '#E3F6F5'}}>
                   <LeftSideBar onLogout={() => logout()}/>
                 </div>
-                <div style={{ width: '84%', overflowY: 'auto'}}>
+                <div style={{ width: '84%', overflowY: 'auto', height: '100vh'}}>
                   {children}
                 </div>
               </div>

@@ -104,47 +104,44 @@ export default function Home() {
     };
 
     return (
-        <div className="content" style={{ height: 'calc(100vh - 60px)', paddingTop: '10px', borderTop: '1.5px solid rgb(195 211 210)' }}>
-            <div className="main-header" style={{ marginRight: '15px', border: 'none' }}>
-                <div className="row mb-2" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                    <div className="col-sm-6">
-                        <h1>Lịch sử Checkin</h1>
-                    </div>
-                </div>
-                <div className="card container-fluid mt-4" >
-                    <div className="card-header">
-                        <div className="float-right">
-                            <div className="input-group">
-                                <input className="form-control" type="month" placeholder="Chọn tháng" value={monthInput} onChange={(e) => setMonthInput(e.target.value)} />
-                                <button className="btn btn-primary" onClick={() => handleMonthChange()}>Xác nhận</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div style={{ overflowY: 'auto' }}>
-                        <table className="table table-bordered table-striped projects mt-3">
-                            <thead>
-                                <tr style={{ fontSize: '9px' }}>
-                                    <th>Nhân viên</th>
-                                    {/* <th>ảnh</th> */}
-                                    <th>Tổng ngày công</th>
-                                    {renderRowTable().map((e: any, i: number) => (
-                                        <th key={i}>
-                                            <span>
-                                                <strong>{e.day}</strong><br />
-                                                {e.date}
-                                            </span>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody style={{ fontSize: '9px' }}>
-                                {formattedData.length > 0 ? renderTableData() : null}
-                            </tbody>
-                        </table>
-                    </div>
+        <>
+            <div className="container-fluid">
+                <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                    <h3 className='m-0' style={{ height: '40px' }}>Danh sách món</h3>
                 </div>
             </div>
-        </div>
+            <div className="card container-fluid mt-4" >
+                <div className="card-header">
+                    <div className="float-right">
+                        <div className="input-group">
+                            <input className="form-control" type="month" placeholder="Chọn tháng" value={monthInput} onChange={(e) => setMonthInput(e.target.value)} />
+                            <button className="btn btn-primary" onClick={() => handleMonthChange()}>Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+                <div style={{ overflowY: 'auto' }}>
+                    <table className="table table-bordered table-striped projects mt-3">
+                        <thead>
+                            <tr style={{ fontSize: '9px' }}>
+                                <th>Nhân viên</th>
+                                <th>Tổng ngày công</th>
+                                {renderRowTable().map((e: any, i: number) => (
+                                    <th key={i}>
+                                        <span>
+                                            <strong>{e.day}</strong><br />
+                                            {e.date}
+                                        </span>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody style={{ fontSize: '9px' }}>
+                            {formattedData.length > 0 ? renderTableData() : null}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </>
 
     );
 }

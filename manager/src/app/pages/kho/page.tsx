@@ -43,7 +43,7 @@ export default function Kho() {
         if (ProductList) {
             setProducts(ProductList);
         }
-    }, [phieuNhapList, dispatch]);
+    }, [phieuNhapList, dispatch, ProductList]);
     const toggle = () => setModal(!modal);
     const openModal = (data: any = null) => {
         toggle();

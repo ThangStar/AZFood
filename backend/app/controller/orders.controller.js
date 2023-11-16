@@ -477,7 +477,7 @@ exports.payBill = async (req, res) => {
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
-                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, u.id AS userID, o.totalAmount , o.id
+                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, u.id AS userID, oi.subTotal as totalAmount, o.id
                 FROM orders o
                 INNER JOIN orderItems oi ON o.id = oi.orderID
                 INNER JOIN products p ON oi.productID = p.id

@@ -86,6 +86,20 @@ export const deleteOrderAsync = createAsyncThunk(
   }
 );
 
+export const deleteAllOrderAsync = createAsyncThunk(
+  'order/deleteAll',
+  async (id: any) => {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/orders/deleteAll', { id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+
 export const payBillAsync = createAsyncThunk(
   'order/payBill',
   async (data: any) => {

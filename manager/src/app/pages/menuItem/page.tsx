@@ -187,7 +187,7 @@ export default function MunuItems() {
 
                 </div>
                 {/* table */}
-                <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh' }}>
+                <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh', overflowY: 'auto'}}>
                     <table className="table table-striped projects">
                         <thead >
                             <tr >

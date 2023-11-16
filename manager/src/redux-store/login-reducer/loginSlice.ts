@@ -6,6 +6,7 @@ export interface AuthenticationState {
   jwtToken: any;
   username: any;
   userID: any;
+  role: any;
   status: 'loading' | 'failed' | 'success';
   error: any
 }
@@ -14,6 +15,7 @@ const initialState: AuthenticationState = {
   jwtToken: null,
   username: null,
   userID: null,
+  role: null,
   status: 'success',
   error: ""
 };
@@ -57,6 +59,7 @@ export const counterSlice = createSlice({
         state.status = 'success';
         state.jwtToken = action.payload.jwtToken;
         state.username = action.payload.username;
+        state.role = action.payload.role;
         state.userID = action.payload.id;
       })
       .addCase(loginAsync.rejected, (state, error) => {
@@ -80,5 +83,6 @@ export const counterSlice = createSlice({
 export const getJWTToken = (state: RootState) => state.authenticationState.jwtToken;
 export const getUserFullname = (state: RootState) => state.authenticationState.username;
 export const getUserID = (state: RootState) => state.authenticationState.userID;
+export const getRole = (state: RootState) => state.authenticationState.role;
 
 export default counterSlice.reducer;

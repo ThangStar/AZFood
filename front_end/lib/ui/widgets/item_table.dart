@@ -168,7 +168,7 @@ class _ItemTableState extends State<ItemTable> {
                                         ))
                                     : const SizedBox.shrink()
                               ],
-                            )
+                            ),
                           ],
                         )),
                   ),

@@ -471,14 +471,13 @@ exports.getList = async (req, res) => {
 exports.payBill = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     const body = req.body;
-    console.log("body", body);
+    console.log("bodsssssssssssy", body);
     if (isAuth) {
         const tableID = req.body.id;
-
         try {
             // Lấy thông tin tổng số tiền và chi tiết hoá đơn
             const getBillDetailsQuery = `
-                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, u.id AS userID, o.totalAmount , o.id
+                SELECT p.name AS productName,p.id AS productID, oi.quantity, p.price, u.name AS userName, u.id AS userID, oi.subTotal as totalAmount, o.id
                 FROM orders o
                 INNER JOIN orderItems oi ON o.id = oi.orderID
                 INNER JOIN products p ON oi.productID = p.id
@@ -505,10 +504,11 @@ exports.payBill = async (req, res) => {
             const createInvoiceQuery = `
 
             INSERT INTO invoice (tableID,total, createAt, userName, userID, invoiceNumber ,payMethod )
-            VALUES (?, ?, ?,? , ?,? ,?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
 
             `;
             const invoiceNumber = getInvoiceNumber();
+            console.log(tableID, totalInvoiceAmount, new Date(), billDetails[0].userName, billDetails[0].userID, invoiceNumber, body.payMethod);
             const invoiceResult = await sequelize.query(createInvoiceQuery, {
                 raw: true,
                 logging: false,

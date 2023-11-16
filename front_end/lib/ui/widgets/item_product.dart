@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/leading_item_status.dart';
@@ -121,7 +122,6 @@ class _ItemProductState extends State<ItemProduct>
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
                           child: Image.network(
-
                             widget.product.imageUrl != null &&
                                     widget.product.imageUrl != ''
                                 ? widget.product.imageUrl!
@@ -226,19 +226,24 @@ class SubTitleItemProduct extends StatelessWidget {
 }
 
 class SubTitleItemCurrentBill extends StatelessWidget {
-  const SubTitleItemCurrentBill({super.key, required this.product});
+  const SubTitleItemCurrentBill({super.key, required this.product, this.bottom});
   final Product product;
-
+  final Widget? bottom;
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.only(top: 6),
-        child: Text(
-          "${NumberFormat.decimalPattern().format(product.price)} đ",
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(color: colorScheme(context).scrim),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${NumberFormat.decimalPattern().format(product.price)} đ",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: colorScheme(context).scrim),
+            ),
+            bottom ?? SizedBox.shrink()
+          ],
         ));
   }
 }

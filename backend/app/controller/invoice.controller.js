@@ -19,9 +19,10 @@ exports.getList = async (req, res) => {
             type: QueryTypes.SELECT
         });
 
-        const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name 
+        const queryRaw = `SELECT ic.id , ic.invoiceNumber, ic.total ,ic.createAt , ic.userName , ic.tableID , t.name AS table_Name , ic.payMethod
         FROM invoice ic 
-        JOIN tables t ON t.id = ic.tableID 
+        LEFT JOIN tables t ON t.id = ic.tableID 
+        order by ic.createAt desc
         LIMIT :limit OFFSET :offset;`;
         try {
             const resultRaw = await sequelize.query(queryRaw, {

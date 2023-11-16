@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
@@ -279,7 +280,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: columns,
-                            childAspectRatio: (maxWidth / columns) / 80,
+                            childAspectRatio: (maxWidth / columns) / 100,
                           ),
                           itemCount: state.currentProducts!.toSet().length,
                           itemBuilder: (context, index) {
@@ -288,7 +289,13 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                             return ItemProduct(
                               product: product,
                               subTitle:
-                                  SubTitleItemCurrentBill(product: product),
+                                  SubTitleItemCurrentBill(product: product, bottom:
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                    Icon(Ionicons.information_circle, size: 18,),
+                                    Text(" ghi chú", style: TextStyle(color: colorScheme(context).scrim.withOpacity(0.5)),)
+                                  ],)),
                               trailling: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.start,

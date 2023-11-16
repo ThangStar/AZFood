@@ -56,48 +56,87 @@ exports.checkAndSendOtpToEmail = async (req, res) => {
     }
 };
 
+
+const updateUser = async (req, res, body) => {
+    const storage = getStorage();
+    try {
+        if (req.file) {
+            const image = req.file;
+            const imageFileName = `${Date.now()}_${image.originalname}`;
+
+            const storageRef = ref(storage, `files/usersss/${imageFileName}`);
+            const metadata = {
+                contentType: req.file.mimetype,
+            };
+            const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+            const imgUrl = await getDownloadURL(snapshot.ref);
+            console.log("imgUrl", imgUrl);
+
+            const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?, email = ?, address = ?, imgUrl = ?, birtDay = ? WHERE id = ?";
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, imgUrl, body.birtDay, body.idUser],
+                type: QueryTypes.UPDATE
+            });
+            res.status(200).json({ message: 'Member updated successfully' });
+        } else {
+            console.log("insert ko file");
+            const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?,  email = ?, address = ?,  birtDay = ? WHERE id = ?";
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, body.birtDay, body.idUser],
+                type: QueryTypes.UPDATE
+            });
+            res.status(200).json({ message: 'Member updated successfully' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 // Create and Save a new member
 exports.createMember = async (req, res) => {
     const storage = getStorage();
     try {
         const body = req.body;
+        console.log('req.body', req.body);
         body.password = sha1(body.password);
         const isAdmin = await Auth.checkAdmin(req);
         if (isAdmin) {
             if (body.idUser) {
-                if (req.file) {
-                    const image = req.file;
-                    const imageFileName = `${Date.now()}_${image.originalname}`;
 
-                    const storageRef = ref(storage, `files/usersss/${imageFileName}`);
-                    const metadata = {
-                        contentType: req.file.mimetype,
-                    };
-                    const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
-                    const imgUrl = await getDownloadURL(snapshot.ref);
-                    console.log("imgUrl", imgUrl);
+                const existingUser = await sequelize.query('SELECT username, email FROM users WHERE id = ? LIMIT 1', {
+                    replacements: [body.idUser],
+                    type: QueryTypes.SELECT
+                });
 
-                    const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?, email = ?, address = ?, imgUrl = ?, birtDay = ? WHERE id = ?";
-                    const resultRaw = await sequelize.query(queryRaw, {
-                        raw: true,
-                        logging: false,
-                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, imgUrl, body.birtDay, body.idUser],
-                        type: QueryTypes.UPDATE
+                if ((existingUser.length > 0 && existingUser[0].username !== body.username) 
+                || (existingUser.length > 0 && existingUser[0].email !== body.email)) {
+
+                    const checkUsername = await sequelize.query('SELECT id FROM users WHERE username = ? AND id <> ?  LIMIT 1', {
+                        replacements: [body.username, body.idUser],
+                        type: QueryTypes.SELECT
                     });
-                    res.status(200).json({ message: 'Member updated successfully' });
 
-
-                } else {
-                    console.log("insert");
-                    const queryRaw = "UPDATE users SET username = ?, password = ?, name = ?, role = ?, phoneNumber = ?,  email = ?, address = ?,  birtDay = ? WHERE id = ?";
-                    const resultRaw = await sequelize.query(queryRaw, {
-                        raw: true,
-                        logging: false,
-                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, body.email, body.address, body.birtDay, body.idUser],
-                        type: QueryTypes.INSERT
+                    const checkEmail = await sequelize.query('SELECT id FROM users WHERE email = ? AND id <> ? LIMIT 1', {
+                        replacements: [body.email, body.idUser],
+                        type: QueryTypes.SELECT
                     });
-                    res.status(200).json({ message: 'Member created successfully' });
 
+                    if (checkUsername.length > 0) {
+                        res.status(401).json('Username already exists');
+                        return;
+                    } else if (checkEmail.length > 0) {
+                        res.status(401).json({ message: 'Email already exists'});
+                        return;
+                    } else {
+                       updateUser(req, res, body);
+                    }
+                }else{
+                    updateUser(req, res, body);
                 }
             } else {
                 if (req.file && req.file.originalname) {
@@ -119,9 +158,6 @@ exports.createMember = async (req, res) => {
                     });
                     console.log("resultRaw ", resultRaw);
                     res.status(200).json({ message: 'Member created successfully' });
-
-
-
                 } else {
                     console.log("insert");
                     const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber , createAt) VALUES (?, ?, ?, ?, ? , ?);";
@@ -132,13 +168,9 @@ exports.createMember = async (req, res) => {
                         type: QueryTypes.INSERT
                     });
                     console.log("resultRaw ", resultRaw);
-                    res.status(200).json({ message: 'Member created successfully' });
-
+                    res.status(200).json({ message: 'Member created successfully'});
                 }
-
-
             }
-
         } else {
             res.status(401).send('member is not admin');
         }

@@ -47,9 +47,6 @@ export default function User() {
         }
     }, [userList]);
 
-    console.log('check userLsit', userList.data);
-    
-
     const totalPages = userList?.totalPages || 1;
 
     const handlePageChange = (page: number) => {
@@ -81,13 +78,6 @@ export default function User() {
                 return;
             }
             
-            // Kiểm tra name không chứa kí tự đặc biệt
-            const nameRegex = /^[a-zA-Z0-9àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹ ]*$/;
-            if (!nameRegex.test(name)) {
-                showAlert("error", "Tên người dùng không được chứa kí tự đặc biệt hoặc kí tự không hỗ trợ");
-                return;
-            }
-            
             // Kiểm tra username có ít nhất 6 kí tự và không chứa kí tự đặc biệt
             const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
             if (!usernameRegex.test(username)) {
@@ -115,10 +105,10 @@ export default function User() {
             }
             
             const resp =  await dispatch(createUserListAsync(user));
-            console.log('check lifecycle', resp.payload.message);
+            console.log('check', status);
             
             if (status == 'idle') {
-                showAlert("success", "Thành công");
+                showAlert("success", 'Thành công');
                 dispatch(getUserListAsync(currentPage));
                 openModal1();
                 setDataForm("");

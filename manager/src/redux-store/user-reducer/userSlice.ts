@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
+import { useState } from 'react';
 
 const serverUrl = "http://localhost:8080";
 
@@ -8,13 +9,18 @@ export interface UserState {
   userList: any[];
   user: any;
   status: 'idle' | 'loading' | 'failed';
+  numberStatus: number;
+  errorMessage: string
 }
 
 const initialState: UserState = {
   userList: [],
   user: null,
   status: 'idle',
+  numberStatus: 0,
+  errorMessage: ''
 };
+
 
 export const getUserListAsync = createAsyncThunk(
   'user/get-list',
@@ -51,16 +57,25 @@ export const createUserListAsync = createAsyncThunk(
     formData.append('birtDay', birtDay);
     formData.append('file', file);
 
-    const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/user/create', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': 'Bearer ' + token,
-      },
-    });
-    return response.data;
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(serverUrl + '/api/user/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+    
+      console.log('check log', response);
+      return response.data;
+    } catch (error:any) {
+      const errResult = {error: true, message: error.response.data.message }
+      return errResult;
+    }
   }
 );
+
+
 export const deleteUserAsync = createAsyncThunk(
   'user/delete',
   async (id: any) => {
@@ -113,11 +128,19 @@ const TableSlice = createSlice({
       })
       .addCase(createUserListAsync.fulfilled, (state, action) => {
         state.status = 'idle';
-        state.userList = action.payload;
-        state.user = action.payload;
+        const payload = action.payload;
+        if (payload.error) {
+          state.errorMessage = payload.message
+        } else {
+          state.errorMessage = '';
+          state.userList = action.payload;
+          state.user = action.payload;
+        }  
       })
-      .addCase(createUserListAsync.rejected, (state) => {
+      .addCase(createUserListAsync.rejected, (state, error) => {
         state.status = 'failed';
+        console.log('111');
+        
       }).addCase(deleteUserAsync.pending, (state) => {
         state.status = 'loading';
       })
@@ -144,5 +167,6 @@ const TableSlice = createSlice({
 
 export const getUserList = (state: RootState) => state.userState.userList;
 export const getStatusUserState = (state: RootState) => state.userState.status;
+export const getErrorMessage = (state: RootState) => state.userState.errorMessage;
 
 export default TableSlice.reducer;

@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
-import { createUserListAsync, deleteUserAsync, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
+import { createUserListAsync, deleteUserAsync, getErrorMessage, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
 import Image from 'next/image'
 import Link from 'next/link';
 import { it } from 'node:test';
@@ -32,6 +32,8 @@ export default function User() {
     const [currentPage, setCurrentPage] = useState(1)
     const [isFormDirty, setIsFormDirty] = useState(false);
 
+    const errorMessage: any = useSelector(getErrorMessage);
+
     const toggle1 = () => setModal1(!modal1);
     const openModal1 = () => {
         toggle1();
@@ -40,6 +42,15 @@ export default function User() {
     useEffect(() => {
         dispatch(getUserListAsync(currentPage));
     }, [dispatch, currentPage]);
+
+    useEffect(() => {
+        if (errorMessage && errorMessage.length > 0) {
+            showAlert("error", errorMessage);
+        }
+    }, [errorMessage]);
+
+    console.log('errorMessage',errorMessage);
+    
 
     useEffect(() => {
         if (userList && userList.data) {
@@ -72,19 +83,19 @@ export default function User() {
                 birtDay,
                 file
             }
-            
+
             if (name === "") {
                 showAlert("error", "Không được để trống tên người dùng");
                 return;
             }
-            
+
             // Kiểm tra username có ít nhất 6 kí tự và không chứa kí tự đặc biệt
             const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
             if (!usernameRegex.test(username)) {
                 showAlert("error", "Username phải có ít nhất 6 kí tự và không chứa kí tự đặc biệt");
                 return;
             }
-            
+
             // Kiểm tra password có ít nhất 6 kí tự
             if (password.length < 6) {
                 showAlert("error", "Password phải có ít nhất 6 kí tự");
@@ -96,32 +107,36 @@ export default function User() {
                 showAlert("error", "Số điện thoại phải chứa đúng 10 số và chỉ chứa kí tự số");
                 return;
             }
-            
+
             // Kiểm tra định dạng email
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showAlert("error", "Định dạng email không hợp lệ");
                 return;
             }
-            
-            const resp =  await dispatch(createUserListAsync(user));
-            console.log('check', status);
-            
-            if (status == 'idle') {
-                showAlert("success", 'Thành công');
-                dispatch(getUserListAsync(currentPage));
-                openModal1();
-                setDataForm("");
-                setIsEdit(false);
+
+            const resp = await dispatch(createUserListAsync(user));
+            console.log('check', resp);
+            if (errorMessage && errorMessage.length > 0) {
+                showAlert("error", errorMessage);
             } else {
-                showAlert("error", "Thất bại");
+                if (resp.payload != undefined) {
+                    showAlert("success", 'Thành công');
+                    dispatch(getUserListAsync(currentPage));
+                    openModal1();
+                    setDataForm("");
+                    setIsEdit(false);
+                } else {
+                    showAlert("error", "Thất bại");
+                }
             }
+
 
             setIsFormDirty(false);
         }
     }
     const setDataForm = (item: any) => {
-        
+
         if (item) {
             setUsername(item.username);
             setPassword(item.password);
@@ -358,20 +373,20 @@ export default function User() {
                             </div>
 
                             <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Số điện thoại</label>
-                                    <div className="col-sm-8">
+                                <label className="col-sm-4 col-form-label">Số điện thoại</label>
+                                <div className="col-sm-8">
 
-                                        <input
-                                            className="form-control"
-                                            id="name"
-                                            value={phoneNumber}
-                                            onChange={(e) => {
-                                                handleInputChange(e);
-                                                setPhoneNumber(e.target.value)
-                                            }}
-                                        />
-                                    </div>
+                                    <input
+                                        className="form-control"
+                                        id="name"
+                                        value={phoneNumber}
+                                        onChange={(e) => {
+                                            handleInputChange(e);
+                                            setPhoneNumber(e.target.value)
+                                        }}
+                                    />
                                 </div>
+                            </div>
 
                             {isEdit && isEdit === true ? <>
                                 <div className="form-group row">

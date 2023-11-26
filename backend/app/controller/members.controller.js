@@ -127,10 +127,10 @@ exports.createMember = async (req, res) => {
                     });
 
                     if (checkUsername.length > 0) {
-                        res.status(401).json('Username already exists');
+                        res.status(409).json({message: 'User already exists'});
                         return;
                     } else if (checkEmail.length > 0) {
-                        res.status(401).json({ message: 'Email already exists'});
+                        res.status(409).json({ message: 'Email already exists'});
                         return;
                     } else {
                        updateUser(req, res, body);

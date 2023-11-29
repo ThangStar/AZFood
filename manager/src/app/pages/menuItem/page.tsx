@@ -35,6 +35,7 @@ export default function MunuItems() {
     const [isEdit, setIsEdit] = useState(false);
     const [image, setImage] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("0");
+    const [itemQuantity, setItemQuantity] = useState("");
 
     const [file, setFile] = useState<File>();
     const totalPages = menuItemList.totalPages || 1;
@@ -100,21 +101,29 @@ export default function MunuItems() {
             status: status,
             dvtID: itemDVT,
             id: idItem,
+            quantity: itemQuantity,
             file
         }
         await dispatch(createMenuItemAsync(data));
+        // await dispatch(nhapHangAsync(data));
+
         setDataForm("");
         handlePageChange(currentPage);
         showAlert("success", " Thêm món thành công");
         toggle();
     }
 
-    const deleteItem = (id: number) => {
-        dispatch(deleteMenuItemAsync(id));
-        showAlert("success", "Xóa món ăn thành công");
+    const deleteItem = async (id: number) => {
+        try {
+            const resultAction = await dispatch(deleteMenuItemAsync(id)).unwrap();
+            showAlert("success", "Xóa món ăn thành công");
+            console.log("Payload:", resultAction.payload);
+        } catch (error) {
+            showAlert("error", "Món ăn này đang được order");
+            console.error("Delete failed:", error);
+        }
         handlePageChange(currentPage);
         toggle1();
-
     };
 
     const onSearchChange = (searchName: any) => {
@@ -187,7 +196,7 @@ export default function MunuItems() {
 
                 </div>
                 {/* table */}
-                <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh', overflowY: 'auto'}}>
+                <div className="card card-body border-0 p-0 mx-3" style={{ height: '70vh', overflowY: 'auto' }}>
                     <table className="table table-striped projects">
                         <thead >
                             <tr >
@@ -360,6 +369,22 @@ export default function MunuItems() {
                                     />
                                 </div>
                             </div>
+                            {itemCategory === "2" ? <>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Số Lượng</label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            id="quantity"
+                                            type='number'
+                                            value={itemQuantity}
+                                            onChange={(e) => {
+                                                setItemQuantity(e.target.value);
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </> : null}
                             <div className="form-group row">
                                 <label className="col-sm-4 col-form-label">Giá</label>
                                 <div className="col-sm-8">

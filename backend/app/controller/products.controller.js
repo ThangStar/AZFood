@@ -80,7 +80,7 @@ exports.createProduct = async (req, res) => {
                         };
                         const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
                         const imgUrl = await getDownloadURL(snapshot.ref);
-console.log(imgUrl);
+                        console.log(imgUrl);
                         // Tiếp tục xử lý và lưu dữ liệu vào MySQL
                         const queryRaw = "INSERT INTO products (name, price, category, status = CASE WHEN category = 1 THEN 1 ELSE null END, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END, ?, ?);";
                         const resultRaw = await sequelize.query(queryRaw, {
@@ -107,9 +107,59 @@ console.log(imgUrl);
                     });
                     res.status(200).json({ message: 'products created successfully' });
                 }
-
-
-
+                if (body.quantity && body.quantity !== 0) {
+                    try {
+                        const productIDQuery = 'SELECT id FROM products WHERE name = ?;'
+                        const _productID = await sequelize.query(productIDQuery, {
+                            raw: true,
+                            logging: false,
+                            replacements: [body.name],
+                            type: QueryTypes.SELECT
+                        });
+                        const productID = _productID[0].id;
+                        const queryRaw = "INSERT INTO nhapHang (productID, soLuong, donGia,ngayNhap ,dvtID) VALUES (?, ?, ?,?,?);";
+                        const resultRaw = await sequelize.query(queryRaw, {
+                            raw: true,
+                            logging: false,
+                            replacements: [productID, body.quantity, body.price, new Date(), body.dvtID],
+                            type: QueryTypes.INSERT
+                        });
+                        const checkExitsQuery = "SELECT productID FROM kho WHERE productID = ?;";
+                        const checkExits = await sequelize.query(checkExitsQuery, {
+                            raw: true,
+                            logging: false,
+                            replacements: [productID],
+                            type: QueryTypes.SELECT
+                        });
+                        if (checkExits.length > 0) {
+                            try {
+                                const khoQueryRaw = "UPDATE kho SET quantity = quantity + ? WHERE productID = ?;";
+                                const khoResultRaw = await sequelize.query(khoQueryRaw, {
+                                    raw: true,
+                                    logging: false,
+                                    replacements: [body.quantity, productID],
+                                    type: QueryTypes.UPDATE
+                                });
+                            } catch (error) {
+                                console.log("error", error);
+                            }
+                        } else {
+                            try {
+                                const khoQueryRaw = "INSERT INTO kho (productID, quantity) VALUES (?, ?);";
+                                const khoResultRaw = await sequelize.query(khoQueryRaw, {
+                                    raw: true,
+                                    logging: false,
+                                    replacements: [productID, body.quantity],
+                                    type: QueryTypes.INSERT
+                                });
+                            } catch (error) {
+                                console.log("error", error);
+                            }
+                        }
+                    } catch (error) {
+                        console.log(" loi nhap hang : ", error);
+                    }
+                }
             }
         } else {
             console.log("Bạn chưa đăng nhập");

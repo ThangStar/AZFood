@@ -76,6 +76,7 @@ export default function RootLayout({
                 </div>
                 <div style={{ width: '84%', overflowY: 'auto', height: '100vh'}}>
                   {children}
+                  <Messenger/>
                 </div>
               </div>
               

@@ -97,6 +97,18 @@ const updateUser = async (req, res, body) => {
     }
 }
 
+const checkDuplicate = async (username, email) => {
+    const queryDuplicate = "SELECT * FROM users WHERE username = ? OR email = ?;";
+    const resultDuplicate = await sequelize.query(queryDuplicate, {
+        raw: true,
+        logging: false,
+        replacements: [username, email],
+        type: QueryTypes.SELECT
+    });
+
+    return resultDuplicate.length > 0;
+};
+
 // Create and Save a new member
 exports.createMember = async (req, res) => {
     const storage = getStorage();
@@ -113,8 +125,8 @@ exports.createMember = async (req, res) => {
                     type: QueryTypes.SELECT
                 });
 
-                if ((existingUser.length > 0 && existingUser[0].username !== body.username) 
-                || (existingUser.length > 0 && existingUser[0].email !== body.email)) {
+                if ((existingUser.length > 0 && existingUser[0].username !== body.username)
+                    || (existingUser.length > 0 && existingUser[0].email !== body.email)) {
 
                     const checkUsername = await sequelize.query('SELECT id FROM users WHERE username = ? AND id <> ?  LIMIT 1', {
                         replacements: [body.username, body.idUser],
@@ -127,39 +139,52 @@ exports.createMember = async (req, res) => {
                     });
 
                     if (checkUsername.length > 0) {
-                        res.status(409).json({message: 'User already exists'});
+                        res.status(409).json({ message: 'Tên người dùng đã được sử dụng' });
                         return;
                     } else if (checkEmail.length > 0) {
-                        res.status(409).json({ message: 'Email already exists'});
+                        res.status(409).json({ message: 'Email đã được sử dụng' });
                         return;
                     } else {
-                       updateUser(req, res, body);
+                        updateUser(req, res, body);
                     }
-                }else{
+                } else {
                     updateUser(req, res, body);
                 }
             } else {
                 if (req.file && req.file.originalname) {
-                    const image = req.file;
-                    const imageFileName = `${Date.now()}_${image.originalname}`;
 
-                    const storageRef = ref(storage, `files/usersss/${imageFileName}`);
-                    const metadata = {
-                        contentType: req.file.mimetype,
-                    };
-                    const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
-                    const imgUrl = await getDownloadURL(snapshot.ref);
-                    const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber,  imgUrl, createAt) VALUES (?, ?, ?, ?, ?, ?, ?);";
-                    const resultRaw = await sequelize.query(queryRaw, {
-                        raw: true,
-                        logging: false,
-                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, imgUrl, new Date()],
-                        type: QueryTypes.INSERT
-                    });
-                    console.log("resultRaw ", resultRaw);
-                    res.status(200).json({ message: 'Member created successfully' });
+                    const isDuplicate = await checkDuplicate(body.username, body.email);
+                    if (isDuplicate) {
+                        res.status(400).json({ message: 'Trùng tên tài khoản hoặc email' });
+                    } else {
+                        const image = req.file;
+                        const imageFileName = `${Date.now()}_${image.originalname}`;
+
+                        const storageRef = ref(storage, `files/usersss/${imageFileName}`);
+                        const metadata = {
+                            contentType: req.file.mimetype,
+                        };
+                        const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
+                        const imgUrl = await getDownloadURL(snapshot.ref);
+                        const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber,  imgUrl, createAt) VALUES (?, ?, ?, ?, ?, ?, ?);";
+                        const resultRaw = await sequelize.query(queryRaw, {
+                            raw: true,
+                            logging: false,
+                            replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, imgUrl, new Date()],
+                            type: QueryTypes.INSERT
+                        });
+                        console.log("resultRaw ", resultRaw);
+                        res.status(200).json({ message: 'Member created successfully' });
+                    }
+
+
                 } else {
                     console.log("insert");
+                    const isDuplicate = await checkDuplicate(body.username, body.email);
+                    console.log('checkDup', isDuplicate);
+                    if (isDuplicate) {
+                        res.status(400).json({ message: 'Trùng tên tài khoản hoặc email' });
+                    } else {
                     const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber , createAt) VALUES (?, ?, ?, ?, ? , ?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
@@ -168,7 +193,9 @@ exports.createMember = async (req, res) => {
                         type: QueryTypes.INSERT
                     });
                     console.log("resultRaw ", resultRaw);
-                    res.status(200).json({ message: 'Member created successfully'});
+                    res.status(200).json({ message: 'Member created successfully' });
+                    }
+
                 }
             }
         } else {
@@ -176,7 +203,7 @@ exports.createMember = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error111' });
     }
 
 };

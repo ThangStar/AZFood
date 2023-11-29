@@ -69,7 +69,7 @@ export const getFilterCategoryListAsync = createAsyncThunk(
 export const createMenuItemAsync = createAsyncThunk(
   'product/create',
   async (data: any) => {
-    const { dvtID, name, price, category, status, id, file } = data;
+    const { dvtID, name, price, category, status, id, file, quantity } = data;
 
     const formData = new FormData();
     formData.append('name', name);
@@ -79,9 +79,10 @@ export const createMenuItemAsync = createAsyncThunk(
     formData.append('id', id);
     formData.append('file', file);
     formData.append('dvtID', dvtID);
+    formData.append('quantity', quantity);
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/products/create', { dvtID, name, price, category, status, id, file }, {
+    const response = await axios.post(serverUrl + '/api/products/create', { dvtID, name, price, category, status, id, file, quantity }, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': 'Bearer ' + token,

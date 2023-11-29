@@ -13,15 +13,21 @@ const Messenger = () => {
     const socket = useSocket();
     const messagesRef = useRef<HTMLDivElement>(null);
 
+    // useEffect(() => {
+    //     const userObject = localStorage.getItem('user');
+    //     console.log('testMess', userObject);
+
+    //     if (typeof userObject === 'object') {
+    //         localStorage.setItem('user', JSON.stringify(userObject));
+    //         // setUserID(JSON.parse(userObject.toString()).userID);
+    //     } else {
+    //         console.error('Dữ liệu không phải là một đối tượng JSON.');
+    //     }
+    // }, []);
     useEffect(() => {
-        const userObject = localStorage.getItem('user');
-        console.log('testMess', userObject);
-        
-        if (typeof userObject === 'object') {
-            localStorage.setItem('user', JSON.stringify(userObject));
-            // setUserID(JSON.parse(userObject.toString()).userID);
-        } else {
-            console.error('Dữ liệu không phải là một đối tượng JSON.');
+        const userLocal = localStorage.getItem('user');
+        if (userLocal) {
+            setUserID(JSON.parse(userLocal).userID);
         }
     }, []);
 
@@ -66,7 +72,7 @@ const Messenger = () => {
             message: textMessage,
             raw: null,
             imageUrl: null,
-            sendBy: 4,
+            sendBy: userID,
         }
         socket?.emit('client-msg-group', data)
         setTextMessage('')

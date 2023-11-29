@@ -282,7 +282,7 @@ export default function Table() {
                         <form className="form-horizontal">
                             <div className="form-group row">
                                 <h4>Bạn có chắc chắn muốn xóa bàn này không? </h4>
-                                <div>Sau khi xóa bàn ăn sẽ bị xóa vĩnh viễn và không thể khôi phực lại được nữa</div>
+                                <div>Sau khi xóa, bàn này sẽ bị xóa vĩnh viễn và không thể khôi phục!</div>
                             </div>
                         </form>
                     </ModalBody>

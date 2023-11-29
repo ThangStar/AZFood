@@ -8,7 +8,7 @@ exports.getList = async (req, res) => {
 
     if (isAuth) {
 
-        const PAGE_SIZE = 25;
+        const PAGE_SIZE = 10;
         const currentPage = parseInt(req.query.page) || 1;
         const offset = (currentPage - 1) * PAGE_SIZE;
 

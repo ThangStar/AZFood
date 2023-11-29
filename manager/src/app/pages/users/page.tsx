@@ -31,6 +31,9 @@ export default function User() {
     const [searchName, setSearchName] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const [isFormDirty, setIsFormDirty] = useState(false);
+    const [modalDel, setModalDel] = useState(false);
+    const [id, setID] = useState<number>(0);
+    const toggleDel = () => setModalDel(!modalDel);
 
     const errorMessage: any = useSelector(getErrorMessage);
 
@@ -39,18 +42,22 @@ export default function User() {
         toggle1();
     }
 
+    const openModalDel = () => {
+        toggleDel()
+    }
+
     useEffect(() => {
         dispatch(getUserListAsync(currentPage));
     }, [dispatch, currentPage]);
 
-    useEffect(() => {
-        if (errorMessage && errorMessage.length > 0) {
-            showAlert("error", errorMessage);
-        }
-    }, [errorMessage]);
+    // useEffect(() => {
+    // if (errorMessage && errorMessage.length > 0) {
+    //     showAlert("error", errorMessage);
+    // }
+    // }, [errorMessage]);
 
-    console.log('errorMessage',errorMessage);
-    
+    console.log('errorMessage', errorMessage);
+
 
     useEffect(() => {
         if (userList && userList.data) {
@@ -117,20 +124,20 @@ export default function User() {
 
             const resp = await dispatch(createUserListAsync(user));
             console.log('check', resp);
-            if (errorMessage && errorMessage.length > 0) {
-                showAlert("error", errorMessage);
-            } else {
-                if (resp.payload != undefined) {
+
+            if (resp.payload != undefined) {
+                if (resp.payload.error) {
+                    showAlert("error", resp.payload.message);
+                } else {
                     showAlert("success", 'Thành công');
                     dispatch(getUserListAsync(currentPage));
                     openModal1();
                     setDataForm("");
                     setIsEdit(false);
-                } else {
-                    showAlert("error", "Thất bại");
                 }
+            } else {
+                showAlert("error", "Thất bại");
             }
-
 
             setIsFormDirty(false);
         }
@@ -176,14 +183,14 @@ export default function User() {
         }
     }
 
-    const handleDeleteUser = (id: any) => {
+    const handleDeleteUser = () => {
 
         dispatch(deleteUserAsync(id));
         if (status == 'idle') {
-            showAlert("success", "Xoá nhân viên thành công ");
+            showAlert("success", "Xoá tài khoản thành công ");
             dispatch(getUserListAsync(currentPage));
         } else {
-            showAlert("error", "Xoá nhân viên không thành công");
+            showAlert("error", "Xoá tài khoản không thành công");
         }
     }
     return (
@@ -266,7 +273,8 @@ export default function User() {
                                             Sửa
                                         </button>
                                         <button className="btn btn-danger btn-sm" onClick={() => {
-                                            handleDeleteUser(item.id)
+                                            setID(item.id)
+                                            openModalDel()
                                         }}>
                                             <i className="fas fa-trash"></i> Xóa
                                         </button>
@@ -277,6 +285,30 @@ export default function User() {
                     </tbody>
                 </table>
             </div>
+            <Modal isOpen={modalDel} toggle={openModalDel}>
+                <ModalHeader toggle1={openModal1}>{"Xác nhận xóa bàn"}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <h4>Bạn có chắc chắn muốn xóa tài khản này không? </h4>
+                            <div>Sau khi xóa, tài khoản này sẽ bị xóa vĩnh viễn và không thể khôi phục!</div>
+                        </div>
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="secondary" onClick={() => {
+                        openModalDel()
+                    }}>
+                        Hủy
+                    </Button>
+                    <Button color="danger" onClick={() => {
+                        handleDeleteUser()
+                        openModalDel()
+                    }}>
+                        Đồng ý xóa
+                    </Button>
+                </ModalFooter>
+            </Modal>
             <Modal size='lg' isOpen={modal1} toggle1={openModal1}>
                 <ModalHeader toggle1={openModal1}>{isEdit == false ? 'Thêm nhân viên mới' : 'Chỉnh sửa thông tin nhân viên'}</ModalHeader>
                 <ModalBody>

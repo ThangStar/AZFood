@@ -6,7 +6,7 @@ import Link from "next/link";
 import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { getDVTList, getDvtListAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
+import { getDVTList, getDvtListAsync, nhapHangAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
 import { showAlert } from '@/component/utils/alert/alert';
 import formatMoney from '@/component/utils/formatMoney';
 
@@ -28,6 +28,7 @@ export default function MunuItems() {
     const [itemCategory, setItemCategory] = useState("");
     const [idItemDelete, setIdItemDelete] = useState<number>(0);
     const [idItem, setIdItem] = useState<number>();
+    const [itemQuantity, setItemQuantity] = useState("");
     const [listCategory, setListCategory] = useState<string[]>([]);
     const [listDvt, setListDvt] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -398,6 +399,23 @@ export default function MunuItems() {
                                     />
                                 </div>
                             </div>
+                            {itemCategory === "2" ? <>
+                                <div className="form-group row">
+                                    <label className="col-sm-4 col-form-label">Số Lượng</label>
+                                    <div className="col-sm-8">
+                                        <input
+                                            className="form-control"
+                                            id="quantity"
+                                            type='number'
+                                            value={itemQuantity}
+                                            onChange={(e) => {
+                                                setItemQuantity(e.target.value);
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </> : null}
+
                             <div className="form-group row">
                                 <label className="col-sm-4 col-form-label">Đơn vị tính</label>
                                 <div className="col-sm-8">

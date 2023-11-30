@@ -3,22 +3,30 @@ services:
   database-mysql:
     image: mysql:8.1
     ports:
-      - "3308:3306"
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: finallapp
       MYSQL_ROOT_PASSWORD: 12345678
-    expose:
-      - 3306
-
+    networks:
+      - app-network
   backend:
     build:
-      context: ../app/
+      context: ../
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      - DB_PORT=3308
+      - DB_PORT=3307
       - DB_HOST=database-mysql
+      - DB_USER=root
+      - DB_PASSWORD=12345678
+      - DB=finallapp
     ports:
-      - "8080:8080"
-
+      - "3434:3434"
+    networks:
+      - app-network 
+    depends_on:
+      - database-mysql
+networks:
+  app-network:
+    driver: bridge
 # then :docker compose -p az-food up -d

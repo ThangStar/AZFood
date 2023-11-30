@@ -161,6 +161,8 @@ exports.createProduct = async (req, res) => {
                     }
                 }
             }
+
+
         } else {
             console.log("Bạn chưa đăng nhập");
         }

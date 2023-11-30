@@ -40,7 +40,7 @@ export default function TableDetails() {
     const [listDVTList, setListDVTList] = useState([]);
     const [searchName, setSearchName] = useState("")
 
-    const [quantityOrder, setQuantityOrder] = useState<number>(1);
+    const [quantityOrder, setQuantityOrder] = useState<number>();
     const [plusQuantityOrder, setPlusQuantityOrder] = useState<number>(1);
     const [minusQuantityOrder, setMinusQuantityOrder] = useState<number>(-1);
     const [productID, setProducID] = useState();
@@ -146,7 +146,11 @@ export default function TableDetails() {
                 toggle1();
             }
         } else {
-            await dispatch(createOrderAsync(data));
+            const resp = await dispatch(createOrderAsync(data));
+            console.log("resp : ", resp);
+            if (resp.payload === undefined) {
+                showAlert('warning', 'số lượng trong kho đã hết');
+            }
             if (statusRD == 'idle') {
                 toggle1();
             }
@@ -154,26 +158,34 @@ export default function TableDetails() {
         dispatch(getOrderInTableListAsync(tableID));
     }
 
-    const handleMinusOrder = async (id: number) => {
+    const handleMinusOrder = async (item: any) => {
+        setOrderID(item.orderID);
         const data = {
             userID: userID,
             tableID: tableID,
-            productID: id,
-            quantity: minusQuantityOrder
+            productID: item.productID,
+            quantity: item.quantity - 1,
         }
-        console.log('log data', data);
 
-        if (isUpdate) {
-            await dispatch(updateOrderAsync({ data, orderID }));
-            if (statusRD == 'idle') {
-                toggle1();
-            }
-        } else {
-            await dispatch(createOrderAsync(data));
-            if (statusRD == 'idle') {
-                toggle1();
-            }
-        }
+
+        // const resp = await dispatch(updateOrderAsync({ data, orderID }));
+        // console.log('resp', resp);
+
+        // if (isUpdate) {
+        const resp = await dispatch(updateOrderAsync({ data, orderID }));
+        console.log('resp', resp);
+        //     if (statusRD == 'idle') {
+        //         toggle1();
+        //     }
+        // } else {
+        //     const resp = await dispatch(createOrderAsync(data));
+        //     if (resp.payload === undefined) {
+        //         showAlert('warning', 'số lượng trong kho đã hết');
+        //     }
+        //     if (statusRD == 'idle') {
+        //         toggle1();
+        //     }
+        // }
         dispatch(getOrderInTableListAsync(tableID));
     }
 
@@ -331,7 +343,7 @@ export default function TableDetails() {
                                             </td>
                                             <td className="text-center">{formatMoney(item.price)}</td>
                                             <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-                                                <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item.productID)}>-</button>
+                                                <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item)}>-</button>
                                                 {item.quantity}
                                                 <button className='btn btn-outline-dark' onClick={() => handlePlusOrder(item.productID)}>+</button>
                                             </td>

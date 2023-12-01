@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLayoutEffect } from 'react';
 import Link from "next/link";
-import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync, updateStatusMenuItem } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { getDVTList, getDvtListAsync, nhapHangAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
@@ -21,6 +21,7 @@ export default function MunuItems() {
     const [menuItems, setMenuItems] = useState<any[]>([]);
     const [modal, setModal] = useState(false);
     const [modal1, setModal1] = useState(false);
+    const [modalStatus, setModalStatus] = useState(false);
     const [itemName, setItemName] = useState("");
     const [itemPrice, setItemPrice] = useState("");
     const [itemDVT, setItemDVT] = useState("");
@@ -28,7 +29,6 @@ export default function MunuItems() {
     const [itemCategory, setItemCategory] = useState("");
     const [idItemDelete, setIdItemDelete] = useState<number>(0);
     const [idItem, setIdItem] = useState<number>();
-    const [itemQuantity, setItemQuantity] = useState("");
     const [listCategory, setListCategory] = useState<string[]>([]);
     const [listDvt, setListDvt] = useState<string[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -154,6 +154,15 @@ export default function MunuItems() {
             dispatch(getFilterCategoryListAsync(selectedValue))
         }
     }
+
+    const handleUpdateStatusMenuItem = (id: any, status: number) => {
+        dispatch(updateStatusMenuItem({ id: id, status: status }))
+        handlePageChange(currentPage)
+    }
+    const toggleStatus = () => setModalStatus(!modalStatus)
+    const openModalStatus = () => {
+        toggleStatus()
+    }
     return (
         <>
             <div className="container-fluid">
@@ -230,16 +239,17 @@ export default function MunuItems() {
                                     <td style={{ textAlign: 'center' }}>
                                         {item.id}
                                     </td>
-                                    <td style={{ display: 'flex', alignItems: 'center' }}>
-                                        {item && item.imgUrl ?
-                                            <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
-                                            :
-                                            <img src="" alt=" món ăn" style={{ height: 40 }} />
-                                        }
-                                        <div style={{ marginLeft: '10px' }}>
-                                            {item && item.name ? item.name : null}
+                                    <td>
+                                        <div className='d-flex align-items-center'>
+                                            {item && item.imgUrl ?
+                                                <img alt="món ăn" style={{ height: 40, width: 40, objectFit: 'cover' }} src={item.imgUrl} />
+                                                :
+                                                <img src="" alt=" món ăn" style={{ height: 40 }} />
+                                            }
+                                            <div style={{ marginLeft: '10px' }}>
+                                                {item && item.name ? item.name : null}
+                                            </div>
                                         </div>
-
                                     </td>
                                     <td className="project_progress" style={{}}>
                                         {item && item.price ? `${formatMoney(item.price)} ₫` : null}
@@ -252,7 +262,16 @@ export default function MunuItems() {
                                     </td>
 
                                     <td className="project_progress">
-                                        {item && item.status === 1 ? "Còn hàng" : item.status == 2 ? "Hết hàng" : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
+                                        {item && item.status === 1 ?
+                                            <button onClick={() => {
+                                                openModalStatus()
+                                                setDataForm(item)
+                                            }}>Còn hàng</button>
+                                            : item.status == 2 ?
+                                                <button onClick={() => {
+                                                    handleUpdateStatusMenuItem(item.id, 1)
+                                                }}>Hết hàng</button>
+                                                : item.quantity == null ? "Hết hàng" : item.quantity == 0 ? "Hết hàng" : item.quantity}
                                     </td>
                                     <td className="project-actions text-right">
                                         <div className="d-flex justify-content-between " >
@@ -262,7 +281,7 @@ export default function MunuItems() {
                                             <button className="btn btn-success btn-sm pd-5" onClick={() => {
                                                 openModal();
                                                 setIsEdit(true);
-                                                setDataForm(item);
+                                                setDataForm(item)
                                             }}>
                                                 <i className="fas fa-pencil-alt"></i> Sửa
                                             </button>
@@ -473,6 +492,28 @@ export default function MunuItems() {
                 </ModalFooter>
             </Modal>
 
+            {/* modal het hang */}
+            <Modal isOpen={modalStatus} toggle={openModalStatus}>
+                <ModalHeader toggle={openModalStatus}>{"Xác nhận hết hàng"}</ModalHeader>
+                <ModalBody>
+                    <div>
+                        Khi chuyển sang trạng thái hết hàng, món ăn <b>{itemName}</b> không thể order được
+                    </div>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="secondary" onClick={() => {
+                        openModalStatus()
+                    }}>
+                        Hủy
+                    </Button>
+                    <Button color="danger" onClick={() => {
+                        handleUpdateStatusMenuItem(idItem, 2)
+                        openModalStatus()
+                    }}>
+                        Hết hàng
+                    </Button>
+                </ModalFooter>
+            </Modal>
         </>
     )
 }

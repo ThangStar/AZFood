@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import '../../../public/img/logo/chicken.png'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import OtpInput from 'react-otp-input';
-import { checkOTP, resetPasswordAsync, sendOtpToEmailAsync, } from '@/redux-store/forgot-password-reducer/forgot-passwordSlide';
+import { checkOTP, resetDataForgot, resetPasswordAsync, sendOtpToEmailAsync, } from '@/redux-store/forgot-password-reducer/forgot-passwordSlide';
 
 
 const Login = () => {
@@ -40,7 +40,7 @@ const Login = () => {
         await dispatch(loginAsync({ username, password }));
     };
     useEffect(() => {
-        if (status === 'success' && userRole ==='admin') {
+        if (status === 'success' && userRole === 'admin') {
             if (jwtToken != null && jwtToken !== "") {
                 const user: any = {
                     userFullname,
@@ -51,11 +51,11 @@ const Login = () => {
                 localStorage.setItem("user", userJSON);
                 showAlert("success", "Đăng nhập thành công");
                 window.location.reload();
-            }else{
+            } else {
             }
         } else if (status === 'failed') {
             showAlert("error", "Sai thông tin tài khoản");
-        }else if (userRole ==='user') {
+        } else if (userRole === 'user') {
             showAlert("error", "Tài khoản không được cấp quyền");
         }
     }, [status, jwtToken, userFullname]);
@@ -75,6 +75,7 @@ const Login = () => {
             setOtp('')
             setEmail('')
             setNewPass('')
+            dispatch(resetDataForgot())
         }
     }, [statusForgot, isCheckForgot]);
 
@@ -84,6 +85,10 @@ const Login = () => {
 
     const openModalForgot = () => {
         toggle()
+        setOtp('')
+        setEmail('')
+        setNewPass('')
+        dispatch(resetDataForgot())
     }
 
     const handleSendOtp = () => {

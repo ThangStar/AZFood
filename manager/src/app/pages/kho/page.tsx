@@ -1,7 +1,8 @@
 "use client"
 import { showAlert } from "@/component/utils/alert/alert";
+import { convertUTCToDDMMYYYYHHmm, formatDate, formatDateTime } from "@/component/utils/formatDate";
 import formatMoney from "@/component/utils/formatMoney";
-import { getDVTList, getDvtListAsync, getPhieuNhapList, getPhieuNhapListAsync,getProductState, getProductList, getProductListAsync, nhapHangAsync } from "@/redux-store/kho-reducer/nhapHangSlice";
+import { getDVTList, getDvtListAsync, getPhieuNhapList, getPhieuNhapListAsync, getProductState, getProductList, getProductListAsync, nhapHangAsync } from "@/redux-store/kho-reducer/nhapHangSlice";
 import { AppDispatch } from "@/redux-store/store";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -140,7 +141,7 @@ export default function Kho() {
                                             {item && item.tenDVT ? item.tenDVT : null}
                                         </td>
                                         <td className="project_progress">
-                                            {item && item.ngayNhap ? item.ngayNhap : null}
+                                            {item && item.ngayNhap ? convertUTCToDDMMYYYYHHmm(item.ngayNhap) : null}
                                         </td>
 
                                     </tr>

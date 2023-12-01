@@ -20,4 +20,16 @@ const formatDateWithPattern = (date: string, pattern: string) => {
     }
 };
 
-export { formatDateTime, formatDate };
+const convertUTCToDDMMYYYYHHmm = (utcDatetime: string) => {
+    const utcDate = new Date(utcDatetime);
+
+    const day = utcDate.getUTCDate().toString().padStart(2, '0');
+    const month = (utcDate.getUTCMonth() + 1).toString().padStart(2, '0');
+    const year = utcDate.getUTCFullYear();
+    const hours = utcDate.getUTCHours().toString().padStart(2, '0');
+    const minutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
+
+    return `${day}/${month}/${year} vào lúc ${hours}:${minutes}`;
+}
+
+export { formatDateTime, formatDate, convertUTCToDDMMYYYYHHmm };

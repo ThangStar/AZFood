@@ -133,6 +133,20 @@ export const getMenuListAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const updateStatusMenuItem = createAsyncThunk(
+  'menuItem/update-status',
+  async (data: any) => {
+    const token = localStorage.getItem('token')
+    const { id, status } = data
+    const response = await axios.post(serverUrl + '/api/products/updateStatus', { id, status }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    })
+    return response.data
+  })
 const menuItemSlice = createSlice({
   name: 'menuItem',
   initialState,
@@ -202,6 +216,16 @@ const menuItemSlice = createSlice({
       })
       .addCase(getFilterCategoryListAsync.rejected, (state) => {
         state.status = 'failed';
+      })
+      .addCase(updateStatusMenuItem.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(updateStatusMenuItem.fulfilled, (state, action) => {
+        state.status = 'idle'
+        console.log(action.payload)
+      })
+      .addCase(updateStatusMenuItem.rejected, (state) => {
+        state.status = 'failed'
       })
   },
 });

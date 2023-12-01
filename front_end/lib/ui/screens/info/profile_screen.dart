@@ -10,6 +10,7 @@ import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 import 'package:restaurant_manager_app/ui/widgets/form_profile.dart';
@@ -42,7 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
     MySharePreferences.loadProfile().then((value) {
       profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
-      invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
+      invoiceBloc
+          .add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
     });
     profile = profileBloc.state.profile;
     super.initState();
@@ -60,11 +62,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        automaticallyImplyLeading:
-            checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
-        backgroundColor: colorScheme(context).onPrimary.withOpacity(0.92),
         scrolledUnderElevation: 0,
-        titleSpacing: checkDevice(size.width, -5.0, 15.0, 15.0),
+        automaticallyImplyLeading: false,
+        backgroundColor: colorScheme(context).onPrimary,
+        titleSpacing: checkDevice(size.width, -5.0, 20.0, 20.0),
+        leading: checkDevice(
+            widget.constraints?.maxWidth ?? 0,
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeMenuScreen(),
+                    ),
+                    (route) => false);
+              },
+            ),
+            null,
+            null),
         title: Text(
           'THÔNG TIN CÁ NHÂN',
           style: Theme.of(context)
@@ -84,9 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onChanged: (value) {
                   setState(() {
                     controllerSearch.text = value;
-                    if(controllerSearch.text.isNotEmpty && !RegExp(r'^\s*$').hasMatch(controllerSearch.text)){
-                       MySharePreferences.loadProfile().then((value) {
-                        invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: controllerSearch.text));
+                    if (controllerSearch.text.isNotEmpty &&
+                        !RegExp(r'^\s*$').hasMatch(controllerSearch.text)) {
+                      MySharePreferences.loadProfile().then((value) {
+                        invoiceBloc.add(GetInvoiceByIdUserEvent(
+                            userID: value?.id ?? 0,
+                            keysearch: controllerSearch.text));
                       });
                     }
                   });
@@ -153,10 +172,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: TextField(
                 controller: controllerSearch,
                 onChanged: (value) {
-                   setState(() {
-                     MySharePreferences.loadProfile().then((value) {
-                        invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: controllerSearch.text));
-                      });
+                  setState(() {
+                    MySharePreferences.loadProfile().then((value) {
+                      invoiceBloc.add(GetInvoiceByIdUserEvent(
+                          userID: value?.id ?? 0,
+                          keysearch: controllerSearch.text));
+                    });
                   });
                 },
                 style: TextStyle(color: colorScheme(context).outline),
@@ -194,9 +215,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onPressed: () {
                             setState(() {
                               controllerSearch.clear();
-                                MySharePreferences.loadProfile().then((value) {
-                                  invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ' '));
-                                });
+                              MySharePreferences.loadProfile().then((value) {
+                                invoiceBloc.add(GetInvoiceByIdUserEvent(
+                                    userID: value?.id ?? 0, keysearch: ' '));
+                              });
                             });
                           },
                         ),
@@ -265,11 +287,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ],
-        shape: Border(
-            bottom: BorderSide(
-          color: colorScheme(context).outline.withOpacity(0.4),
-          width: 1,
-        )),
       ),
       body: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
@@ -483,7 +500,8 @@ class _ListBill extends StatelessWidget {
                         ),
                       ])),
                   ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 300.0, maxHeight: 500),
+                    constraints:
+                        const BoxConstraints(minWidth: 300.0, maxHeight: 500),
                     child: TabBarView(
                       children: [
                         Column(
@@ -598,7 +616,9 @@ class _ListBill extends StatelessWidget {
                                                         Column(
                                                           children: [
                                                             Text(
-                                                              "${NumberFormat("#,###.000", "en_US").format(state.invoices[index].total! * 0.001)} đ".replaceAll(',', '.'),
+                                                              "${NumberFormat("#,###.000", "en_US").format(state.invoices[index].total! * 0.001)} đ"
+                                                                  .replaceAll(
+                                                                      ',', '.'),
                                                               style: Theme.of(
                                                                       context)
                                                                   .textTheme
@@ -681,7 +701,6 @@ class _ListBill extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         const Center(
                           child: Text('Nội dung Tab 2'),
                         ),

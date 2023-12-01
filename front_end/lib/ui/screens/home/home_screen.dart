@@ -36,7 +36,7 @@ import '../../../routers/socket.event.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen(
-      {super.key, required this.constraints, required this.openCurrentBooking});
+    {super.key, required this.constraints, required this.openCurrentBooking});
 
   final Function openCurrentBooking;
   final BoxConstraints constraints;
@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _fillData() async {
     LoginResponse? profile = await MySharePreferences.loadProfile();
-    // usernameController.text = ;
   }
 
   late TableBloc tbBloc;

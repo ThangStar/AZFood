@@ -2,6 +2,7 @@ import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -85,18 +86,37 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     }
                     context.read<CalendarBloc>().add(OnAttendanceEvent());
                   },
-                  label: Text(
+                  label: const Text(
                     "Điểm danh",
                     style: TextStyle(color: Colors.white),
                   ));
             },
           ),
           appBar: AppBar(
-            automaticallyImplyLeading:
-                checkDevice(widget.constraints.maxWidth, true, false, false),
+            backgroundColor: colorScheme(context).onPrimary,
+            titleSpacing: checkDevice(widget.constraints.maxWidth, -5.0, 20.0, 20.0),
+            automaticallyImplyLeading: false,
+            leading: checkDevice(
+            widget.constraints.maxWidth,
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeMenuScreen(),
+                    ),
+                    (route) => false);
+              },
+            ),
+            null,
+            null),
             title: Text(
-              "Lịch",
-              style: TextStyle(fontSize: 30),
+              'LỊCH',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
             ),
           ),
           body: Stack(

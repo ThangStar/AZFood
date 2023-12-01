@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/chart/chart_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -41,13 +42,30 @@ class _ChartScreenState extends State<ChartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: const [],
-        leading: widget.constraints.maxWidth > mobileWidth
-            ? null
-            : const BackButton(),
-        title: const Text(
-          "Doanh thu",
-          style: TextStyle(fontSize: 24),
+        automaticallyImplyLeading: false,
+        backgroundColor: colorScheme(context).onPrimary,
+        titleSpacing: checkDevice(widget.constraints.maxWidth, -5.0, 20.0, 20.0),
+        leading: checkDevice(
+            widget.constraints.maxWidth,
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeMenuScreen(),
+                    ),
+                    (route) => false);
+              },
+            ),
+            null,
+            null),
+        title: Text(
+          'DOANH THU',
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
         ),
       ),
       body: Stack(
@@ -60,7 +78,10 @@ class _ChartScreenState extends State<ChartScreen> {
               children: [
                 Text(
                   "Doanh thu: ",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.purple),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple),
                 ),
                 DropdownButtonHideUnderline(
                   child: DropdownButton(
@@ -70,7 +91,10 @@ class _ChartScreenState extends State<ChartScreen> {
                     style: TextStyle(
                         fontSize: 14, color: colorScheme(context).scrim),
                     items: const [
-                      DropdownMenuItem(child: Text("Tháng"), value: "month", ),
+                      DropdownMenuItem(
+                        child: Text("Tháng"),
+                        value: "month",
+                      ),
                       DropdownMenuItem(
                         child: Text("Năm"),
                         value: "year",

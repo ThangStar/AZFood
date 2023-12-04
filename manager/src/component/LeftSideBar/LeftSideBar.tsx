@@ -24,13 +24,19 @@ type ButtonProps = {
 const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
     const dispatch: AppDispatch = useDispatch()
     const [modal, setModal] = useState(false)
+    const [modalLogout, setModalLogout] = useState(false)
     const [oldPassword, setOldPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
 
     const toggle = () => setModal(!modal)
+    const toggleLogout = () => setModalLogout(!modalLogout)
 
     const openModal = () => {
         toggle()
+    }
+
+    const openModalLogout = () => {
+        toggleLogout()
     }
 
     const changePassword = () => {
@@ -52,11 +58,11 @@ const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
     return (
         <div className="p-3">
             <div>
-                <div className="d-flex mb-3" style={{ alignItems: 'center', justifyContent: 'center'}}>
+                <div className="d-flex mb-3" style={{ alignItems: 'center', justifyContent: 'center' }}>
                     <img src="\img\logo\chicken.png" alt="" style={{ height: '40px' }} />
                     <span className="brand-text fs-4 col-sm-8 fw-bolder" style={{ color: '#272343' }}>AZFOOD</span>
                 </div>
-                <div className="management" style={{ color: 'whitesmoke', borderTop: '1.5px solid rgb(195 211 210)'}}>
+                <div className="management" style={{ color: 'whitesmoke', borderTop: '1.5px solid rgb(195 211 210)' }}>
                     <div className="tittle mt-3" style={{ color: '#272343' }}>
                         QUẢN LÍ
                     </div>
@@ -124,13 +130,13 @@ const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
                                     <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Mật khẩu</p>
                                 </div>
                             </div>
-                            <Link href="#" style={{ padding: '10px', borderRadius: '10px' }} className="link">
+                            {/* <Link href="#" style={{ padding: '10px', borderRadius: '10px' }} className="link">
                                 <div className="d-flex">
                                     <SettingsSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
                                     <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Hệ thống</p>
                                 </div>
-                            </Link>
-                            <div onClick={() => onLogout()} style={{ padding: '10px', borderRadius: '10px', cursor: "pointer" }} className="link">
+                            </Link> */}
+                            <div onClick={() => openModalLogout()} style={{ padding: '10px', borderRadius: '10px', cursor: "pointer" }} className="link">
                                 <div className="d-flex">
                                     <LogoutSharpIcon style={{ marginRight: '10px', color: '#272343' }} />
                                     <p style={{ color: "#272343", fontWeight: "normal", margin: '0px' }}>Đăng xuất</p>
@@ -166,6 +172,24 @@ const AdminPage: React.FC<ButtonProps> = ({ onLogout }) => {
                         Xác nhận
                     </Button>
                     <Button color="secondary" onClick={() => openModal()}>
+                        Hủy
+                    </Button>
+                </ModalFooter>
+            </Modal>
+
+
+            <Modal isOpen={modalLogout} toggle={openModalLogout}>
+                <ModalHeader toggle={openModalLogout}>{"Xác nhận đăng xuất"}</ModalHeader>
+                <ModalBody>
+                    <div>
+                        Xác nhận đăng xuất tài khoản ?
+                    </div>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={()=>onLogout()}>
+                        Xác nhận
+                    </Button>
+                    <Button color="secondary" onClick={() => openModalLogout()}>
                         Hủy
                     </Button>
                 </ModalFooter>

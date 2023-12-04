@@ -9,6 +9,7 @@ import userReducer from './user-reducer/userSlice';
 import evenueReducer from './evenue-reducer/evenueSlice';
 import authenticationReducer from './login-reducer/loginSlice';
 import forgotPassReducer from './forgot-password-reducer/forgot-passwordSlide';
+import topMenuReducer from './topProduct-reducer/topProductSlice';
 
 export const store = configureStore({
   reducer: {
@@ -21,7 +22,8 @@ export const store = configureStore({
     userState: userReducer,
     evenueState: evenueReducer,
     authenticationState: authenticationReducer,
-    forgotPassSate: forgotPassReducer
+    forgotPassSate: forgotPassReducer,
+    topMenuState: topMenuReducer,
   },
 });
 

@@ -89,7 +89,7 @@ const reportDay = (selectMonth: any) => {
                 <div className="card-header">
 
                 </div>
-                <div className="card bg-gradient-info">
+                <div className="card">
                     <div className="card-header border-0">
                         <h3 className="card-title">
                             Doanh Thu

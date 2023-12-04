@@ -49,6 +49,12 @@ const forgotPassSlice = createSlice({
                 state.status = 'failed'
             }
         },
+
+        resetDataForgot: (state) => {
+            state.isCheck = 'email'
+            state.status = 'idle'
+            state.result = null
+        }
     },
 
     extraReducers: (builder) => {
@@ -78,4 +84,4 @@ export const getResultFogot = (state: RootState) => state.forgotPassSate.result;
 
 export default forgotPassSlice.reducer;
 
-export const { checkOTP } = forgotPassSlice.actions;
+export const { checkOTP, resetDataForgot } = forgotPassSlice.actions;

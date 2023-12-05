@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState, api } from '../store';
+import { RootState, } from '../store';
+import { api } from '../api';
 
 
 
@@ -18,9 +19,10 @@ const initialState: TableState = {
 export const createOrderAsync = createAsyncThunk(
   'order/create',
   async (data: any) => {
-    const { userID, tableID, productID, quantity } = data;
+    const { userID, tableID, productID, quantity, category } = data;
+
     const token = localStorage.getItem('token');
-    const response = await axios.post(api + '/api/orders/create', { userID, tableID, productID, quantity }, {
+    const response = await axios.post(api + '/api/orders/create', { userID, tableID, productID, quantity, category }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -47,10 +49,11 @@ export const incrementProductAsync = createAsyncThunk(
 export const updateOrderAsync = createAsyncThunk(
   'order/update',
   async ({ data, orderID }: { data: any; orderID: any }) => {
-    const { userID, tableID, productID, quantity } = data;
+    const { userID, tableID, productID, quantity, category } = data;
+
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(api + '/api/orders/update', { orderID, userID, tableID, productID, quantity }, {
+    const response = await axios.post(api + '/api/orders/update', { orderID, userID, tableID, productID, quantity, category }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

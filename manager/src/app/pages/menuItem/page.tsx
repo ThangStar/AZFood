@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLayoutEffect } from 'react';
 import Link from "next/link";
-import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getSearchMenuListAsync, updateStatusMenuItem } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getPriceForSize, getPriceList, getSearchMenuListAsync, updateStatusMenuItem } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { getDVTList, getDvtListAsync, nhapHangAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
@@ -16,9 +16,11 @@ export default function MunuItems() {
     const menuItemList: any = useSelector(getMenuItemtList);
     const categoryList: any = useSelector(getCategoryList);
     const dvtList: any = useSelector(getDVTList);
+    const priceList: any = useSelector(getPriceList);
 
 
     const [menuItems, setMenuItems] = useState<any[]>([]);
+    const [listPriceProd, setListPriceProd] = useState<any[]>([]);
     const [modal, setModal] = useState(false);
     const [modal1, setModal1] = useState(false);
     const [modalStatus, setModalStatus] = useState(false);
@@ -39,15 +41,20 @@ export default function MunuItems() {
     const [itemQuantity, setItemQuantity] = useState("");
 
     const [file, setFile] = useState<File>();
-    const totalPages = menuItemList.totalPages || 1;
+    const totalPages = menuItemList ? menuItemList.totalPages : 1;
 
     useEffect(() => {
-        handlePageChange(currentPage);
-        dispatch(getCategoryListAsync());
-        dispatch(getDvtListAsync());
+        const fetchData = async () => {
+            handlePageChange(currentPage);
+            await dispatch(getCategoryListAsync());
+            await dispatch(getDvtListAsync());
+            await dispatch(getPriceForSize());
+        }
+        fetchData();
     }, [dispatch, currentPage]);
 
     useEffect(() => {
+
         if (menuItemList && menuItemList.data) {
             setMenuItems(menuItemList.data);
         }
@@ -57,7 +64,10 @@ export default function MunuItems() {
         if (dvtList && dvtList.resultRaw) {
             setListDvt(dvtList.resultRaw);
         }
-    }, [menuItemList, categoryList, dvtList, dispatch]);
+        if (priceList && priceList.resultRaw) {
+            setListPriceProd(priceList.resultRaw);
+        }
+    }, [menuItemList, categoryList, dvtList, dispatch, priceList]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -252,7 +262,7 @@ export default function MunuItems() {
                                         </div>
                                     </td>
                                     <td className="project_progress" style={{}}>
-                                        {item && item.price ? `${formatMoney(item.price)} ₫` : null}
+                                        {item && item.price ? `${formatMoney(item.price)} ₫` : 'Tính theo phần'}
                                     </td>
                                     <td className="project_progress">
                                         {item && item.dvt_name ? item.dvt_name : null}
@@ -294,7 +304,9 @@ export default function MunuItems() {
                                         </div>
                                     </td>
                                 </tr>
-                            )) : ""}
+                            )) :
+                                <>Loading</>
+                            }
                         </tbody>
                     </table>
                 </div>

@@ -511,3 +511,35 @@ exports.getListTop = async (req, res) => {
         console.log("error", error);
     }
 };
+
+exports.getPriceProduct = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (!checkAuth) {
+        return res.status(401).send('User is not admin');
+    }
+
+    const queryRaw = `SELECT
+            p.product_id,
+            p.products_size,
+            p.product_price,
+            ps.name AS ProductName,
+            pz.size_name AS SizeName
+        FROM
+            product_price p
+        JOIN 
+            products ps ON p.product_id = ps.id
+        JOIN 
+            product_size pz ON p.products_size = pz.id;`;
+    try {
+        const resultRaw = await sequelize.query(queryRaw, {
+            type: QueryTypes.SELECT
+        });
+        res.status(200).json({
+            data: resultRaw,
+
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+        console.log("error", error);
+    }
+}

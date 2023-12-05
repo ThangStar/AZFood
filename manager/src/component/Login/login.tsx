@@ -59,7 +59,6 @@ const Login = () => {
             showAlert("error", "Tài khoản không được cấp quyền");
         }
     }, [status, jwtToken, userFullname]);
-    console.log(" sttus ", status);
 
     useEffect(() => {
         // check hanhle forgot password

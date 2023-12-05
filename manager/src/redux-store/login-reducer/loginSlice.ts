@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk, api } from '@/redux-store/store';
+import { RootState, AppThunk } from '@/redux-store/store';
 import axios from 'axios';
+import { api } from '../api';
 
 export interface AuthenticationState {
   jwtToken: any;

@@ -17,6 +17,7 @@ module.exports = app => {
   router.get("/searchProducts", [jwt.checkJwt], products.searchProduct);
   router.get("/listDVT", [jwt.checkJwt], products.getListDVT);
   router.get("/listTopProduct", [jwt.checkJwt], products.getListTop);
+  router.get("/listPriceProduct", [jwt.checkJwt], products.getPriceProduct);
 
   app.use('/api/products', router);
 };

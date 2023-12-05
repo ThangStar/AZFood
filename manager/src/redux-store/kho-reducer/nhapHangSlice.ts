@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { RootState, api } from '../store';
 import { useLayoutEffect } from 'react';
 
-const serverUrl = "http://localhost:8080";
+const serverUrl = api;
 
 export interface MenuItemState {
   nhapHangList: any[];
@@ -13,9 +13,9 @@ export interface MenuItemState {
 }
 
 const initialState: MenuItemState = {
-    nhapHangList: [],
-    ProductList: [],
-    dvtList: [],
+  nhapHangList: [],
+  ProductList: [],
+  dvtList: [],
   status: 'idle',
 };
 
@@ -23,7 +23,7 @@ export const getPhieuNhapListAsync = createAsyncThunk(
   'nhapHang/get-list',
   async () => {
     const token = localStorage.getItem('token');
-    
+
     const response = await axios.get(serverUrl + '/api/kho/list', {
       headers: {
         'Content-Type': 'application/json',
@@ -35,52 +35,52 @@ export const getPhieuNhapListAsync = createAsyncThunk(
 );
 
 export const getDvtListAsync = createAsyncThunk(
-    'nhapHang/list-dvt',
-    async () => {
-      const token = localStorage.getItem('token');
-      
-      const response = await axios.get(serverUrl + '/api/products/listDVT', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
-        },
-      });
-      return response.data;
-    }
-  );
-  export const getProductListAsync = createAsyncThunk(
-    'nhapHang/list-product',
-    async () => {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(serverUrl + '/api/kho/products', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
-        },
-      });
-      return response.data;
-    }
-  );
+  'nhapHang/list-dvt',
+  async () => {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.get(serverUrl + '/api/products/listDVT', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+export const getProductListAsync = createAsyncThunk(
+  'nhapHang/list-product',
+  async () => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(serverUrl + '/api/kho/products', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 export const nhapHangAsync = createAsyncThunk(
-    'nhapHang/create',
-    async (data : any ) => {
-        const { productID, soLuong , donGia ,dvtID } = data;
-      const token = localStorage.getItem('token');
-      const response = await axios.post(serverUrl + '/api/kho/create', 
+  'nhapHang/create',
+  async (data: any) => {
+    const { productID, soLuong, donGia, dvtID } = data;
+    const token = localStorage.getItem('token');
+    const response = await axios.post(serverUrl + '/api/kho/create',
       {
         productID,
         soLuong,
         donGia,
         dvtID
-      },{
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
-        },
-      });
-      return response.data;
-    }
-  );
+      }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 const nhapHangSlice = createSlice({
   name: 'menuItem',
   initialState,

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '@/redux-store/store';
+import { RootState, AppThunk, api } from '@/redux-store/store';
 import axios from 'axios';
 
 export interface AuthenticationState {
@@ -23,7 +23,7 @@ const initialState: AuthenticationState = {
 export const loginAsync = createAsyncThunk(
   'authentication/login',
   async (account: any) => {
-    const response = await axios.post('http://localhost:8080/api/user/login', { username: account.username, password: account.password })
+    const response = await axios.post(api + '/api/user/login', { username: account.username, password: account.password })
     console.log("response ", response.data);
 
     return response.data;
@@ -34,7 +34,7 @@ export const changePassAsync = createAsyncThunk(
   'authentication/changePassword',
   async (payload: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://localhost:8080/api/user/change', { oldPassword: payload.oldPassword, password: payload.password }, {
+    const response = await axios.post(api + '/api/user/change', { oldPassword: payload.oldPassword, password: payload.password }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

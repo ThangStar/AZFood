@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState, api } from '../store';
+import { RootState, } from '../store';
 import { useLayoutEffect } from 'react';
+import { api } from '../api';
 
 export interface MenuItemState {
   menuItemList: any[];
   menuList: any[];
   categoryList: any[];
+  priceList: any[];
   status: 'idle' | 'loading' | 'failed';
 }
 
@@ -15,6 +17,7 @@ const initialState: MenuItemState = {
   menuList: [],
   categoryList: [],
   status: 'idle',
+  priceList: [],
 };
 
 export const getMenuItemListAsync = createAsyncThunk(
@@ -30,6 +33,7 @@ export const getMenuItemListAsync = createAsyncThunk(
         'Authorization': 'Bearer ' + token,
       },
     });
+
     return response.data;
   }
 );
@@ -63,7 +67,20 @@ export const getFilterCategoryListAsync = createAsyncThunk(
     return response.data;
   }
 );
+export const getPriceForSize = createAsyncThunk(
+  'menuItem/price-list',
+  async () => {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(api + '/api/products/listPriceProduct', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
 
+    return response.data;
+  }
+);
 export const createMenuItemAsync = createAsyncThunk(
   'product/create',
   async (data: any) => {
@@ -225,11 +242,22 @@ const menuItemSlice = createSlice({
       .addCase(updateStatusMenuItem.rejected, (state) => {
         state.status = 'failed'
       })
+      .addCase(getPriceForSize.pending, (state) => {
+        state.status = 'loading'
+      })
+      .addCase(getPriceForSize.fulfilled, (state, action) => {
+        state.status = 'idle',
+          state.priceList = action.payload;
+      })
+      .addCase(getPriceForSize.rejected, (state) => {
+        state.status = 'failed'
+      })
   },
 });
 
 export const getMenuItemtList = (state: RootState) => state.menuItemState.menuItemList;
 export const getItemtList = (state: RootState) => state.menuItemState.menuList;
 export const getCategoryList = (state: RootState) => state.menuItemState.categoryList;
+export const getPriceList = (state: RootState) => state.menuItemState.priceList;
 
 export default menuItemSlice.reducer;

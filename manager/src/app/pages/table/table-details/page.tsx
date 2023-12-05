@@ -3,7 +3,7 @@ import '../table-details/page.css'
 import { showAlert } from '@/component/utils/alert/alert';
 import { formatDateTime } from '@/component/utils/formatDate';
 import formatMoney from '@/component/utils/formatMoney';
-import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList, getFilterCategoryListAsync, getSearchMenuListAsync } from '@/redux-store/menuItem-reducer/menuItemSlice';
+import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList, getFilterCategoryListAsync, getSearchMenuListAsync, getPriceList, getPriceForSize } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync, deleteAllOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { useSearchParams } from 'next/navigation';
@@ -29,9 +29,11 @@ export default function TableDetails() {
     const orders: any = useSelector(getOrder);
     const menuItems: any = useSelector(getItemtList);
     const statusRD: any = useSelector(getStatus);
-
+    const priceList: any = useSelector(getPriceList);
     const categoryList: any = useSelector(getCategoryList);
-    const dvTinhList: any = useSelector(getDVTList)
+    const dvTinhList: any = useSelector(getDVTList);
+
+    const [listPriceProd, setListPriceProd] = useState<any[]>([]);
     const [listItem, setlistItem] = useState<any[]>([]);
     const [order, setOrder] = useState<any[]>([]);
     const [itemMenus, setItemMenus] = useState<any[]>([]);
@@ -53,7 +55,8 @@ export default function TableDetails() {
         const fetchData = async () => {
             await dispatch(getMenuListAsync());
             await dispatch(getDvtListAsync());
-            await dispatch(getCategoryListAsync())
+            await dispatch(getCategoryListAsync());
+            await dispatch(getPriceForSize());
         }
         fetchData();
     }, [dispatch]);
@@ -61,8 +64,12 @@ export default function TableDetails() {
     useEffect(() => {
         if (menuItems && menuItems.data) {
             setlistItem(menuItems.data);
+        };
+        if (priceList && priceList.data) {
+            setListPriceProd(priceList.data);
         }
-    }, [menuItems]);
+    }, [menuItems, priceList]);
+
 
 
     const toggle1 = () => setModal1(!modal1);
@@ -131,14 +138,20 @@ export default function TableDetails() {
         return totalAll;
     }
 
-    const handlePlusOrder = async (id: number) => {
+    const handlePlusOrder = async (item: any) => {
+        var productID = 0;
+        if (item.productID !== undefined) {
+            productID = item.productID;
+        } else {
+            productID = item.id;
+        }
         const data = {
             userID: userID,
             tableID: tableID,
-            productID: id,
-            quantity: plusQuantityOrder
+            productID: productID,
+            quantity: 1,
+            category: item.category
         }
-        console.log('log data', data);
 
         if (isUpdate) {
             await dispatch(updateOrderAsync({ data, orderID }));
@@ -159,12 +172,14 @@ export default function TableDetails() {
     }
 
     const handleMinusOrder = async (item: any) => {
+
         setOrderID(item.orderID);
         const data = {
             userID: userID,
             tableID: tableID,
             productID: item.productID,
             quantity: item.quantity - 1,
+
         }
 
 
@@ -281,7 +296,7 @@ export default function TableDetails() {
                                 key={id}
                                 style={{ backgroundImage: `url(${item && item.imgUrl ? item.imgUrl : ''})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
                                 onClick={() => {
-                                    handlePlusOrder(item.id);
+                                    handlePlusOrder(item);
                                 }}
                             >
                                 <div style={{ width: '100%', padding: '10px 0px 10px 0px', backgroundColor: 'white', opacity: '0.9', borderRadius: "0px 0px 10px 10px" }}>
@@ -345,7 +360,7 @@ export default function TableDetails() {
                                             <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                                 <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item)}>-</button>
                                                 {item.quantity}
-                                                <button className='btn btn-outline-dark' onClick={() => handlePlusOrder(item.productID)}>+</button>
+                                                <button className='btn btn-outline-dark' onClick={() => handlePlusOrder(item)}>+</button>
                                             </td>
                                             <td className="text-center">{formatMoney((item.price * item.quantity))}</td>
                                             <td className="project-actions text-left ">

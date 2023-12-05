@@ -104,31 +104,35 @@ exports.createOrder = async (req, res) => {
             const productID = body.productID;
             const quantityClient = body.quantity;
             const tableID = body.tableID;
-            console.log("Insert Order");
-            //check quantity
-            const quantityCheckQuery = 'SELECT quantity FROM kho WHERE productID = ?';
-            const quantityCheck = await sequelize.query(quantityCheckQuery, {
-                raw: true,
-                logging: false,
-                replacements: [productID],
-                type: QueryTypes.SELECT
-            });
-
-            const isEnoughQuantity = quantityCheck[0].quantity;
-            console.log("isEnoughQuantity ", isEnoughQuantity);
-            if (isEnoughQuantity > 0) {
-                // Trừ số lượng trong kho
-                const updateQuantityQuery = 'UPDATE kho SET quantity = quantity - ? WHERE productID = ?';
-
-                await sequelize.query(updateQuantityQuery, {
+            const category = body.category;
+            console.log("body", body);
+            if (category !== 1 && category !== 2) {
+                //check quantity
+                const quantityCheckQuery = 'SELECT quantity FROM kho WHERE productID = ?';
+                const quantityCheck = await sequelize.query(quantityCheckQuery, {
+                    raw: true,
                     logging: false,
-                    replacements: [quantityClient, productID],
-                    type: QueryTypes.UPDATE
+                    replacements: [productID],
+                    type: QueryTypes.SELECT
                 });
 
-            } else {
-                return res.status(500).json({ message: 'Quantity not enough' });
+                const isEnoughQuantity = quantityCheck[0].quantity;
+                console.log("isEnoughQuantity ", isEnoughQuantity);
+                if (isEnoughQuantity > 0) {
+                    // Trừ số lượng trong kho
+                    const updateQuantityQuery = 'UPDATE kho SET quantity = quantity - ? WHERE productID = ?';
+
+                    await sequelize.query(updateQuantityQuery, {
+                        logging: false,
+                        replacements: [quantityClient, productID],
+                        type: QueryTypes.UPDATE
+                    });
+
+                } else {
+                    return res.status(500).json({ message: 'Quantity not enough' });
+                }
             }
+
 
             const priceQuery = 'SELECT price, status FROM products WHERE id = ?';
             const quantityQuery = 'SELECT SUM(quantity) AS quantity  FROM kho WHERE productID = ?';

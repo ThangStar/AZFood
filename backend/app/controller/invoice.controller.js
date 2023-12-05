@@ -155,7 +155,7 @@ exports.reportByDay = async (req, res) => {
         INNER JOIN invoice ON invoicedetails.invoiceID = invoice.id
         WHERE  DAY(invoice.createAt) = ?  AND  MONTH(invoice.createAt) = ?
        
-        GROUP BY invoicedetails.poductName, invoice.userName, invoice.userID;
+        GROUP BY invoiceDetails.poductName, invoice.userName, invoice.userID;
     `;
         try {
             const resultRaw = await sequelize.query(queryRaw, {

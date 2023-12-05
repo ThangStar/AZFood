@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface InvoiceSate {
     invoiceList: any[];
@@ -23,7 +23,7 @@ export const getInvoiceListAsync = createAsyncThunk(
     async (page: number = 1) => {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get(serverUrl + '/api/invoice/list', {
+        const response = await axios.get(api + '/api/invoice/list', {
             params: {
                 page,
             },
@@ -41,7 +41,7 @@ export const getSearchDateInvoiceListAsync = createAsyncThunk(
     async (data: any) => {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get(serverUrl + '/api/invoice/search', {
+        const response = await axios.get(api + '/api/invoice/search', {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
@@ -60,7 +60,7 @@ export const getDetailsInvoiceAsync = createAsyncThunk(
     async (invoiceID: any) => {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get(serverUrl + '/api/invoice/details', {
+        const response = await axios.get(api + '/api/invoice/details', {
             params: { invoiceID },
             headers: {
                 'Content-Type': 'application/json',

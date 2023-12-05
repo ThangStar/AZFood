@@ -44,7 +44,7 @@ require("./app/routes/statistics.route.js")(app);
 require("./app/routes/attendance.route.js")(app);
 require('./app/socket/socket.init.js')(io);
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3434;
 server.listen(PORT, () => {
-    console.log(`SOCKET is running on port ${PORT}.`);
+    console.log(`SOCKET is running on port11111 ${PORT}.`);
 });

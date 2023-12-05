@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RootState, api } from '../store';
 import { useLayoutEffect } from 'react';
 
-const serverUrl = api;
+
 
 export interface MenuItemState {
   nhapHangList: any[];
@@ -24,7 +24,7 @@ export const getPhieuNhapListAsync = createAsyncThunk(
   async () => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.get(serverUrl + '/api/kho/list', {
+    const response = await axios.get(api + '/api/kho/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -39,7 +39,7 @@ export const getDvtListAsync = createAsyncThunk(
   async () => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.get(serverUrl + '/api/products/listDVT', {
+    const response = await axios.get(api + '/api/products/listDVT', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -52,7 +52,7 @@ export const getProductListAsync = createAsyncThunk(
   'nhapHang/list-product',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/kho/products', {
+    const response = await axios.get(api + '/api/kho/products', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -66,7 +66,7 @@ export const nhapHangAsync = createAsyncThunk(
   async (data: any) => {
     const { productID, soLuong, donGia, dvtID } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/kho/create',
+    const response = await axios.post(api + '/api/kho/create',
       {
         productID,
         soLuong,

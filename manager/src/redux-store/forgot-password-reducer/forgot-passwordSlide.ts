@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, Action } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface ForgotPassSate {
     result: any;
@@ -19,7 +19,7 @@ const initialState: ForgotPassSate = {
 export const sendOtpToEmailAsync = createAsyncThunk(
     'forgot-pass/send-otp',
     async (email: any) => {
-        const response = await axios.post(serverUrl + '/api/auth/checkAndSendOtpToEmail',
+        const response = await axios.post(api + '/api/auth/checkAndSendOtpToEmail',
             { email: email });
         return response.data;
     }
@@ -29,7 +29,7 @@ export const sendOtpToEmailAsync = createAsyncThunk(
 export const resetPasswordAsync = createAsyncThunk(
     'forgot-pass/reset-password',
     async (data: any) => {
-        const response = await axios.post(serverUrl + '/api/auth/resetPassword',
+        const response = await axios.post(api + '/api/auth/resetPassword',
             { email: data.email, password: data.password });
         return response.data;
     }

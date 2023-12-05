@@ -4,10 +4,12 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+# RUN npm install && npm install pm2 -g
+RUN npm install 
 
 COPY . .
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+CMD [ "node", "app.js"]
+# CMD [ "pm2-runtime", "start", "npm", "--", "run", "start" ]

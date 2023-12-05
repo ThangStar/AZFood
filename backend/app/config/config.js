@@ -23,10 +23,10 @@
 // }
 require('dotenv').config();
 module.exports = {
-  HOST: process.env.DB_HOST,
-  // PORT: process.env.DB_HOST,
-  USER: process.env.DB_USER,
-  PASSWORD: process.env.DB_PASSWORD,
-  DB: process.env.DB,
+  HOST: process.env.DB_HOST || 'database-mysql',
+  USER: process.env.DB_USER || 'root',
+  PORT: process.env.DB_PORT || 3306,
+  PASSWORD: process.env.DB_PASSWORD || '12345678',
+  DB: process.env.DB || 'finallapp',
   dialect: "mysql",
 };

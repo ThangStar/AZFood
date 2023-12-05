@@ -26,9 +26,7 @@ export const store = configureStore({
     topMenuState: topMenuReducer,
   },
 });
-const port = 3434;
-
-export const api = `http://localhost:${port}`;
+export const api = "http://localhost:3434";
 export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppThunk<ReturnType = void> = ThunkAction<

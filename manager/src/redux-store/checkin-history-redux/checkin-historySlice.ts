@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface InvoiceSate {
     checkinHistoryList: any[];
@@ -21,7 +21,7 @@ export const getCheckinHistoryListAsync = createAsyncThunk(
     async (month: any) => {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get(serverUrl + '/api/attendance/list', {
+        const response = await axios.get(api + '/api/attendance/list', {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,

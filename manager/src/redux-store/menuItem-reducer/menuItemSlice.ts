@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { RootState, api } from '../store';
 import { useLayoutEffect } from 'react';
 
-const serverUrl = "http://localhost:8080";
+const serverUrl = api;
 
 export interface MenuItemState {
   menuItemList: any[];

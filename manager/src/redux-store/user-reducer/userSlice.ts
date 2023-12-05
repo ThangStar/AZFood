@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { RootState, api } from '../store';
 import { useState } from 'react';
 
-const serverUrl = "http://localhost:8080";
+const serverUrl = api;
 
 export interface UserState {
   userList: any[];
@@ -65,11 +65,11 @@ export const createUserListAsync = createAsyncThunk(
           'Authorization': 'Bearer ' + token,
         },
       });
-    
+
       console.log('check log', response);
       return response.data;
-    } catch (error:any) {
-      const errResult = {error: true, message: error.response.data.message }
+    } catch (error: any) {
+      const errResult = { error: true, message: error.response.data.message }
       return errResult;
     }
   }
@@ -135,12 +135,12 @@ const TableSlice = createSlice({
           state.errorMessage = '';
           state.userList = action.payload;
           state.user = action.payload;
-        }  
+        }
       })
       .addCase(createUserListAsync.rejected, (state, error) => {
         state.status = 'failed';
         console.log('111');
-        
+
       }).addCase(deleteUserAsync.pending, (state) => {
         state.status = 'loading';
       })

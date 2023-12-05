@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, Action } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { RootState, api } from '../store';
 
-const serverUrl = "http://localhost:8080";
+const serverUrl = api;
 
 export interface ForgotPassSate {
     result: any;

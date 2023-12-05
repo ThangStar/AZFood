@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { RootState, api } from '../store';
 
-const serverUrl = "http://localhost:8080";
+const serverUrl = api;
 
 export interface TableState {
   tableList: any[];
@@ -58,10 +58,10 @@ export const getStatusTableAsync = createAsyncThunk(
 );
 export const updateStatusTableAsync = createAsyncThunk(
   'table/update-status',
-  async ({id }: { id: number }) => {
+  async ({ id }: { id: number }) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.post(serverUrl + '/api/table/updateStatus', { id}, {
+    const response = await axios.post(serverUrl + '/api/table/updateStatus', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

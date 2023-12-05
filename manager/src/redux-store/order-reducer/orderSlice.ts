@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { RootState } from '../store';
+import { RootState, api } from '../store';
 
-const serverUrl = "http://localhost:8080";
+const serverUrl = api;
 
 export interface TableState {
   orderList: any[];
@@ -33,9 +33,9 @@ export const createOrderAsync = createAsyncThunk(
 export const incrementProductAsync = createAsyncThunk(
   'order/increment',
   async (data: any) => {
-    const {quantity, productID } = data;
+    const { quantity, productID } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/increment', {quantity, productID}, {
+    const response = await axios.post(serverUrl + '/api/orders/increment', { quantity, productID }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

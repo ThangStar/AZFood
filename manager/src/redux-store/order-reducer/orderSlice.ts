@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface TableState {
   orderList: any[];
@@ -20,7 +20,7 @@ export const createOrderAsync = createAsyncThunk(
   async (data: any) => {
     const { userID, tableID, productID, quantity } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/create', { userID, tableID, productID, quantity }, {
+    const response = await axios.post(api + '/api/orders/create', { userID, tableID, productID, quantity }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -35,7 +35,7 @@ export const incrementProductAsync = createAsyncThunk(
   async (data: any) => {
     const { quantity, productID } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/increment', { quantity, productID }, {
+    const response = await axios.post(api + '/api/orders/increment', { quantity, productID }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -50,7 +50,7 @@ export const updateOrderAsync = createAsyncThunk(
     const { userID, tableID, productID, quantity } = data;
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/update', { orderID, userID, tableID, productID, quantity }, {
+    const response = await axios.post(api + '/api/orders/update', { orderID, userID, tableID, productID, quantity }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -63,7 +63,7 @@ export const getOrderListAsync = createAsyncThunk(
   'order/get-list',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/orders/list', {
+    const response = await axios.get(api + '/api/orders/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -76,7 +76,7 @@ export const deleteOrderAsync = createAsyncThunk(
   'order/delete',
   async (id: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/delete', { id }, {
+    const response = await axios.post(api + '/api/orders/delete', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -90,7 +90,7 @@ export const deleteAllOrderAsync = createAsyncThunk(
   'order/deleteAll',
   async (id: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/deleteAll', { id }, {
+    const response = await axios.post(api + '/api/orders/deleteAll', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -107,7 +107,7 @@ export const payBillAsync = createAsyncThunk(
 
     const { id, payMethod } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/orders/payBill', { id, payMethod }, {
+    const response = await axios.post(api + '/api/orders/payBill', { id, payMethod }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -122,7 +122,7 @@ export const getOrderInTableListAsync = createAsyncThunk(
   async (tableID: any) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(serverUrl + `/api/orders/getOrder`, {
+      const response = await axios.get(api + `/api/orders/getOrder`, {
         params: { tableID },
         headers: {
           'Content-Type': 'application/json',

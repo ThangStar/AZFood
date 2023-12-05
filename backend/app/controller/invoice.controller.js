@@ -148,12 +148,14 @@ exports.reportByDay = async (req, res) => {
         SELECT 
             poductName,
             SUM(quantity) AS totalQuantity,
-            SUM(totalAmount) AS totalAmount
+            SUM(totalAmount) AS totalAmount,
+            invoice.userName,
+            invoice.userID
         FROM invoicedetails
         INNER JOIN invoice ON invoicedetails.invoiceID = invoice.id
         WHERE  DAY(invoice.createAt) = ?  AND  MONTH(invoice.createAt) = ?
        
-        GROUP BY poductName;
+        GROUP BY invoicedetails.poductName, invoice.userName, invoice.userID;
     `;
         try {
             const resultRaw = await sequelize.query(queryRaw, {

@@ -3,8 +3,6 @@ import axios from 'axios';
 import { RootState, api } from '../store';
 import { useLayoutEffect } from 'react';
 
-const serverUrl = api;
-
 export interface MenuItemState {
   menuItemList: any[];
   menuList: any[];
@@ -23,7 +21,7 @@ export const getMenuItemListAsync = createAsyncThunk(
   'menuItem/get-list',
   async (page: number = 1) => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/products/list', {
+    const response = await axios.get(api + '/api/products/list', {
       params: {
         page,
       },
@@ -40,7 +38,7 @@ export const getSearchMenuListAsync = createAsyncThunk(
   'menuItem/search-list',
   async (name: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/products/searchProducts', {
+    const response = await axios.get(api + '/api/products/searchProducts', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -55,7 +53,7 @@ export const getFilterCategoryListAsync = createAsyncThunk(
   'menuItem/filter-category',
   async (category: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/products/filterData', {
+    const response = await axios.get(api + '/api/products/filterData', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -82,7 +80,7 @@ export const createMenuItemAsync = createAsyncThunk(
     formData.append('quantity', quantity);
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/products/create', { dvtID, name, price, category, status, id, file, quantity }, {
+    const response = await axios.post(api + '/api/products/create', { dvtID, name, price, category, status, id, file, quantity }, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': 'Bearer ' + token,
@@ -95,7 +93,7 @@ export const getCategoryListAsync = createAsyncThunk(
   'category/get-list',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/products/category', {
+    const response = await axios.get(api + '/api/products/category', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -110,7 +108,7 @@ export const deleteMenuItemAsync = createAsyncThunk(
     console.log("id", id);
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/products/delete', { id }, {
+    const response = await axios.post(api + '/api/products/delete', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -123,7 +121,7 @@ export const getMenuListAsync = createAsyncThunk(
   'menuItem/get-list-all',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/products/listAll', {
+    const response = await axios.get(api + '/api/products/listAll', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -139,7 +137,7 @@ export const updateStatusMenuItem = createAsyncThunk(
   async (data: any) => {
     const token = localStorage.getItem('token')
     const { id, status } = data
-    const response = await axios.post(serverUrl + '/api/products/updateStatus', { id, status }, {
+    const response = await axios.post(api + '/api/products/updateStatus', { id, status }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

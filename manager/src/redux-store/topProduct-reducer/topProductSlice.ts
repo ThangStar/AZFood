@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface TopProductState {
   topMenuList: any[];
@@ -18,7 +18,7 @@ export const getTopMenuListAsync = createAsyncThunk(
   'top-menu/get-list',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/products/listTopProduct', {
+    const response = await axios.get(api + '/api/products/listTopProduct', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

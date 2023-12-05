@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface evenueState {
     evenueList: any[];
@@ -21,7 +21,7 @@ export const getEvenueListAsync = createAsyncThunk(
     async () => {
         const token = localStorage.getItem('token');
 
-        const response = await axios.get(serverUrl + '/api/stats/revenue-year', {
+        const response = await axios.get(api + '/api/stats/revenue-year', {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
@@ -35,8 +35,9 @@ export const getEvenueMonthListAsync = createAsyncThunk(
     'invoice/get-month',
     async (month: any) => {
         const token = localStorage.getItem('token');
+        console.log("api :: a", api);
 
-        const response = await axios.get(serverUrl + '/api/stats/revenue-month', {
+        const response = await axios.get(api + '/api/stats/revenue-month', {
             params: { month },
             headers: {
                 'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ const evenueSlice = createSlice({
     },
 });
 
-export const getEvenueList = (state: RootState) => state.evenueState.evenueList;
-export const getEvenueMonthList = (state: RootState) => state.evenueState.evenueMonthList;
+export const getEvenueList = (state: RootState) => state.evenueState?.evenueList;
+export const getEvenueMonthList = (state: RootState) => state.evenueState?.evenueMonthList;
 
 export default evenueSlice.reducer;

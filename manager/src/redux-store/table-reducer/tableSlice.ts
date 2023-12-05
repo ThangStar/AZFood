@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, api } from '../store';
 
-const serverUrl = api;
+
 
 export interface TableState {
   tableList: any[];
@@ -20,7 +20,9 @@ export const getTableListAsync = createAsyncThunk(
   'table/get-list',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/table/list', {
+    console.log("api : :", api);
+
+    const response = await axios.get(api + '/api/table/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -34,7 +36,7 @@ export const createTableListAsync = createAsyncThunk(
   'table/create',
   async (name: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.post(serverUrl + '/api/table/create', name, {
+    const response = await axios.post(api + '/api/table/create', name, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -47,7 +49,7 @@ export const getStatusTableAsync = createAsyncThunk(
   'table/get-status',
   async () => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/table/listStatus', {
+    const response = await axios.get(api + '/api/table/listStatus', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -61,7 +63,7 @@ export const updateStatusTableAsync = createAsyncThunk(
   async ({ id }: { id: number }) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.post(serverUrl + '/api/table/updateStatus', { id }, {
+    const response = await axios.post(api + '/api/table/updateStatus', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -76,7 +78,7 @@ export const deleteTableAsync = createAsyncThunk(
   async (id: number) => {
     const token = localStorage.getItem('token');
 
-    const response = await axios.post(serverUrl + '/api/table/delete', { id }, {
+    const response = await axios.post(api + '/api/table/delete', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

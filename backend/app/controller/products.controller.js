@@ -499,7 +499,7 @@ exports.getListTop = async (req, res) => {
                 p.id
             ORDER BY
                 totalQuantity DESC
-            LIMIT 2;`;
+            LIMIT 10;`;
 
         const topSellingProducts = await sequelize.query(topSellingProductsQuery, {
             type: QueryTypes.SELECT

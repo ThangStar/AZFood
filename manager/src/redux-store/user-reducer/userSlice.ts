@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RootState, api } from '../store';
 import { useState } from 'react';
 
-const serverUrl = api;
+
 
 export interface UserState {
   userList: any[];
@@ -26,7 +26,7 @@ export const getUserListAsync = createAsyncThunk(
   'user/get-list',
   async (page: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/user/list', {
+    const response = await axios.get(api + '/api/user/list', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -59,7 +59,7 @@ export const createUserListAsync = createAsyncThunk(
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(serverUrl + '/api/user/create', formData, {
+      const response = await axios.post(api + '/api/user/create', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': 'Bearer ' + token,
@@ -82,7 +82,7 @@ export const deleteUserAsync = createAsyncThunk(
     const token = localStorage.getItem('token');
     console.log(" id ", id);
 
-    const response = await axios.post(serverUrl + '/api/user/delete', { id }, {
+    const response = await axios.post(api + '/api/user/delete', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -96,7 +96,7 @@ export const searchUserAsync = createAsyncThunk(
   'user/search-list',
   async (name: any) => {
     const token = localStorage.getItem('token');
-    const response = await axios.get(serverUrl + '/api/user/search', {
+    const response = await axios.get(api + '/api/user/search', {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

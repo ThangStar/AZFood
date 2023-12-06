@@ -2,7 +2,9 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:restaurant_manager_app/apis/order/order.api.dart';
@@ -38,8 +40,17 @@ class CurrentBookingScreen extends StatefulWidget {
 }
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
-  int? selectedItem = 2;
   late ProductBloc prdBloc;
+  int? selectedItem = 2;
+  bool _showDialog = false;
+  String? content;
+
+  void openDialog(String textContent, bool alertDialog) {
+    setState(() {
+      _showDialog = true;
+      content = textContent;
+    });
+  }
 
   @override
   void initState() {
@@ -50,157 +61,82 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: colorScheme(context).background,
-      bottomNavigationBar: BlocBuilder<ProductBloc, ProductState>(
-        builder: (context, state) {
-          int amount = state.status == ProductStatus.success
-              ? (state.currentProducts?.length ?? 0)
-              : 0;
-          return BottomActionBill(
-            tableId: widget.tableID,
-            selectedItem: selectedItem,
-            amount: amount, prdBloc: prdBloc,
-          );
-        },
-      ),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: colorScheme(context).background,
+          bottomNavigationBar: BlocBuilder<ProductBloc, ProductState>(
+            builder: (context, state) {
+              int amount = state.status == ProductStatus.success
+                  ? (state.currentProducts?.length ?? 0)
+                  : 0;
+              return BottomActionBill(
+                tableId: widget.tableID,
+                amount: amount,
+                prdBloc: prdBloc,
+                openDialog: openDialog,
+              );
+            },
+          ),
+          body: SingleChildScrollView(
+            child: Stack(
               children: [
-                MyToolbar(
-                  title: "Hôm nay",
-                  leading: MyIconButtonBlur(
-                    icon: Icon(
-                      Icons.close_sharp,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
-                    onTap: () {
-                      Navigator.of(context, rootNavigator: true).pop();
-                    },
-                  ),
-                  trailling: [
-                    MyIconButtonBlur(
-                      icon: Icon(Icons.more_horiz_sharp,
-                          color: Colors.white.withOpacity(0.8)),
-                      onTap: () {},
-                    )
-                  ],
-                  content: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                Column(
+                  children: [
+                    MyToolbar(
+                      title: "Hôm nay",
+                      leading: MyIconButtonBlur(
+                        icon: Icon(
+                          Icons.close_sharp,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
+                        onTap: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                      ),
+                      trailling: [
+                        MyIconButtonBlur(
+                          icon: Icon(Icons.more_horiz_sharp,
+                              color: Colors.white.withOpacity(0.8)),
+                          onTap: () {},
+                        )
+                      ],
+                      content: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 18),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              widget.tableName,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(fontSize: 20, color: Colors.white),
-                            ),
-                            BlocBuilder<ProductBloc, ProductState>(
-                              buildWhen: (previous, current) => widget.tableID == prdBloc.state.tableId,
-                              builder: (context, state) {
-                                return Text(
-                                  state.currentProducts != null
-                                      ? "Số lượng ${state.currentProducts!.length}"
-                                      : "đang tải..",
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.tableName,
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
                                       ?.copyWith(
-                                          fontSize: 12,
-                                          color: Colors.white.withOpacity(0.6)),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                    maxWidth: 250.0, maxHeight: 45.0),
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    canvasColor: colorScheme(context).tertiary,
-                                    buttonTheme:
-                                        ButtonTheme.of(context).copyWith(
-                                      alignedDropdown: true,
-                                    ),
-                                  ),
-                                  child: DropdownButtonFormField(
-                                    isExpanded: true,
-                                    decoration: InputDecoration(
-                                      filled: true,
-                                      fillColor: Colors.white.withOpacity(0.1),
-                                      enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0)),
-                                        borderSide: BorderSide(
-                                            width: 1.0,
-                                            color: Colors.transparent),
-                                      ),
-                                      focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10.0)),
-                                        borderSide: BorderSide(
-                                            width: 1.0,
-                                            color: Colors.transparent),
-                                      ),
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                    ),
-                                    value: 2,
-                                    icon: const Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.white,
-                                    ),
-                                    iconSize: 24,
-                                    elevation: 16,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 15.0),
-                                    items: const [
-                                      DropdownMenuItem(
-                                        value: 2,
-                                        child: Text('Chọn phương thức...'),
-                                      ),
-                                      DropdownMenuItem(
-                                          value: 0,
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                  Icons
-                                                      .monetization_on_outlined,
-                                                  color: Colors.white),
-                                              SizedBox(width: 5.0),
-                                              Text('Tiền mặt'),
-                                            ],
-                                          )),
-                                      DropdownMenuItem(
-                                          value: 1,
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.credit_card,
-                                                  color: Colors.white),
-                                              SizedBox(width: 5.0),
-                                              Text('Chuyển khoản'),
-                                            ],
-                                          )),
-                                    ],
-                                    onChanged: (item) => setState(() {
-                                      selectedItem = item;
-                                    }),
-                                  ),
-                                )),
-                            const SizedBox(
-                              width: 30.0,
+                                          fontSize: 20, color: Colors.white),
+                                ),
+                                BlocBuilder<ProductBloc, ProductState>(
+                                  buildWhen: (previous, current) =>
+                                      widget.tableID == prdBloc.state.tableId,
+                                  builder: (context, state) {
+                                    return Text(
+                                      state.currentProducts != null
+                                          ? "Số lượng ${state.currentProducts!.length}"
+                                          : "đang tải..",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.copyWith(
+                                              fontSize: 12,
+                                              color: Colors.white
+                                                  .withOpacity(0.6)),
+                                    );
+                                  },
+                                ),
+                              ],
                             ),
                             MyButtonBlur(
                               text: "Thêm mới",
@@ -215,184 +151,283 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                             )
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                LayoutBuilder(builder:
-                    (BuildContext context, BoxConstraints constraints) {
-                  double maxWidth = constraints.maxWidth;
-                  int columns;
-                  if (maxWidth > mobileWidth) {
-                    if (maxWidth > tabletWidth) {
-                      columns = 3; // PC
-                    } else {
-                      columns = 2; // Tablet
-                    }
-                  } else {
-                    columns = 1; // Mobile
-                  }
-                  return BlocBuilder<ProductBloc, ProductState>(
-                    buildWhen: (previous, current) {
-                      print(
-                          "has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
-                      return widget.tableID == prdBloc.state.tableId;
-                    },
-                    builder: (context, state) {
-                      if (state.status == ProductStatus.loading) {
-                        return Container(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            child: const CircularProgressIndicator());
+                    LayoutBuilder(builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      double maxWidth = constraints.maxWidth;
+                      int columns;
+                      if (maxWidth > mobileWidth) {
+                        if (maxWidth > tabletWidth) {
+                          columns = 3; // PC
+                        } else {
+                          columns = 2; // Tablet
+                        }
+                      } else {
+                        columns = 1; // Mobile
                       }
-                      if (state.currentProducts != null &&
-                          state.status == ProductStatus.success) {
-                        if (state.currentProducts!.isEmpty) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(vertical: 24),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Icon(
-                                  Icons.no_food_outlined,
-                                  size: 64,
-                                  color: colorScheme(context)
-                                      .scrim
-                                      .withOpacity(0.3),
-                                ),
-                                const SizedBox(
-                                  height: 24,
-                                ),
-                                Text(
-                                  "Hiện tại chưa có sản phẩm nào",
-                                  style: TextStyle(
-                                      fontSize: 18,
+                      return BlocBuilder<ProductBloc, ProductState>(
+                        buildWhen: (previous, current) {
+                          print(
+                              "has new data: param: ${widget.tableID} state: ${prdBloc.state.tableId}");
+                          return widget.tableID == prdBloc.state.tableId;
+                        },
+                        builder: (context, state) {
+                          if (state.status == ProductStatus.loading) {
+                            return Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 24),
+                                child: const CircularProgressIndicator());
+                          }
+                          if (state.currentProducts != null &&
+                              state.status == ProductStatus.success) {
+                            if (state.currentProducts!.isEmpty) {
+                              return Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 24),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Icon(
+                                      Icons.no_food_outlined,
+                                      size: 64,
                                       color: colorScheme(context)
                                           .scrim
-                                          .withOpacity(0.3)),
-                                )
-                              ],
-                            ),
-                          );
-                        }
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          primary: false,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: columns,
-                            childAspectRatio: (maxWidth / columns) / 100,
-                          ),
-                          itemCount: state.currentProducts!.toSet().length,
-                          itemBuilder: (context, index) {
-                            Product product = state.currentProducts![index];
-                            int quantityProduct = product.quantity ?? 1;
-                            return ItemProduct(
-                              product: product,
-                              subTitle:
-                                  SubTitleItemCurrentBill(product: product, bottom:
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                    Icon(Ionicons.information_circle, size: 18,),
-                                    Text(" ghi chú", style: TextStyle(color: colorScheme(context).scrim.withOpacity(0.5)),)
-                                  ],)),
-                              trailling: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Center(
-                                    child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(6),
-                                          border: Border.all(
-                                              color: colorScheme(context)
-                                                  .primary
-                                                  .withOpacity(0.3)),
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Material(
-                                              color: Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              child: InkWell(
-                                                onTap: () {
-                                                  context.read<OrderBloc>().add(
-                                                      OnUpdateProductQuantity(
-                                                          productID: product.id,
-                                                          type:
-                                                              TypeUpdateQuantity
-                                                                  .decrement,
-                                                          tableID:
-                                                              widget.tableID));
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(2),
-                                                  child: Icon(Icons.remove,
-                                                      color:
-                                                          colorScheme(context)
-                                                              .primary),
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              "${product.quantity}",
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: colorScheme(context)
-                                                      .scrim
-                                                      .withOpacity(0.8)),
-                                            ),
-                                            Material(
-                                              color: Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              child: InkWell(
-                                                onTap: () {
-                                                  print(
-                                                      "PRD ID: ${product.id}");
-                                                  context.read<OrderBloc>().add(
-                                                      OnUpdateProductQuantity(
-                                                          productID: product.id,
-                                                          type:
-                                                              TypeUpdateQuantity
-                                                                  .increment,
-                                                          tableID:
-                                                              widget.tableID));
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(2),
-                                                  child: Icon(Icons.add,
-                                                      color:
-                                                          colorScheme(context)
-                                                              .primary),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                  ),
-                                ],
+                                          .withOpacity(0.3),
+                                    ),
+                                    const SizedBox(
+                                      height: 24,
+                                    ),
+                                    Text(
+                                      "Hiện tại chưa có sản phẩm nào",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: colorScheme(context)
+                                              .scrim
+                                              .withOpacity(0.3)),
+                                    )
+                                  ],
+                                ),
+                              );
+                            }
+                            return GridView.builder(
+                              shrinkWrap: true,
+                              primary: false,
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: columns,
+                                childAspectRatio: (maxWidth / columns) / 100,
                               ),
+                              itemCount: state.currentProducts!.toSet().length,
+                              itemBuilder: (context, index) {
+                                Product product = state.currentProducts![index];
+                                int quantityProduct = product.quantity ?? 1;
+                                return ItemProduct(
+                                  product: product,
+                                  subTitle: SubTitleItemCurrentBill(
+                                      product: product,
+                                      bottom: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Icon(
+                                            Ionicons.information_circle,
+                                            size: 18,
+                                          ),
+                                          Text(
+                                            " ghi chú",
+                                            style: TextStyle(
+                                                color: colorScheme(context)
+                                                    .scrim
+                                                    .withOpacity(0.5)),
+                                          )
+                                        ],
+                                      )),
+                                  trailling: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                              border: Border.all(
+                                                  color: colorScheme(context)
+                                                      .primary
+                                                      .withOpacity(0.3)),
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Material(
+                                                  color: Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      context.read<OrderBloc>().add(
+                                                          OnUpdateProductQuantity(
+                                                              productID:
+                                                                  product.id,
+                                                              type:
+                                                                  TypeUpdateQuantity
+                                                                      .decrement,
+                                                              tableID: widget
+                                                                  .tableID));
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              2),
+                                                      child: Icon(Icons.remove,
+                                                          color: colorScheme(
+                                                                  context)
+                                                              .primary),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "${product.quantity}",
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: colorScheme(
+                                                              context)
+                                                          .scrim
+                                                          .withOpacity(0.8)),
+                                                ),
+                                                Material(
+                                                  color: Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  child: InkWell(
+                                                    onTap: () {
+                                                      print(
+                                                          "PRD ID: ${product.id}");
+                                                      context.read<OrderBloc>().add(
+                                                          OnUpdateProductQuantity(
+                                                              productID:
+                                                                  product.id,
+                                                              type:
+                                                                  TypeUpdateQuantity
+                                                                      .increment,
+                                                              tableID: widget
+                                                                  .tableID));
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              2),
+                                                      child: Icon(Icons.add,
+                                                          color: colorScheme(
+                                                                  context)
+                                                              .primary),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             );
-                          },
-                        );
-                      }
-                      return const CircularProgressIndicator();
-                    },
-                  );
-                })
+                          }
+                          return const CircularProgressIndicator();
+                        },
+                      );
+                    })
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        if (_showDialog) ...{
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+            ),
+            child: Center(
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                    child: Container(
+                      constraints: const BoxConstraints(maxHeight: 200.0, maxWidth: 300.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.0),
+                        color: colorScheme(context).onPrimary.withOpacity(0.6),
+                        border: Border.all(
+                          color: colorScheme(context).tertiary,
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.report_gmailerrorred_outlined,
+                              size: 60,
+                              color: Colors.red,
+                            ),
+                            Text(
+                              textAlign: TextAlign.center,
+                              content ?? "",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                      fontSize: 15,
+                                      color: colorScheme(context).scrim),
+                            ),
+                            ButtonBar(
+                              alignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _showDialog = false;
+                                      });
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              Colors.red),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 50.0, vertical: 10.0),
+                                      child: Text('ĐÓNG',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white)),
+                                    )),
+                              ],
+                            ),
+                          ]),
+                    ),
+                  )),
+            ),
+          )
+        },
+      ],
     );
   }
 }
@@ -401,92 +436,29 @@ class BottomActionBill extends StatelessWidget {
   const BottomActionBill(
       {super.key,
       required this.tableId,
-      this.selectedItem,
-      required this.amount, required this.prdBloc});
+      required this.amount,
+      required this.prdBloc,
+      required this.openDialog});
 
   final int tableId;
-  final int? selectedItem;
   final int amount;
   final ProductBloc prdBloc;
-
-  _showDialog(BuildContext context, String content) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            contentPadding: const EdgeInsets.all(20.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            backgroundColor: colorScheme(context).onPrimary.withOpacity(0.6),
-            surfaceTintColor: Colors.transparent,
-            title: const Center(
-              child: Icon(
-                Icons.report_gmailerrorred_outlined,
-                size: 60,
-                color: Colors.red,
-              ),
-            ),
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  content,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      ?.copyWith(fontSize: 15),
-                ),
-              ],
-            ),
-            actions: [
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50.0, vertical: 10.0),
-                        child: Text('ĐÓNG',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white)),
-                      )),
-                ],
-              ),
-            ],
-          );
-        });
-  }
+  final Function(String, bool) openDialog;
 
   @override
   Widget build(BuildContext context) {
-    double widthOfScreen = MediaQuery.of(context).size.width;
-    bool isMobile = checkDevice(widthOfScreen, true, false, false);
+    bool isMobile = checkDevice(
+        MediaQuery.of(context).size.width * 0.85, true, false, false);
     int price = 0;
+    int selectedItem = 0;
     return Container(
         decoration: BoxDecoration(
           color: colorScheme(context).onPrimary,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               blurRadius: 1.0,
               spreadRadius: 0.0,
-              offset: const Offset(0, 1.0), // shadow direction: bottom right
+              offset: Offset(0, 1.0),
             )
           ],
         ),
@@ -506,7 +478,8 @@ class BottomActionBill extends StatelessWidget {
                       style: TextStyle(fontSize: 14),
                     ),
                     BlocBuilder<ProductBloc, ProductState>(
-                      buildWhen: (previous, current) => tableId == prdBloc.state.tableId,
+                      buildWhen: (previous, current) =>
+                          tableId == prdBloc.state.tableId,
                       builder: (context, state) {
                         price = 0;
                         for (Product i in state.currentProducts ?? []) {
@@ -514,6 +487,7 @@ class BottomActionBill extends StatelessWidget {
                         }
                         return Text(
                           "${NumberFormat.decimalPattern().format(price)} đ",
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         );
@@ -521,30 +495,132 @@ class BottomActionBill extends StatelessWidget {
                     ),
                   ],
                 ),
-                InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return MyDialog(
-                          onTapLeading: () {
-                            Navigator.pop(context);
-                          },
-                          onTapTrailling: () {
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    );
-                  },
-                  child: Text(
-                    "Hủy bàn",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 16,
-                        color: const Color(0xFFE4295D),
-                        fontWeight: FontWeight.bold),
-                  ),
+                const SizedBox(
+                  width: 20.0,
                 ),
+                Flexible(
+                  child: Container(
+                    constraints:
+                        const BoxConstraints(maxWidth: 410.0, maxHeight: 50.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              canvasColor: colorScheme(context).tertiary,
+                              buttonTheme: ButtonTheme.of(context).copyWith(
+                                alignedDropdown: true,
+                              ),
+                            ),
+                            child: DropdownButtonFormField(
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(10.0)),
+                                    borderSide: BorderSide(
+                                        width: 1.0,
+                                        color: colorScheme(context).tertiary),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(10.0)),
+                                    borderSide: BorderSide(
+                                        width: 1.0,
+                                        color: colorScheme(context).tertiary),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                ),
+                                value: 0,
+                                icon: Icon(
+                                  Icons.arrow_drop_down,
+                                  color: colorScheme(context).scrim,
+                                ),
+                                iconSize: 24,
+                                elevation: 16,
+                                style: TextStyle(
+                                    color: colorScheme(context).scrim,
+                                    fontSize: 15.0),
+                                items: [
+                                  DropdownMenuItem(
+                                      value: 0,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/svgs/icon_cash.svg',
+                                            width: 31,
+                                            height: 31,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          const SizedBox(width: 5.0),
+                                          const Flexible(
+                                            child: Text(
+                                              'Tiền mặt',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          )
+                                        ],
+                                      )),
+                                  DropdownMenuItem(
+                                      value: 1,
+                                      child: Row(
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/svgs/icon_credit.svg',
+                                            width: 31,
+                                            height: 31,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          const SizedBox(width: 5.0),
+                                          const Flexible(
+                                            child: Text('Chuyển khoản',
+                                                overflow:
+                                                    TextOverflow.ellipsis),
+                                          ),
+                                        ],
+                                      )),
+                                ],
+                                onChanged: (item) => () {
+                                      selectedItem = item ?? 2;
+                                      print(item);
+                                    }),
+                          ),
+                        ),
+                        const SizedBox(width: 20.0),
+                        InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return MyDialog(
+                                  onTapLeading: () {
+                                    Navigator.pop(context);
+                                  },
+                                  onTapTrailling: () {
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                            );
+                          },
+                          child: Text(
+                            "Hủy bàn",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                    fontSize: 16,
+                                    color: const Color(0xFFE4295D),
+                                    fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
             const SizedBox(
@@ -567,14 +643,11 @@ class BottomActionBill extends StatelessWidget {
                           text: "Thanh toán",
                           onTap: () {
                             if (amount == 0) {
-                              _showDialog(context, 'Vui lòng chọn món.');
-                            } else if (selectedItem == 2) {
-                              _showDialog(context,
-                                  'Vui lòng chọn phương thức thanh toán.');
+                              openDialog("Vui lòng chọn món.", true);
                             } else {
                               context.read<OrderBloc>().add(PayBillEvent(
                                     tableId: tableId,
-                                    payMethod: selectedItem ?? 0,
+                                    payMethod: selectedItem,
                                     pushScreen: (payStatus, billData) {
                                       Navigator.push(
                                         context,
@@ -612,10 +685,7 @@ class BottomActionBill extends StatelessWidget {
                           text: "Thanh toán",
                           onTap: () {
                             if (amount == 0) {
-                              _showDialog(context, 'Vui lòng chọn món.');
-                            } else if (selectedItem == 2) {
-                              _showDialog(context,
-                                  'Vui lòng chọn phương thức thanh toán.');
+                              openDialog("Vui lòng chọn món.", true);
                             } else {
                               context.read<OrderBloc>().add(PayBillEvent(
                                     tableId: tableId,

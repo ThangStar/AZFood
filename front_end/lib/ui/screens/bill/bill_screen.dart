@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/detail_bill_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
@@ -32,14 +34,30 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
       backgroundColor: colorScheme(context).background,
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        automaticallyImplyLeading:
-            checkDevice(widget.constraints?.maxWidth ?? 0, true, false, false),
+        automaticallyImplyLeading: false,
+        backgroundColor: colorScheme(context).onPrimary,
+        titleSpacing: checkDevice(widget.constraints?.maxWidth ?? 0, -5.0, 20.0, 20.0),
+        leading: checkDevice(
+            widget.constraints?.maxWidth ?? 0,
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeMenuScreen(),
+                    ),
+                    (route) => false);
+              },
+            ),
+            null,
+            null),
         title: Text(
-          "Hoá đơn",
+          'HÓA ĐƠN',
           style: Theme.of(context)
               .textTheme
-              .bodyLarge
-              ?.copyWith(fontSize: 25, fontWeight: FontWeight.bold),
+              .titleMedium
+              ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(

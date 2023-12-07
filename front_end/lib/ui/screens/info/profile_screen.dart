@@ -35,18 +35,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final innerController = ScrollController();
   late ProfileBloc profileBloc;
   late InvoiceBloc invoiceBloc;
-  Profile? profile;
 
   @override
   void initState() {
     profileBloc = BlocProvider.of<ProfileBloc>(context);
     invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
     MySharePreferences.loadProfile().then((value) {
+      print("GET BY ID ${value?.id}");
       profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
-      invoiceBloc
-          .add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
+      invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
     });
-    profile = profileBloc.state.profile;
     super.initState();
   }
 
@@ -245,20 +243,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {},
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
-              padding: const EdgeInsets.all(18.0),
-              backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
-              foregroundColor: colorScheme(context).outlineVariant,
-            ),
-            child: const Icon(
-              Icons.notifications,
-              color: Color.fromRGBO(149, 156, 164, 1),
-              size: 20.0,
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
               padding: EdgeInsets.zero,
             ),
             child: ClipOval(
@@ -300,7 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   size.width * 0.6,
                   Center(
                     child: Column(children: [
-                      FormProfile(profile: state.profile),
+                      FormProfile(),
                       const SizedBox(
                         width: 20,
                         height: 20,
@@ -318,7 +302,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          FormProfile(profile: state.profile),
+                          FormProfile(),
                           const SizedBox(width: 20),
                           Expanded(
                             child: _ListBill(
@@ -334,7 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        FormProfile(profile: state.profile),
+                        FormProfile(),
                         const SizedBox(width: 20),
                         Expanded(
                           child: _ListBill(

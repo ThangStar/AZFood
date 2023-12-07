@@ -34,9 +34,16 @@ import 'package:restaurant_manager_app/model/message.dart' as msg;
 import '../../../model/message.dart';
 import '../../../routers/socket.event.dart';
 
+class FilterItem {
+  String status;
+  Color? color;
+
+  FilterItem({required this.status, required this.color});
+}
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen(
-    {super.key, required this.constraints, required this.openCurrentBooking});
+      {super.key, required this.constraints, required this.openCurrentBooking});
 
   final Function openCurrentBooking;
   final BoxConstraints constraints;
@@ -47,10 +54,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  List<String> filterStatus = ["Tất cả", "Hoạt động", "bận", "Chờ"];
+  // List<String> filterStatus = ["Tất cả", "Hoạt động", "Bận", "Chờ"];
+
+  List<FilterItem> filterStatus = [
+    FilterItem(status: 'Tất cả', color: null),
+    FilterItem(status: 'Hoạt động', color: Colors.green),
+    FilterItem(status: 'Bận', color: Colors.redAccent),
+    FilterItem(status: 'Chờ', color: Colors.grey),
+    // Thêm các mục khác nếu cần
+  ];
 
   int posFilterStatusSelected = 0;
-  bool isShowFilter = false;
+  bool isShowFilter = true;
   bool chatVisible = false;
   bool notificationVisible = false;
 
@@ -84,8 +99,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if(checkDevice(widget.constraints.maxWidth, false, true, true)){
-       ZoomDrawer.of(context)!.close();
+    if (checkDevice(widget.constraints.maxWidth, false, true, true)) {
+      ZoomDrawer.of(context)!.close();
     }
     return GestureDetector(
       onTap: () {
@@ -96,13 +111,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         }
       },
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: colorScheme(context).primary,
-            onPressed: () {},
-            child: Icon(
-              Icons.arrow_forward_sharp,
-              color: Colors.white,
-            )),
         body: Stack(
           fit: StackFit.expand,
           children: [
@@ -164,56 +172,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             const SizedBox(
                               height: 16,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Danh sách bàn",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20),
-                                ).animate().moveY(),
-                                Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 10,
-                                          height: 10,
-                                          color: Colors.green,
-                                        ),
-                                        Text(" Đang hoạt động "),
-                                        Container(
-                                          width: 10,
-                                          height: 10,
-                                          color: Colors.grey,
-                                        ),
-                                        Text(" Trống "),
-                                        Container(
-                                          width: 10,
-                                          height: 10,
-                                          color: Colors.redAccent,
-                                        ),
-                                        Text(" Đang chờ"),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
+                            Text(
+                              "Danh sách bàn",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                            ).animate().moveY(),
                             const PageIndex(),
                           ],
                         ),
                       ),
                       const Divider(),
-                      const SizedBox(
-                        height: 16,
-                      ),
                       Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
@@ -229,7 +201,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     children: [
                                       TextSpan(
                                           text: filterStatus[
-                                              posFilterStatusSelected],
+                                                  posFilterStatusSelected]
+                                              .status,
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold))
                                     ]),
@@ -264,7 +237,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   .map((e) => MyChipToggle(
                                         isSelected:
                                             posFilterStatusSelected == e.key,
-                                        label: e.value,
+                                        label: e.value.status,
+                                        color: e.value.color,
                                         onTap: () {
                                           setState(() {
                                             posFilterStatusSelected = e.key;
@@ -345,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               builder: (context) =>
                                                   CurrentBookingScreen(
                                                 tableID: table.id!,
-                                                tableName: table.name ?? "dđ",
+                                                tableName: table.name ?? "đ",
                                               ),
                                             ));
                                   }
@@ -364,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         },
                       ),
                       const SizedBox(
-                        height: 24,
+                        height: 50,
                       )
                     ],
                   ),
@@ -414,9 +388,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         .tertiary
                                         .withOpacity(0.5))),
                             child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-
-                                )),
+                              borderRadius: BorderRadius.circular(8),
+                            )),
                       ],
                     ))
                 : const SizedBox.shrink(),
@@ -513,9 +486,8 @@ class ToolbarHome extends StatelessWidget {
               child: ToolbarProfile(profile: profile),
             ),
             const SizedBox(
-              height: 30,
+              height: 60,
             ),
-            const NotificationNews(),
           ],
         ),
       ),

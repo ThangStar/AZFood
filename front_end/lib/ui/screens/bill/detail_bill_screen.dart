@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:marquee/marquee.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -30,7 +31,7 @@ class _detailBillState extends State<DetailBillScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(40.0),
+          preferredSize: const Size.fromHeight(55.0),
           child: AppBar(
             scrolledUnderElevation: 0,
             backgroundColor: colorScheme(context).onPrimary,
@@ -53,68 +54,63 @@ class _detailBillState extends State<DetailBillScreen> {
             ),
           ),
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            color: colorScheme(context).onPrimary,
-          ),
-          child: Center(
-            child: ScrollConfiguration(
-              behavior:
-                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  width: checkDevice(size.width, 500.0, 600.0, 1000.0),
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.all(15.0),
-                          child: Column(
-                            children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  HeaderBill(),
-                                  BodyBill(),
-                                  FooterBill(),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 55,
-                          right: 14,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(100),
-                                  topLeft: Radius.circular(100)),
-                              color: colorScheme(context).onPrimary,
-                              shape: BoxShape.rectangle,
+        body: Center(
+          child: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: checkDevice(size.width, 500.0, 600.0, 1000.0),
+                child: Center(
+                  child: Stack(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: Column(
+                          children: [
+                            Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                HeaderBill(),
+                                BodyBill(),
+                                FooterBill(),
+                              ],
                             ),
-                            height: 45,
-                            width: 25,
-                          ),
+                          ],
                         ),
-                        Positioned(
-                          top: 55,
-                          left: 14,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  topRight: Radius.circular(100),
-                                  bottomRight: Radius.circular(100)),
-                              color: colorScheme(context).onPrimary,
-                              shape: BoxShape.rectangle,
-                            ),
-                            height: 45,
-                            width: 25,
+                      ),
+                      Positioned(
+                        top: 55,
+                        right: 14,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(100),
+                                topLeft: Radius.circular(100)),
+                            color: colorScheme(context).background,
+                            shape: BoxShape.rectangle,
                           ),
+                          height: 45,
+                          width: 25,
                         ),
-                      ],
-                    ),
+                      ),
+                      Positioned(
+                        top: 55,
+                        left: 14,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                topRight: Radius.circular(100),
+                                bottomRight: Radius.circular(100)),
+                            color: colorScheme(context).background,
+                            shape: BoxShape.rectangle,
+                          ),
+                          height: 45,
+                          width: 25,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -140,8 +136,7 @@ class FooterBill extends StatelessWidget {
           bottomRight: Radius.circular(15.0),
         ),
       ),
-      child: BlocBuilder<InvoiceBloc, InvoiceState>
-      (builder: (context, state) {
+      child: BlocBuilder<InvoiceBloc, InvoiceState>(builder: (context, state) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -161,24 +156,9 @@ class FooterBill extends StatelessWidget {
                 ),
               ],
             ),
-            TextButton(
-              onPressed: () {},
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                backgroundColor: Colors.white, // Màu chữ đen
-              ),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Text(
-                  'In hóa đơn',
-                  style: TextStyle(fontSize: 17, color: Colors.black54),
-                ),
-              ),
-            ),
           ],
         );
-      }
-      ),
+      }),
     );
   }
 }
@@ -207,6 +187,7 @@ class BodyBill extends StatelessWidget {
           ),
           const Text(
             'THÔNG TIN HÓA ĐƠN',
+            textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -279,19 +260,19 @@ class BodyBill extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(width: double.infinity, height: 15),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Khuyến mãi',
+                      const Text(
+                        'Thu ngân',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54),
                       ),
                       Text(
-                        '3%',
-                        style: TextStyle(
+                        state.invoice?.userName ?? "",
+                        style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54),
@@ -326,11 +307,36 @@ class BodyBill extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: Colors.black45),
                       ),
-                      Text(
-                        DateFormat("HH'h'mm'p,' 'ngày' dd/MM/yyyy")
-                            .format(state.invoice?.createAt ?? DateTime.now()),
-                        style: const TextStyle(
-                            fontSize: 14, color: Colors.black54),
+                      const SizedBox(width: 10.0),
+                      Flexible(
+                        child: LayoutBuilder(
+                          builder: (BuildContext context, BoxConstraints constraints) {
+                          var flexibleSize = constraints.maxWidth;
+                          return SizedBox(
+                            width: 180.0,
+                            height: 20.0,
+                            child: flexibleSize < 180
+                              ? Marquee(
+                                  text: DateFormat("HH'h'mm'p,' 'ngày' dd/MM/yyyy").format(state.invoice?.createAt ?? DateTime.now()),
+                                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                                  scrollAxis: Axis.horizontal,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  blankSpace: 20.0,
+                                  velocity: 50.0,
+                                  pauseAfterRound: const Duration(seconds: 1),
+                                  startPadding: 10.0,
+                                  accelerationDuration: const Duration(seconds: 1),
+                                  accelerationCurve: Curves.linear,
+                                  decelerationDuration:const Duration(milliseconds: 500),
+                                  decelerationCurve: Curves.easeOut,
+                                )
+                              : Text(
+                                  DateFormat("HH'h'mm'p,' 'ngày' dd/MM/yyyy").format(state.invoice?.createAt ?? DateTime.now()),
+                                  textAlign: TextAlign.right,
+                                  style: const TextStyle(fontSize: 14, color: Colors.black54),
+                                ),
+                          );
+                        }),
                       ),
                     ],
                   ),

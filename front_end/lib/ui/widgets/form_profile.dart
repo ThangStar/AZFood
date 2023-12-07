@@ -15,15 +15,17 @@ import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 class FormProfile extends StatefulWidget {
   const FormProfile({
     super.key,
-    required this.profile,
   });
-  final Profile? profile;
+ 
 
   @override
   State<FormProfile> createState() => _FormProfileState();
 }
 
 class _FormProfileState extends State<FormProfile> {
+  Profile? profile;
+  late ProfileBloc profileBloc;
+
   final controllerEmail = TextEditingController(text: "");
   final controllerPhone = TextEditingController(text: "");
   final controllerBirth = TextEditingController(text: "");
@@ -34,11 +36,14 @@ class _FormProfileState extends State<FormProfile> {
 
   @override
   void initState() {
-    controllerEmail.text = widget.profile?.email ?? "";
-    controllerPhone.text = widget.profile?.phoneNumber ?? "";
-    if ((widget.profile?.birtDay ?? "") != "") {
-      controllerBirth.text = widget.profile?.birtDay ?? "";
-    }
+    profileBloc = BlocProvider.of<ProfileBloc>(context);
+    print("profileBlocprofileBlocvprofileBloc ${profileBloc.state.profile}");
+    controllerEmail.text = profileBloc.state.profile?.email ?? "";
+    controllerPhone.text = profileBloc.state.profile?.phoneNumber ?? "";
+  
+    // if ((widget.profile?.birtDay ?? "") != "") {
+    //   controllerBirth.text = widget.profile?.birtDay ?? "";
+    // }
     super.initState();
   }
 
@@ -131,8 +136,8 @@ class _FormProfileState extends State<FormProfile> {
                               height: 300,
                               fit: BoxFit.cover,
                             );
-                          } else if ((widget.profile?.imgUrl ?? "") != "") {
-                            return Image.network(widget.profile?.imgUrl ?? "",
+                          } else if ((profileBloc.state.profile?.imgUrl ?? "") != "") {
+                            return Image.network(profileBloc.state.profile?.imgUrl ?? "",
                                 width: 300, height: 300, fit: BoxFit.cover);
                           } else {
                             return Image.asset('assets/images/avatar.jpg',
@@ -150,7 +155,7 @@ class _FormProfileState extends State<FormProfile> {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(3.0), // Độ cong của viền
+                                BorderRadius.circular(3.0),
                           ),
                         ),
                       ),
@@ -376,8 +381,8 @@ class _FormProfileState extends State<FormProfile> {
                             height: 300,
                             fit: BoxFit.cover,
                           );
-                        } else if ((widget.profile?.imgUrl ?? "") != "") {
-                          return Image.network(widget.profile?.imgUrl ?? "",
+                        } else if ((profileBloc.state.profile?.imgUrl ?? "") != "") {
+                          return Image.network(profileBloc.state.profile?.imgUrl ?? "",
                               width: 300, height: 300, fit: BoxFit.cover);
                         } else {
                           return const Center(
@@ -415,7 +420,7 @@ class _FormProfileState extends State<FormProfile> {
               ),
               const SizedBox(height: 20),
               Text(
-                widget.profile?.name ?? "",
+                profileBloc.state.profile?.name ?? "",
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontSize: 18.0 * checkDevice(size.width, 1.0, 1.2, 1.3),
                     color: colorScheme(context).scrim.withOpacity(0.8)),
@@ -429,19 +434,18 @@ class _FormProfileState extends State<FormProfile> {
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
                 child: Text(
-                  (widget.profile?.role ?? "") == "admin" ? "Admin" : "User",
+                  (profileBloc.state.profile?.role ?? "") == "admin" ? "Admin" : "User",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 15.0,
                       color: const Color.fromRGBO(94, 194, 129, 1)),
                 ),
               ),
               const SizedBox(height: 50),
-              BlocBuilder<ProfileBloc, ProfileState>(
-                builder: (context, state) {
-                  return Column(
+                  Column(
                     children: [
                       TextField(
                         controller: controllerEmail,
+                        
                         style: TextStyle(
                           color: colorScheme(context).scrim,
                         ),
@@ -690,9 +694,8 @@ class _FormProfileState extends State<FormProfile> {
                         ],
                       ),
                     ],
-                  );
-                },
-              )
+                  )
+              
             ],
           ),
         ),

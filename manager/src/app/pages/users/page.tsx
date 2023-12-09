@@ -183,9 +183,11 @@ export default function User() {
         }
     }
 
-    const handleDeleteUser = () => {
+    const handleDeleteUser = async () => {
 
-        dispatch(deleteUserAsync(id));
+        await dispatch(deleteUserAsync(id));
+
+
         if (status == 'idle') {
             showAlert("success", "Xoá tài khoản thành công ");
             dispatch(getUserListAsync(currentPage));

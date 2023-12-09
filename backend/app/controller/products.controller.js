@@ -15,10 +15,10 @@ exports.createProduct = async (req, res) => {
     const isAdmin = await Auth.checkAdmin(req);
     try {
         if (isAdmin) {
+            console.log(" body ", body);
             if (body.id) {
-
                 if (req.file) {
-                    console.log(" body ", body);
+
                     try {
                         const image = req.file;
                         const imageFileName = `${Date.now()}_${image.originalname}`;
@@ -55,7 +55,6 @@ exports.createProduct = async (req, res) => {
                             replacements: [body.name, body.price, body.category, body.dvtID, body.id],
                             type: QueryTypes.UPDATE
                         });
-                        console.log("Số hàng bị ảnh hưởng: ", rowCount);
                         if (rowCount > 0) {
                             res.status(200).json({ message: 'Sản phẩm được cập nhật thành công' });
                         } else {
@@ -82,7 +81,8 @@ exports.createProduct = async (req, res) => {
                         const imgUrl = await getDownloadURL(snapshot.ref);
                         console.log(imgUrl);
                         // Tiếp tục xử lý và lưu dữ liệu vào MySQL
-                        const queryRaw = "INSERT INTO products (name, price, category, status = CASE WHEN category = 1 THEN 1 ELSE null END, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END, ?, ?);";
+                        const queryRaw = "INSERT INTO products (name, price, category, dvtID, imgUrl) VALUES (?, ?, ?, ?, ?);";
+
                         const resultRaw = await sequelize.query(queryRaw, {
                             raw: true,
                             logging: false,
@@ -98,7 +98,7 @@ exports.createProduct = async (req, res) => {
                 }
                 else {
                     console.log("khong  có file");
-                    const queryRaw = "INSERT INTO products (name, price, category, status , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END ,?);";
+                    const queryRaw = "INSERT INTO products (name, price, category, status , dvtID) VALUES (?, ?, ?,?,?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,

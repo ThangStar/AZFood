@@ -1,5 +1,5 @@
 module.exports = {
     jwtSecret: "@QEGTUI",
-    jwtSecretExp: "6h"
-   
+    jwtSecretExp: "100h"
+
 };

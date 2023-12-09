@@ -63,7 +63,7 @@ const Login = () => {
     useEffect(() => {
         // check hanhle forgot password
         if (statusForgot === 'failed' && isCheckForgot === 'email') {
-            showAlert("error", "Không thể gửi mã otp");
+            showAlert("error", "Bạn chưa nhập Email");
         } else if (statusForgot === 'failed' && isCheckForgot === 'otp') {
             showAlert("error", "Mã otp không đúng");
         } else if (statusForgot === 'failed' && isCheckForgot === 'password') {

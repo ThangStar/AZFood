@@ -121,6 +121,7 @@ export default function MunuItems() {
         setDataForm("");
         handlePageChange(currentPage);
         showAlert("success", " Thêm món thành công");
+        setItemQuantity('0');
         toggle();
     }
 
@@ -401,22 +402,7 @@ export default function MunuItems() {
                                     />
                                 </div>
                             </div>
-                            {itemCategory === "2" ? <>
-                                <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Số Lượng</label>
-                                    <div className="col-sm-8">
-                                        <input
-                                            className="form-control"
-                                            id="quantity"
-                                            type='number'
-                                            value={itemQuantity}
-                                            onChange={(e) => {
-                                                setItemQuantity(e.target.value);
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            </> : null}
+
                             <div className="form-group row">
                                 <label className="col-sm-4 col-form-label">Giá</label>
                                 <div className="col-sm-8">

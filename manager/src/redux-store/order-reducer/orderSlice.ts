@@ -19,10 +19,10 @@ const initialState: TableState = {
 export const createOrderAsync = createAsyncThunk(
   'order/create',
   async (data: any) => {
-    const { userID, tableID, productID, quantity, category } = data;
+    const { userID, tableID, productID, quantity, category, price } = data;
 
     const token = localStorage.getItem('token');
-    const response = await axios.post(api + '/api/orders/create', { userID, tableID, productID, quantity, category }, {
+    const response = await axios.post(api + '/api/orders/create', { userID, tableID, productID, quantity, category, price }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -54,6 +54,24 @@ export const updateOrderAsync = createAsyncThunk(
 
     const token = localStorage.getItem('token');
     const response = await axios.post(api + '/api/orders/update', { orderID, userID, tableID, productID, quantity, category }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+export const updatePriceOrderAsync = createAsyncThunk(
+  'order/update-price',
+  async ({ data }: { data: any }) => {
+    const { id, subTotal } = data;
+    console.log(" id", id);
+    console.log("subTotal ", subTotal);
+
+
+    const token = localStorage.getItem('token');
+    const response = await axios.post(api + '/api/orders/updatePriceItem', { subTotal, id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -206,6 +224,15 @@ const OrderSlice = createSlice({
         state.order = action.payload;
       })
       .addCase(getOrderInTableListAsync.rejected, (state) => {
+        state.status = 'failed';
+      }).addCase(updatePriceOrderAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updatePriceOrderAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.orderList = action.payload;
+      })
+      .addCase(updatePriceOrderAsync.rejected, (state) => {
         state.status = 'failed';
       });
   },

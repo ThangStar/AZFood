@@ -184,8 +184,8 @@ exports.createOrder = async (req, res) => {
                 replacements: [tableID, productID],
                 type: QueryTypes.SELECT
             });
-
-            if (existingOrderItemResult.length > 0) {
+            const _price = body.price;
+            if (existingOrderItemResult.length > 0 && _price != 0) {
                 // Update existing orderItem
                 const existingOrderItemId = existingOrderItemResult[0].id;
                 const existingQuantity = existingOrderItemResult[0].quantity;
@@ -277,7 +277,6 @@ exports.updateOrder = async (req, res) => {
             const productID = body.productID;
             const quantity = body.quantity;
             const id = body.orderID;
-            console.log(" id____", id);
             const priceQuery = 'SELECT price FROM products WHERE id = ?';
             try {
 
@@ -299,14 +298,10 @@ exports.updateOrder = async (req, res) => {
                 const price = priceResult[0].price;
 
                 const subTotal = quantity * price;
-                console.log("subTotal", subTotal);
                 const orderData = {
                     totalAmount: subTotal,
                 };
 
-                // console.log("orderData.totalAmount", orderData.totalAmount);
-                // console.log("productID", productID);
-                // console.log("orderID", orderID);
                 await sequelize.transaction(async transaction => {
                     const updateOrderQuery = `UPDATE orders SET totalAmount = ? WHERE id = ?;`;
 
@@ -434,7 +429,7 @@ exports.getOrdersForTable = async (req, res) => {
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
+            SELECT o.id AS orderID, o.orderDate,o.price AS price_produc , o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
              oi.quantity, oi.subTotal , p.category , p.price , u.name As userName ,u.id As userID
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
@@ -462,50 +457,6 @@ exports.getOrdersForTable = async (req, res) => {
     }
 };
 
-// exports.getOrdersForTable = async (req, res) => {
-//     try {
-
-//         const tableID = req.query.tableID;
-//         const isAuth = await Auth.checkAuth(req);
-//         if (isAuth) {
-//             const getOrdersQuery = `
-//             SELECT
-//             p.id AS productID,
-//             p.name AS productName,
-//             p.dvtID AS dvt,
-//             SUM(oi.quantity) AS totalQuantity,
-//             SUM(oi.subTotal) AS totalSubTotal,
-//             p.category,
-//             p.price,
-//             u.name AS userName,
-//             u.id AS userID
-//         FROM orders o
-//         INNER JOIN orderItems oi ON o.id = oi.orderID
-//         INNER JOIN products p ON oi.productID = p.id
-//         INNER JOIN users u ON o.userID = u.id
-//         WHERE o.tableID = ?
-//         GROUP BY productID, productName, dvt, category, price, userName, userID
-
-//         `;
-
-//             const orders = await sequelize.query(getOrdersQuery, {
-//                 raw: true,
-//                 logging: false,
-//                 replacements: [tableID || id],
-//                 type: QueryTypes.SELECT
-//             });
-
-//             res.status(200).json({ orders });
-//         }
-//         else {
-//             res.status(403).json({ message: 'you are not logned in' });
-//         }
-
-//     } catch (error) {
-//         console.error('Error getting orders:', error);
-//         res.status(500).json({ message: 'Internal server error', error: error.message });
-//     }
-// };
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
@@ -636,3 +587,31 @@ exports.payBill = async (req, res) => {
     }
 };
 
+exports.updatePriceOrder = async (req, res) => {
+    try {
+        const body = req.body;
+        const isAuth = await Auth.checkAuth(req);
+
+        if (isAuth) {
+            const queryRaw = 'UPDATE orderItems SET subTotal = ? WHERE orderID = ?;'
+            const queryRaw_ = 'UPDATE orders SET totalAmount = ? , price=? WHERE id = ?;'
+
+            console.log('body::', body);
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.subTotal, body.id],
+                type: QueryTypes.UPDATE,
+            });
+            const resultRaw_ = await sequelize.query(queryRaw_, {
+                raw: true,
+                logging: false,
+                replacements: [body.subTotal, body.subTotal, body.id],
+                type: QueryTypes.UPDATE,
+            });
+            res.status(200).json({ message: 'Order updated successfully' });
+        }
+    } catch (error) {
+        console.log(" error::", error);
+    }
+}

@@ -136,9 +136,15 @@ export default function Table() {
     }
 
     const addTable = async () => {
+        if (tableName === "") {
+            showAlert('error', 'Bạn chưa nhập tên bàn');
+            return;
+        }
         try {
+
             await dispatch(createTableListAsync({ name: tableName }));
             dispatch(getTableListAsync());
+            showAlert('success', 'Thêm bàn thành công');
             openModal1();
         } catch (error) {
             console.log(" error : ", error);

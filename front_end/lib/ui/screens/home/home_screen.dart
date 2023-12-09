@@ -54,6 +54,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   // List<String> filterStatus = ["Tất cả", "Hoạt động", "Bận", "Chờ"];
 
   List<FilterItem> filterStatus = [
@@ -282,6 +283,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             "Không thể order bàn đang bận")
                                         .show(context);
                                   } else {
+                                    print("GETTTTTTTTT}");
                                     prdBloc.add(const GetListProductStatusEvent(
                                         status: ProductStatus.loading));
                                     io.emit('listProductByIdTable',

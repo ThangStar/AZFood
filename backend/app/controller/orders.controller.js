@@ -21,15 +21,12 @@ exports.updateQuantity = async (req, res) => {
     try {
 
         console.log("BODY", req.body);
-
-        const { type, quantity, productID, tableID } = req.body
+        const { type, quantity, productID, tableID, idOrderItems } = req.body
         const isIncrement = type == 'increment';
         const isDecrement = type == 'decrement';
         const isSet = type == 'set';
         if (isIncrement) {
             //handle plus
-            console.log('plus');
-
             const query = `UPDATE orderItems as o1 
         INNER JOIN orders as o2 
         ON o1.orderID = o2.id 
@@ -46,21 +43,46 @@ exports.updateQuantity = async (req, res) => {
             res.status(200).json({ increment });
         } else if (isDecrement) {
             //handle minus
-            console.log('minus');
+            sequelize.transaction(async t => {
 
-            const query = `UPDATE orderItems as o1 
-            INNER JOIN orders as o2 
-            ON o1.orderID = o2.id 
-            SET o1.quantity = o1.quantity - 1
-            WHERE o1.productID = ? AND o2.tableID = ?`;
-            const decrement = await sequelize.query(query, {
-                raw: true,
-                logging: false,
-                replacements: [productID, tableID],
-                type: QueryTypes.UPDATE
-            });
+                const queryIsExist = `SELECT * FROM orderItems as oi JOIN orders as ord ON
+                 ord.id = oi.orderID WHERE oi.quantity > 1 AND ord.tableID = ? AND oi.productID = ?`;
+                const isExist = await sequelize.query(queryIsExist, {
+                    raw: true,
+                    logging: false,
+                    replacements: [tableID, productID],
+                    type: QueryTypes.SELECT,
+                });
 
-            res.status(200).json({ decrement });
+                console.log("is exis", isExist)
+                //decrement if > 1
+                if (isExist.length > 0) {
+                    const query = `UPDATE orderItems as o1 
+                    INNER JOIN orders as o2 
+                    ON o1.orderID = o2.id 
+                    SET o1.quantity = o1.quantity - 1
+                    WHERE o1.productID = ? AND o2.tableID = ?`;
+                    const decrement = await sequelize.query(query, {
+                        raw: true,
+                        logging: false,
+                        replacements: [productID, tableID],
+                        type: QueryTypes.UPDATE,
+                    });
+                    return res.status(200).json({ decrement });
+                } else {
+
+                    const query = `DELETE FROM orderItems where id = ?`;
+                    const decrement = await sequelize.query(query, {
+                        raw: true,
+                        logging: false,
+                        replacements: [idOrderItems],
+                        type: QueryTypes.DELETE,
+                    });
+                    return res.status(200).json({ decrement });
+
+                }
+
+            })
         } else if (isSet) {
             //handle set
             console.log("set");

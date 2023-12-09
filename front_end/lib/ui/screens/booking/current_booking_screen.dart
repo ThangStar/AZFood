@@ -221,7 +221,6 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               itemCount: state.currentProducts!.toSet().length,
                               itemBuilder: (context, index) {
                                 Product product = state.currentProducts![index];
-                                int quantityProduct = product.quantity ?? 1;
                                 return ItemProduct(
                                   product: product,
                                   subTitle: SubTitleItemCurrentBill(
@@ -269,6 +268,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                     onTap: () {
                                                       context.read<OrderBloc>().add(
                                                           OnUpdateProductQuantity(
+                                                              idOrderItems: product
+                                                                  .idOrdersItem,
                                                               productID:
                                                                   product.id,
                                                               type:
@@ -309,6 +310,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                           "PRD ID: ${product.id}");
                                                       context.read<OrderBloc>().add(
                                                           OnUpdateProductQuantity(
+                                                              idOrderItems: product
+                                                                  .idOrdersItem,
                                                               productID:
                                                                   product.id,
                                                               type:
@@ -358,7 +361,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
                     child: Container(
-                      constraints: const BoxConstraints(maxHeight: 200.0, maxWidth: 300.0),
+                      constraints: const BoxConstraints(
+                          maxHeight: 200.0, maxWidth: 300.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.0),
                         color: colorScheme(context).onPrimary.withOpacity(0.6),

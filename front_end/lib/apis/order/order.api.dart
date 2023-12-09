@@ -46,9 +46,8 @@ class OrderApi {
 
   static Future<Object> payBill(tableID, payMethod) async {
     try {
-      Response<dynamic> response = await http.post(Router.payBill, data: {
-        "id": tableID, "payMethod": payMethod
-      });
+      Response<dynamic> response = await http
+          .post(Router.payBill, data: {"id": tableID, "payMethod": payMethod});
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
       } else {
@@ -63,6 +62,7 @@ class OrderApi {
 
   static Future<Object> updateQuantity(
       {int? quantity,
+      int? idOrderItems,
       required int productId,
       required int tableId,
       required TypeUpdateQuantity type}) async {
@@ -73,6 +73,7 @@ class OrderApi {
         "productID": productId,
         "tableID": tableId,
         "type": type.name,
+        "idOrderItems": idOrderItems
       });
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);

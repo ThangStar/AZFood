@@ -63,7 +63,7 @@ const Login = () => {
     useEffect(() => {
         // check hanhle forgot password
         if (statusForgot === 'failed' && isCheckForgot === 'email') {
-            showAlert("error", "Bạn chưa nhập Email");
+            showAlert("error", "Không thể gửi mã otp");
         } else if (statusForgot === 'failed' && isCheckForgot === 'otp') {
             showAlert("error", "Mã otp không đúng");
         } else if (statusForgot === 'failed' && isCheckForgot === 'password') {
@@ -99,11 +99,15 @@ const Login = () => {
     }
 
     const handleChangePassword = () => {
-        const data = {
-            email: resultSendOtp?.email,
-            password: newPass
+        if (newPass.trim().length < 6) {
+            showAlert('error', 'Password phải trên 6 ký tự')
+        } else {
+            const data = {
+                email: resultSendOtp?.email,
+                password: newPass
+            }
+            dispatch(resetPasswordAsync(data))
         }
-        dispatch(resetPasswordAsync(data))
     }
 
     return (

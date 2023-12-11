@@ -165,6 +165,7 @@ exports.reportByDay = async (req, res) => {
                 type: QueryTypes.SELECT
             });
             res.send({ resultRaw })
+            console.log("body  ", resultRaw);
             res.status(200);
         } catch (error) {
             res.status(500);

@@ -13,7 +13,7 @@ module.exports = app => {
     router.get("/detailbyid",[jwt.checkJwt] , invoice.getDetailsById );
     router.get("/details",[jwt.checkJwt] , invoice.getDetails );
     router.get("/search",[jwt.checkJwt] , invoice.searchByDate );
-    router.get("/report-day", [jwt.checkJwt], invoice.reportByDay);
+    router.post("/report-day", [jwt.checkJwt], invoice.reportByDay);
 
   app.use('/api/invoice', router);
 };

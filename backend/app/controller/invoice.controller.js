@@ -194,7 +194,6 @@ exports.getDetailsById = async (req, res) => {
                 type: QueryTypes.SELECT
             });
             res.status(200).send(resultRaw[0]);
-            console.log(resultRaw);
         } catch (error) {
             res.status(500).send(error);
         }

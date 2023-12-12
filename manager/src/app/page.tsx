@@ -30,7 +30,7 @@ export default function Home() {
   }, [currentMonth]);
 
   useEffect(() => {
-    if (reportDayList && reportDayList.resultRaw.length > 0) {
+    if (reportDayList && reportDayList.resultRaw) {
       setReportDays(reportDayList.resultRaw)
     }
   }, [dispatch, reportDayList])

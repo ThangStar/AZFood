@@ -172,12 +172,10 @@ exports.createOrder = async (req, res) => {
             });
 
             const price = priceResult[0].price;
-            const _quantity = quantityResult[0].quantity;
-            const _status = priceResult[0].status;
-
 
             const subTotal = quantityClient * price;
             const existingOrderItemQuery = 'SELECT id, quantity, subTotal FROM orderItems WHERE orderID IN (SELECT id FROM orders WHERE tableID = ?) AND productID = ?';
+
             const existingOrderItemResult = await sequelize.query(existingOrderItemQuery, {
                 raw: true,
                 logging: false,
@@ -187,10 +185,15 @@ exports.createOrder = async (req, res) => {
             const _price = body.price;
             if (existingOrderItemResult.length > 0 && _price != 0) {
                 // Update existing orderItem
-                const existingOrderItemId = existingOrderItemResult[0].id;
-                const existingQuantity = existingOrderItemResult[0].quantity;
-                const existingSubTotal = existingOrderItemResult[0].subTotal;
-
+                var item;
+                for (let i = 0; i < existingOrderItemResult.length; i++) {
+                    if (existingOrderItemResult[i].subTotal == _price) {
+                        item = existingOrderItemResult[i];
+                    }
+                }
+                const existingOrderItemId = item.id;
+                const existingQuantity = item.quantity;
+                const existingSubTotal = item.subTotal;
                 const newQuantity = existingQuantity + quantityClient;
                 const newSubTotal = existingSubTotal + subTotal;
 
@@ -208,6 +211,7 @@ exports.createOrder = async (req, res) => {
                 }
             } else {
                 // Insert a new orderItem
+                console.log("order; insẻtc");
                 const orderId = await sequelize.transaction(async transaction => {
                     const orderData = {
                         userID: body.userID,

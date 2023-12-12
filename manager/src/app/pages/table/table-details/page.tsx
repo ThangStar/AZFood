@@ -151,14 +151,11 @@ export default function TableDetails() {
         var price = 0;
         if (item.productID !== undefined) {
             productID = item.productID;
-            price = item.price_product
-
+            price = item.price_produc
         } else {
-            console.log("Item2::", item);
             productID = item.id;
             price = item.price
         }
-
 
         const data = {
             userID: userID,
@@ -176,6 +173,7 @@ export default function TableDetails() {
             }
         } else {
             const resp = await dispatch(createOrderAsync(data));
+
             if (resp.payload === undefined) {
                 showAlert('warning', 'số lượng trong kho đã hết');
             }

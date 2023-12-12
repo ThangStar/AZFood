@@ -4,23 +4,23 @@ import ReportMonth from '../component/reportMonth/report'
 import ReportDay from '../component/reportDay/report'
 import { useAppDispatch } from '@/redux-store/hooks';
 import { useSelector } from 'react-redux';
-import { getTopMenuList, getTopMenuListAsync } from '@/redux-store/topProduct-reducer/topProductSlice';
+import { getReportDayList, getReportDayListAsync, getTopMenuList, getTopMenuListAsync } from '@/redux-store/topProduct-reducer/topProductSlice';
 import formatMoney from '@/component/utils/formatMoney';
-
 
 export default function Home() {
   const dispatch = useAppDispatch()
   const topMenuList: any = useSelector(getTopMenuList)
+  const reportDayList: any = useSelector(getReportDayList)
 
   const [type, setType] = useState<'money' | 'menu' | 'user'>('money')
   const [optionsChart, setOptionsChart] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [currentMonth, setCurrentMonth] = useState<number>()
-
-  const [topMenus, setTopMenus] = useState<any[]>([]);
+  const [reportDays, setReportDays] = useState([]);
 
   useEffect(() => {
     dispatch(getTopMenuListAsync())
+    dispatch(getReportDayListAsync())
   }, [])
 
   useEffect(() => {
@@ -28,6 +28,13 @@ export default function Home() {
     const getCurrentMonth = currentDate.getMonth() + 1;
     setCurrentMonth(getCurrentMonth);
   }, [currentMonth]);
+
+  useEffect(() => {
+    if (reportDayList && reportDayList.resultRaw.length > 0) {
+      setReportDays(reportDayList.resultRaw)
+    }
+  }, [dispatch, reportDayList])
+
   const month = [
     {
       value: 1, name: 'Tháng 1'
@@ -168,6 +175,19 @@ export default function Home() {
               <h3>Danh sách sản phẩm bán nhiều nhất</h3>
             </div>
           </div>
+        </>
+      }
+
+      {
+        type == 'user' &&
+        <>
+          {reportDays && reportDays.length > 0 ?
+            reportDays.map(reportDay => (
+              <div>
+                {JSON.stringify(reportDay)}.
+              </div>
+            ))
+            : null}
         </>
       }
     </>

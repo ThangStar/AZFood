@@ -3,11 +3,11 @@ module.exports = app => {
   const nhapHang = require('../controller/nhapHang.controller.js')
 
   var router = require("express").Router();
+  router.use([jwt.checkJwt],)
 
-
-  router.post("/create", [jwt.checkJwt], nhapHang.nhapHang);
-  router.get("/list", [jwt.checkJwt], nhapHang.getList);
-  router.get("/products", [jwt.checkJwt], nhapHang.getProductNhapHang);
+  router.post("/create", nhapHang.nhapHang);
+  router.get("/list", nhapHang.getList);
+  router.get("/products", nhapHang.getProductNhapHang);
 
 
   app.use('/api/kho', router);

@@ -111,8 +111,11 @@ export default function Home() {
       {
         type == 'menu' &&
         <>
-          <div className='container mt-5'>
-            <div className="card card-body border-0 p-0 mx-3">
+          <div className='container mt-3'>
+            <div style={{ fontSize: 24, fontWeight: 'bold', marginLeft: '1%', color: 'ActiveBorder' }}>
+              Top 10 Sản phẩm bán chạy nhất
+            </div>
+            <div className="card card-body border-0 p-0 mx-3 mt-3">
               <table className="table table-striped projects">
                 <thead >
                   <tr >

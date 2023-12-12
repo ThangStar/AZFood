@@ -106,6 +106,41 @@ export const createMenuItemAsync = createAsyncThunk(
     return response.data;
   }
 );
+
+export const createPriceForProdAsync = createAsyncThunk(
+  'price/create',
+  async (data: any) => {
+    const { productID, sizeValue, prodPrice } = data;
+    const token = localStorage.getItem('token');
+    const response = await axios.post(api + '/api/products/createPrice',
+      {
+        productID, sizeValue, prodPrice
+      }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+export const updatePriceForProdAsync = createAsyncThunk(
+  'price/update',
+  async (data: any) => {
+    const { productID, sizeValue, prodPrice, id } = data;
+    const token = localStorage.getItem('token');
+    const response = await axios.post(api + '/api/products/updatePrice',
+      {
+        productID, sizeValue, prodPrice, id
+      }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 export const getCategoryListAsync = createAsyncThunk(
   'category/get-list',
   async () => {
@@ -126,6 +161,21 @@ export const deleteMenuItemAsync = createAsyncThunk(
 
     const token = localStorage.getItem('token');
     const response = await axios.post(api + '/api/products/delete', { id }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
+export const deletePriceAsync = createAsyncThunk(
+  'price/delete',
+  async (id: any) => {
+    console.log("id", id);
+
+    const token = localStorage.getItem('token');
+    const response = await axios.post(api + '/api/products/deletePrice', { id }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,
@@ -251,6 +301,15 @@ const menuItemSlice = createSlice({
       })
       .addCase(getPriceForSize.rejected, (state) => {
         state.status = 'failed'
+      }).addCase(deletePriceAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.priceList = action.payload;
+      }).addCase(createPriceForProdAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.priceList = action.payload;
+      }).addCase(updatePriceForProdAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.priceList = action.payload;
       })
   },
 });

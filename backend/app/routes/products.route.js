@@ -5,6 +5,8 @@ module.exports = app => {
   const upload = multer();
   var router = require("express").Router();
 
+  router.post("/createPrice", [jwt.checkJwt], products.addPriceProduct);
+  router.post("/updatePrice", [jwt.checkJwt], products.updatePriceProduct);
   router.post("/create", [jwt.checkJwt, upload.single('file')], products.createProduct);
   router.post("/updateStatus", [jwt.checkJwt], products.updateStatus);
   router.post("/delete", [jwt.checkJwt], products.delete);
@@ -17,6 +19,7 @@ module.exports = app => {
   router.get("/searchProducts", [jwt.checkJwt], products.searchProduct);
   router.get("/listDVT", [jwt.checkJwt], products.getListDVT);
   router.get("/listTopProduct", [jwt.checkJwt], products.getListTop);
+  router.post("/deletePrice", [jwt.checkJwt], products.deletePriceProduct);
   router.get("/listPriceProduct", [jwt.checkJwt], products.getPriceProduct);
 
   app.use('/api/products', router);

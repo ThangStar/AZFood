@@ -179,9 +179,15 @@ export default function MunuItems() {
             <div className="container-fluid">
                 <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
                     <h3 className='m-0' style={{ height: '40px' }}>Danh sách món</h3>
-                    <button className="btn btn-success" onClick={() => {
-                        openModal()
-                    }}><i className="fas fa-plus-circle mx-0"></i>Thêm món ăn</button>
+                    <div >
+                        <button className="btn btn-success" onClick={() => {
+                            openModal()
+                        }}><i className="fas fa-plus-circle mx-0"></i>Thêm món ăn</button>
+                        <Link href="/pages/menuItem/menuItemDetail" style={{ padding: '10px', borderRadius: '10px' }} className="link">
+                            <button className="btn btn-warning"><i className="fas fa-plus-circle mx-0"></i>Quản lý phần</button>
+                        </Link>
+
+                    </div>
                 </div>
             </div>
 

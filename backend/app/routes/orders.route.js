@@ -3,17 +3,17 @@ module.exports = app => {
   const orders = require('../controller/orders.controller.js')
 
   var router = require("express").Router();
+  router.use([jwt.checkJwt])
 
-
-  router.post("/create", [jwt.checkJwt], orders.createOrder);
-  router.post("/updateQuantity", [jwt.checkJwt], orders.updateQuantity);
-  router.post("/updatePriceItem", [jwt.checkJwt], orders.updatePriceOrder);
-  router.post("/update", [jwt.checkJwt], orders.updateOrder);
-  router.post("/delete", [jwt.checkJwt], orders.deleteOrder);
-  router.post("/deleteAll", [jwt.checkJwt], orders.deleteAllOrder);
-  router.post("/payBill", [jwt.checkJwt], orders.payBill);
-  router.get("/getOrder", [jwt.checkJwt], orders.getOrdersForTable);
-  router.get("/list", [jwt.checkJwt], orders.getList);
+  router.post("/create", orders.createOrder);
+  router.post("/updateQuantity", orders.updateQuantity);
+  router.post("/updatePriceItem", orders.updatePriceOrder);
+  router.post("/update", orders.updateOrder);
+  router.post("/delete", orders.deleteOrder);
+  router.post("/deleteAll", orders.deleteAllOrder);
+  router.post("/payBill", orders.payBill);
+  router.get("/getOrder", orders.getOrdersForTable);
+  router.get("/list", orders.getList);
 
 
   app.use('/api/orders', router);

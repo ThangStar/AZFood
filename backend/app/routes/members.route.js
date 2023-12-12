@@ -9,17 +9,18 @@ module.exports = app => {
   // Login
   router.post("/login", login.login);
   router.post("/checkAndSendOtpToEmail", member.checkAndSendOtpToEmail);
-  // router.post("/update", [jwt.checkJwt, upload.single('file')], member.updateUser);
-  router.post("/create", [jwt.checkJwt, upload.single('file')], member.createMember);
-  router.post("/change", [jwt.checkJwt], member.changePassUser);
-  router.post("/updateinfo", [jwt.checkJwt, upload.single('file')], member.updateUserInfo);
-  router.post("/delete", [jwt.checkJwt], member.delete);
-  router.get("/list", [jwt.checkJwt], member.getListPage);
-  router.get("/listAll", [jwt.checkJwt], member.getList);
-  router.get("/details", [jwt.checkJwt], member.getDetails);
-  router.get("/account", [jwt.checkJwt], login.account);
-  router.get("/checkAuth", [jwt.checkJwt], Auth.getUserLogin);
-  router.get("/search", [jwt.checkJwt], member.searchUser);
+
+  router.use([jwt.checkJwt]);
+  router.post("/create", [upload.single('file')], member.createMember);
+  router.post("/change", member.changePassUser);
+  router.post("/updateinfo", [upload.single('file')], member.updateUserInfo);
+  router.post("/delete", member.delete);
+  router.get("/list", member.getListPage);
+  router.get("/listAll", member.getList);
+  router.get("/details", member.getDetails);
+  router.get("/account", login.account);
+  router.get("/checkAuth", Auth.getUserLogin);
+  router.get("/search", member.searchUser);
 
   app.use('/api/user', router);
 

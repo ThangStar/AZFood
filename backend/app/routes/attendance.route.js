@@ -3,10 +3,10 @@ module.exports = app => {
     const attendance = require("../controller/attendance.controller.js");
     var router = require("express").Router();
 
-
-    router.post("/attendance", [jwt.checkJwt], attendance.attendance);
-    router.get("/list", [jwt.checkJwt], attendance.getListAttendance);
-    router.get("/details", [jwt.checkJwt], attendance.getAttendance);
+    router.use([jwt.checkJwt])
+    router.post("/attendance", attendance.attendance);
+    router.get("/list", attendance.getListAttendance);
+    router.get("/details", attendance.getAttendance);
 
     app.use('/api/attendance', router);
 

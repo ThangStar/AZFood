@@ -567,6 +567,18 @@ exports.deletePriceProduct = async (req, res) => {
     }
 
 }
+exports.getProductSize = async (req, res) => {
+    try {
+        const querySize = 'SELECT * FROM product_size'
+        const response = await sequelize.query(querySize, {
+            raw: true, logging: false, replacements: [],
+            type: QueryTypes.SELECT
+        });
+        return res.status(200).json({ data: response });
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error', error });
+    }
+}
 exports.addPriceProduct = async (req, res) => {
     const body = req.body;
     const isAdmin = await Auth.checkAdmin(req);
@@ -580,11 +592,17 @@ exports.addPriceProduct = async (req, res) => {
                 replacements: [body.productID, body.sizeValue],
                 type: QueryTypes.SELECT
             });
-            console.log("checkExits ", checkExits.length);
+
             if (checkExits.length > 0) {
                 return res.status(409).json({ message: 'conflig data' });
 
             } else {
+                const querySize = 'SELECT * FROM product_size'
+                const checkExits = await sequelize.query(querySize, {
+                    raw: true, logging: false, replacements: [],
+                    type: QueryTypes.SELECT
+                });
+                console.log(" checkExits", checkExits);
                 const khoQueryRaw = "INSERT INTO product_price (product_id, products_size , product_price) VALUES (?,?, ?);";
 
                 const khoResultRaw = await sequelize.query(khoQueryRaw, {

@@ -1,7 +1,7 @@
 'use client'
 import { showAlert } from "@/component/utils/alert/alert";
 import formatMoney from "@/component/utils/formatMoney";
-import { createPriceForProdAsync, deletePriceAsync, getItemtList, getMenuListAsync, getPriceForSize, getPriceList, updatePriceForProdAsync } from "@/redux-store/menuItem-reducer/menuItemSlice";
+import { createPriceForProdAsync, deletePriceAsync, getItemtList, getMenuListAsync, getPriceForSize, getPriceList, getSizeList, getSizeListAsync, updatePriceForProdAsync } from "@/redux-store/menuItem-reducer/menuItemSlice";
 import { AppDispatch } from "@/redux-store/store";
 import { log } from "console";
 import Link from "next/link";
@@ -14,6 +14,8 @@ const MenuItemDetail = () => {
 
     const priceList: any = useSelector(getPriceList);
     const menuItemList: any = useSelector(getItemtList);
+    const menuSizeList: any = useSelector(getSizeList);
+
 
     const [modal1, setModal1] = useState(false);
     const [modal, setModal] = useState(false);
@@ -27,10 +29,14 @@ const MenuItemDetail = () => {
 
     const [listPriceProd, setListPriceProd] = useState<any[]>([]);
     const [listMenuItem, setListMenuItem] = useState<any[]>([]);
+    const [listSizeProd, setListSizeProd] = useState<any[]>([]);
+
+
     useEffect(() => {
         const fetchData = async () => {
             await dispatch(getPriceForSize());
             await dispatch(getMenuListAsync());
+            await dispatch(getSizeListAsync());
         }
         fetchData();
     }, [dispatch]);
@@ -78,7 +84,10 @@ const MenuItemDetail = () => {
             const productsWithPriceZero = menuItemList.data.filter((product: any) => product.price === 0);
             setListMenuItem(productsWithPriceZero);
         };
-    }, [menuItemList]);
+        if (menuSizeList && menuSizeList.data) {
+            setListSizeProd(menuSizeList.data);
+        };
+    }, [menuItemList, menuSizeList]);
 
     const handleDelete = async (id: number) => {
         if (!id) {
@@ -138,7 +147,7 @@ const MenuItemDetail = () => {
             <div className="container-fluid">
                 <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
                     <h3 className='m-0' style={{ height: '40px' }}>Quản lý Phần món ăn</h3>
-                    <button className="btn btn-success" onClick={() => { openModal('') }}>Nhập hàng</button>
+                    <button className="btn btn-success" onClick={() => { openModal('') }}>Thêm phần</button>
                 </div>
             </div>
 
@@ -232,15 +241,30 @@ const MenuItemDetail = () => {
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Tên phần  </label>
-                            <div className="col-sm-8">
+                            <div className="col-sm-4">
+                                <select
+                                    className="form-control"
+                                    id="productID"
+                                    value={size}
+                                    onChange={(e) => {
+                                        setProductID(e.target.value);
+                                    }}
+                                >
+                                    <option value="">option</option>
+                                    {listSizeProd && listSizeProd.length > 0 ? listSizeProd.map((item: any, id: number) => (
+                                        <option key={item.id} value={item.id}>{item.size_name}</option>
+                                    )) : ""}
+                                </select>
+                            </div>
+                            <div className="col-sm-4">
                                 <input
                                     type="text"
                                     className="form-control"
                                     id="quantity"
                                     value={size}
                                     onChange={handleInputChange} />
-
                             </div>
+
                         </div>
                         <div className="form-group row">
                             <label className="col-sm-4 col-form-label">Giá </label>

@@ -187,7 +187,8 @@ exports.createOrder = async (req, res) => {
                 // Update existing orderItem
                 var item;
                 for (let i = 0; i < existingOrderItemResult.length; i++) {
-                    if (existingOrderItemResult[i].subTotal == _price) {
+                    const _check = existingOrderItemResult[i].subTotal / existingOrderItemResult[i].quantity
+                    if (existingOrderItemResult[i].subTotal == _price || _check == _price) {
                         item = existingOrderItemResult[i];
                     }
                 }

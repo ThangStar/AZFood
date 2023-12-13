@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState, } from '../store';
-import { useLayoutEffect } from 'react';
 import { api } from '../api';
 
 export interface MenuItemState {
@@ -9,11 +8,13 @@ export interface MenuItemState {
   menuList: any[];
   categoryList: any[];
   priceList: any[];
+  sizeList: any[];
   status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: MenuItemState = {
   menuItemList: [],
+  sizeList: [],
   menuList: [],
   categoryList: [],
   status: 'idle',
@@ -198,7 +199,19 @@ export const getMenuListAsync = createAsyncThunk(
     return response.data;
   }
 );
-
+export const getSizeListAsync = createAsyncThunk(
+  'menuItem/get-list-size',
+  async () => {
+    const token = localStorage.getItem('token')
+    const response = await axios.get(api + '/api/products/listProductSize', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+    });
+    return response.data;
+  }
+);
 export const updateStatusMenuItem = createAsyncThunk(
   'menuItem/update-status',
   async (data: any) => {
@@ -310,6 +323,9 @@ const menuItemSlice = createSlice({
       }).addCase(updatePriceForProdAsync.fulfilled, (state, action) => {
         state.status = 'idle';
         state.priceList = action.payload;
+      }).addCase(getSizeListAsync.fulfilled, (state, action) => {
+        state.sizeList = action.payload;
+        state.status = 'idle'
       })
   },
 });
@@ -318,5 +334,6 @@ export const getMenuItemtList = (state: RootState) => state.menuItemState.menuIt
 export const getItemtList = (state: RootState) => state.menuItemState.menuList;
 export const getCategoryList = (state: RootState) => state.menuItemState.categoryList;
 export const getPriceList = (state: RootState) => state.menuItemState.priceList;
+export const getSizeList = (state: RootState) => state.menuItemState.sizeList;
 
 export default menuItemSlice.reducer;

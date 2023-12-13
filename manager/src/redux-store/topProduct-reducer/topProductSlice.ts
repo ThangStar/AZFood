@@ -33,9 +33,10 @@ export const getTopMenuListAsync = createAsyncThunk(
 
 export const getReportDayListAsync = createAsyncThunk(
   'top-menu/report-day',
-  async () => {
+  async (data: any) => {
+    const { day, month } = data
     const token = localStorage.getItem('token');
-    const response = await axios.post(api + '/api/invoice/report-day', { day: 30, month: 10 }, {
+    const response = await axios.post(api + '/api/invoice/report-day', { day, month }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

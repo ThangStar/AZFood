@@ -19,6 +19,7 @@ module.exports = app => {
   router.get("/filterData", products.filterCategory);
   router.get("/searchProducts", products.searchProduct);
   router.get("/listDVT", products.getListDVT);
+  router.get("/listProductSize", products.getProductSize);
   router.get("/listTopProduct", products.getListTop);
   router.post("/deletePrice", products.deletePriceProduct);
   router.get("/listPriceProduct", products.getPriceProduct);

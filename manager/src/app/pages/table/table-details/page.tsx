@@ -139,16 +139,18 @@ export default function TableDetails() {
     const caculatorTotal = () => {
         let totalAll = 0;
         order.forEach(item => {
-            totalAll += item.price * item.quantity
+            const price = item.price_produc ? item.price_produc : item.price
+            totalAll += price * item.quantity
         });
         return totalAll;
     }
-    console.log("order::", order);
+
 
     const handlePlusOrder = async (item: any) => {
 
-        var productID = 0;
-        var price = 0;
+
+        var productID;
+        var price;
         if (item.productID !== undefined) {
             productID = item.productID;
             price = item.price_produc
@@ -163,7 +165,7 @@ export default function TableDetails() {
             productID: productID,
             quantity: 1,
             category: item.category,
-            price: price
+            price: price ? price : item.price
         }
 
         if (isUpdate) {

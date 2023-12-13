@@ -152,6 +152,13 @@ export default function Table() {
 
     }
 
+    const handleKeyPress = (e:any) => {
+        if (e.key === "Enter") {
+            // Xử lý khi người dùng nhấn Enter
+            addTable();
+        }
+    };
+
     const handleDeleteTable = () => {
         dispatch(deleteTableAsync(id)).then((response) => {
             if (response?.meta?.requestStatus === 'fulfilled') {
@@ -266,6 +273,9 @@ export default function Table() {
                                         value={tableName}
                                         onChange={(e) => {
                                             handleChangeDataForm1(e);
+                                        }}
+                                        onKeyUp={(e) => {
+                                            handleKeyPress(e);
                                         }}
                                     />
                                 </div>

@@ -182,13 +182,15 @@ exports.createOrder = async (req, res) => {
                 replacements: [tableID, productID],
                 type: QueryTypes.SELECT
             });
+            
             const _price = body.price;
             if (existingOrderItemResult.length > 0 && _price != 0) {
                 // Update existing orderItem
                 var item;
                 for (let i = 0; i < existingOrderItemResult.length; i++) {
-                    const _check = existingOrderItemResult[i].subTotal / existingOrderItemResult[i].quantity
-                    if (existingOrderItemResult[i].subTotal == _price || _check == _price) {
+                    const _check = existingOrderItemResult[i].subTotal / existingOrderItemResult[i].quantity;
+                    console.log('check order', _check, existingOrderItemResult);
+                    if (existingOrderItemResult[i].subTotal == _price || _check == _price || existingOrderItemResult[i].price == _price ) {
                         item = existingOrderItemResult[i];
                     }
                 }

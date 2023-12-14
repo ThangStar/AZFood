@@ -6,6 +6,8 @@ import { useAppDispatch } from '@/redux-store/hooks';
 import { useSelector } from 'react-redux';
 import { getReportDayList, getReportDayListAsync, getTopMenuList, getTopMenuListAsync } from '@/redux-store/topProduct-reducer/topProductSlice';
 import formatMoney from '@/component/utils/formatMoney';
+import ReportUser from '@/component/reportUser/report';
+import ReportProduct from '@/component/reportProduct/report';
 
 export default function Home() {
   const dispatch = useAppDispatch()
@@ -17,10 +19,18 @@ export default function Home() {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [currentMonth, setCurrentMonth] = useState<number>()
   const [reportDays, setReportDays] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
 
   useEffect(() => {
     dispatch(getTopMenuListAsync())
-    dispatch(getReportDayListAsync())
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    setSelectedDate(formattedDate);
+    dispatch(getReportDayListAsync({ day: day, month: month }))
   }, [])
 
   useEffect(() => {
@@ -42,6 +52,11 @@ export default function Home() {
     , { value: 7, name: 'Tháng 7' }, { value: 8, name: 'Tháng 8' }, { value: 9, name: 'Tháng 9' }, { value: 10, name: 'Tháng 10' }, { value: 11, name: 'Tháng 11' }, { value: 12, name: 'Tháng 12' }
   ]
   const years = [2021, 2022, 2023];
+
+  const handleReportDay = () => {
+    const [year, month, day] = selectedDate.split('-')
+    dispatch(getReportDayListAsync({ day: day, month: month }))
+  }
   return (
     <>
       <div>
@@ -60,7 +75,7 @@ export default function Home() {
           <li className="nav-item">
             <button className={`nav-link fs-3 p-3 ${type == 'user' ? 'active fw-medium ' : 'fw-lighter'}`}
               onClick={() => { setType('user') }}>
-              Nhân viên</button>
+              Trong ngày</button>
           </li>
         </ul>
       </div>
@@ -174,9 +189,6 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
-            <div className="card-footer bg-transparent text-center">
-              <h3>Danh sách sản phẩm bán nhiều nhất</h3>
-            </div>
           </div>
         </>
       }
@@ -184,13 +196,31 @@ export default function Home() {
       {
         type == 'user' &&
         <>
-          {reportDays && reportDays.length > 0 ?
-            reportDays.map(reportDay => (
-              <div>
-                {JSON.stringify(reportDay)}.
+          <div className="container overflow-hidden mt-2">
+            <div className="card-header border-0">
+              <div className="float-right">
+                <div className="input-group">
+                  <input className="form-control" type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)} />
+                  <button className="btn btn-primary"
+                    onClick={handleReportDay}>
+                    Xác nhận
+                  </button>
+                </div>
               </div>
-            ))
-            : null}
+            </div>
+            {reportDays && reportDays.length > 0 ?
+              <div className="row g-3">
+                <div className="col-sm-6">
+                  <ReportUser originalList={reportDays} />
+                </div>
+                <div className="col-sm-6">
+                  <ReportProduct originalList={reportDays} />
+                </div>
+              </div>
+              : "Không có dữ liệu"}
+          </div>
         </>
       }
     </>

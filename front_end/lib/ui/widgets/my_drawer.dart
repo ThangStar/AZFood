@@ -5,11 +5,15 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
+import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/calendar/calendar_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/screens/info/profile_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_tabbar_theme.dart';
 
 import '../../storage/share_preferences.dart';
@@ -25,7 +29,7 @@ class MyDrawer extends StatefulWidget {
   State<MyDrawer> createState() => _MyDrawerState();
 }
 
-enum TypeDrawer { home, profile, order, calendar, analytics, logout }
+enum TypeDrawer { home, order, calendar, analytics, profile, logout }
 
 class ItemDrawer {
   final String label;
@@ -38,12 +42,17 @@ class ItemDrawer {
 
 final List<ItemDrawer> itemsDrawer = [
   ItemDrawer(
-      label: "Bàn", icon: Icons.table_restaurant, typeDrawer: TypeDrawer.home),
-  ItemDrawer(label: "Hóa đơn", icon: Icons.book, typeDrawer: TypeDrawer.order),
+      label: "Bàn", 
+      icon: Icons.table_restaurant, 
+      typeDrawer: TypeDrawer.home),
+  ItemDrawer(
+    label: "Hóa đơn", 
+    icon: Icons.book, 
+    typeDrawer: TypeDrawer.order),
   ItemDrawer(
       label: "Điểm danh",
       icon: Icons.free_cancellation_sharp,
-      typeDrawer: TypeDrawer.home),
+      typeDrawer: TypeDrawer.calendar),
   ItemDrawer(
       label: "Thống kê",
       icon: Icons.analytics,
@@ -58,6 +67,29 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+  }
+
+  void logout(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) => MyDialog(
+              title: "Đăng xuất?",
+              content: "Bạn có chắc chắn muốn đăng xuất",
+              onTapLeading: () {
+                Navigator.pop(context);
+                MySharePreferences.setRememberMe(false);
+
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                    (route) => false);
+              },
+              onTapTrailling: () {
+                Navigator.pop(context);
+              },
+            ));
   }
 
   @override
@@ -83,9 +115,15 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                             image: AssetImage("assets/images/bg_app_bar.jpg"),
                           ),
                         ),
-                        currentAccountPicture: const CircleAvatar(
-                          backgroundImage:
-                              AssetImage("assets/images/avatar.jpg"),
+                        currentAccountPicture: CircleAvatar(
+                          backgroundImage: widget.profile.imgUrl != null
+                              ? Image.network(
+                                  widget.profile.imgUrl ?? "",
+                                  width: 23,
+                                  height: 23,
+                                  fit: BoxFit.cover,
+                                ).image
+                              : const AssetImage("assets/images/avatar.jpg"),
                         ),
                         otherAccountsPictures: [
                           IconButton(
@@ -142,6 +180,8 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 8),
                                   child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       ...itemsDrawer.asMap().entries.map((e) {
                                         return AnimatedContainer(
@@ -179,27 +219,27 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                   ));
                                                   break;
 
+                                                case TypeDrawer.order:
+                                                  // ignore: use_build_context_synchronously
+                                                  Navigator.push(context,
+                                                      MaterialPageRoute(
+                                                    builder: (context) {
+                                                      return const BillScreen();
+                                                    },
+                                                  ));
+                                                  break;
+
                                                 case TypeDrawer.calendar:
                                                   // ignore: use_build_context_synchronously
                                                   Navigator.push(context,
                                                       MaterialPageRoute(
                                                     builder: (context) {
-                                                      return const BillScreen();
+                                                      return const CalendarScreen();
                                                     },
                                                   ));
                                                   break;
 
                                                 case TypeDrawer.analytics:
-                                                  // ignore: use_build_context_synchronously
-                                                  Navigator.push(context,
-                                                      MaterialPageRoute(
-                                                    builder: (context) {
-                                                      return const BillScreen();
-                                                    },
-                                                  ));
-                                                  break;
-
-                                                case TypeDrawer.order:
                                                   // ignore: use_build_context_synchronously
                                                   Navigator.push(context,
                                                       MaterialPageRoute(
@@ -240,18 +280,21 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                 //         },
                                                 //       ));
                                                 //   break;
+                                                case TypeDrawer.logout:
+                                                  // ignore: use_build_context_synchronously
+                                                  logout(context);
+                                                  break;
+
                                                 default:
                                                   // ignore: use_build_context_synchronously
                                                   Navigator.push(context,
                                                       MaterialPageRoute(
                                                     builder: (context) {
-                                                      return const BillScreen();
+                                                      return const HomeMenuScreen();
                                                     },
                                                   ));
                                                   break;
-                                                // ignore: use_build_context_synchronously
                                               }
-                                              // Navigator.pop(context);
                                             },
                                             leading: Icon(
                                               e.value.icon,
@@ -285,7 +328,38 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                             ),
                                           ),
                                         );
-                                      })
+                                      }).toList(),
+                                      Container(
+                                        padding: const EdgeInsets.only(left: 8.0,right: 8.0),
+                                        child: TextButton(
+                                        onPressed: () => {
+                                          logout(context),
+                                        },
+                                        style: ButtonStyle(
+                                          overlayColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                                          minimumSize: MaterialStateProperty.all<Size>(const Size(500, 55)),
+                                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8.0),
+                                            ),
+                                          ),
+                                        ),
+                                        
+                                        child: Row(
+                                          children: [
+                                            const SizedBox(width: 5.0),
+                                            Icon(Icons.logout, color: colorScheme(context).scrim.withOpacity(0.6)),
+                                            const SizedBox(width: 10.0),
+                                            Text("Đăng xuất", textAlign: TextAlign.left, style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge
+                                                  ?.copyWith(color: colorScheme(context).scrim.withOpacity(0.8)),
+                                            ),
+                                          ],
+                                        )
+                                      ),
+                                      )
+                                      
                                     ],
                                   ),
                                 )

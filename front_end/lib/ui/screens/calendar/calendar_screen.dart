@@ -10,9 +10,9 @@ import '../../blocs/calendar/calendar_bloc.dart';
 import '../../theme/color_schemes.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key, required this.constraints});
+  const CalendarScreen({super.key, this.constraints});
 
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -44,11 +44,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         switch (state.runtimeType) {
           case AttendanceResultState:
             if (state.status == CalendarStatus.success) {
-              myAlert(context, checkDeviceType(widget.constraints.maxWidth),
-                      AlertType.info, "Thông báo", "Đã điểm danh")
+              myAlert(context, checkDeviceType(widget.constraints?.maxWidth ?? 0),
+                      AlertType.success, "Thông báo", "Đã điểm danh.")
                   .show(context);
             } else if (state.status == CalendarStatus.failed) {
-              myAlert(context, checkDeviceType(widget.constraints.maxWidth),
+              myAlert(context, checkDeviceType(widget.constraints?.maxWidth ?? 0),
                       AlertType.error, "Cảnh báo", "Địa chỉ wifi không hợp lệ!")
                   .show(context);
             }
@@ -69,7 +69,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
               return FloatingActionButton.extended(
                   backgroundColor: colorScheme(context).primary,
                   onPressed: () {
-                    bool isToday = state.eventData
+                    setState(() {
+                      bool isToday = state.eventData
                             .where((element) =>
                                 element.date.compareWithoutTime(DateTime.now()))
                             .firstOrNull !=
@@ -77,7 +78,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     if (isToday) {
                       myAlert(
                               context,
-                              checkDeviceType(widget.constraints.maxWidth),
+                              checkDeviceType(widget.constraints?.maxWidth ?? 0),
                               AlertType.info,
                               "Thông tin",
                               "Hôm nay bạn đã điểm danh rồi!")
@@ -85,6 +86,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       return;
                     }
                     context.read<CalendarBloc>().add(OnAttendanceEvent());
+                    }); 
                   },
                   label: const Text(
                     "Điểm danh",
@@ -94,10 +96,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           appBar: AppBar(
             backgroundColor: colorScheme(context).onPrimary,
-            titleSpacing: checkDevice(widget.constraints.maxWidth, -5.0, 20.0, 20.0),
+            titleSpacing: checkDevice(widget.constraints?.maxWidth ?? 0, -5.0, 20.0, 20.0),
             automaticallyImplyLeading: false,
             leading: checkDevice(
-            widget.constraints.maxWidth,
+            widget.constraints?.maxWidth ?? 0,
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
@@ -130,36 +132,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     weekDayStringBuilder: (p0) {
                       switch (p0) {
                         case 0:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 2"
                               : "T2";
                         case 1:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 3"
                               : "T2";
 
                         case 2:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 4"
                               : "T4";
 
                         case 3:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 5"
                               : "T5";
 
                         case 4:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 6"
                               : "T6";
 
                         case 5:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 7"
                               : "T7";
 
                         case 6:
-                          return widget.constraints.maxWidth > mobileWidth
+                          return (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Chủ nhật"
                               : "CN";
                         default:
@@ -178,36 +180,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       String strDate = "";
                       switch (day) {
                         case 0:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 2"
                               : "T2";
                         case 1:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 3"
                               : "T2";
 
                         case 2:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 4"
                               : "T4";
 
                         case 3:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 5"
                               : "T5";
 
                         case 4:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 6"
                               : "T6";
 
                         case 5:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Thứ 7"
                               : "T7";
 
                         case 6:
-                          strDate = widget.constraints.maxWidth > mobileWidth
+                          strDate = (widget.constraints?.maxWidth ?? 0) > mobileWidth
                               ? "Chủ nhật"
                               : "CN";
                         default:
@@ -215,10 +217,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       }
                       return Center(
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 18),
+                          padding: const EdgeInsets.symmetric(vertical: 18),
                           child: Text(
                             strDate,
-                            style: TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ),
                       );
@@ -300,7 +302,7 @@ class CalendarItemDay extends StatelessWidget {
                     null
                 ?
                 // if (isToday && attendanceThisDay)
-                Center(
+                 Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
@@ -309,10 +311,14 @@ class CalendarItemDay extends StatelessWidget {
                           Ionicons.checkmark_circle,
                           color: Colors.greenAccent,
                         ),
-                        Text(
+                        if(MediaQuery.of(context).size.width > mobileWidth)...[
+                          const SizedBox(height: 10.0),
+                          const Text(
                           "Đã điểm danh",
                           style: TextStyle(color: Colors.white),
                         ),
+                        ],
+                        
                       ],
                     ),
                   )

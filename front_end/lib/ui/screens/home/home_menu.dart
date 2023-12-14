@@ -176,12 +176,12 @@ class _ZoomState extends State<HomeMenuScreen> {
                                             label: Text(e.label));
                                       }).toList(),
                                       NavigationRailDestination(
-                                          icon: Icon(Icons.logout),
+                                          icon: const Icon(Icons.logout),
                                           label: GestureDetector(
                                               onTap: () {
                                                 logout(context);
                                               },
-                                              child: Text("Đăng xuất"))),
+                                              child: const Text("Đăng xuất"))),
                                       NavigationRailDestination(
                                           icon: Switch(
                                             value: isDarkTheme,

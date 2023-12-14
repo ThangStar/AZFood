@@ -56,7 +56,7 @@ export default function User() {
     // }
     // }, [errorMessage]);
 
-    console.log('errorMessage', errorMessage);
+    console.log('image', image);
 
 
     useEffect(() => {
@@ -90,6 +90,7 @@ export default function User() {
                 birtDay,
                 file
             }
+console.log('check log user', user);
 
             if (name === "") {
                 showAlert("error", "Không được để trống tên người dùng");
@@ -177,9 +178,12 @@ export default function User() {
         }
     }
     const handleChangeFile = (event: any) => {
+        console.log("event ::" , event.target.files[0]);
+        
         if (event.target.files && event.target.files[0]) {
             const selectedImage = event.target.files[0];
             setFile(selectedImage);
+            setImage(selectedImage);
         }
     }
 

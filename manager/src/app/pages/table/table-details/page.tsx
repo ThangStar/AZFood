@@ -51,6 +51,9 @@ export default function TableDetails() {
     const [idItemDelete, setIdDelete] = useState();
     const [payMethod, setPayMethod] = useState<number>(1)
 
+    const [showAddButton, setShowAddButton] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+
     useEffect(() => {
         const fetchData = async () => {
             await dispatch(getMenuListAsync());
@@ -123,7 +126,20 @@ export default function TableDetails() {
     useEffect(() => {
 
         if (orders && Array.isArray(orders.orders)) {
-            setOrder(orders.orders);
+
+            const item = orders.orders.map((item : any) => {
+                if(item.price ==0 || item.price_produc == 0){
+                    return {
+                        ...item,
+                        price: item.price === 0 ? 'Chọn phần' : item.price,
+                        price_produc: item.price_produc === 0 ? 'Chọn phần' : item.price_produc,
+                    };
+                }
+                return item
+            })
+            setOrder(item);
+            console.log('orders.orders', item);
+            
         }
         if (menuItems && menuItems.data) {
             setItemMenus(menuItems.data);
@@ -207,8 +223,11 @@ export default function TableDetails() {
 
     const handleMinusOrder = async (item: any) => {
         console.log(" item::", item);
-        if (item.quantity <= 0) {
-            showAlert('warning', 'Không thể giảm số lượng món ăn');
+        if (item.quantity <= 1) {
+            await dispatch(deleteOrderAsync(item.orderID));
+            console.log('check id order', item.id);
+            dispatch(getOrderInTableListAsync(tableID));
+            // showAlert('warning', 'Không thể giảm số lượng món ăn');
             return;
         }
         setOrderID(item.orderID);
@@ -229,6 +248,8 @@ export default function TableDetails() {
             dispatch(getOrderInTableListAsync(tableID));
 
         }
+
+
         toggle();
     }
 
@@ -313,7 +334,7 @@ export default function TableDetails() {
                             <div
                                 className="grid-item"
                                 key={id}
-                                style={{ backgroundImage: `url(${item && item.imgUrl ? item.imgUrl : ''})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
+                                style={{ backgroundImage: `url(${item && item.imgUrl ? item.imgUrl : '/img/dinner.png'})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
                                 onClick={() => {
                                     handlePlusOrder(item);
                                 }}
@@ -372,9 +393,11 @@ export default function TableDetails() {
                                     order.map((item, index, id) => (
                                         <tr key={index}>
                                             <td style={{ color: "green", fontSize: 20 }}>
-                                                <h6>{item.productName} ({findTenDVT(item.dvt)})</h6>
+                                                <h6>{item.productName} 
+                                              {/* ({findTenDVT(item.dvt)}) */}
+                                                </h6>
                                             </td>
-                                            <td className="text-center" onClick={() => { openModal3(item) }}>{formatMoney(item.price_produc ? item.price_produc : item.price)}</td>
+                                            <td className="text-center" onClick={() => { openModal3(item) }}>{formatMoney(item.price_produc ? item.price_produc : item.price)} </td>
                                             <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                                 <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item)}>-</button>
                                                 {item.quantity}
@@ -463,7 +486,7 @@ export default function TableDetails() {
                     }}>
                         Xóa
                     </Button>
-                    <Button color="secondary" onClick={() => {openModalDel()}}>
+                    <Button color="secondary" onClick={() => { openModalDel() }}>
                         Hủy
                     </Button>
                 </ModalFooter>

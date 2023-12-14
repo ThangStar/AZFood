@@ -152,7 +152,7 @@ export default function Table() {
 
     }
 
-    const handleKeyPress = (e:any) => {
+    const handleKeyPress = (e: any) => {
         if (e.key === "Enter") {
             // Xử lý khi người dùng nhấn Enter
             addTable();
@@ -203,28 +203,39 @@ export default function Table() {
                     </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gridGap: '10px', padding: '0px 15px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gridGap: '10px', padding: '0px 15px' }}>
 
                     {filteredTables && filteredTables.length > 0 ? filteredTables.map((item: any, i: number) => (
                         <div key={item.id} style={{ position: 'relative' }}>
                             {item.status === 2 ? ( // Kiểm tra trạng thái của bàn
-                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #F39422', borderRadius: '20px', color: '#F39422' }}>
+                                <div style={{ padding: '8px', margin: '5px', border: '1.5px solid #F39422', borderRadius: '15px', color: '#F39422' }}>
                                     <div style={{ display: 'flex' }}>
-                                        <h5 style={{ marginRight: '5px' }}>{item.name}</h5>
-                                        <p>({item.status_name})</p>
+                                        <h5 style={{ marginRight: '5px', fontSize: '18px', marginBottom: 0}}>{item.name}</h5>
+                                        <p style={{fontSize: '16px' ,  marginBottom: 0}}>({item.status_name})</p>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                        <button onClick={() => { handleUpdate(item.id) }} className='btn btn-warning btn-sm'>
-                                            Chuyển về bàn trống
-                                        </button>
+                                    <div>
+                                        <div style={{ display: 'flex', justifyContent: 'center', padding: '5px 0px'}}>
+                                           <img src="\img\pay.png" alt="" style={{width: 50}}/> 
+                                        </div>
+                                        
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+
+                                            <button onClick={() => { handleUpdate(item.id) }} className='btn btn-warning btn-sm'>
+                                                Chuyển về bàn trống
+                                            </button>
+                                        </div>
                                     </div>
+
 
                                 </div>
 
                             ) : item.status === 1 ? (
-                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #26A744', borderRadius: '20px' }}>
+                                <div style={{ padding: '8px', margin: '5px', border: '1.5px solid #26A744', borderRadius: '15px' }}>
                                     <Link href={`table/table-details?tableID=${item.id}`}>
-                                        <h5 style={{ height: '40px', color: '#26A744' }}>{item.name}</h5>
+                                        <h5 style={{ color: '#26A744', fontSize: '18px', marginBottom: 0}}>{item.name}</h5>
+                                        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0px'}}>
+                                           <img src="\img\eating.png" alt="" style={{width: 50}}/> 
+                                        </div>
                                         <div style={{ display: 'grid' }}>
                                             <span className="badge" style={{ fontSize: '16px', color: '#26A744' }}>
                                                 {item.status_name}
@@ -233,9 +244,12 @@ export default function Table() {
                                     </Link>
                                 </div>
                             ) : (
-                                <div style={{ padding: '15px', margin: '5px', border: '1.5px solid #007bff', borderRadius: '20px' }}>
+                                <div style={{ padding: '8px', margin: '5px', border: '1.5px solid #007bff', borderRadius: '15px' }}>
                                     <Link href={`table/table-details?tableID=${item.id}`}>
-                                        <h5 style={{ height: '40px' }}>{item.name}</h5>
+                                    <h5 style={{ color: '#007bff', fontSize: '18px', marginBottom: 0}}>{item.name}</h5>
+                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0px'}}>
+                                           <img src="\img\chair.png" alt="" style={{width: 50}}/> 
+                                        </div>
                                         <div style={{ display: 'grid' }}>
                                             <span className="badge" style={{ fontSize: '16px', color: '#007bff' }}>
                                                 {item.status_name}

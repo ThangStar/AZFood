@@ -419,6 +419,18 @@ class ToolbarHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool shouldTrimText() {
+      // Kiểm tra kích thước màn hình và trả về true nếu nhỏ hơn giới hạn
+      double screenWidth = MediaQuery.of(context).size.width;
+      return screenWidth < 375;
+    }
+
+    String trimText(String text, int maxLength) {
+      if (text != null && text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+      }
+      return text ?? "";
+    }
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -461,7 +473,10 @@ class ToolbarHome extends StatelessWidget {
                   //       fontWeight: FontWeight.bold, color: Colors.white),
                   // ).animate().shimmer(),
                   SingleChildScrollView(
-                    child: Text("Xin chào, ${profile.name ?? "".split(' ').last}",
+                    child: Text(
+                  "Xin chào, ${shouldTrimText()
+                            ? trimText(profile.name ?? "".split(' ').last ?? '', 12)
+                            : profile.name ?? "".split(' ').last ?? ""}",
                         style: Theme.of(context)
                             .textTheme
                             .bodyLarge

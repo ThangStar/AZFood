@@ -98,8 +98,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fillData();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+
     if (checkDevice(widget.constraints.maxWidth, false, true, true)) {
       ZoomDrawer.of(context)!.close();
     }
@@ -450,11 +453,20 @@ class ToolbarHome extends StatelessWidget {
                         ZoomDrawer.of(context)!.open();
                       },
                     ),
-                  Text("Xin chào, ${profile.name ?? "".split(' ').last}",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Colors.white)),
+                  // Text(
+                  //   shouldTrimText()
+                  //       ? trimText(widget.profile.name ?? '', 15)
+                  //       : widget.profile.name ?? "",
+                  //   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  //       fontWeight: FontWeight.bold, color: Colors.white),
+                  // ).animate().shimmer(),
+                  SingleChildScrollView(
+                    child: Text("Xin chào, ${profile.name ?? "".split(' ').last}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: Colors.white)),
+                  ),
                   Row(
                     children: [
                       MyIconButtonBlur(
@@ -541,18 +553,24 @@ class _ToolbarProfileState extends State<ToolbarProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.profile.name ?? "",
+                        shouldTrimText()
+                            ? trimText(widget.profile.name ?? '', 15)
+                            : widget.profile.name ?? "",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ).animate().shimmer(),
                       Text(
-                        widget.profile.email ?? "",
+                        shouldTrimText()
+                            ? trimText(widget.profile.email ?? '', 15)
+                            : widget.profile.email ?? "",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                         ),
                       ),
                     ],
                   ),
+
+
                 ],
               ),
               FittedBox(
@@ -576,6 +594,19 @@ class _ToolbarProfileState extends State<ToolbarProfile> {
         ),
       ),
     ).animate().slideX();
+  }
+
+  bool shouldTrimText() {
+    // Kiểm tra kích thước màn hình và trả về true nếu nhỏ hơn giới hạn
+    double screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth < 375;
+  }
+
+  String trimText(String text, int maxLength) {
+    if (text != null && text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    }
+    return text ?? "";
   }
 }
 
@@ -605,6 +636,7 @@ class _CurrentBookingDrawerState extends State<CurrentBookingDrawer>
         setState(() {});
       });
   }
+
 
   @override
   void initState() {

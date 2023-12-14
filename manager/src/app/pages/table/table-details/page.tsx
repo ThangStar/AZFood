@@ -227,6 +227,7 @@ export default function TableDetails() {
             dispatch(getOrderInTableListAsync(tableID));
 
         }
+        toggle();
     }
 
     const deleteAllItem = async () => {
@@ -460,7 +461,7 @@ export default function TableDetails() {
                     }}>
                         Xóa
                     </Button>
-                    <Button color="secondary" onClick={() => openModalDel()}>
+                    <Button color="secondary" onClick={() => {openModalDel()}}>
                         Hủy
                     </Button>
                 </ModalFooter>

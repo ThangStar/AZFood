@@ -11,6 +11,8 @@ import 'package:restaurant_manager_app/apis/order/order.api.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/pay_success_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
+import 'package:restaurant_manager_app/ui/screens/home/home_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/product/add_product_to_current_booking_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -91,7 +93,15 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                           color: Colors.white.withOpacity(0.8),
                         ),
                         onTap: () {
-                          Navigator.of(context, rootNavigator: true).pop();
+                          MediaQuery.of(context).size.width < mobileWidth
+                              ? Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const HomeMenuScreen(),
+                                  ),
+                                  (route) => false)
+                              : Navigator.of(context, rootNavigator: true).pop();
                         },
                       ),
                       trailling: [
@@ -358,7 +368,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
                     child: Container(
-                      constraints: const BoxConstraints(maxHeight: 200.0, maxWidth: 300.0),
+                      constraints: const BoxConstraints(
+                          maxHeight: 200.0, maxWidth: 300.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12.0),
                         color: colorScheme(context).onPrimary.withOpacity(0.6),

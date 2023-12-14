@@ -83,90 +83,74 @@ class _BillScreenState extends State<BillScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          DefaultTabController(
-              length: 2,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height - 136,
-                child: Column(
-                  children: [
-                    const TabBar.secondary(tabs: [
-                      Tab(
-                        child: Text("Tất cả"),
-                      ),
-                      Tab(
-                        child: Text("Gần đây"),
-                      )
-                    ]),
-                    Expanded(
-                      child: TabBarView(children: [
-                        BlocBuilder<InvoiceBloc, InvoiceState>(
-                          builder: (context, state) {
-                            if (state is InvoiceLoadingState) {
-                              return const Center(
-                                child: SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: AspectRatio(
-                                      aspectRatio: 1,
-                                      child: CircularProgressIndicator()),
-                                ),
-                              );
-                            } else if (state.invoices.isNotEmpty) {
-                              return GridView.builder(
-                                shrinkWrap: true,
-                                primary: false,
-                                itemBuilder: (context, index) {
-                                  Invoice invoice = state.invoices[index];
-                                  return ItemBill(
-                                    invoice: invoice,
-                                  ).animate().fade(duration: 1.seconds).moveY(
-                                      duration: 1.seconds,
-                                      begin: 50 * index.toDouble() ?? 0.0,
-                                      curve: Curves.fastOutSlowIn);
-                                },
-                                itemCount: state.invoices.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: checkDevice(
-                                            widget.constraints?.maxWidth ?? 0,
-                                            1,
-                                            2,
-                                            3),
-                                        mainAxisExtent: 95),
-                              );
-                            } else {
-                              return Center(
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/svgs/icon_empty_bill.svg',
-                                        width: 100,
-                                        height: 100,
-                                      ),
-                                      Text(
-                                        "Hiện tại không có hóa đơn nào !",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(
-                                                fontSize: 15,
-                                                color: colorScheme(context)
-                                                    .outline),
-                                      ),
-                                    ]),
-                              );
-                            }
+          SizedBox(
+            height: MediaQuery.of(context).size.height - 136,
+            child: Column(
+              children: [
+                Expanded(
+                  child: BlocBuilder<InvoiceBloc, InvoiceState>(
+                    builder: (context, state) {
+                      if (state is InvoiceLoadingState) {
+                        return const Center(
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: AspectRatio(
+                                aspectRatio: 1,
+                                child: CircularProgressIndicator()),
+                          ),
+                        );
+                      } else if (state.invoices.isNotEmpty) {
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          primary: false,
+                          itemBuilder: (context, index) {
+                            Invoice invoice = state.invoices[index];
+                            return ItemBill(
+                              invoice: invoice,
+                            ).animate().fade(duration: 1.seconds).moveY(
+                                duration: 1.seconds,
+                                begin: 50 * index.toDouble() ?? 0.0,
+                                curve: Curves.fastOutSlowIn);
                           },
-                        ),
-                        Center(
-                          child: Text("tab2"),
-                        ),
-                      ]),
-                    ),
-                  ],
+                          itemCount: state.invoices.length,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: checkDevice(
+                                      widget.constraints?.maxWidth ?? 0,
+                                      1,
+                                      2,
+                                      3),
+                                  mainAxisExtent: 95),
+                        );
+                      } else {
+                        return Center(
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/svgs/icon_empty_bill.svg',
+                                  width: 100,
+                                  height: 100,
+                                ),
+                                Text(
+                                  "Hiện tại không có hóa đơn nào !",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                          fontSize: 15,
+                                          color: colorScheme(context).outline),
+                                ),
+                              ]),
+                        );
+                      }
+                    },
+                  ),
                 ),
-              )),
+              ],
+            ),
+          ),
         ],
       ),
     );

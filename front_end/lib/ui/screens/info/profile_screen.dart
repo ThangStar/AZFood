@@ -41,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     profileBloc = BlocProvider.of<ProfileBloc>(context);
     invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
     MySharePreferences.loadProfile().then((value) {
-      print("GET BY ID ${value?.id}");
       profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
       invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
     });
@@ -453,41 +452,11 @@ class _ListBill extends StatelessWidget {
                 ],
               ),
               child: Column(
-                children: <Widget>[
-                  Container(
-                      decoration: const BoxDecoration(
-                          border: Border(
-                        bottom: BorderSide(
-                          color: Color.fromRGBO(227, 226, 235, 1),
-                          width: 1.0,
-                        ),
-                      )),
-                      child: Row(children: [
-                        Expanded(
-                          child: TabBar.secondary(
-                            isScrollable: true,
-                            tabs: const [
-                              Tab(text: 'Danh sách hóa đơn'),
-                              Tab(text: 'Khác'),
-                            ],
-                            labelColor: colorScheme(context).scrim,
-                            dividerColor: Colors.transparent,
-                            indicator: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.blue,
-                                  width: 2.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ])),
+                children: [
                   ConstrainedBox(
                     constraints:
                         const BoxConstraints(minWidth: 300.0, maxHeight: 500),
-                    child: TabBarView(
-                      children: [
+                    child:
                         Column(
                           children: [
                             Expanded(
@@ -685,11 +654,6 @@ class _ListBill extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const Center(
-                          child: Text('Nội dung Tab 2'),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),

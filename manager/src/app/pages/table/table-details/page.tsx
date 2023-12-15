@@ -126,20 +126,8 @@ export default function TableDetails() {
     useEffect(() => {
 
         if (orders && Array.isArray(orders.orders)) {
+            setOrder(orders.orders);
 
-            const item = orders.orders.map((item : any) => {
-                if(item.price ==0 || item.price_produc == 0){
-                    return {
-                        ...item,
-                        price: item.price === 0 ? 'Chọn phần' : item.price,
-                        price_produc: item.price_produc === 0 ? 'Chọn phần' : item.price_produc,
-                    };
-                }
-                return item
-            })
-            setOrder(item);
-            console.log('orders.orders', item);
-            
         }
         if (menuItems && menuItems.data) {
             setItemMenus(menuItems.data);
@@ -163,10 +151,9 @@ export default function TableDetails() {
 
 
     const handlePlusOrder = async (item: any) => {
-
-
         var productID;
         var price;
+        const orderID = item.orderID;
         if (item.productID !== undefined) {
             productID = item.productID;
             price = item.price_produc
@@ -183,7 +170,6 @@ export default function TableDetails() {
             category: item.category,
             price: price ? price : item.price
         }
-
         if (isUpdate) {
             await dispatch(updateOrderAsync({ data, orderID }));
             if (statusRD == 'idle') {
@@ -222,15 +208,13 @@ export default function TableDetails() {
     }
 
     const handleMinusOrder = async (item: any) => {
-        console.log(" item::", item);
+
         if (item.quantity <= 1) {
             await dispatch(deleteOrderAsync(item.orderID));
-            console.log('check id order', item.id);
             dispatch(getOrderInTableListAsync(tableID));
-            // showAlert('warning', 'Không thể giảm số lượng món ăn');
             return;
         }
-        setOrderID(item.orderID);
+        const orderID = item.orderID;
         const data = {
             userID: userID,
             tableID: tableID,
@@ -393,11 +377,13 @@ export default function TableDetails() {
                                     order.map((item, index, id) => (
                                         <tr key={index}>
                                             <td style={{ color: "green", fontSize: 20 }}>
-                                                <h6>{item.productName} 
-                                              {/* ({findTenDVT(item.dvt)}) */}
+                                                <h6>{item.productName}
+                                                    ({findTenDVT(item.dvt)})
                                                 </h6>
                                             </td>
-                                            <td className="text-center" onClick={() => { openModal3(item) }}>{formatMoney(item.price_produc ? item.price_produc : item.price)} </td>
+                                            <td className="text-center" onClick={() => {
+                                                openModal3(item)
+                                            }}>{formatMoney(item.price_produc ? item.price_produc : item.price)} </td>
                                             <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                                 <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item)}>-</button>
                                                 {item.quantity}

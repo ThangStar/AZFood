@@ -107,7 +107,7 @@ export default function Home() {
         <>
             <div className="container-fluid">
                 <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
-                    <h3 className='m-0' style={{ height: '40px' }}>Danh sách món</h3>
+                    <h3 className='m-0' style={{ height: '40px' }}>Bảng chấm công</h3>
                 </div>
             </div>
             <div className="card container-fluid mt-4" >

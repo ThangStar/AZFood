@@ -81,12 +81,13 @@ exports.createProduct = async (req, res) => {
                         const imgUrl = await getDownloadURL(snapshot.ref);
                         console.log(imgUrl);
                         // Tiếp tục xử lý và lưu dữ liệu vào MySQL
-                        const queryRaw = "INSERT INTO products (name, price, category, dvtID, imgUrl) VALUES (?, ?, ?, ?, ?);";
-
+                        const status = body.category === '1' ? 1 : null
+                        const queryRaw = "INSERT INTO products (name, price, category, dvtID, imgUrl, status) VALUES (?, ?, ?, ?, ?, ?);";
+                        console.log('tao mon mơi' + body.category + status)
                         const resultRaw = await sequelize.query(queryRaw, {
                             raw: true,
                             logging: false,
-                            replacements: [body.name, body.price, body.category, body.dvtID, imgUrl],
+                            replacements: [body.name, body.price, body.category, body.dvtID, imgUrl, status],
                             type: QueryTypes.INSERT
                         });
 
@@ -98,11 +99,12 @@ exports.createProduct = async (req, res) => {
                 }
                 else {
                     console.log("khong  có file");
-                    const queryRaw = "INSERT INTO products (name, price, category,  dvtID) VALUES (?, ?, ?,?);";
+                    const status = body.category === '1' ? 1 : null
+                    const queryRaw = "INSERT INTO products (name, price, category, dvtID, status) VALUES (?, ?, ?, ?, ?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.name, body.price, body.category, body.dvtID],
+                        replacements: [body.name, body.price, body.category, body.dvtID, status],
                         type: QueryTypes.INSERT
                     });
                     res.status(200).json({ message: 'products created successfully' });

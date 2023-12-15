@@ -79,6 +79,7 @@ export default function MunuItems() {
     const toggle = () => setModal(!modal);
     const openModal = () => {
         toggle();
+        setDataForm("");
     }
     const setDataForm = (data: any) => {
         setIdItem(data.id);
@@ -120,6 +121,15 @@ export default function MunuItems() {
                 quantity: itemQuantity,
                 file
             };
+            // vailable
+            const isNonNegativeNumber = /^\d+(\.\d+)?$/.test(itemPrice);
+            if (itemCategory === undefined || itemCategory === "" ||
+                itemName === undefined || itemName.trim().length === 0 ||
+                itemPrice === undefined || !isNonNegativeNumber ||
+                itemDVT === undefined || itemDVT === "") {
+                showAlert("error", "Bạn cần điền đầy đủ thông tin");
+                return;
+            }
 
             await dispatch(createMenuItemAsync(data));
             setDataForm("");

@@ -43,7 +43,7 @@ class CurrentBookingScreen extends StatefulWidget {
 
 class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
   late ProductBloc prdBloc;
-  int? selectedItem = 2;
+  int selectedItem = 0;
   bool _showDialog = false;
   String? content;
 
@@ -76,6 +76,7 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                 tableId: widget.tableID,
                 amount: amount,
                 prdBloc: prdBloc,
+                selectedItem: selectedItem,
                 openDialog: openDialog,
               );
             },
@@ -149,17 +150,118 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                 ),
                               ],
                             ),
-                            MyButtonBlur(
-                              text: "Thêm mới",
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddProductToCurrentBookingScreen(
-                                                tableID: widget.tableID)));
-                              },
-                            )
+                            const SizedBox(width: 20.0),
+                            Flexible(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                    maxWidth: 410.0,
+                                    minWidth: 100.0,
+                                    maxHeight: 41.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Theme(
+                                        data: Theme.of(context).copyWith(
+                                          canvasColor:
+                                              colorScheme(context).tertiary,
+                                          buttonTheme:
+                                              ButtonTheme.of(context).copyWith(
+                                            alignedDropdown: true,
+                                          ),
+                                        ),
+                                        child: DropdownButtonFormField(
+                                          isExpanded: true,
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            border: InputBorder.none,
+                                            fillColor: Colors.white.withOpacity(0.1),
+                                            enabledBorder:
+                                              OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              borderSide: const BorderSide(color: Colors.transparent, width: 0),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              borderSide: const BorderSide(color: Colors.transparent, width: 0),
+                                            ),
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 5.0),
+                                          ),
+                                          value: 0,
+                                          icon: const Icon(
+                                            Icons.arrow_drop_down,
+                                            color: Colors.white,
+                                          ),
+                                          iconSize: 24,
+                                          elevation: 16,
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15.0),
+                                          items: [
+                                            DropdownMenuItem(
+                                                value: 0,
+                                                child: Row(
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      'assets/svgs/icon_cash.svg',
+                                                      width: 31,
+                                                      height: 31,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    const SizedBox(width: 5.0),
+                                                    const Flexible(
+                                                      child: Text(
+                                                        'Tiền mặt',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    )
+                                                  ],
+                                                )),
+                                            DropdownMenuItem(
+                                                value: 1,
+                                                child: Row(
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      'assets/svgs/icon_credit.svg',
+                                                      width: 31,
+                                                      height: 31,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    const SizedBox(width: 5.0),
+                                                    const Flexible(
+                                                      child: Text(
+                                                          'Chuyển khoản',
+                                                          overflow: TextOverflow
+                                                              .ellipsis),
+                                                    ),
+                                                  ],
+                                                )),
+                                          ],
+                                          onChanged: (value) => {
+                                            setState(() {
+                                              selectedItem = value ?? 0;
+                                            }),
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    MyButtonBlur(
+                                      text: "Thêm mới",
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AddProductToCurrentBookingScreen(
+                                                        tableID:
+                                                            widget.tableID)));
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -437,11 +539,13 @@ class BottomActionBill extends StatelessWidget {
       required this.tableId,
       required this.amount,
       required this.prdBloc,
-      required this.openDialog});
+      required this.openDialog,
+      required this.selectedItem});
 
   final int tableId;
   final int amount;
   final ProductBloc prdBloc;
+  final int selectedItem;
   final Function(String, bool) openDialog;
 
   @override
@@ -449,7 +553,6 @@ class BottomActionBill extends StatelessWidget {
     bool isMobile = checkDevice(
         MediaQuery.of(context).size.width * 0.85, true, false, false);
     int price = 0;
-    int selectedItem = 0;
     return Container(
         decoration: BoxDecoration(
           color: colorScheme(context).onPrimary,
@@ -498,132 +601,30 @@ class BottomActionBill extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  width: 20.0,
-                ),
-                Flexible(
-                  child: Container(
-                    constraints:
-                        const BoxConstraints(maxWidth: 410.0, maxHeight: 50.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Theme(
-                            data: Theme.of(context).copyWith(
-                              canvasColor: colorScheme(context).tertiary,
-                              buttonTheme: ButtonTheme.of(context).copyWith(
-                                alignedDropdown: true,
-                              ),
-                            ),
-                            child: DropdownButtonFormField(
-                                isExpanded: true,
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(10.0)),
-                                    borderSide: BorderSide(
-                                        width: 1.0,
-                                        color: colorScheme(context).tertiary),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(10.0)),
-                                    borderSide: BorderSide(
-                                        width: 1.0,
-                                        color: colorScheme(context).tertiary),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                ),
-                                value: 0,
-                                icon: Icon(
-                                  Icons.arrow_drop_down,
-                                  color: colorScheme(context).scrim,
-                                ),
-                                iconSize: 24,
-                                elevation: 16,
-                                style: TextStyle(
-                                    color: colorScheme(context).scrim,
-                                    fontSize: 15.0),
-                                items: [
-                                  DropdownMenuItem(
-                                      value: 0,
-                                      child: Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            'assets/svgs/icon_cash.svg',
-                                            width: 31,
-                                            height: 31,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          const SizedBox(width: 5.0),
-                                          const Flexible(
-                                            child: Text(
-                                              'Tiền mặt',
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          )
-                                        ],
-                                      )),
-                                  DropdownMenuItem(
-                                      value: 1,
-                                      child: Row(
-                                        children: [
-                                          SvgPicture.asset(
-                                            'assets/svgs/icon_credit.svg',
-                                            width: 31,
-                                            height: 31,
-                                            fit: BoxFit.cover,
-                                          ),
-                                          const SizedBox(width: 5.0),
-                                          const Flexible(
-                                            child: Text('Chuyển khoản',
-                                                overflow:
-                                                    TextOverflow.ellipsis),
-                                          ),
-                                        ],
-                                      )),
-                                ],
-                                onChanged: (item) => () {
-                                      selectedItem = item ?? 2;
-                                      print(item);
-                                    }),
-                          ),
-                        ),
-                        const SizedBox(width: 20.0),
-                        InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return MyDialog(
-                                  onTapLeading: () {
-                                    Navigator.pop(context);
-                                  },
-                                  onTapTrailling: () {
-                                    Navigator.pop(context);
-                                  },
-                                );
-                              },
-                            );
+                InkWell(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return MyDialog(
+                          onTapLeading: () {
+                            Navigator.pop(context);
                           },
-                          child: Text(
-                            "Hủy bàn",
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                    fontSize: 16,
-                                    color: const Color(0xFFE4295D),
-                                    fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                          onTapTrailling: () {
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    "Hủy bàn",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 16,
+                        color: const Color(0xFFE4295D),
+                        fontWeight: FontWeight.bold),
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(

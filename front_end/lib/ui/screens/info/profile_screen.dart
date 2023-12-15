@@ -470,8 +470,7 @@ class _ListBill extends StatelessWidget {
                                           height: 50,
                                           child: AspectRatio(
                                               aspectRatio: 1,
-                                              child:
-                                                  CircularProgressIndicator()),
+                                              child: CircularProgressIndicator()),
                                         ),
                                       );
                                     } else {

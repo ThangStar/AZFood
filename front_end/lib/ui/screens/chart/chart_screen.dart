@@ -8,9 +8,9 @@ import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 
 class ChartScreen extends StatefulWidget {
-  const ChartScreen({super.key, required this.constraints});
+  const ChartScreen({super.key, this.constraints});
 
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
 
   @override
   State<ChartScreen> createState() => _ChartScreenState();
@@ -44,9 +44,9 @@ class _ChartScreenState extends State<ChartScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: colorScheme(context).onPrimary,
-        titleSpacing: checkDevice(widget.constraints.maxWidth, -5.0, 20.0, 20.0),
+        titleSpacing: checkDevice(widget.constraints?.maxWidth ?? 0, -5.0, 20.0, 20.0),
         leading: checkDevice(
-            widget.constraints.maxWidth,
+            widget.constraints?.maxWidth ?? 0,
             IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
@@ -76,7 +76,7 @@ class _ChartScreenState extends State<ChartScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
+                const Text(
                   "Doanh thu: ",
                   style: TextStyle(
                       fontSize: 14,

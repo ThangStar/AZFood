@@ -194,11 +194,9 @@ class _SendEmailScreenState extends State<SendEmailScreen> {
                                                       return null;
                                                     }
                                                   },
-                                                  hintText:
-                                                      "Nhập email của bạn...",
+                                                  hintText: "Nhập email của bạn...",
                                                   icon: const Icon(Icons.email),
-                                                  controller:
-                                                      fogetPassController,
+                                                  controller: fogetPassController,
                                                 ),
                                               ],
                                             ),

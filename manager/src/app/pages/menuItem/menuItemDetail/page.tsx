@@ -7,7 +7,7 @@ import { log } from "console";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Alert } from 'reactstrap';
 
 const MenuItemDetail = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -145,6 +145,7 @@ const MenuItemDetail = () => {
         toggle();
 
     }
+
     return (
         <div>
             <div className="container-fluid">
@@ -255,7 +256,8 @@ const MenuItemDetail = () => {
                                 >
                                     <option value="">Chọn</option>
                                     {listSizeProd && listSizeProd.length > 0 ? listSizeProd.map((item: any, id: number) => (
-                                        <option key={item.id} value={item.id}>{item.size_name}</option>
+                                        <option key={item.id} value={item.id}>{item.size_name}
+                                        </option>
                                     )) : ""}
                                 </select>
                             </div>

@@ -23,6 +23,7 @@ module.exports = app => {
   router.get("/listTopProduct", products.getListTop);
   router.post("/deletePrice", products.deletePriceProduct);
   router.get("/listPriceProduct", products.getPriceProduct);
+  router.get("/getSizePrice", products.getSizePrice);
 
   app.use('/api/products', router);
 };

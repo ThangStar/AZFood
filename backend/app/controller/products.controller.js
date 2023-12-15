@@ -173,6 +173,22 @@ exports.createProduct = async (req, res) => {
 
 
 }
+exports.getSizePrice = async (req, res) => {
+    const queryRaw = "SELECT * FROM product_size as ps JOIN product_price as pr ON ps.id = pr.products_size";
+    try {
+        const resultRaw = await sequelize.query(queryRaw, {
+            raw: true,
+            logging: false,
+            replacements: [],
+            type: QueryTypes.SELECT
+        });
+        res.send({ resultRaw })
+        res.status(200);
+    } catch (error) {
+        res.status(500);
+        res.send(error)
+    }
+}
 exports.updateStatus = async (req, res) => {
     try {
         const body = req.body;

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_manager_app/model/ProductPriceSize.dart';
 import 'package:restaurant_manager_app/model/product.dart';
 import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/product_size/product_size_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/my_search_delegate.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
@@ -31,12 +33,15 @@ class _AddProductToCurrentBookingScreenState
 
   GlobalKey cartKey = GlobalKey();
   late ProductBloc productBloc;
+  late ProductSizeBloc prdSizeBloc;
 
   @override
   void initState() {
     productBloc = BlocProvider.of(context);
+    prdSizeBloc = BlocProvider.of<ProductSizeBloc>(context);
     productBloc.add(const GetProductsEvent());
     productBloc.add(GetCategoryEvent());
+    prdSizeBloc.add(GetAllSizePrdEvent());
     super.initState();
   }
 
@@ -71,8 +76,8 @@ class _AddProductToCurrentBookingScreenState
                           ? FloatingActionButton.extended(
                               backgroundColor: colorScheme(context).error,
                               onPressed: () {
-                                productBloc
-                                    .add(ChangePageProductEvent(isNext: false));
+                                productBloc.add(const ChangePageProductEvent(
+                                    isNext: false));
                               },
                               label: Icon(
                                 Icons.arrow_back,
@@ -86,7 +91,7 @@ class _AddProductToCurrentBookingScreenState
                               key: cartKey,
                               backgroundColor: colorScheme(context).secondary,
                               onPressed: () {
-                                productBloc.add(ChangePageProductEvent());
+                                productBloc.add(const ChangePageProductEvent());
                               },
                               label: Icon(
                                 Icons.arrow_forward,
@@ -279,49 +284,106 @@ class _AddProductToCurrentBookingScreenState
   }
 }
 
-class SubTitleProduct extends StatelessWidget {
+class SubTitleProduct extends StatefulWidget {
   const SubTitleProduct({super.key, required this.product});
-
   final Product product;
 
   @override
+  State<SubTitleProduct> createState() => _SubTitleProductState();
+}
+
+class _SubTitleProductState extends State<SubTitleProduct> {
+  int idSelected = 0;
+  late ProductSizeBloc prdSizeBloc;
+
+  @override
+  void initState() {
+    setState(() {
+      prdSizeBloc = BlocProvider.of<ProductSizeBloc>(context);
+      idSelected = prdSizeBloc.state.productSize[0].id ?? 0;
+      print("selected: ${idSelected}");
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    int quantity = product.quantity ?? 0;
+    int quantity = widget.product.quantity ?? 0;
     return Row(
       children: [
         Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? const Color(0xFF049C6B) : null,
+              color: (widget.product.quantity != 0 && widget.product.quantity != null) ||
+                      (widget.product.category == 1 && widget.product.status == 1)
+                  ? const Color(0xFF049C6B)
+                  : null,
             ),
-            padding: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1)
+            padding: (widget.product.quantity != 0 && widget.product.quantity != null) ||
+                    (widget.product.category == 1 && widget.product.status == 1)
                 ? const EdgeInsets.symmetric(horizontal: 14, vertical: 4)
                 : null,
             child: Row(
               children: [
-                (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1)
+                (widget.product.quantity != 0 && widget.product.quantity != null) ||
+                        (widget.product.category == 1 && widget.product.status == 1)
                     ? const SizedBox.shrink()
                     : const Icon(
                         Icons.error,
                         color: Colors.red,
                       ),
                 Text(
-                  quantity != 0 && product.category != 1
+                  quantity != 0 && widget.product.category != 1
                       ? "Kho: $quantity"
-                      : product.status == 2 || (quantity == 0 && product.category != 1)
+                      : widget.product.status == 2 ||
+                              (quantity == 0 && widget.product.category != 1)
                           ? " Hết hàng "
                           : "Sẵn sàng",
                   style: TextStyle(
-                      color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? Colors.white : Colors.red),
+                      color:
+                          (widget.product.quantity != 0 && widget.product.quantity != null) ||
+                                  (widget.product.category == 1 && widget.product.status == 1)
+                              ? Colors.white
+                              : Colors.red),
                 ),
-
               ],
             )),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: DropD,
-        )
+          padding: const EdgeInsets.all(8.0),
+          child: BlocBuilder<ProductSizeBloc, ProductSizeState>(
+            builder: (context, state) {
 
+              ProductPriceSize? prd;
+              try {
+                prd = state.productSize.firstWhere(
+                      (element) => element.productId == widget.product.id,
+                );
+              } catch (e) {}
+
+              if (state.productSize.isNotEmpty && prd != null) {
+
+                return DropdownButton(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  style: TextStyle(
+                      fontSize: 16, color: colorScheme(context).scrim),
+                  isDense: true,
+                  value: idSelected,
+                  items: state.productSize.map((e) {
+                    return DropdownMenuItem(
+                      child: Text(e.sizeName ?? ""),
+                      value: e.id,
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      idSelected = value ?? 0;
+                    });
+                  },
+                );
+              }
+              return SizedBox.shrink();
+            },
+          ),
+        )
       ],
     );
   }

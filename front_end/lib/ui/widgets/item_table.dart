@@ -162,7 +162,7 @@ class _ItemTableState extends State<ItemTable> {
                                                   status: 3 ));
                                         },
                                         child: const Icon(
-                                          Ionicons.arrow_forward,
+                                          Ionicons.arrow_forward_circle_outline,
                                           size: 38,
                                           color: Colors.black45,
                                         ))

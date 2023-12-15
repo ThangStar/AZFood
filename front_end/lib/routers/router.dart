@@ -9,6 +9,7 @@ class Router {
   static String category = "/api/products/category";
   static String productsFilter = '/api/products/filterData';
   static String searchProduct = '/api/products/searchProducts';
+  static String getSizePrice = '/api/products/getSizePrice';
 
   //table
   static String updateStatusTable = '/api/table/updateStatus';

@@ -111,11 +111,11 @@ export const createMenuItemAsync = createAsyncThunk(
 export const createPriceForProdAsync = createAsyncThunk(
   'price/create',
   async (data: any) => {
-    const { productID, sizeValue, prodPrice } = data;
+    const { productID, sizeValue, prodPrice, size } = data;
     const token = localStorage.getItem('token');
     const response = await axios.post(api + '/api/products/createPrice',
       {
-        productID, sizeValue, prodPrice
+        productID, sizeValue, prodPrice, size
       }, {
       headers: {
         'Content-Type': 'application/json',

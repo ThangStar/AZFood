@@ -5,10 +5,12 @@ import { useLayoutEffect } from 'react';
 import Link from "next/link";
 import { createMenuItemAsync, deleteMenuItemAsync, getCategoryList, getCategoryListAsync, getFilterCategoryListAsync, getMenuItemListAsync, getMenuItemtList, getPriceForSize, getPriceList, getSearchMenuListAsync, updateStatusMenuItem } from '@/redux-store/menuItem-reducer/menuItemSlice';
 import { AppDispatch } from '@/redux-store/store';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Label } from 'reactstrap';
 import { getDVTList, getDvtListAsync, nhapHangAsync } from '@/redux-store/kho-reducer/nhapHangSlice';
 import { showAlert } from '@/component/utils/alert/alert';
 import formatMoney from '@/component/utils/formatMoney';
+import Loading from '@/component/Loading/loading';
+import LoadingAdd from '@/component/Loading/LoddingAdd';
 
 
 export default function MunuItems() {
@@ -39,10 +41,10 @@ export default function MunuItems() {
     const [image, setImage] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("0");
     const [itemQuantity, setItemQuantity] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [file, setFile] = useState<File>();
+    const [file, setFile] = useState<File | null>(null);
     const totalPages = menuItemList ? menuItemList.totalPages : 1;
-
     useEffect(() => {
         const fetchData = async () => {
             handlePageChange(currentPage);
@@ -105,24 +107,33 @@ export default function MunuItems() {
     }
 
     const addMenuItem = async () => {
-        const data = {
-            name: itemName,
-            price: itemPrice,
-            category: itemCategory,
-            status: status,
-            dvtID: itemDVT,
-            id: idItem,
-            quantity: itemQuantity,
-            file
-        }
-        await dispatch(createMenuItemAsync(data));
-        // await dispatch(nhapHangAsync(data));
+        try {
+            setIsLoading(true);
 
-        setDataForm("");
-        handlePageChange(currentPage);
-        showAlert("success", " Thêm món thành công");
-        setItemQuantity('0');
-        toggle();
+            const data = {
+                name: itemName,
+                price: itemPrice,
+                category: itemCategory,
+                status: status,
+                dvtID: itemDVT,
+                id: idItem,
+                quantity: itemQuantity,
+                file
+            };
+
+            await dispatch(createMenuItemAsync(data));
+            setDataForm("");
+            handlePageChange(currentPage);
+            showAlert("success", " Thêm món thành công");
+            setItemQuantity('0');
+            toggle();
+        } catch (error) {
+            console.error('Error adding menu item:', error);
+            setIsLoading(false);
+        } finally {
+            setIsLoading(false);
+        }
+
     }
 
     const deleteItem = async (id: number) => {
@@ -147,13 +158,22 @@ export default function MunuItems() {
             handlePageChange(currentPage)
         }
     }
-
-    const handleChangeFile = (event: any) => {
-        if (event.target.files && event.target.files[0]) {
-            const selectedImage = event.target.files[0];
-            setFile(selectedImage);
+    const handleImageUpload = (files: any) => {
+        if (files && files.length > 0) {
+            const reader = new FileReader();
+            setFile(files[0]);
+            reader.onload = (e: any) => {
+                setImage(e.target.result);
+            };
+            reader.readAsDataURL(files[0]);
         }
-    }
+    };
+
+    const handleImageClear = () => {
+        setFile(null);
+        // setImageFile(null);
+        setImage("");
+    };
 
     const handleSelectedCategoryChange = (event: any) => {
         const selectedValue = event.target.value;
@@ -176,6 +196,7 @@ export default function MunuItems() {
     }
     return (
         <>
+            {isLoading && <LoadingAdd />}
             <div className="container-fluid">
                 <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
                     <h3 className='m-0' style={{ height: '40px' }}>Danh sách món</h3>
@@ -234,7 +255,7 @@ export default function MunuItems() {
                                     Tên Món
                                 </th>
                                 <th>
-                                    Giá
+                                    Giá(vnd)
                                 </th>
                                 <th>
                                     Đơn vị Tính
@@ -269,7 +290,7 @@ export default function MunuItems() {
                                         </div>
                                     </td>
                                     <td className="project_progress" style={{}}>
-                                        {item && item.price ? `${formatMoney(item.price)} ₫` : 'Tính theo phần'}
+                                        {item && item.price ? `${formatMoney(item.price)} ` : 'Tính theo phần'}
                                     </td>
                                     <td className="project_progress">
                                         {item && item.dvt_name ? item.dvt_name : null}
@@ -356,11 +377,11 @@ export default function MunuItems() {
             </div>
             {/* modal add and edit */}
             <Modal isOpen={modal} toggle={openModal}>
-                <ModalHeader toggle={openModal}>{"Thêm Món Mới"}</ModalHeader>
+                <ModalHeader toggle={openModal}>{!idItem ? "Thêm Món Mới" : "Sửa món"}</ModalHeader>
                 <ModalBody>
                     <form className="form-horizontal">
                         <div className="form-group row">
-                            <label className="col-sm-4 col-form-label">Loại món </label>
+                            <label className="col-sm-3 col-form-label">Loại món </label>
                             <div className="col-sm-8">
                                 <select
                                     className="form-control"
@@ -379,24 +400,26 @@ export default function MunuItems() {
                         </div>
                         <>
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Ảnh đại diện</label>
+                                <label className="col-sm-3 col-form-label">Ảnh đại diện</label>
                                 <div className="col-sm-8">
                                     <input
                                         className="form-control"
                                         type='file'
                                         id="image"
-                                        onChange={handleChangeFile}
+                                        placeholder='Chọn ảnh '
+                                        onChange={(e) => handleImageUpload(e.target.files)}
 
                                     />
-                                    {image ? (<img src={image} alt="" width={80} height={80} />) : (
-                                        <div className='ratio ratio-1x1 w-50 mt-2'>
-                                            <img src={image} alt="" style={{ objectFit: 'cover' }} />
-                                        </div>)
-                                    }
+                                    {image && typeof image === 'string' && (
+                                        <div>
+                                            <img src={image} width={80} height={80} alt="Selected" />
+                                            <button onClick={handleImageClear} style={{ color: "red", fontSize: 12, marginLeft: 10 }}>Xoá ảnh</button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Tên món ăn </label>
+                                <label className="col-sm-3 col-form-label">Tên món ăn </label>
                                 <div className="col-sm-8">
                                     <input
                                         className="form-control"
@@ -410,8 +433,8 @@ export default function MunuItems() {
                             </div>
 
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Giá</label>
-                                <div className="col-sm-8">
+                                <label className="col-sm-3 col-form-label">Giá</label>
+                                <div className="col-sm-4">
                                     <input
                                         className="form-control"
                                         id="name"
@@ -421,10 +444,21 @@ export default function MunuItems() {
                                         }}
                                     />
                                 </div>
+                                <div className="col-sm-3 ml-10 mt-2" >
+                                    <Input type="checkbox"
+                                        id="exampleInput"
+                                        placeholder="Enter something"
+                                        value={itemPrice}
+                                        onChange={() => setItemPrice('0')} />
+                                    <Label check>
+                                        Tính theo phần
+                                    </Label>
+                                </div>
                             </div>
+
                             {itemCategory === "2" ? <>
                                 <div className="form-group row">
-                                    <label className="col-sm-4 col-form-label">Số Lượng</label>
+                                    <label className="col-sm-3 col-form-label">Số Lượng</label>
                                     <div className="col-sm-8">
                                         <input
                                             className="form-control"
@@ -440,7 +474,7 @@ export default function MunuItems() {
                             </> : null}
 
                             <div className="form-group row">
-                                <label className="col-sm-4 col-form-label">Đơn vị tính</label>
+                                <label className="col-sm-3 col-form-label">Đơn vị tính</label>
                                 <div className="col-sm-8">
                                     <select
                                         className="form-control"

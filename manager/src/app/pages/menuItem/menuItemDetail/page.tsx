@@ -110,6 +110,8 @@ const MenuItemDetail = () => {
             setSizeValue(1);
         } else if (inputValue.toLowerCase().includes('trung bình')) {
             setSizeValue(2);
+        } else {
+            setSizeValue(0);
         }
     };
     const handleAdd = async () => {
@@ -118,6 +120,7 @@ const MenuItemDetail = () => {
         const data = {
             productID: parsedID,
             sizeValue,
+            size,
             prodPrice: parsedPrice,
             id: idItem
         }
@@ -162,11 +165,11 @@ const MenuItemDetail = () => {
                                 <th style={{ width: "20%" }}>
                                     Tên hàng
                                 </th>
-                                <th style={{ width: "10%" }}>
+                                <th style={{ width: "20%" }}>
                                     Tên Phần
                                 </th>
                                 <th>
-                                    Đơn giá
+                                    Đơn giá(vnd)
                                 </th>
                                 <th style={{ width: "14%" }}>
                                     Tuỳ chỉnh
@@ -245,12 +248,12 @@ const MenuItemDetail = () => {
                                 <select
                                     className="form-control"
                                     id="productID"
-                                    value={size}
+                                    value={sizeValue}
                                     onChange={(e) => {
-                                        setProductID(e.target.value);
+                                        setSizeValue(parseInt(e.target.value, 0));
                                     }}
                                 >
-                                    <option value="">option</option>
+                                    <option value="">Chọn</option>
                                     {listSizeProd && listSizeProd.length > 0 ? listSizeProd.map((item: any, id: number) => (
                                         <option key={item.id} value={item.id}>{item.size_name}</option>
                                     )) : ""}
@@ -259,6 +262,7 @@ const MenuItemDetail = () => {
                             <div className="col-sm-4">
                                 <input
                                     type="text"
+                                    placeholder="Nhập"
                                     className="form-control"
                                     id="quantity"
                                     value={size}

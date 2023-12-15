@@ -1,4 +1,6 @@
 'use client'
+import LoadingAdd from '@/component/Loading/LoddingAdd';
+import Loading from '@/component/Loading/loading';
 import { showAlert } from '@/component/utils/alert/alert';
 import { AppDispatch } from '@/redux-store/store';
 import { createUserListAsync, deleteUserAsync, getErrorMessage, getStatusUserState, getUserList, getUserListAsync, searchUserAsync } from '@/redux-store/user-reducer/userSlice';
@@ -27,13 +29,14 @@ export default function User() {
     const [roleUser, setRoleUser] = useState("");
     const [image, setImage] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [file, setFile] = useState<File>()
+    const [file, setFile] = useState<File | null>(null);
     const [searchName, setSearchName] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const [isFormDirty, setIsFormDirty] = useState(false);
     const [modalDel, setModalDel] = useState(false);
     const [id, setID] = useState<number>(0);
     const toggleDel = () => setModalDel(!modalDel);
+    const [isLoading, setIsLoading] = useState(false);
 
     const errorMessage: any = useSelector(getErrorMessage);
 
@@ -77,70 +80,79 @@ export default function User() {
     };
 
     const handleAddUser = async () => {
-        if (isFormDirty) {
-            const user = {
-                idUser,
-                username,
-                password,
-                name,
-                roleUser,
-                phoneNumber,
-                email,
-                address,
-                birtDay,
-                file
-            }
-console.log('check log user', user);
 
-            if (name === "") {
-                showAlert("error", "Không được để trống tên người dùng");
-                return;
-            }
+        try {
+            setIsLoading(true);
+            if (isFormDirty) {
+                const user = {
+                    idUser,
+                    username,
+                    password,
+                    name,
+                    roleUser,
+                    phoneNumber,
+                    email,
+                    address,
+                    birtDay,
+                    file
 
-            // Kiểm tra username có ít nhất 6 kí tự và không chứa kí tự đặc biệt
-            const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
-            if (!usernameRegex.test(username)) {
-                showAlert("error", "Username phải có ít nhất 6 kí tự và không chứa kí tự đặc biệt");
-                return;
-            }
-
-            // Kiểm tra password có ít nhất 6 kí tự
-            if (password.length < 6) {
-                showAlert("error", "Password phải có ít nhất 6 kí tự");
-                return;
-            }
-
-            const phoneRegex = /^[0-9]{10}$/;
-            if (!phoneRegex.test(phoneNumber)) {
-                showAlert("error", "Số điện thoại phải chứa đúng 10 số và chỉ chứa kí tự số");
-                return;
-            }
-
-            // Kiểm tra định dạng email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showAlert("error", "Định dạng email không hợp lệ");
-                return;
-            }
-
-            const resp = await dispatch(createUserListAsync(user));
-            console.log('check', resp);
-
-            if (resp.payload != undefined) {
-                if (resp.payload.error) {
-                    showAlert("error", resp.payload.message);
-                } else {
-                    showAlert("success", 'Thành công');
-                    dispatch(getUserListAsync(currentPage));
-                    openModal1();
-                    setDataForm("");
-                    setIsEdit(false);
                 }
-            } else {
-                showAlert("error", "Thất bại");
-            }
 
-            setIsFormDirty(false);
+                if (name === "") {
+                    showAlert("error", "Không được để trống tên người dùng");
+                    return;
+                }
+
+                // Kiểm tra username có ít nhất 6 kí tự và không chứa kí tự đặc biệt
+                const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
+                if (!usernameRegex.test(username)) {
+                    showAlert("error", "Username phải có ít nhất 6 kí tự và không chứa kí tự đặc biệt");
+                    return;
+                }
+
+                // Kiểm tra password có ít nhất 6 kí tự
+                if (password.length < 6) {
+                    showAlert("error", "Password phải có ít nhất 6 kí tự");
+                    return;
+                }
+
+                const phoneRegex = /^[0-9]{10}$/;
+                if (!phoneRegex.test(phoneNumber)) {
+                    showAlert("error", "Số điện thoại phải chứa đúng 10 số và chỉ chứa kí tự số");
+                    return;
+                }
+
+                // Kiểm tra định dạng email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showAlert("error", "Định dạng email không hợp lệ");
+                    return;
+                }
+
+                const resp = await dispatch(createUserListAsync(user));
+                console.log('check', resp);
+
+                if (resp.payload != undefined) {
+                    if (resp.payload.error) {
+                        showAlert("error", resp.payload.message);
+                    } else {
+                        showAlert("success", 'Thành công');
+                        dispatch(getUserListAsync(currentPage));
+                        openModal1();
+                        setDataForm("");
+                        setIsEdit(false);
+                    }
+                } else {
+                    showAlert("error", "Thất bại");
+                }
+
+                setIsFormDirty(false);
+            }
+        } catch (error) {
+            console.log("Error :: ", error);
+            setIsLoading(false);
+        } finally {
+            setIsLoading(false);
         }
     }
     const setDataForm = (item: any) => {
@@ -177,21 +189,31 @@ console.log('check log user', user);
             handlePageChange(currentPage)
         }
     }
+    const handleImageUpload = (files: any) => {
+        if (files && files.length > 0) {
+            const reader = new FileReader();
+            setFile(files[0]);
+            reader.onload = (e: any) => {
+                setImage(e.target.result);
+            };
+            reader.readAsDataURL(files[0]);
+        }
+    };
     const handleChangeFile = (event: any) => {
-        console.log("event ::" , event.target.files[0]);
-        
+        console.log("event ::", event.target.files[0]);
+
         if (event.target.files && event.target.files[0]) {
             const selectedImage = event.target.files[0];
             setFile(selectedImage);
             setImage(selectedImage);
         }
     }
-
+    const handleImageClear = () => {
+        setFile(null);
+        setImage("");
+    };
     const handleDeleteUser = async () => {
-
         await dispatch(deleteUserAsync(id));
-
-
         if (status == 'idle') {
             showAlert("success", "Xoá tài khoản thành công ");
             dispatch(getUserListAsync(currentPage));
@@ -201,6 +223,7 @@ console.log('check log user', user);
     }
     return (
         <>
+            {isLoading && <LoadingAdd />}
             <div className="container-fluid">
                 <div className="p-3" style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1.5px solid rgb(195 211 210)' }}>
                     <h3 className='m-0' style={{ height: '40px' }}>Danh sách nhân viên</h3>
@@ -316,19 +339,25 @@ console.log('check log user', user);
                 </ModalFooter>
             </Modal>
             <Modal size='lg' isOpen={modal1} toggle1={openModal1}>
-                <ModalHeader toggle1={openModal1}>{isEdit == false ? 'Thêm nhân viên mới' : 'Chỉnh sửa thông tin nhân viên'}</ModalHeader>
+                <ModalHeader toggle1={openModal1}>{!isEdit ? 'Thêm nhân viên mới' : 'Chỉnh sửa thông tin nhân viên'}</ModalHeader>
                 <ModalBody>
                     <form className="form-horizontal row d-flex justify-content-between" >
                         <div className='col-sm-5'>
-                            <div className="form-group row" style={{ display: 'flex', border: '1px solid gray', justifyContent: 'center', padding: '10px', borderRadius: '20px' }}>
-                                <img src={image ? image : '/img/user.png'} alt="" style={{ width: '200px', height: '200px', borderRadius: '20px' }} />
-                                <div className="col-sm-8">
+                            <div className="form-group row" >
+                                <div style={{ display: 'flex', border: '1px solid gray', justifyContent: 'center', padding: '10px', borderRadius: '20px' }}>
+                                    <img src={image ? image : '/img/user.png'} alt="Selected" style={{ width: '220px', height: '220px', borderRadius: '20px' }} />
+                                    <Button color="error" onClick={handleImageClear} style={{ color: "red", fontSize: 20, marginLeft: 10, position: 'absolute', top: 10, right: 10 }}>
+                                        X
+                                    </Button>
+                                </div>
+                                <div className="col-sm-10">
                                     <input
                                         className="form-control mt-2"
                                         type='file'
                                         id="image"
-                                        onChange={handleChangeFile}
+                                        onChange={(e) => handleImageUpload(e.target.files)}
                                     />
+
                                 </div>
                             </div>
                             <div className="form-group " style={{ display: 'flex', justifyContent: 'center' }}>

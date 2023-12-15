@@ -314,8 +314,14 @@ class SubTitleProduct extends StatelessWidget {
                   style: TextStyle(
                       color: (product.quantity != 0 && product.quantity != null) || (product.category == 1 && product.status == 1) ? Colors.white : Colors.red),
                 ),
+
               ],
             )),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: DropD,
+        )
+
       ],
     );
   }

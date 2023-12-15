@@ -79,7 +79,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
-
     tbBloc = BlocProvider.of<TableBloc>(context);
     prdBloc = BlocProvider.of<ProductBloc>(context);
     //init table
@@ -99,11 +98,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fillData();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
     if (checkDevice(widget.constraints.maxWidth, false, true, true)) {
       ZoomDrawer.of(context)!.close();
     }
@@ -432,6 +428,7 @@ class ToolbarHome extends StatelessWidget {
       }
       return text ?? "";
     }
+
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -475,9 +472,7 @@ class ToolbarHome extends StatelessWidget {
                   // ).animate().shimmer(),
                   SingleChildScrollView(
                     child: Text(
-                  "Xin chào, ${shouldTrimText()
-                            ? trimText(profile.name ?? "".split(' ').last ?? '', 12)
-                            : profile.name ?? "".split(' ').last ?? ""}",
+                        "Xin chào, ${shouldTrimText() ? trimText(profile.name ?? "".split(' ').last ?? '', 12) : profile.name ?? "".split(' ').last ?? ""}",
                         style: Theme.of(context)
                             .textTheme
                             .bodyLarge
@@ -487,11 +482,11 @@ class ToolbarHome extends StatelessWidget {
                     children: [
                       MyIconButtonBlur(
                         icon: Badge(
-                          label: const Text("9+",
-                              style: TextStyle(
-                                color: Colors.white,
-                              )),
-                          backgroundColor: Colors.redAccent,
+                          // label: const Text("9+",
+                          //     style: TextStyle(
+                          //       color: Colors.white,
+                          //     )),
+                          // backgroundColor: Colors.redAccent,
                           child: const Icon(Icons.chat, color: Colors.white)
                               .animate(
                                 onPlay: (controller) => controller.repeat(),
@@ -588,8 +583,6 @@ class _ToolbarProfileState extends State<ToolbarProfile> {
                       ),
                     ],
                   ),
-
-
                 ],
               ),
               FittedBox(
@@ -655,7 +648,6 @@ class _CurrentBookingDrawerState extends State<CurrentBookingDrawer>
         setState(() {});
       });
   }
-
 
   @override
   void initState() {

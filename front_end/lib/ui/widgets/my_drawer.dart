@@ -10,6 +10,7 @@ import 'package:restaurant_manager_app/ui/blocs/initial/initial_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/bill/bill_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/calendar/calendar_screen.dart';
+import 'package:restaurant_manager_app/ui/screens/chart/chart_screen.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
 import 'package:restaurant_manager_app/ui/screens/info/profile_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
@@ -238,7 +239,7 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                   Navigator.push(context,
                                                       MaterialPageRoute(
                                                     builder: (context) {
-                                                      return const BillScreen();
+                                                      return const ChartScreen();
                                                     },
                                                   ));
                                                   break;

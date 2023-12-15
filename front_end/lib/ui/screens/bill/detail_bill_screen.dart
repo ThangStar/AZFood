@@ -370,31 +370,31 @@ class HeaderBill extends StatelessWidget {
           topRight: Radius.circular(20.0),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 15),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 26, vertical: 15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('29-8-2023',
+            Text('29-8-2023',
                 style: TextStyle(
                     fontSize: 20,
                     color: Colors.white,
                     fontWeight: FontWeight.bold)),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.3),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-              ),
-              child: const Text(
-                'Chi tiết món',
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-            )
+            // ElevatedButton(
+            //   onPressed: () {},
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Colors.white.withOpacity(0.3),
+            //     padding:
+            //         const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+            //   ),
+            //   child: const Text(
+            //     'Chi tiết món',
+            //     style: TextStyle(
+            //         fontSize: 16,
+            //         color: Colors.white,
+            //         fontWeight: FontWeight.bold),
+            //   ),
+            // )
           ],
         ),
       ),

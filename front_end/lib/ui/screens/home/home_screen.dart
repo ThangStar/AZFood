@@ -78,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
-
     tbBloc = BlocProvider.of<TableBloc>(context);
     prdBloc = BlocProvider.of<ProductBloc>(context);
     //init table
@@ -529,13 +528,10 @@ class _ToolbarProfileState extends State<ToolbarProfile> {
                       decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(12)),
-                      child: widget.profile.imgUrl != null
-                          ? Image.network(widget.profile.imgUrl ?? "",
-                              width: 23, height: 23, fit: BoxFit.cover)
-                          : Icon(
-                              Icons.person_4,
-                              color: Colors.white.withOpacity(0.8),
-                            )),
+                      child: Icon(
+                        Icons.person_4,
+                        color: Colors.white.withOpacity(0.8),
+                      )),
                   const SizedBox(
                     width: 8,
                   ),

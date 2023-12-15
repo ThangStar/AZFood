@@ -421,6 +421,7 @@ class _FormProfileState extends State<FormProfile> {
               const SizedBox(height: 20),
               Text(
                 profileBloc.state.profile?.name ?? "",
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontSize: 18.0 * checkDevice(size.width, 1.0, 1.2, 1.3),
                     color: colorScheme(context).scrim.withOpacity(0.8)),
@@ -627,6 +628,54 @@ class _FormProfileState extends State<FormProfile> {
                       const SizedBox(height: 20),
                       Row(
                         children: [
+                          ConstrainedBox(
+                              constraints:
+                                  const BoxConstraints(maxWidth: 350.0),
+                              child: Container(
+                                height: 45.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(15.0)),
+                                    gradient: const LinearGradient(colors: [
+                                      Color.fromRGBO(109, 92, 255, 1),
+                                      Color.fromRGBO(160, 91, 255, 1)
+                                    ]),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            const Color.fromARGB(255, 0, 0, 0)
+                                                .withOpacity(0.2),
+                                        spreadRadius: 4,
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 5),
+                                      )
+                                    ]),
+                                child: ElevatedButton(
+                                  onPressed: () {},
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    disabledBackgroundColor:
+                                        colorScheme(context).outline,
+                                    disabledForegroundColor:
+                                        colorScheme(context).outline,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'ĐỔI MẬT KHẨU',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                            fontSize: 14,
+                                            color: colorScheme(context)
+                                                .background),
+                                  ),
+                                ),
+                              )),
                           const Spacer(),
                           ConstrainedBox(
                               constraints:

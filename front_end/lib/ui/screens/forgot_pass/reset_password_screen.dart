@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/auth/login_screen.dart';
+import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 
 import '../../blocs/forgot_pass/forgot_password_bloc.dart';
 import '../../theme/color_schemes.dart';
@@ -56,24 +57,31 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
   }
 
+  bool isEnablePassword = false;
+  bool isEnableConfirmPassword = false;
+  bool isPassword = false;
+  bool isConfirmPassword = false;
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return BlocListener<ForgotPasswordBloc, ForgotPasswordState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is ResetPasswordSuccess) {
-          showMySnackBar(context, state.response['message'].toString(),
-              TypeSnackBar.success);
+          myAlert(context, checkDeviceType(size.width), AlertType.success,
+                "Thông báo", state.response['message'].toString())
+            .show(context);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         } else if (state is ResetPasswordFailed) {
-          showMySnackBar(context, state.response['message'].toString(),
-              TypeSnackBar.error);
-        }else if (state is ResetPasswordErorr) {
-          showMySnackBar(context, 'Đã xảy ra lỗi, vui lòng thử lại',
-              TypeSnackBar.error);
+          myAlert(context, checkDeviceType(size.width), AlertType.error,
+                "Thông báo", state.response['message'].toString())
+            .show(context);
+        } else if (state is ResetPasswordErorr) {
+          myAlert(context, checkDeviceType(size.width), AlertType.error,
+                "Thông báo", 'Đã xảy ra lỗi, vui lòng thử lại')
+            .show(context);
         }
       },
       child: Scaffold(
@@ -176,84 +184,83 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                                 const Padding(
                                                   padding: EdgeInsets.only(
                                                       bottom: 4),
-                                                  child:
-                                                      Text("Đặt lại mật khẩu"),
+                                                  child: Text("Mật khẩu mới"),
                                                 ),
                                                 MyTextField(
-                                                  validator: (p0) {
-                                                    bool isEmail = RegExp(
-                                                        r"^[a-zA-Z0-9]{5,12}$")
-                                                        .hasMatch(p0!);
-                                                    return isEmail
-                                                        ? null
-                                                        : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
+                                                  onChanged: (p0) {
+                                                    setState(() {
+                                                      isPassword;
+                                                      isEnablePassword = true;
+                                                      print(
+                                                          "${isEnablePassword}");
+                                                    });
                                                   },
-                                                  isShowPass: isShowPass,
+                                                  validator: (value) {
+                                                    isPassword = RegExp(
+                                                            r"^[a-zA-Z0-9]{5,12}$")
+                                                        .hasMatch(value!);
+                                                    return isPassword
+                                                        ? null
+                                                        : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự.";
+                                                  },
                                                   hintText:
                                                       "Nhập mật khẩu mới của bạn",
                                                   icon: const Icon(
                                                       Icons.password),
-                                                  label: "Password",
                                                   controller:
                                                       resetPassController,
                                                 ),
-                                                const SizedBox(
-                                                  height: 10,
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10.0, bottom: 4.0),
+                                                  child:
+                                                      Text("Nhập lại mật khẩu"),
                                                 ),
                                                 MyTextField(
-                                                  validator: (p0) {
-                                                    bool isEmail = RegExp(
-                                                        r"^[a-zA-Z0-9]{5,12}$")
-                                                        .hasMatch(p0!);
-                                                    return isEmail
-                                                        ? null
-                                                        : "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự";
+                                                  onChanged: (p0) {
+                                                    setState(() {
+                                                      isConfirmPassword;
+                                                      isEnableConfirmPassword =
+                                                          true;
+                                                    });
                                                   },
-                                                  isShowPass: isShowPass,
+                                                  validator: (value) {
+                                                    isConfirmPassword = RegExp(
+                                                            r"^[a-zA-Z0-9]{5,12}$")
+                                                        .hasMatch(value!);
+                                                    if (!isConfirmPassword) {
+                                                      return "Mật khẩu không chứa kí tự đặc biệt, 5-12 kí tự.";
+                                                    } else if (value !=
+                                                        resetPassController
+                                                            .text) {
+                                                      return "Mật khẩu không khớp với mật khẩu trên.";
+                                                    } else {
+                                                      return null;
+                                                    }
+                                                  },
                                                   hintText:
                                                       "Xác nhận mật khẩu của bạn",
                                                   icon: const Icon(
                                                       Icons.password),
-                                                  label: "Verify Password",
                                                   controller:
                                                       verifyPassController,
                                                 ),
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    _onChangeShowPass();
-                                                  },
-                                                  child: const Text(
-                                                    'Hiện mật khẩu',
-                                                    style: TextStyle(color: Colors.blue),
-                                                  ),
-                                                )
                                               ],
                                             ),
                                             const SizedBox(
-                                              height: 8,
-                                            ),
-                                            const SizedBox(
-                                              height: 18,
+                                              height: 26,
                                             ),
                                             Hero(
                                                 tag: "login_hero",
                                                 child: MyButton(
                                                   value: "Đổi mật khẩu",
+                                                  disable: !(isEnablePassword && isEnableConfirmPassword && isPassword && isConfirmPassword && (resetPassController.text == verifyPassController.text)),
                                                   onPressed: () {
-                                                    if(resetPassController.text == verifyPassController.text){
-                                                      BlocProvider.of<
-                                                          ForgotPasswordBloc>(
-                                                          context)
-                                                          .add(
-                                                        ResetPasswordEvent(
-                                                            password:
-                                                            resetPassController
-                                                                .text,),
-                                                      );
-                                                    }else{
-                                                      showMySnackBar(context, 'Mật khẩu không trùng khớp',
-                                                          TypeSnackBar.error);
-                                                    }
+                                                    BlocProvider.of<ForgotPasswordBloc>(context).add(
+                                                      ResetPasswordEvent(
+                                                        password:resetPassController.text
+                                                      ),
+                                                    );
                                                   },
                                                 )),
                                             const SizedBox(

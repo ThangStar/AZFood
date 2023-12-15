@@ -311,7 +311,7 @@ class CalendarItemDay extends StatelessWidget {
                           Ionicons.checkmark_circle,
                           color: Colors.greenAccent,
                         ),
-                        if(MediaQuery.of(context).size.width > mobileWidth)...[
+                        if(MediaQuery.of(context).size.width > 750)...[
                           const SizedBox(height: 10.0),
                           const Text(
                           "Đã điểm danh",

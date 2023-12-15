@@ -585,6 +585,25 @@ exports.addPriceProduct = async (req, res) => {
     if (isAdmin) {
         try {
             console.log("body :: ", body);
+            let sizeValue = 0;
+            if (body.sizeValue == 0) {
+                const sizeQueryRaw = "INSERT INTO product_size (size_name) VALUES (?);";
+                try {
+                    const sizeResultRaw = await sequelize.query(sizeQueryRaw, {
+                        raw: true,
+                        logging: false,
+                        replacements: [body.size],
+                        type: QueryTypes.INSERT
+                    });
+                    sizeValue = sizeResultRaw[0];
+                } catch (error) {
+                    console.log("error", error);
+                }
+
+
+
+            }
+
             const checkExitsQuery = "SELECT * FROM product_price WHERE product_id = ? AND products_size = ?;";
             const checkExits = await sequelize.query(checkExitsQuery, {
                 raw: true,
@@ -608,12 +627,14 @@ exports.addPriceProduct = async (req, res) => {
                 const khoResultRaw = await sequelize.query(khoQueryRaw, {
                     raw: true,
                     logging: false,
-                    replacements: [body.productID, body.sizeValue, body.prodPrice],
+                    replacements: [body.productID, sizeValue ? sizeValue : body.sizeValue, body.prodPrice],
                     type: QueryTypes.INSERT
                 });
             }
 
-            return res.status(200).json({ message: 'Successs' });
+            return res.status(200).json({
+                message: 'Successs'
+            });
         } catch (error) {
             res.status(500).json({ message: 'Internal server error', error });
         }

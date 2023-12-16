@@ -2,6 +2,7 @@
 'use client'
 import { useSocket } from "@/socket/io.init"
 import { useEffect, useRef, useState } from "react"
+import { convertUTCToDDMMYYYYHHmm } from "../utils/formatDate"
 
 const Messenger = () => {
     const [showChat, setShowChat] = useState(false)
@@ -85,7 +86,7 @@ const Messenger = () => {
                     <i className="fas fa-comment-dots"></i>
                 </button>
                 :
-                <div className="shadow bg-white d-flex flex-column" style={{ width: 400, maxHeight: 600 }}>
+                <div className="shadow bg-white d-flex flex-column" style={{ width: 400, height: 600 }}>
                     <div className="px-3 py-2 d-flex justify-content-between align-items-center border-bottom">
                         <div className="h4">Tin nhắn ...</div>
                         <button className="btn" onClick={() => onToggleChat()}>
@@ -124,7 +125,7 @@ const ItemMessage = (props: any) => {
         <div className="row justify-content-between pb-2">
             {!isSender ?
                 <>
-                    <div className="col-9" title={item?.dateTime}>
+                    <div className="col-9" title={convertUTCToDDMMYYYYHHmm(item?.dateTime)}>
                         <div style={{ fontSize: 12 }}>{item?.profile.name}</div>
                         <div className="px-2 py-1 bg-secondary rounded-3 float-start">
                             {item?.message}
@@ -135,7 +136,7 @@ const ItemMessage = (props: any) => {
                 :
                 <>
                     <div className="col-3"></div>
-                    <div className="col-9" title={item?.dateTime}>
+                    <div className="col-9" title={convertUTCToDDMMYYYYHHmm(item?.dateTime)}>
                         <div className="px-2 py-1 bg-primary text-white rounded-3 float-end">
                             {item?.message}
                         </div>

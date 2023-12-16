@@ -14,7 +14,7 @@ class FlowerPainter extends CustomPainter {
     // canvas.drawImage(flower, Offset.zero, Paint());
     // canvas.drawImageNine(flower, Rect.zero, Rect.fromLTRB(0, 0, 300, 300), Paint());
     final paint = Paint()..color = Colors.white.withOpacity(0.3);
-    canvas.drawCircle(const Offset(1, 100), 10, paint);
+    // canvas.drawCircle(const Offset(1, 100), 10, paint);
   }
 
   @override

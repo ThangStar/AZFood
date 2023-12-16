@@ -4,7 +4,7 @@ import { showAlert } from '@/component/utils/alert/alert';
 import { formatDateTime } from '@/component/utils/formatDate';
 import formatMoney from '@/component/utils/formatMoney';
 import { getCategoryList, getCategoryListAsync, getItemtList, getMenuListAsync, getMenuItemListAsync, getMenuItemtList, getFilterCategoryListAsync, getSearchMenuListAsync, getPriceList, getPriceForSize } from '@/redux-store/menuItem-reducer/menuItemSlice';
-import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync, deleteAllOrderAsync } from '@/redux-store/order-reducer/orderSlice';
+import { createOrderAsync, incrementProductAsync, deleteOrderAsync, getOrder, getOrderInTableListAsync, getStatus, payBillAsync, updateOrderAsync, deleteAllOrderAsync, updatePriceOrderAsync } from '@/redux-store/order-reducer/orderSlice';
 import { AppDispatch } from '@/redux-store/store';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -23,6 +23,7 @@ export default function TableDetails() {
     const [modal, setModal] = useState(false);
     const [modalDelAll, setmodalDelAll] = useState(false);
     const [modal2, setModal2] = useState(false);
+    const [modal3, setModal3] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
 
     const dispatch: AppDispatch = useDispatch();
@@ -34,6 +35,7 @@ export default function TableDetails() {
     const dvTinhList: any = useSelector(getDVTList);
 
     const [listPriceProd, setListPriceProd] = useState<any[]>([]);
+    const [listPriceOfProd, setListPriceOfProd] = useState([]);
     const [listItem, setlistItem] = useState<any[]>([]);
     const [order, setOrder] = useState<any[]>([]);
     const [itemMenus, setItemMenus] = useState<any[]>([]);
@@ -42,14 +44,15 @@ export default function TableDetails() {
     const [listDVTList, setListDVTList] = useState([]);
     const [searchName, setSearchName] = useState("")
 
-    const [quantityOrder, setQuantityOrder] = useState<number>();
-    const [plusQuantityOrder, setPlusQuantityOrder] = useState<number>(1);
-    const [minusQuantityOrder, setMinusQuantityOrder] = useState<number>(-1);
-    const [productID, setProducID] = useState();
+    const [priceProduct, setPriceProduct] = useState<number>(0);
+    const [currentProductId, setCurrentProductId] = useState(null);
     const [userID, setUserID] = useState();
     const [orderID, setOrderID] = useState();
     const [idItemDelete, setIdDelete] = useState();
     const [payMethod, setPayMethod] = useState<number>(1)
+
+    const [showAddButton, setShowAddButton] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,21 +79,29 @@ export default function TableDetails() {
     const toggle = () => setModal(!modal);
     const toggleDelAll = () => setmodalDelAll(!modalDelAll);
     const openModal = (data: any = null) => {
-
         if (data != null) {
             setIdDelete(data);
         }
         toggle();
     }
 
-    const openModalDel = () => {
-        toggleDelAll();
-    }
-
+    const openModalDel = () => { toggleDelAll(); }
     const toggle2 = () => setModal2(!modal2);
-
-    const openModal2 = () => {
-        toggle2();
+    const openModal2 = () => { toggle2(); }
+    const toggle3 = () => setModal3(!modal3);
+    const openModal3 = (item: any) => {
+        if (item.price !== 0) {
+            return;
+        }
+        setOrderID(item.orderID);
+        setCurrentProductId(item.productID);
+        const price: any = setPriceForProd(item.productID);
+        setListPriceOfProd(price);
+        toggle3();
+    }
+    const setPriceForProd = (prodId: number) => {
+        const filteredProducts = listPriceProd.filter((item: any) => item.product_id == prodId);
+        return filteredProducts;
     }
 
     useEffect(() => {
@@ -104,8 +115,6 @@ export default function TableDetails() {
         }
     }, [userID]);
 
-    const category = parseInt(itemCategory);
-
     useEffect(() => {
         const fetchData = async () => {
             await dispatch(getOrderInTableListAsync(tableID));
@@ -118,6 +127,7 @@ export default function TableDetails() {
 
         if (orders && Array.isArray(orders.orders)) {
             setOrder(orders.orders);
+
         }
         if (menuItems && menuItems.data) {
             setItemMenus(menuItems.data);
@@ -133,26 +143,33 @@ export default function TableDetails() {
     const caculatorTotal = () => {
         let totalAll = 0;
         order.forEach(item => {
-            totalAll += item.price * item.quantity
+            const price = item.price_produc ? item.price_produc : item.price
+            totalAll += price * item.quantity
         });
         return totalAll;
     }
 
+
     const handlePlusOrder = async (item: any) => {
-        var productID = 0;
+        var productID;
+        var price;
+        const orderID = item.orderID;
         if (item.productID !== undefined) {
             productID = item.productID;
+            price = item.price_produc
         } else {
             productID = item.id;
+            price = item.price
         }
+
         const data = {
             userID: userID,
             tableID: tableID,
             productID: productID,
             quantity: 1,
-            category: item.category
+            category: item.category,
+            price: price ? price : item.price
         }
-
         if (isUpdate) {
             await dispatch(updateOrderAsync({ data, orderID }));
             if (statusRD == 'idle') {
@@ -160,7 +177,7 @@ export default function TableDetails() {
             }
         } else {
             const resp = await dispatch(createOrderAsync(data));
-            console.log("resp : ", resp);
+
             if (resp.payload === undefined) {
                 showAlert('warning', 'số lượng trong kho đã hết');
             }
@@ -170,37 +187,41 @@ export default function TableDetails() {
         }
         dispatch(getOrderInTableListAsync(tableID));
     }
+    const handleUpdatepriceItem = async () => {
+        if (priceProduct != null) {
+            const data = {
+                id: orderID,
+                subTotal: priceProduct
+            }
+            await dispatch(updatePriceOrderAsync({ data }));
+            const updatedOrders = order.map((item) => {
+                if (item.orderID === orderID) {
+                    return { ...item, price: priceProduct };
+                }
+                return item;
+            });
+
+            setOrder(updatedOrders);
+            dispatch(getOrderInTableListAsync(tableID));
+        }
+        toggle3();
+    }
 
     const handleMinusOrder = async (item: any) => {
 
-        setOrderID(item.orderID);
+        if (item.quantity <= 1) {
+            await dispatch(deleteOrderAsync(item.orderID));
+            dispatch(getOrderInTableListAsync(tableID));
+            return;
+        }
+        const orderID = item.orderID;
         const data = {
             userID: userID,
             tableID: tableID,
             productID: item.productID,
             quantity: item.quantity - 1,
-
         }
-
-
-        // const resp = await dispatch(updateOrderAsync({ data, orderID }));
-        // console.log('resp', resp);
-
-        // if (isUpdate) {
         const resp = await dispatch(updateOrderAsync({ data, orderID }));
-        console.log('resp', resp);
-        //     if (statusRD == 'idle') {
-        //         toggle1();
-        //     }
-        // } else {
-        //     const resp = await dispatch(createOrderAsync(data));
-        //     if (resp.payload === undefined) {
-        //         showAlert('warning', 'số lượng trong kho đã hết');
-        //     }
-        //     if (statusRD == 'idle') {
-        //         toggle1();
-        //     }
-        // }
         dispatch(getOrderInTableListAsync(tableID));
     }
 
@@ -211,6 +232,9 @@ export default function TableDetails() {
             dispatch(getOrderInTableListAsync(tableID));
 
         }
+
+
+        toggle();
     }
 
     const deleteAllItem = async () => {
@@ -294,7 +318,7 @@ export default function TableDetails() {
                             <div
                                 className="grid-item"
                                 key={id}
-                                style={{ backgroundImage: `url(${item && item.imgUrl ? item.imgUrl : ''})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
+                                style={{ backgroundImage: `url(${item && item.imgUrl ? item.imgUrl : '/img/dinner.png'})`, height: '150px', padding: '0px', display: 'flex', alignItems: 'end', borderRadius: "10px" }}
                                 onClick={() => {
                                     handlePlusOrder(item);
                                 }}
@@ -332,7 +356,6 @@ export default function TableDetails() {
                                 </button>
                             ) : (null)}
                         </div>
-
                     </div>
 
                 </div>
@@ -354,15 +377,19 @@ export default function TableDetails() {
                                     order.map((item, index, id) => (
                                         <tr key={index}>
                                             <td style={{ color: "green", fontSize: 20 }}>
-                                                <h6>{item.productName} ({findTenDVT(item.dvt)})</h6>
+                                                <h6>{item.productName}
+                                                    ({findTenDVT(item.dvt)})
+                                                </h6>
                                             </td>
-                                            <td className="text-center">{formatMoney(item.price)}</td>
+                                            <td className="text-center" onClick={() => {
+                                                openModal3(item)
+                                            }}>{formatMoney(item.price_produc ? item.price_produc : item.price)} </td>
                                             <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                                 <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item)}>-</button>
                                                 {item.quantity}
                                                 <button className='btn btn-outline-dark' onClick={() => handlePlusOrder(item)}>+</button>
                                             </td>
-                                            <td className="text-center">{formatMoney((item.price * item.quantity))}</td>
+                                            <td className="text-center">{formatMoney((item.price_produc !== null ? item.price_produc * item.quantity : item.subTotal))}</td>
                                             <td className="project-actions text-left ">
                                                 <button className="btn btn-outline-danger" onClick={() => {
                                                     openModal(item.orderID)
@@ -445,7 +472,7 @@ export default function TableDetails() {
                     }}>
                         Xóa
                     </Button>
-                    <Button color="secondary" onClick={() => openModalDel()}>
+                    <Button color="secondary" onClick={() => { openModalDel() }}>
                         Hủy
                     </Button>
                 </ModalFooter>
@@ -466,6 +493,39 @@ export default function TableDetails() {
                         OK
                     </Button>
                     <Button color="secondary" onClick={() => openModal2()}>
+                        Hủy
+                    </Button>
+                </ModalFooter>
+            </Modal>
+
+            {/* quantity Product order */}
+            <Modal isOpen={modal3} toggle={openModal3}>
+                <ModalHeader toggle={openModal3}>{"Chọn phần ! "}</ModalHeader>
+                <ModalBody>
+                    <form className="form-horizontal">
+                        <div className="form-group row">
+                            <select
+                                className="form-control"
+                                id="price"
+                                value={priceProduct}
+                                onChange={(e) => {
+                                    setPriceProduct(Number(e.target.value));
+                                }}
+                            >
+                                <option value=" ">Chọn phần cho món ăn</option>
+                                {listPriceOfProd && listPriceOfProd.length > 0 ? listPriceOfProd.map((item: any, id: number) => (
+                                    <option value={item.product_price}>{`${item.SizeName} : ${item.product_price}`}</option>
+                                )) : ""}
+                            </select>
+                        </div>
+
+                    </form>
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="primary" onClick={handleUpdatepriceItem}>
+                        OK
+                    </Button>
+                    <Button color="secondary" onClick={() => toggle3()}>
                         Hủy
                     </Button>
                 </ModalFooter>

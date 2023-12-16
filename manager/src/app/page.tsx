@@ -4,23 +4,33 @@ import ReportMonth from '../component/reportMonth/report'
 import ReportDay from '../component/reportDay/report'
 import { useAppDispatch } from '@/redux-store/hooks';
 import { useSelector } from 'react-redux';
-import { getTopMenuList, getTopMenuListAsync } from '@/redux-store/topProduct-reducer/topProductSlice';
+import { getReportDayList, getReportDayListAsync, getTopMenuList, getTopMenuListAsync } from '@/redux-store/topProduct-reducer/topProductSlice';
 import formatMoney from '@/component/utils/formatMoney';
-
+import ReportUser from '@/component/reportUser/report';
+import ReportProduct from '@/component/reportProduct/report';
 
 export default function Home() {
   const dispatch = useAppDispatch()
   const topMenuList: any = useSelector(getTopMenuList)
+  const reportDayList: any = useSelector(getReportDayList)
 
   const [type, setType] = useState<'money' | 'menu' | 'user'>('money')
   const [optionsChart, setOptionsChart] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [currentMonth, setCurrentMonth] = useState<number>()
-
-  const [topMenus, setTopMenus] = useState<any[]>([]);
+  const [reportDays, setReportDays] = useState([]);
+  const [selectedDate, setSelectedDate] = useState('');
 
   useEffect(() => {
     dispatch(getTopMenuListAsync())
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    setSelectedDate(formattedDate);
+    dispatch(getReportDayListAsync({ day: day, month: month }))
   }, [])
 
   useEffect(() => {
@@ -28,6 +38,13 @@ export default function Home() {
     const getCurrentMonth = currentDate.getMonth() + 1;
     setCurrentMonth(getCurrentMonth);
   }, [currentMonth]);
+
+  useEffect(() => {
+    if (reportDayList && reportDayList.resultRaw) {
+      setReportDays(reportDayList.resultRaw)
+    }
+  }, [dispatch, reportDayList])
+
   const month = [
     {
       value: 1, name: 'Tháng 1'
@@ -35,6 +52,11 @@ export default function Home() {
     , { value: 7, name: 'Tháng 7' }, { value: 8, name: 'Tháng 8' }, { value: 9, name: 'Tháng 9' }, { value: 10, name: 'Tháng 10' }, { value: 11, name: 'Tháng 11' }, { value: 12, name: 'Tháng 12' }
   ]
   const years = [2021, 2022, 2023];
+
+  const handleReportDay = () => {
+    const [year, month, day] = selectedDate.split('-')
+    dispatch(getReportDayListAsync({ day: day, month: month }))
+  }
   return (
     <>
       <div>
@@ -53,7 +75,7 @@ export default function Home() {
           <li className="nav-item">
             <button className={`nav-link fs-3 p-3 ${type == 'user' ? 'active fw-medium ' : 'fw-lighter'}`}
               onClick={() => { setType('user') }}>
-              Nhân viên</button>
+              Trong ngày</button>
           </li>
         </ul>
       </div>
@@ -104,8 +126,11 @@ export default function Home() {
       {
         type == 'menu' &&
         <>
-          <div className='container mt-5'>
-            <div className="card card-body border-0 p-0 mx-3">
+          <div className='container mt-3'>
+            <div style={{ fontSize: 24, fontWeight: 'bold', marginLeft: '1%', color: 'ActiveBorder' }}>
+              Top 10 Sản phẩm bán chạy nhất
+            </div>
+            <div className="card card-body border-0 p-0 mx-3 mt-3">
               <table className="table table-striped projects">
                 <thead >
                   <tr >
@@ -164,9 +189,37 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
-            <div className="card-footer bg-transparent text-center">
-              <h3>Danh sách sản phẩm bán nhiều nhất</h3>
+          </div>
+        </>
+      }
+
+      {
+        type == 'user' &&
+        <>
+          <div className="container overflow-hidden mt-2">
+            <div className="card-header border-0">
+              <div className="float-right">
+                <div className="input-group">
+                  <input className="form-control" type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)} />
+                  <button className="btn btn-primary"
+                    onClick={handleReportDay}>
+                    Xác nhận
+                  </button>
+                </div>
+              </div>
             </div>
+            {reportDays && reportDays.length > 0 ?
+              <div className="row g-3">
+                <div className="col-sm-6">
+                  <ReportUser originalList={reportDays} />
+                </div>
+                <div className="col-sm-6">
+                  <ReportProduct originalList={reportDays} />
+                </div>
+              </div>
+              : "Không có dữ liệu"}
           </div>
         </>
       }

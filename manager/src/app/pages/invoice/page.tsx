@@ -99,8 +99,11 @@ const ListInvoice = () => {
     return (
         <>
             <div className="container-fluid">
-                <div className="p-3" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
+                <div className="p-3 d-flex justify-content-between" style={{ borderBottom: '1.5px solid rgb(195 211 210)' }}>
                     <h3 className='m-0' style={{ height: '40px' }}>Danh sách hóa đơn</h3>
+                    <button className="btn btn-primary" onClick={() => openModal()}>
+                        <i className="fas fa-filter"></i>
+                    </button>
                 </div>
             </div>
 

@@ -15,10 +15,10 @@ exports.createProduct = async (req, res) => {
     const isAdmin = await Auth.checkAdmin(req);
     try {
         if (isAdmin) {
+            console.log(" body ", body);
             if (body.id) {
-
                 if (req.file) {
-                    console.log(" body ", body);
+
                     try {
                         const image = req.file;
                         const imageFileName = `${Date.now()}_${image.originalname}`;
@@ -50,12 +50,11 @@ exports.createProduct = async (req, res) => {
                     try {
                         console.log("Update");
                         console.log("body", body);
-                        const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, status = CASE WHEN category = 1 THEN 1 ELSE null END, dvtID = ? WHERE id = ?";
+                        const queryRaw = "UPDATE products SET name = ?, price = ?, category = ?, dvtID = ? WHERE id = ?";
                         const [rowCount] = await sequelize.query(queryRaw, {
                             replacements: [body.name, body.price, body.category, body.dvtID, body.id],
                             type: QueryTypes.UPDATE
                         });
-                        console.log("Số hàng bị ảnh hưởng: ", rowCount);
                         if (rowCount > 0) {
                             res.status(200).json({ message: 'Sản phẩm được cập nhật thành công' });
                         } else {
@@ -82,7 +81,8 @@ exports.createProduct = async (req, res) => {
                         const imgUrl = await getDownloadURL(snapshot.ref);
                         console.log(imgUrl);
                         // Tiếp tục xử lý và lưu dữ liệu vào MySQL
-                        const queryRaw = "INSERT INTO products (name, price, category, status = CASE WHEN category = 1 THEN 1 ELSE null END, dvtID, imgUrl) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END, ?, ?);";
+                        const queryRaw = "INSERT INTO products (name, price, category, dvtID, imgUrl) VALUES (?, ?, ?, ?, ?);";
+
                         const resultRaw = await sequelize.query(queryRaw, {
                             raw: true,
                             logging: false,
@@ -98,11 +98,11 @@ exports.createProduct = async (req, res) => {
                 }
                 else {
                     console.log("khong  có file");
-                    const queryRaw = "INSERT INTO products (name, price, category, status , dvtID) VALUES (?, ?, ?, CASE WHEN ? = 1 THEN 1 ELSE null END ,?);";
+                    const queryRaw = "INSERT INTO products (name, price, category,  dvtID) VALUES (?, ?, ?,?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.name, body.price, body.category, body.status, body.dvtID],
+                        replacements: [body.name, body.price, body.category, body.dvtID],
                         type: QueryTypes.INSERT
                     });
                     res.status(200).json({ message: 'products created successfully' });
@@ -172,6 +172,22 @@ exports.createProduct = async (req, res) => {
 
 
 
+}
+exports.getSizePrice = async (req, res) => {
+    const queryRaw = "SELECT * FROM product_size as ps JOIN product_price as pr ON ps.id = pr.products_size";
+    try {
+        const resultRaw = await sequelize.query(queryRaw, {
+            raw: true,
+            logging: false,
+            replacements: [],
+            type: QueryTypes.SELECT
+        });
+        res.send({ resultRaw })
+        res.status(200);
+    } catch (error) {
+        res.status(500);
+        res.send(error)
+    }
 }
 exports.updateStatus = async (req, res) => {
     try {
@@ -519,6 +535,7 @@ exports.getPriceProduct = async (req, res) => {
     }
 
     const queryRaw = `SELECT
+            p.id,
             p.product_id,
             p.products_size,
             p.product_price,
@@ -541,5 +558,140 @@ exports.getPriceProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
         console.log("error", error);
+    }
+}
+
+exports.deletePriceProduct = async (req, res) => {
+    const checkAuth = Auth.checkAuth(req);
+    if (!checkAuth) {
+        return res.status(401).send('User is not admin');
+    }
+    const body = req.body;
+    const queryRaw = "DELETE FROM product_price WHERE id = ? ";
+    try {
+        const resultRaw = await sequelize.query(queryRaw, {
+            raw: true,
+            logging: false,
+            replacements: [body.id],
+            type: QueryTypes.DELETE
+        });
+        res.send({})
+        res.status(200);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+
+}
+exports.getProductSize = async (req, res) => {
+    try {
+        const querySize = 'SELECT * FROM product_size'
+        const response = await sequelize.query(querySize, {
+            raw: true, logging: false, replacements: [],
+            type: QueryTypes.SELECT
+        });
+        return res.status(200).json({ data: response });
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error', error });
+    }
+}
+exports.addPriceProduct = async (req, res) => {
+    const body = req.body;
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        try {
+            console.log("body :: ", body);
+            let sizeValue = 0;
+            if (body.sizeValue == 0) {
+                const sizeQueryRaw = "INSERT INTO product_size (size_name) VALUES (?);";
+                try {
+                    const sizeResultRaw = await sequelize.query(sizeQueryRaw, {
+                        raw: true,
+                        logging: false,
+                        replacements: [body.size],
+                        type: QueryTypes.INSERT
+                    });
+                    sizeValue = sizeResultRaw[0];
+                } catch (error) {
+                    console.log("error", error);
+                }
+
+
+
+            }
+
+            const checkExitsQuery = "SELECT * FROM product_price WHERE product_id = ? AND products_size = ?;";
+            const checkExits = await sequelize.query(checkExitsQuery, {
+                raw: true,
+                logging: false,
+                replacements: [body.productID, body.sizeValue],
+                type: QueryTypes.SELECT
+            });
+
+            if (checkExits.length > 0) {
+                return res.status(409).json({ message: 'conflig data' });
+
+            } else {
+                const querySize = 'SELECT * FROM product_size'
+                const checkExits = await sequelize.query(querySize, {
+                    raw: true, logging: false, replacements: [],
+                    type: QueryTypes.SELECT
+                });
+                console.log(" checkExits", checkExits);
+                const khoQueryRaw = "INSERT INTO product_price (product_id, products_size , product_price) VALUES (?,?, ?);";
+
+                const khoResultRaw = await sequelize.query(khoQueryRaw, {
+                    raw: true,
+                    logging: false,
+                    replacements: [body.productID, sizeValue ? sizeValue : body.sizeValue, body.prodPrice],
+                    type: QueryTypes.INSERT
+                });
+            }
+
+            return res.status(200).json({
+                message: 'Successs'
+            });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error', error });
+        }
+    } else {
+        res.status(401).send('member is not admin');
+    }
+};
+
+exports.updatePriceProduct = async (req, res) => {
+    const body = req.body;
+    const isAdmin = await Auth.checkAdmin(req);
+    if (isAdmin) {
+        try {
+            console.log("body :: ", body);
+            const checkExitsQuery = "SELECT * FROM product_price WHERE product_id = ? AND products_size = ?;";
+            const checkExits = await sequelize.query(checkExitsQuery, {
+                raw: true,
+                logging: false,
+                replacements: [body.productID, body.sizeValue],
+                type: QueryTypes.SELECT
+            });
+            console.log("checkExits ", checkExits);
+            if (checkExits.length > 0 && checkExits[0].product_price === body.prodPrice) {
+                return res.status(409).json({ message: 'conflig data' });
+
+            } else {
+                const khoQueryRaw = "UPDATE product_price SET product_id=?, products_size=? , product_price=? WHERE id = ?;";
+
+                const khoResultRaw = await sequelize.query(khoQueryRaw, {
+                    raw: true,
+                    logging: false,
+                    replacements: [body.productID, body.sizeValue, body.prodPrice, body.id],
+                    type: QueryTypes.UPDATE
+                });
+            }
+
+            return res.status(200).json({ message: 'Successs' });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error', error });
+        }
+    } else {
+        res.status(401).send('member is not admin');
     }
 }

@@ -8,11 +8,15 @@ const formatDate = (date: string) => {
     return formatDateWithPattern(date, 'dd/MM/yyyy');
 };
 
-const formatDateWithPattern = (date: string, pattern: string) => {
+const formatDateWithPattern = (dateString: string, pattern: string) => {
     const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
 
     try {
-        const formattedDate = format(new Date(date), pattern, { timeZone: vietnamTimeZone });
+        const date = new Date(dateString);
+        // Trừ đi 7 giờ từ đối tượng Date
+        date.setHours(date.getHours() - 7);
+        // Định dạng ngày và giờ với múi giờ Việt Nam
+        const formattedDate = format(date, pattern, { timeZone: vietnamTimeZone });
         return formattedDate;
     } catch (error) {
         console.error('Error formatting date:', error);

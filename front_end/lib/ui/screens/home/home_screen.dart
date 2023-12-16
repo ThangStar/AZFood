@@ -54,6 +54,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   // List<String> filterStatus = ["Tất cả", "Hoạt động", "Bận", "Chờ"];
 
   List<FilterItem> filterStatus = [
@@ -282,6 +283,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                             "Không thể order bàn đang bận")
                                         .show(context);
                                   } else {
+                                    print("GETTTTTTTTT}");
                                     prdBloc.add(const GetListProductStatusEvent(
                                         status: ProductStatus.loading));
                                     io.emit('listProductByIdTable',
@@ -414,6 +416,19 @@ class ToolbarHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool shouldTrimText() {
+      // Kiểm tra kích thước màn hình và trả về true nếu nhỏ hơn giới hạn
+      double screenWidth = MediaQuery.of(context).size.width;
+      return screenWidth < 375;
+    }
+
+    String trimText(String text, int maxLength) {
+      if (text != null && text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+      }
+      return text ?? "";
+    }
+
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -448,20 +463,30 @@ class ToolbarHome extends StatelessWidget {
                         ZoomDrawer.of(context)!.open();
                       },
                     ),
-                  Text("Xin chào, ${profile.name ?? "".split(' ').last}",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(color: Colors.white)),
+                  // Text(
+                  //   shouldTrimText()
+                  //       ? trimText(widget.profile.name ?? '', 15)
+                  //       : widget.profile.name ?? "",
+                  //   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  //       fontWeight: FontWeight.bold, color: Colors.white),
+                  // ).animate().shimmer(),
+                  SingleChildScrollView(
+                    child: Text(
+                        "Xin chào, ${shouldTrimText() ? trimText(profile.name ?? "".split(' ').last ?? '', 12) : profile.name ?? "".split(' ').last ?? ""}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(color: Colors.white)),
+                  ),
                   Row(
                     children: [
                       MyIconButtonBlur(
                         icon: Badge(
-                          label: const Text("9+",
-                              style: TextStyle(
-                                color: Colors.white,
-                              )),
-                          backgroundColor: Colors.redAccent,
+                          // label: const Text("9+",
+                          //     style: TextStyle(
+                          //       color: Colors.white,
+                          //     )),
+                          // backgroundColor: Colors.redAccent,
                           child: const Icon(Icons.chat, color: Colors.white)
                               .animate(
                                 onPlay: (controller) => controller.repeat(),
@@ -539,12 +564,16 @@ class _ToolbarProfileState extends State<ToolbarProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.profile.name ?? "",
+                        shouldTrimText()
+                            ? trimText(widget.profile.name ?? '', 15)
+                            : widget.profile.name ?? "",
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold, color: Colors.white),
                       ).animate().shimmer(),
                       Text(
-                        widget.profile.email ?? "",
+                        shouldTrimText()
+                            ? trimText(widget.profile.email ?? '', 15)
+                            : widget.profile.email ?? "",
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                         ),
@@ -574,6 +603,19 @@ class _ToolbarProfileState extends State<ToolbarProfile> {
         ),
       ),
     ).animate().slideX();
+  }
+
+  bool shouldTrimText() {
+    // Kiểm tra kích thước màn hình và trả về true nếu nhỏ hơn giới hạn
+    double screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth < 375;
+  }
+
+  String trimText(String text, int maxLength) {
+    if (text != null && text.length > maxLength) {
+      return text.substring(0, maxLength) + '...';
+    }
+    return text ?? "";
   }
 }
 

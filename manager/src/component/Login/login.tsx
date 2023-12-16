@@ -99,11 +99,15 @@ const Login = () => {
     }
 
     const handleChangePassword = () => {
-        const data = {
-            email: resultSendOtp?.email,
-            password: newPass
+        if (newPass.trim().length < 6) {
+            showAlert('error', 'Password phải trên 6 ký tự')
+        } else {
+            const data = {
+                email: resultSendOtp?.email,
+                password: newPass
+            }
+            dispatch(resetPasswordAsync(data))
         }
-        dispatch(resetPasswordAsync(data))
     }
 
     return (

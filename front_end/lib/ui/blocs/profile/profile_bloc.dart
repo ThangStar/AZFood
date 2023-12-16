@@ -56,13 +56,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   FutureOr<void> _getProfileEvent(GetProfileEvent event, Emitter<ProfileState> emit) async {
+    emit(GetProfileLoading());
      try {
+      print("ok");
       Object result = await ProfileApi.getProfile(event.id);
       if (result is Success) {
         Profile profile = Profile.fromJson(jsonDecode(result.response.toString()));
-        emit(state.copyWith(
-          profile: profile
-        ));
+        emit(state.copyWith(profile: profile));
       } else if (result is Failure) {
         print("failure");
       }

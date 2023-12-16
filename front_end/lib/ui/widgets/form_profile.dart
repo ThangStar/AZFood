@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
 import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
+import 'package:restaurant_manager_app/ui/screens/info/change_password_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/size_config.dart';
@@ -15,7 +16,9 @@ import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 class FormProfile extends StatefulWidget {
   const FormProfile({
     super.key,
+    required this.profile,
   });
+  final Profile? profile;
  
 
   @override
@@ -23,8 +26,6 @@ class FormProfile extends StatefulWidget {
 }
 
 class _FormProfileState extends State<FormProfile> {
-  Profile? profile;
-  late ProfileBloc profileBloc;
 
   final controllerEmail = TextEditingController(text: "");
   final controllerPhone = TextEditingController(text: "");
@@ -36,14 +37,12 @@ class _FormProfileState extends State<FormProfile> {
 
   @override
   void initState() {
-    profileBloc = BlocProvider.of<ProfileBloc>(context);
-    print("profileBlocprofileBlocvprofileBloc ${profileBloc.state.profile}");
-    controllerEmail.text = profileBloc.state.profile?.email ?? "";
-    controllerPhone.text = profileBloc.state.profile?.phoneNumber ?? "";
-  
-    // if ((widget.profile?.birtDay ?? "") != "") {
-    //   controllerBirth.text = widget.profile?.birtDay ?? "";
-    // }
+    print("profileBlocprofileBlocvprofileBloc ${json.encode(widget.profile)}");
+    controllerEmail.text = widget.profile?.email ?? "";
+    controllerPhone.text = widget.profile?.phoneNumber ?? "";
+    if ((widget.profile?.birtDay) != "") {
+      controllerBirth.text = widget.profile?.birtDay ?? "";
+    }
     super.initState();
   }
 
@@ -136,8 +135,8 @@ class _FormProfileState extends State<FormProfile> {
                               height: 300,
                               fit: BoxFit.cover,
                             );
-                          } else if ((profileBloc.state.profile?.imgUrl ?? "") != "") {
-                            return Image.network(profileBloc.state.profile?.imgUrl ?? "",
+                          } else if ((widget.profile?.imgUrl ?? "") != "") {
+                            return Image.network(widget.profile?.imgUrl ?? "",
                                 width: 300, height: 300, fit: BoxFit.cover);
                           } else {
                             return Image.asset('assets/images/avatar.jpg',
@@ -318,6 +317,351 @@ class _FormProfileState extends State<FormProfile> {
     return File(image.path);
   }
 
+  // _showDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text(
+  //           "ĐỔI MẬT KHẨU",
+  //           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+  //                 fontSize: 20,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: colorScheme(context).scrim,
+  //               ),
+  //         ),
+  //         elevation: 24.0,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(15.0),
+  //           side: const BorderSide(
+  //             color: Colors.white,
+  //             width: 2.0,
+  //           ),
+  //         ),
+  //         backgroundColor: colorScheme(context).background,
+  //         surfaceTintColor: Colors.transparent,
+  //         content: BlocListener<ProfileBloc, ProfileState>(
+  //     listener: (context, state) {
+  //       if (state is ChangePasswordSuccess) {
+  //         myAlert(context, checkDeviceType(size.width), AlertType.success,
+  //                 "Thông báo", "Đổi mật khẩu thành công.")
+  //             .show(context);
+  //         _controllerOldPassword.clear();
+  //         _controllerNewPassword.clear();
+  //         _controllerRepeatNewPassword.clear();
+  //       } else if (state is ChangePasswordFailed) {
+  //         setState(() {
+  //           oldPasswordExist = true;
+  //         });
+  //       } else if (state is ChangePasswordConnectionFailed) {
+  //         myAlert(context, checkDeviceType(size.width), AlertType.error,
+  //                 "Thông báo", "Mất kết nối với máy chủ.")
+  //             .show(context);
+  //       }
+  //     },
+  //     child: Scaffold(
+  //       resizeToAvoidBottomInset: false,
+  //       backgroundColor: colorScheme(context).onSecondary,
+  //       appBar: AppBar(
+  //         backgroundColor: colorScheme(context).onTertiary,
+  //         scrolledUnderElevation: 0,
+  //         centerTitle: false,
+  //         titleSpacing: -5.0,
+  //         leading: IconButton(
+  //           icon: Icon(
+  //             Icons.arrow_back,
+  //             color: colorScheme(context).scrim,
+  //           ),
+  //           onPressed: () {
+  //             Navigator.pop(context);
+  //           },
+  //         ),
+  //         title: Text(
+  //           'THAY ĐỔI MẬT KHẨU',
+  //           style: Theme.of(context)
+  //               .textTheme
+  //               .titleMedium
+  //               ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
+  //         ),
+  //         shape: Border(
+  //             bottom: BorderSide(
+  //           color: colorScheme(context).outlineVariant,
+  //           width: 1,
+  //         )),
+  //       ),
+  //       body: Center(
+  //         child: ScrollConfiguration(
+  //           behavior:
+  //               ScrollConfiguration.of(context).copyWith(scrollbars: false),
+  //           child: SingleChildScrollView(
+  //             child: Center(
+  //               child: Padding(
+  //                 padding: const EdgeInsets.all(16.0),
+  //                 child: Column(
+  //                   mainAxisSize: MainAxisSize.max,
+  //                   children: [
+  //                     const SizedBox(
+  //                       height: 10,
+  //                     ),
+  //                     Image.asset(
+  //                       'assets/images/image_password.png',
+  //                       height: 200,
+  //                       width: 200,
+  //                       fit: BoxFit.cover,
+  //                     ),
+  //                     SizedBox(
+  //                       width: 270,
+  //                       child: Text(
+  //                           "Vui lòng tạo mật khẩu mới độ dài từ 10 ~ 25 bao gồm ký tự và số.",
+  //                           textAlign: TextAlign.center,
+  //                           style: Theme.of(context)
+  //                               .textTheme
+  //                               .labelMedium
+  //                               ?.copyWith(fontSize: 12)),
+  //                     ),
+  //                     ConstrainedBox(
+  //                       constraints: const BoxConstraints(maxWidth: 800),
+  //                       child: Form(
+  //                         child: Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.start,
+  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                           children: [
+  //                             Text(
+  //                               "Mật khẩu cũ: ",
+  //                               style: Theme.of(context)
+  //                                   .textTheme
+  //                                   .bodyLarge
+  //                                   ?.copyWith(
+  //                                       fontSize: 13,
+  //                                       color: _errorTextOldPassword != null
+  //                                           ? colorScheme(context).error
+  //                                           : colorScheme(context).outline),
+  //                             ),
+  //                             TextField(
+  //                               controller: _controllerOldPassword,
+  //                               obscureText: passwordVisibleOld,
+  //                               obscuringCharacter: '●',
+  //                               decoration: InputDecoration(
+  //                                 border: OutlineInputBorder(
+  //                                     borderRadius: BorderRadius.circular(5.0)),
+  //                                 hintStyle: Theme.of(context)
+  //                                     .textTheme
+  //                                     .bodyLarge
+  //                                     ?.copyWith(fontSize: 12),
+  //                                 hintText: 'Nhập mật khẩu cũ...',
+  //                                 errorText: _errorTextOldPassword,
+  //                                 contentPadding: const EdgeInsets.all(10),
+  //                                 suffixIcon: IconButton(
+  //                                   icon: Icon(
+  //                                     passwordVisibleOld
+  //                                         ? Icons.visibility
+  //                                         : Icons.visibility_off,
+  //                                     color: colorScheme(context).outline,
+  //                                   ),
+  //                                   onPressed: () {
+  //                                     setState(
+  //                                       () {
+  //                                         passwordVisibleOld =
+  //                                             !passwordVisibleOld;
+  //                                       },
+  //                                     );
+  //                                   },
+  //                                 ),
+  //                                 alignLabelWithHint: false,
+  //                               ),
+  //                               keyboardType: TextInputType.visiblePassword,
+  //                               textInputAction: TextInputAction.done,
+  //                             ),
+  //                             const SizedBox(height: 20),
+  //                             Text(
+  //                               "Mật khẩu mới: ",
+  //                               style: Theme.of(context)
+  //                                   .textTheme
+  //                                   .bodyLarge
+  //                                   ?.copyWith(
+  //                                       fontSize: 13,
+  //                                       color: _errorTextNewPassword != null
+  //                                           ? colorScheme(context).error
+  //                                           : colorScheme(context).outline),
+  //                             ),
+  //                             TextField(
+  //                               controller: _controllerNewPassword,
+  //                               obscureText: passwordVisibleNew,
+  //                               obscuringCharacter: '●',
+  //                               decoration: InputDecoration(
+  //                                 border: OutlineInputBorder(
+  //                                     borderRadius: BorderRadius.circular(8.0)),
+  //                                 hintStyle: Theme.of(context)
+  //                                     .textTheme
+  //                                     .bodyLarge
+  //                                     ?.copyWith(fontSize: 12),
+  //                                 hintText: 'Nhập mật khẩu mới...',
+  //                                 errorText: _errorTextNewPassword,
+  //                                 contentPadding: const EdgeInsets.all(10),
+  //                                 suffixIcon: IconButton(
+  //                                   icon: Icon(
+  //                                     passwordVisibleNew
+  //                                         ? Icons.visibility
+  //                                         : Icons.visibility_off,
+  //                                     color: colorScheme(context).outline,
+  //                                   ),
+  //                                   onPressed: () {
+  //                                     setState(
+  //                                       () {
+  //                                         passwordVisibleNew =
+  //                                             !passwordVisibleNew;
+  //                                       },
+  //                                     );
+  //                                   },
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                             const SizedBox(height: 20),
+  //                             Text(
+  //                               "Nhập lại mật khẩu mới: ",
+  //                               style: Theme.of(context)
+  //                                   .textTheme
+  //                                   .bodyLarge
+  //                                   ?.copyWith(
+  //                                       fontSize: 13,
+  //                                       color:
+  //                                           _errorTextRepeatNewPassword != null
+  //                                               ? colorScheme(context).error
+  //                                               : colorScheme(context).outline),
+  //                             ),
+  //                             TextField(
+  //                               controller: _controllerRepeatNewPassword,
+  //                               obscureText: passwordVisibleRepeat,
+  //                               obscuringCharacter: '●',
+  //                               decoration: InputDecoration(
+  //                                 border: OutlineInputBorder(
+  //                                     borderRadius: BorderRadius.circular(8.0)),
+  //                                 hintStyle: Theme.of(context)
+  //                                     .textTheme
+  //                                     .bodyLarge
+  //                                     ?.copyWith(fontSize: 12),
+  //                                 hintText: "Nhập lại mật khẩu mới...",
+  //                                 errorText: _errorTextRepeatNewPassword,
+  //                                 contentPadding: const EdgeInsets.all(10),
+  //                                 suffixIcon: IconButton(
+  //                                   icon: Icon(
+  //                                     passwordVisibleRepeat
+  //                                         ? Icons.visibility
+  //                                         : Icons.visibility_off,
+  //                                     color: colorScheme(context).outline,
+  //                                   ),
+  //                                   onPressed: () {
+  //                                     setState(
+  //                                       () {
+  //                                         passwordVisibleRepeat =
+  //                                             !passwordVisibleRepeat;
+  //                                       },
+  //                                     );
+  //                                   },
+  //                                 ),
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     const SizedBox(
+  //                       height: 80,
+  //                     ),
+  //                     ConstrainedBox(
+  //                       constraints: const BoxConstraints(maxWidth: 800),
+  //                       child: Row(
+  //                         crossAxisAlignment: CrossAxisAlignment.center,
+  //                         mainAxisAlignment: MainAxisAlignment.center,
+  //                         children: [
+  //                           Expanded(
+  //                               child: Container(
+  //                             height: 45.0,
+  //                             decoration: BoxDecoration(
+  //                                 borderRadius: const BorderRadius.all(
+  //                                     Radius.circular(5.0)),
+  //                                 gradient: const LinearGradient(colors: [
+  //                                   Color.fromRGBO(109, 92, 255, 1),
+  //                                   Color.fromRGBO(160, 91, 255, 1)
+  //                                 ]),
+  //                                 boxShadow: [
+  //                                   BoxShadow(
+  //                                     color: const Color.fromARGB(255, 0, 0, 0)
+  //                                         .withOpacity(0.2),
+  //                                     spreadRadius: 4,
+  //                                     blurRadius: 12,
+  //                                     offset: const Offset(0, 5),
+  //                                   )
+  //                                 ]),
+  //                             child: ElevatedButton(
+  //                               onPressed: () {
+  //                                 setState(() => _submitted = true);
+  //                                 if(oldPasswordExist){
+  //                                   oldPasswordExist = false;
+  //                                 }
+  //                                 if (_errorTextOldPassword == null &&
+  //                                     _errorTextNewPassword == null &&
+  //                                     _errorTextRepeatNewPassword == null) {
+  //                                   profileBloc.add(ChangePasswordEvent(
+  //                                       oldPassword:
+  //                                           _controllerOldPassword.text,
+  //                                       newPassword:
+  //                                           _controllerNewPassword.text));
+  //                                 }
+  //                               },
+  //                               style: ElevatedButton.styleFrom(
+  //                                 backgroundColor: Colors.transparent,
+  //                                 shadowColor: Colors.transparent,
+  //                                 elevation: 0,
+  //                                 shape: RoundedRectangleBorder(
+  //                                   borderRadius: BorderRadius.circular(5.0),
+  //                                 ),
+  //                               ),
+  //                               child: Text(
+  //                                 'THAY ĐỔI MẬT KHẨU',
+  //                                 style: Theme.of(context)
+  //                                     .textTheme
+  //                                     .labelMedium
+  //                                     ?.copyWith(
+  //                                         fontSize: 16,
+  //                                         color:
+  //                                             colorScheme(context).onSecondary),
+  //                               ),
+  //                             ),
+  //                           )),
+  //                         ],
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   ),
+  //         actions: [
+  //           TextButton(
+  //             child: const Text("CANCEL"),
+  //             onPressed: () => Navigator.pop(context, "cancel"),
+  //           ),
+  //           TextButton(
+  //               child: const Text("OK"),
+  //               onPressed: () {
+  //                 Navigator.pop(context, "ok");
+  //                 selectedImage = imgFist;
+  //                 setState(() {
+  //                   changeImage = (selectedImage != null);
+  //                   isValid = true;
+  //                 });
+  //               }),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -381,8 +725,8 @@ class _FormProfileState extends State<FormProfile> {
                             height: 300,
                             fit: BoxFit.cover,
                           );
-                        } else if ((profileBloc.state.profile?.imgUrl ?? "") != "") {
-                          return Image.network(profileBloc.state.profile?.imgUrl ?? "",
+                        } else if ((widget.profile?.imgUrl ?? "") != "") {
+                          return Image.network(widget.profile?.imgUrl ?? "",
                               width: 300, height: 300, fit: BoxFit.cover);
                         } else {
                           return const Center(
@@ -420,7 +764,7 @@ class _FormProfileState extends State<FormProfile> {
               ),
               const SizedBox(height: 20),
               Text(
-                profileBloc.state.profile?.name ?? "",
+                widget.profile?.name ?? "",
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
                     fontSize: 18.0 * checkDevice(size.width, 1.0, 1.2, 1.3),
@@ -435,7 +779,7 @@ class _FormProfileState extends State<FormProfile> {
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
                 ),
                 child: Text(
-                  (profileBloc.state.profile?.role ?? "") == "admin" ? "Admin" : "User",
+                  (widget.profile?.role ?? "") == "admin" ? "Admin" : "User",
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontSize: 15.0,
                       color: const Color.fromRGBO(94, 194, 129, 1)),
@@ -651,7 +995,16 @@ class _FormProfileState extends State<FormProfile> {
                                       )
                                     ]),
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ChangePasswordScreen(
+                                              ),
+                                            ));
+
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
                                     shadowColor: Colors.transparent,

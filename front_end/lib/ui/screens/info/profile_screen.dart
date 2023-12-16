@@ -35,6 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final innerController = ScrollController();
   late ProfileBloc profileBloc;
   late InvoiceBloc invoiceBloc;
+  Profile? profile;
 
   @override
   void initState() {
@@ -44,6 +45,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
       invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
     });
+    profile = profileBloc.state.profile;
+    print("Test data ${json.encode(profile)}");
     super.initState();
   }
 
@@ -283,7 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   size.width * 0.6,
                   Center(
                     child: Column(children: [
-                      FormProfile(),
+                      FormProfile(profile: profile),
                       const SizedBox(
                         width: 20,
                         height: 20,
@@ -301,7 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          FormProfile(),
+                          FormProfile(profile: profile,),
                           const SizedBox(width: 20),
                           Expanded(
                             child: _ListBill(
@@ -317,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        FormProfile(),
+                        FormProfile(profile: profile,),
                         const SizedBox(width: 20),
                         Expanded(
                           child: _ListBill(

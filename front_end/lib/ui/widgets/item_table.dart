@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:marquee/marquee.dart';
 import 'package:restaurant_manager_app/model/table.dart' as Model;
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/utils/spacing_date_to_now.dart';
@@ -131,6 +132,8 @@ class _ItemTableState extends State<ItemTable> {
                               height: 30,
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                     "${NumberFormat.decimalPattern().format(widget.table.sumPrice ?? 0)} đ",
@@ -146,7 +149,7 @@ class _ItemTableState extends State<ItemTable> {
                                                 : colorScheme(context)
                                                     .scrim
                                                     .withOpacity(0.8))),
-                                const Spacer(),
+                                // const Spacer(),
                                 widget.table.status == 2
                                     ? InkWell(
                                         borderRadius:
@@ -159,13 +162,16 @@ class _ItemTableState extends State<ItemTable> {
                                           context.read<TableBloc>().add(
                                               UpdateStatusEvent(
                                                   idTable: widget.table.id ?? 0,
-                                                  status: 3 ));
+                                                  status: 3));
                                         },
-                                        child: const Icon(
-                                          Ionicons.arrow_forward_circle_outline,
-                                          size: 38,
-                                          color: Colors.black45,
-                                        ))
+                                        child: Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            alignment: Alignment.center,
+                                            child: Icon(
+                                              Icons.arrow_forward,
+                                              size: 30,
+                                              color: colorScheme(context).scrim.withOpacity(0.6),
+                                            )))
                                     : const SizedBox.shrink()
                               ],
                             ),

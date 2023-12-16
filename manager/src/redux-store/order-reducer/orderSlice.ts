@@ -65,9 +65,9 @@ export const updateOrderAsync = createAsyncThunk(
 export const updatePriceOrderAsync = createAsyncThunk(
   'order/update-price',
   async ({ data }: { data: any }) => {
-    const { id, subTotal } = data;
+    const { id, subTotal, portion } = data;
     const token = localStorage.getItem('token');
-    const response = await axios.post(api + '/api/orders/updatePriceItem', { subTotal, id }, {
+    const response = await axios.post(api + '/api/orders/updatePriceItem', { subTotal, id, portion }, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token,

@@ -79,6 +79,8 @@ const MenuItemDetail = () => {
         };
 
     }, [priceList]);
+    console.log("listMenuItem ::  ", listMenuItem);
+
     useEffect(() => {
         if (menuItemList && menuItemList.data) {
             const productsWithPriceZero = menuItemList.data.filter((product: any) => product.price === 0);
@@ -108,7 +110,7 @@ const MenuItemDetail = () => {
             setSizeValue(3);
         } else if (inputValue.toLowerCase().includes('nhỏ')) {
             setSizeValue(1);
-        } else if (inputValue.toLowerCase().includes('trung bình')) {
+        } else if (inputValue.toLowerCase().includes('trung bình' || 'vừa')) {
             setSizeValue(2);
         } else {
             setSizeValue(0);

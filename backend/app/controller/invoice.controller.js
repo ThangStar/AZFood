@@ -151,8 +151,8 @@ exports.reportByDay = async (req, res) => {
             SUM(totalAmount) AS totalAmount,
             invoice.userName,
             invoice.userID
-        FROM invoicedetails
-        INNER JOIN invoice ON invoicedetails.invoiceID = invoice.id
+        FROM invoiceDetails
+        INNER JOIN invoice ON invoiceDetails.invoiceID = invoice.id
         WHERE  DAY(invoice.createAt) = ?  AND  MONTH(invoice.createAt) = ?
        
         GROUP BY invoiceDetails.poductName, invoice.userName, invoice.userID;

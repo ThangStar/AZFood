@@ -189,6 +189,24 @@ exports.getSizePrice = async (req, res) => {
         res.send(error)
     }
 }
+exports.getPriceBySizeAndIdProduct = async (req, res) => {
+    const queryRaw = `SELECT product_price FROM product_price WHERE id = ?`;
+    try {
+        const { id } = req.query
+        console.log("transform", req.query)
+        const resultRaw = await sequelize.query(queryRaw, {
+            raw: true,
+            logging: false,
+            replacements: [Number(id)],
+            type: QueryTypes.SELECT
+        });
+        console.log("KEY QUA", resultRaw)
+        res.status(200).send({ resultRaw })
+    } catch (error) {
+        res.status(500);
+        res.send(error)
+    }
+}
 exports.updateStatus = async (req, res) => {
     try {
         const body = req.body;
@@ -213,7 +231,7 @@ exports.getList = async (req, res) => {
     const checkAuth = Auth.checkAuth(req);
     if (checkAuth) {
         try {
-            const PAGE_SIZE = 7;
+            const PAGE_SIZE = 21;
             const currentPage = parseInt(req.query.page) || 1;
             const offset = (currentPage - 1) * PAGE_SIZE;
 

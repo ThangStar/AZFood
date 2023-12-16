@@ -165,10 +165,10 @@ class _ItemTableState extends State<ItemTable> {
                                                   status: 3));
                                         },
                                         child: Container(
-                                            padding: const EdgeInsets.all(8.0),
+                                            margin: const EdgeInsets.all(8.0),
                                             alignment: Alignment.center,
                                             child: Icon(
-                                              Icons.arrow_forward,
+                                              Ionicons.arrow_forward_circle_outline,
                                               size: 30,
                                               color: colorScheme(context).scrim.withOpacity(0.6),
                                             )))

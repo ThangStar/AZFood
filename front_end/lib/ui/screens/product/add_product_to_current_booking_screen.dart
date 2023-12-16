@@ -285,8 +285,9 @@ class _AddProductToCurrentBookingScreenState
 }
 
 class SubTitleProduct extends StatefulWidget {
-  const SubTitleProduct({super.key, required this.product});
-  final Product product;
+  SubTitleProduct({super.key, required this.product});
+
+  Product product;
 
   @override
   State<SubTitleProduct> createState() => _SubTitleProductState();
@@ -296,15 +297,28 @@ class _SubTitleProductState extends State<SubTitleProduct> {
   int idSelected = 0;
   late ProductSizeBloc prdSizeBloc;
 
+  late ProductBloc productBloc;
+
   @override
   void initState() {
-    setState(() {
-      prdSizeBloc = BlocProvider.of<ProductSizeBloc>(context);
-      idSelected = prdSizeBloc.state.productSize[0].id ?? 0;
-      print("selected: ${idSelected}");
+    prdSizeBloc = BlocProvider.of<ProductSizeBloc>(context);
+    productBloc = BlocProvider.of<ProductBloc>(context);
+    print("INIT CALLLLLLL: ${widget.product.id}");
+    prdSizeBloc.state.productSize.forEach((element) {
+      // print("ID PRODUCT ${widget.product.id} SIZE STORE ${element.productId}");
+    });
+
+    List<ProductPriceSize> prd = prdSizeBloc.state.productSize
+        .where((element) => element.productId == widget.product.id)
+        .toList();
+
+    print("selected: ${idSelected}");
+    prd.forEach((element) {
+      print("prd: ${element.id}");
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     int quantity = widget.product.quantity ?? 0;
@@ -313,19 +327,24 @@ class _SubTitleProductState extends State<SubTitleProduct> {
         Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              color: (widget.product.quantity != 0 && widget.product.quantity != null) ||
-                      (widget.product.category == 1 && widget.product.status == 1)
+              color: (widget.product.quantity != 0 &&
+                          widget.product.quantity != null) ||
+                      (widget.product.category == 1 &&
+                          widget.product.status == 1)
                   ? const Color(0xFF049C6B)
                   : null,
             ),
-            padding: (widget.product.quantity != 0 && widget.product.quantity != null) ||
+            padding: (widget.product.quantity != 0 &&
+                        widget.product.quantity != null) ||
                     (widget.product.category == 1 && widget.product.status == 1)
                 ? const EdgeInsets.symmetric(horizontal: 14, vertical: 4)
                 : null,
             child: Row(
               children: [
-                (widget.product.quantity != 0 && widget.product.quantity != null) ||
-                        (widget.product.category == 1 && widget.product.status == 1)
+                (widget.product.quantity != 0 &&
+                            widget.product.quantity != null) ||
+                        (widget.product.category == 1 &&
+                            widget.product.status == 1)
                     ? const SizedBox.shrink()
                     : const Icon(
                         Icons.error,
@@ -339,46 +358,53 @@ class _SubTitleProductState extends State<SubTitleProduct> {
                           ? " Hết hàng "
                           : "Sẵn sàng",
                   style: TextStyle(
-                      color:
-                          (widget.product.quantity != 0 && widget.product.quantity != null) ||
-                                  (widget.product.category == 1 && widget.product.status == 1)
-                              ? Colors.white
-                              : Colors.red),
+                      color: (widget.product.quantity != 0 &&
+                                  widget.product.quantity != null) ||
+                              (widget.product.category == 1 &&
+                                  widget.product.status == 1)
+                          ? Colors.white
+                          : Colors.red),
                 ),
               ],
             )),
         Padding(
-// <<<<<<< Updated upstream
           padding: const EdgeInsets.all(8.0),
           child: BlocBuilder<ProductSizeBloc, ProductSizeState>(
             builder: (context, state) {
-// =======
-//           padding: const EdgeInsets.symmetric(horizontal: 8.0)
-//         )
-// >>>>>>> Stashed changes
-
               ProductPriceSize? prd;
               try {
                 prd = state.productSize.firstWhere(
-                      (element) => element.productId == widget.product.id,
+                  (element) => element.productId == widget.product.id,
                 );
+                setState(() {
+                  idSelected = prd?.id ?? 0;
+                });
               } catch (e) {}
 
-              if (state.productSize.isNotEmpty && prd != null) {
+              if (state.productSize.isNotEmpty &&
+                  prd != null &&
+                  idSelected != 0) {
+                //call transform new price follow size if has size
+                productBloc
+                    .add(OnChangeSizeTransformPrice(idSize: idSelected,productId: widget.product.id));
 
+                List<ProductPriceSize> prd = state.productSize
+                    .where((element) => element.productId == widget.product.id)
+                    .toList();
                 return DropdownButton(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   style: TextStyle(
                       fontSize: 16, color: colorScheme(context).scrim),
                   isDense: true,
                   value: idSelected,
-                  items: state.productSize.map((e) {
+                  items: prd.map((e) {
                     return DropdownMenuItem(
                       child: Text(e.sizeName ?? ""),
                       value: e.id,
                     );
                   }).toList(),
                   onChanged: (value) {
+                    print("CHANGED");
                     setState(() {
                       idSelected = value ?? 0;
                     });
@@ -388,7 +414,8 @@ class _SubTitleProductState extends State<SubTitleProduct> {
               return SizedBox.shrink();
             },
           ),
-        )
+        ),
+        Text("${widget.product.id}")
       ],
     );
   }

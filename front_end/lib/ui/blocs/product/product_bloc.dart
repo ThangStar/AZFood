@@ -28,12 +28,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<ChangePageProductEvent>(_changePageProductEvent);
     on<DecreaseProductQuantity>(_decreaseProductQuantity);
     on<OnChangeTableId>(_onChangeTableId);
+    on<OnChangeSizeTransformPrice>(_onChangeSizeTransformPrice);
   }
 
   FutureOr<void> _getProductsEvent(
       GetProductsEvent event, Emitter<ProductState> emit) async {
     final data = await getProduct(state.page);
-    print("data, $data");
     ProductResponse productResponse = ProductResponse.fromJson(data);
     emit(state.copyWith(
         productResponse: productResponse,
@@ -124,11 +124,40 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   }
 
   FutureOr<void> _decreaseProductQuantity(
-      DecreaseProductQuantity event, Emitter<ProductState> emit) {
+      DecreaseProductQuantity event, Emitter<ProductState> emit) {}
 
+  FutureOr<void> _onChangeTableId(
+      OnChangeTableId event, Emitter<ProductState> emit) {
+    emit(state.copyWith(tableId: event.id));
   }
 
-  FutureOr<void> _onChangeTableId(OnChangeTableId event, Emitter<ProductState> emit) {
-    emit(state.copyWith(tableId: event.id));
+  FutureOr<void> _onChangeSizeTransformPrice(
+      OnChangeSizeTransformPrice event, Emitter<ProductState> emit) async {
+    print("OK i ll get for id ${event.idSize}");
+    Object result = await ProductApi.transformPriceByIdSize(event.idSize);
+    if (result is Success) {
+      // List<dynamic> jsonList = result.response.data['data'] as List<dynamic>;
+      int index = (state.productResponse?.data
+              .indexWhere((element) => event.productId == element.id)) ??
+          -1;
+
+      print("OK TAO CAN THAY DOI TAI index  ${index}");
+      if (index > -1) {
+        print("ALO1");
+        if (state.productResponse != null) {
+          print("ALO2");
+          List<Product> products = state.productResponse!.data;
+
+          products[index].price =
+              result.response.data['resultRaw'][0]['product_price'];
+          print(
+              "GIA MOI LA ${result.response.data['resultRaw'][0]['product_price']}");
+          emit(
+              state.copyWith(productResponse: ProductResponse(data: products)));
+        }
+      }
+    } else if (result is Failure) {
+      emit(state.copyWith(productsSearchResults: []));
+    }
   }
 }

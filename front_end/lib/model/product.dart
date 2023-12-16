@@ -72,4 +72,30 @@ class Product {
       amountCart.hashCode ^
       idOrdersItem.hashCode ^
       dvtName.hashCode;
+
+  Product copyWith({
+    int? id,
+    String? name,
+    int? price,
+    int? category,
+    int? status,
+    int? quantity,
+    String? imageUrl,
+    int? amountCart,
+    String? dvtName,
+    int? idOrdersItem,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      category: category ?? this.category,
+      status: status ?? this.status,
+      quantity: quantity ?? this.quantity,
+      imageUrl: imageUrl ?? this.imageUrl,
+      amountCart: amountCart ?? this.amountCart,
+      dvtName: dvtName ?? this.dvtName,
+      idOrdersItem: idOrdersItem ?? this.idOrdersItem,
+    );
+  }
 }

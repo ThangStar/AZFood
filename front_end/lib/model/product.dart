@@ -8,6 +8,7 @@ class Product {
   String? imageUrl;
   int amountCart;
   String? dvtName;
+  int? idOrdersItem;
 
   Product(
       {this.dvtName,
@@ -18,6 +19,7 @@ class Product {
       required this.status,
       required this.quantity,
       this.imageUrl,
+      this.idOrdersItem,
       this.amountCart = 1});
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -28,6 +30,7 @@ class Product {
       status: json["status"],
       quantity: json["quantity"],
       dvtName: json["dvt_name"],
+      idOrdersItem: json["idOrdersItem"],
       imageUrl: json['imgUrl']);
 
   Map<String, dynamic> toJson() => {
@@ -38,7 +41,8 @@ class Product {
         "category": category,
         "status": status,
         "quantity": quantity,
-        "imgUrl": imageUrl
+        "imgUrl": imageUrl,
+        "idOrdersItem": idOrdersItem
       };
 
   @override
@@ -53,6 +57,7 @@ class Product {
             quantity == other.quantity &&
             imageUrl == other.imageUrl &&
             amountCart == other.amountCart &&
+            idOrdersItem == other.idOrdersItem &&
             dvtName == other.dvtName;
   }
 
@@ -65,5 +70,6 @@ class Product {
       quantity.hashCode ^
       imageUrl.hashCode ^
       amountCart.hashCode ^
+      idOrdersItem.hashCode ^
       dvtName.hashCode;
 }

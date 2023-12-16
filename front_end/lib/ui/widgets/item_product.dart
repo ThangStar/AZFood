@@ -41,7 +41,6 @@ class _ItemProductState extends State<ItemProduct>
 
   @override
   void initState() {
-    print("URl${widget.product.imageUrl}");
     moveController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 1000));
     moveYAnimation =
@@ -226,24 +225,21 @@ class SubTitleItemProduct extends StatelessWidget {
 }
 
 class SubTitleItemCurrentBill extends StatelessWidget {
-  const SubTitleItemCurrentBill({super.key, required this.product, this.bottom});
+  const SubTitleItemCurrentBill({super.key, required this.product});
   final Product product;
-  final Widget? bottom;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(top: 6),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "${NumberFormat.decimalPattern().format(product.price)} đ",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: colorScheme(context).scrim),
-            ),
-            bottom ?? SizedBox.shrink()
-          ],
-        ));
+    return Column(crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${NumberFormat.decimalPattern().format(product.price)} đ",
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(color: colorScheme(context).scrim),
+        ),
+      ],
+    );
   }
 }

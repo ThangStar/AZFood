@@ -12,6 +12,7 @@ const checkAddressWifi = () => {
             }
         }
     }
+
     if (wifiIPAddresses[0] === process.env.IPWF) {
         console.log("Đúng địa chỉ wifi ");
         return true;

@@ -334,28 +334,11 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                               itemCount: state.currentProducts!.toSet().length,
                               itemBuilder: (context, index) {
                                 Product product = state.currentProducts![index];
-                                int quantityProduct = product.quantity ?? 1;
                                 return ItemProduct(
                                   product: product,
                                   subTitle: SubTitleItemCurrentBill(
-                                      product: product,
-                                      bottom: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          const Icon(
-                                            Ionicons.information_circle,
-                                            size: 18,
-                                          ),
-                                          Text(
-                                            " ghi chú",
-                                            style: TextStyle(
-                                                color: colorScheme(context)
-                                                    .scrim
-                                                    .withOpacity(0.5)),
-                                          )
-                                        ],
-                                      )),
+                                    product: product,
+                                  ),
                                   trailling: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -382,6 +365,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                     onTap: () {
                                                       context.read<OrderBloc>().add(
                                                           OnUpdateProductQuantity(
+                                                              idOrderItems: product
+                                                                  .idOrdersItem,
                                                               productID:
                                                                   product.id,
                                                               type:
@@ -422,6 +407,8 @@ class _CurrentBookingScreenState extends State<CurrentBookingScreen> {
                                                           "PRD ID: ${product.id}");
                                                       context.read<OrderBloc>().add(
                                                           OnUpdateProductQuantity(
+                                                              idOrderItems: product
+                                                                  .idOrdersItem,
                                                               productID:
                                                                   product.id,
                                                               type:
@@ -597,9 +584,13 @@ class BottomActionBill extends StatelessWidget {
                           tableId == prdBloc.state.tableId,
                       builder: (context, state) {
                         price = 0;
-                        for (Product i in state.currentProducts ?? []) {
-                          price += i.price * i.amountCart;
+                        if (state.currentProducts != null) {
+                          for (Product i in state.currentProducts!) {
+                            int q = i.quantity ?? 1;
+                            price += i.price * q;
+                          }
                         }
+
                         return Text(
                           "${NumberFormat.decimalPattern().format(price)} đ",
                           overflow: TextOverflow.ellipsis,

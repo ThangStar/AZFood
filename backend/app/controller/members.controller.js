@@ -166,11 +166,11 @@ exports.createMember = async (req, res) => {
                         };
                         const snapshot = await uploadBytes(storageRef, req.file.buffer, metadata);
                         const imgUrl = await getDownloadURL(snapshot.ref);
-                        const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber,  imgUrl, createAt) VALUES (?, ?, ?, ?, ?, ?, ?);";
+                        const queryRaw = "INSERT INTO users (username, password, name, role, email, phoneNumber,  imgUrl, createAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
                         const resultRaw = await sequelize.query(queryRaw, {
                             raw: true,
                             logging: false,
-                            replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, imgUrl, new Date()],
+                            replacements: [body.username, body.password, body.name, body.role,body.email, body.phoneNumber, imgUrl, new Date()],
                             type: QueryTypes.INSERT
                         });
                         console.log("resultRaw ", resultRaw);
@@ -185,11 +185,11 @@ exports.createMember = async (req, res) => {
                     if (isDuplicate) {
                         res.status(400).json({ message: 'Trùng tên tài khoản hoặc email' });
                     } else {
-                    const queryRaw = "INSERT INTO users (username, password, name, role, phoneNumber , createAt) VALUES (?, ?, ?, ?, ? , ?);";
+                    const queryRaw = "INSERT INTO users (username, password, name, role, email, phoneNumber , createAt) VALUES (?, ?, ?, ?, ?, ? , ?);";
                     const resultRaw = await sequelize.query(queryRaw, {
                         raw: true,
                         logging: false,
-                        replacements: [body.username, body.password, body.name, body.role, body.phoneNumber, new Date(),],
+                        replacements: [body.username, body.password, body.name, body.role,body.email, body.phoneNumber, new Date(),],
                         type: QueryTypes.INSERT
                     });
                     console.log("resultRaw ", resultRaw);

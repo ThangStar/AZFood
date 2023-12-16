@@ -21,15 +21,12 @@ exports.updateQuantity = async (req, res) => {
     try {
 
         console.log("BODY", req.body);
-
-        const { type, quantity, productID, tableID } = req.body
+        const { type, quantity, productID, tableID, idOrderItems } = req.body
         const isIncrement = type == 'increment';
         const isDecrement = type == 'decrement';
         const isSet = type == 'set';
         if (isIncrement) {
             //handle plus
-            console.log('plus');
-
             const query = `UPDATE orderItems as o1 
         INNER JOIN orders as o2 
         ON o1.orderID = o2.id 
@@ -46,21 +43,46 @@ exports.updateQuantity = async (req, res) => {
             res.status(200).json({ increment });
         } else if (isDecrement) {
             //handle minus
-            console.log('minus');
+            sequelize.transaction(async t => {
 
-            const query = `UPDATE orderItems as o1 
-            INNER JOIN orders as o2 
-            ON o1.orderID = o2.id 
-            SET o1.quantity = o1.quantity - 1
-            WHERE o1.productID = ? AND o2.tableID = ?`;
-            const decrement = await sequelize.query(query, {
-                raw: true,
-                logging: false,
-                replacements: [productID, tableID],
-                type: QueryTypes.UPDATE
-            });
+                const queryIsExist = `SELECT * FROM orderItems as oi JOIN orders as ord ON
+                 ord.id = oi.orderID WHERE oi.quantity > 1 AND ord.tableID = ? AND oi.productID = ?`;
+                const isExist = await sequelize.query(queryIsExist, {
+                    raw: true,
+                    logging: false,
+                    replacements: [tableID, productID],
+                    type: QueryTypes.SELECT,
+                });
 
-            res.status(200).json({ decrement });
+                console.log("is exis", isExist)
+                //decrement if > 1
+                if (isExist.length > 0) {
+                    const query = `UPDATE orderItems as o1 
+                    INNER JOIN orders as o2 
+                    ON o1.orderID = o2.id 
+                    SET o1.quantity = o1.quantity - 1
+                    WHERE o1.productID = ? AND o2.tableID = ?`;
+                    const decrement = await sequelize.query(query, {
+                        raw: true,
+                        logging: false,
+                        replacements: [productID, tableID],
+                        type: QueryTypes.UPDATE,
+                    });
+                    return res.status(200).json({ decrement });
+                } else {
+
+                    const query = `DELETE FROM orderItems where id = ?`;
+                    const decrement = await sequelize.query(query, {
+                        raw: true,
+                        logging: false,
+                        replacements: [idOrderItems],
+                        type: QueryTypes.DELETE,
+                    });
+                    return res.status(200).json({ decrement });
+
+                }
+
+            })
         } else if (isSet) {
             //handle set
             console.log("set");
@@ -132,30 +154,8 @@ exports.createOrder = async (req, res) => {
                     return res.status(500).json({ message: 'Quantity not enough' });
                 }
             }
+            const existingOrderItemQuery = 'SELECT id, quantity, subTotal ,orderID FROM orderItems WHERE orderID IN (SELECT id FROM orders WHERE tableID = ?) AND productID = ?';
 
-
-            const priceQuery = 'SELECT price, status FROM products WHERE id = ?';
-            const quantityQuery = 'SELECT SUM(quantity) AS quantity  FROM kho WHERE productID = ?';
-            const priceResult = await sequelize.query(priceQuery, {
-                raw: true,
-                logging: false,
-                replacements: [productID],
-                type: QueryTypes.SELECT
-            });
-            const quantityResult = await sequelize.query(quantityQuery, {
-                raw: true,
-                logging: false,
-                replacements: [productID],
-                type: QueryTypes.SELECT
-            });
-
-            const price = priceResult[0].price;
-            const _quantity = quantityResult[0].quantity;
-            const _status = priceResult[0].status;
-
-
-            const subTotal = quantityClient * price;
-            const existingOrderItemQuery = 'SELECT id, quantity, subTotal FROM orderItems WHERE orderID IN (SELECT id FROM orders WHERE tableID = ?) AND productID = ?';
             const existingOrderItemResult = await sequelize.query(existingOrderItemQuery, {
                 raw: true,
                 logging: false,
@@ -163,14 +163,22 @@ exports.createOrder = async (req, res) => {
                 type: QueryTypes.SELECT
             });
 
-            if (existingOrderItemResult.length > 0) {
+            const _price = body.price;
+            if (existingOrderItemResult.length > 0 && _price != 0) {
                 // Update existing orderItem
-                const existingOrderItemId = existingOrderItemResult[0].id;
-                const existingQuantity = existingOrderItemResult[0].quantity;
-                const existingSubTotal = existingOrderItemResult[0].subTotal;
-
+                var item;
+                for (let i = 0; i < existingOrderItemResult.length; i++) {
+                    const _check = existingOrderItemResult[i].subTotal / existingOrderItemResult[i].quantity;
+                    console.log('check order', existingOrderItemResult);
+                    if (existingOrderItemResult[i].subTotal == _price || _check == _price || existingOrderItemResult[i].price == _price) {
+                        item = existingOrderItemResult[i];
+                    }
+                }
+                const existingOrderItemId = item.id;
+                const existingQuantity = item.quantity;
+                const orderID = item.orderID;
                 const newQuantity = existingQuantity + quantityClient;
-                const newSubTotal = existingSubTotal + subTotal;
+                const newSubTotal = _price * newQuantity;
 
                 if (newQuantity < 0) {
                     res.status(201).json({ message: 'Sản phẩm erorr' });
@@ -183,15 +191,23 @@ exports.createOrder = async (req, res) => {
                         replacements: [newQuantity, newSubTotal, existingOrderItemId],
                         type: QueryTypes.UPDATE
                     });
+                    const updateOrderQuery = 'UPDATE orders SET totalAmount = ? WHERE id = ?';
+                    await sequelize.query(updateOrderQuery, {
+                        raw: true,
+                        logging: false,
+                        replacements: [newSubTotal, orderID],
+                        type: QueryTypes.UPDATE
+                    });
                 }
             } else {
                 // Insert a new orderItem
+                console.log("order; insẻtc");
                 const orderId = await sequelize.transaction(async transaction => {
                     const orderData = {
                         userID: body.userID,
                         tableID: tableID,
                         orderDate: new Date(),
-                        totalAmount: subTotal,
+                        totalAmount: body.price,
                     };
 
                     const queryRaw = 'INSERT INTO orders (userID, tableID, orderDate, totalAmount) VALUES (?, ?, ?, ?)';
@@ -214,7 +230,7 @@ exports.createOrder = async (req, res) => {
                     await sequelize.query(queryRaw2, {
                         raw: true,
                         logging: false,
-                        replacements: [orderId, productID, quantityClient, subTotal],
+                        replacements: [orderId, productID, quantityClient, body.price],
                         type: QueryTypes.INSERT,
                         transaction
                     });
@@ -255,7 +271,7 @@ exports.updateOrder = async (req, res) => {
             const productID = body.productID;
             const quantity = body.quantity;
             const id = body.orderID;
-            console.log(" id____", id);
+            console.log("body ::: ", body);
             const priceQuery = 'SELECT price FROM products WHERE id = ?';
             try {
 
@@ -266,46 +282,38 @@ exports.updateOrder = async (req, res) => {
                     replacements: [productID],
                     type: QueryTypes.UPDATE
                 });
-
-                const priceResult = await sequelize.query(priceQuery, {
+                const queryOrderItem = 'Select * from orderItems where orderID = ? ';
+                const orderItemResult = await sequelize.query(queryOrderItem, {
                     raw: true,
                     logging: false,
-                    replacements: [productID],
+                    replacements: [id],
                     type: QueryTypes.SELECT
                 });
-
-                const price = priceResult[0].price;
-
-                const subTotal = quantity * price;
-                console.log("subTotal", subTotal);
-                const orderData = {
-                    totalAmount: subTotal,
-                };
-
-                // console.log("orderData.totalAmount", orderData.totalAmount);
-                // console.log("productID", productID);
-                // console.log("orderID", orderID);
-                await sequelize.transaction(async transaction => {
+                const price = orderItemResult[0].subTotal / orderItemResult[0]?.quantity;
+                const newQuantity = orderItemResult[0]?.quantity - 1;
+                const newTotal = newQuantity * price;
+                try {
                     const updateOrderQuery = `UPDATE orders SET totalAmount = ? WHERE id = ?;`;
-
                     await sequelize.query(updateOrderQuery, {
                         raw: true,
                         logging: false,
-                        replacements: [orderData.totalAmount, id],
+                        replacements: [newTotal, id],
                         type: QueryTypes.UPDATE,
-                        transaction
                     });
 
-                    const updateOrderItemsQuery = `UPDATE orderItems SET productID = ?, quantity = ?, subTotal = ? WHERE orderID = ?;`;
-
+                    const updateOrderItemsQuery = `UPDATE orderItems SET  quantity = ?, subTotal = ?  WHERE orderID = ?;`;
                     await sequelize.query(updateOrderItemsQuery, {
                         raw: true,
                         logging: false,
-                        replacements: [productID, quantity, subTotal, id],
+                        replacements: [newQuantity, newTotal, id],
                         type: QueryTypes.UPDATE,
-                        transaction
                     });
-                });
+
+                } catch (error) {
+                    console.log({ error });
+                }
+
+
 
                 res.status(200).json({ message: 'Order updated successfully' });
             } catch (error) {
@@ -412,7 +420,7 @@ exports.getOrdersForTable = async (req, res) => {
         const isAuth = await Auth.checkAuth(req);
         if (isAuth) {
             const getOrdersQuery = `
-            SELECT o.id AS orderID, o.orderDate, o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
+            SELECT o.id AS orderID, o.orderDate,o.price AS price_produc , o.totalAmount,p.id AS productID,o.orderDate , p.name AS productName, p.dvtID AS dvt ,
              oi.quantity, oi.subTotal , p.category , p.price , u.name As userName ,u.id As userID
             FROM orders o
             INNER JOIN orderItems oi ON o.id = oi.orderID
@@ -440,50 +448,6 @@ exports.getOrdersForTable = async (req, res) => {
     }
 };
 
-// exports.getOrdersForTable = async (req, res) => {
-//     try {
-
-//         const tableID = req.query.tableID;
-//         const isAuth = await Auth.checkAuth(req);
-//         if (isAuth) {
-//             const getOrdersQuery = `
-//             SELECT
-//             p.id AS productID,
-//             p.name AS productName,
-//             p.dvtID AS dvt,
-//             SUM(oi.quantity) AS totalQuantity,
-//             SUM(oi.subTotal) AS totalSubTotal,
-//             p.category,
-//             p.price,
-//             u.name AS userName,
-//             u.id AS userID
-//         FROM orders o
-//         INNER JOIN orderItems oi ON o.id = oi.orderID
-//         INNER JOIN products p ON oi.productID = p.id
-//         INNER JOIN users u ON o.userID = u.id
-//         WHERE o.tableID = ?
-//         GROUP BY productID, productName, dvt, category, price, userName, userID
-
-//         `;
-
-//             const orders = await sequelize.query(getOrdersQuery, {
-//                 raw: true,
-//                 logging: false,
-//                 replacements: [tableID || id],
-//                 type: QueryTypes.SELECT
-//             });
-
-//             res.status(200).json({ orders });
-//         }
-//         else {
-//             res.status(403).json({ message: 'you are not logned in' });
-//         }
-
-//     } catch (error) {
-//         console.error('Error getting orders:', error);
-//         res.status(500).json({ message: 'Internal server error', error: error.message });
-//     }
-// };
 exports.getList = async (req, res) => {
 
     const isAdmin = await Auth.checkAdmin(req);
@@ -614,3 +578,31 @@ exports.payBill = async (req, res) => {
     }
 };
 
+exports.updatePriceOrder = async (req, res) => {
+    try {
+        const body = req.body;
+        const isAuth = await Auth.checkAuth(req);
+
+        if (isAuth) {
+            const queryRaw = 'UPDATE orderItems SET subTotal = ? WHERE orderID = ?;'
+            const queryRaw_ = 'UPDATE orders SET totalAmount = ? , price=? WHERE id = ?;'
+
+            console.log('body::', body);
+            const resultRaw = await sequelize.query(queryRaw, {
+                raw: true,
+                logging: false,
+                replacements: [body.subTotal, body.id],
+                type: QueryTypes.UPDATE,
+            });
+            const resultRaw_ = await sequelize.query(queryRaw_, {
+                raw: true,
+                logging: false,
+                replacements: [body.subTotal, body.subTotal, body.id],
+                type: QueryTypes.UPDATE,
+            });
+            res.status(200).json({ message: 'Order updated successfully' });
+        }
+    } catch (error) {
+        console.log(" error::", error);
+    }
+}

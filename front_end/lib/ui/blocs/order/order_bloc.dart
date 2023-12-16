@@ -64,7 +64,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           idInvoice: result.response.data['invoiceID'],
           sumPrice: 999999,
           username: loginResponse?.username ?? "username",
-          time: (DateFormat('HH:mm dd/MM/yyyy').format(DateTime.now()).toString()));
+          time: (DateFormat('HH:mm dd/MM/yyyy')
+              .format(DateTime.now())
+              .toString()));
       io.emit("listProductByIdTable", {"id": event.tableId});
       event.pushScreen(PayStatus.success, billData);
     } else if (result is Failure) {
@@ -76,7 +78,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   FutureOr<void> _onUpdateProductQuantity(
       OnUpdateProductQuantity event, Emitter<OrderState> emit) async {
     print("object");
-    Object result = await OrderApi.updateQuantity(productId: event.productID, tableId: event.tableID, type: event.type);
+    Object result = await OrderApi.updateQuantity(
+        idOrderItems: event.idOrderItems,
+        productId: event.productID,
+        tableId: event.tableID,
+        type: event.type);
     if (result is Success) {
       io.emit("listProductByIdTable", {"id": event.tableID});
       print('OK');

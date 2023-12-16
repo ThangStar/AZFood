@@ -114,8 +114,8 @@ exports.getDetails = async (req, res) => {
 exports.searchByDate = async (req, res) => {
     const isAuth = await Auth.checkAuth(req);
     if (isAuth) {
-        const startDate = req.body.startDate;
-        const endDate = req.body.endDate;
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
         const queryRaw = "SELECT * FROM invoice WHERE createAt >= :startDate AND createAt <= :endDate ";
         try {
             const resultRaw = await sequelize.query(queryRaw, {
@@ -165,6 +165,7 @@ exports.reportByDay = async (req, res) => {
                 type: QueryTypes.SELECT
             });
             res.send({ resultRaw })
+            console.log("body  ", resultRaw);
             res.status(200);
         } catch (error) {
             res.status(500);
@@ -193,7 +194,6 @@ exports.getDetailsById = async (req, res) => {
                 type: QueryTypes.SELECT
             });
             res.status(200).send(resultRaw[0]);
-            console.log(resultRaw);
         } catch (error) {
             res.status(500).send(error);
         }

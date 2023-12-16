@@ -6,18 +6,18 @@ module.exports = app => {
 
   var router = require("express").Router();
 
-  
-  
-    router.get("/list",[jwt.checkJwt] , invoice.getList );
-    router.get("/listbyiduser",[jwt.checkJwt] , invoice.getListByIdUser );
-    router.get("/detailbyid",[jwt.checkJwt] , invoice.getDetailsById );
-    router.get("/details",[jwt.checkJwt] , invoice.getDetails );
-    router.get("/search",[jwt.checkJwt] , invoice.searchByDate );
-    router.get("/report-day", [jwt.checkJwt], invoice.reportByDay);
+  router.use([jwt.checkJwt])
+
+  router.get("/list", invoice.getList);
+  router.get("/listbyiduser", invoice.getListByIdUser);
+  router.get("/detailbyid", invoice.getDetailsById);
+  router.get("/details", invoice.getDetails);
+  router.get("/search", invoice.searchByDate);
+  router.post("/report-day", invoice.reportByDay);
 
   app.use('/api/invoice', router);
 };
 
 
-  
+
 

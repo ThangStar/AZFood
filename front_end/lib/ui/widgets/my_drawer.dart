@@ -17,6 +17,10 @@ import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_dialog.dart';
 import 'package:restaurant_manager_app/ui/widgets/my_tabbar_theme.dart';
 
+import '../../storage/share_preferences.dart';
+import '../screens/auth/login_screen.dart';
+import 'my_dialog.dart';
+
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key, required this.profile});
 
@@ -56,6 +60,8 @@ final List<ItemDrawer> itemsDrawer = [
       typeDrawer: TypeDrawer.analytics),
   ItemDrawer(
       label: "Cá nhân", icon: Icons.person, typeDrawer: TypeDrawer.profile),
+  // ItemDrawer(
+  //     label: "Đăng xuất", icon: Icons.logout, typeDrawer: TypeDrawer.logout),
 ];
 
 class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
@@ -254,6 +260,27 @@ class _MyDrawerState extends State<MyDrawer> with TickerProviderStateMixin {
                                                   ));
                                                   break;
 
+                                                // case TypeDrawer.logout:
+                                                //   // ignore: use_build_context_synchronously
+                                                //   showDialog(
+                                                //       context: context,
+                                                //       builder: (context) => MyDialog(
+                                                //         title: "Đăng xuất?",
+                                                //         content: "Bạn có chắc chắn muốn đăng xuất",
+                                                //         onTapLeading: () {
+                                                //           MySharePreferences.setRememberMe(false);
+                                                //           Navigator.pushAndRemoveUntil(
+                                                //               context,
+                                                //               MaterialPageRoute(
+                                                //                 builder: (context) => const LoginScreen(),
+                                                //               ),
+                                                //                   (route) => false);
+                                                //         },
+                                                //         onTapTrailling: () {
+                                                //           Navigator.pop(context);
+                                                //         },
+                                                //       ));
+                                                //   break;
                                                 case TypeDrawer.logout:
                                                   // ignore: use_build_context_synchronously
                                                   logout(context);

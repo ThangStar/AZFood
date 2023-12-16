@@ -153,6 +153,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
           products[index].price =
               result.response.data['resultRaw'][0]['product_price'];
+          products[index].idSizeCurrent = event.idSize;
           print(
               "GIA MOI LA ${result.response.data['resultRaw'][0]['product_price']}");
           emit(

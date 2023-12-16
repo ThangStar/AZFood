@@ -8,6 +8,7 @@ import 'package:restaurant_manager_app/ui/blocs/order/order_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product/product_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/product_size/product_size_bloc.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
+import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
 import 'package:restaurant_manager_app/ui/utils/my_search_delegate.dart';
 import 'package:restaurant_manager_app/ui/widgets/item_product.dart';
 import 'package:restaurant_manager_app/ui/widgets/keyboard_icon.dart';
@@ -251,12 +252,29 @@ class _AddProductToCurrentBookingScreenState
                                             Product product = state
                                                 .productResponse!.data[index];
                                             return ItemProduct(
-                                                isAddCart: true,
+                                                isAddCart: product.price != 0,
                                                 cartKey: cartKey,
                                                 product: product,
                                                 onTap: () {
+                                                  if (product.price == 0) {
+                                                    myAlert(
+                                                            context,
+                                                            checkDeviceType(
+                                                                MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width),
+                                                            AlertType.error,
+                                                            "Cảnh báo",
+                                                            "Hãy chọn loại sản phẩm")
+                                                        .show(context);
+                                                    return;
+                                                  }
                                                   context.read<OrderBloc>().add(
                                                       CreateOrderEvent(
+                                                          idSize: product
+                                                              .idSizeCurrent,
+                                                          price: product.price,
                                                           product: ProductCheckOut(
                                                               productID:
                                                                   product.id,

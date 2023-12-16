@@ -20,6 +20,7 @@ class Router {
   static String getOrderInTable = '/api/orders/getOrder';
   static String payBill = '/api/orders/payBill';
   static String updateQuantity = '/api/orders/updateQuantity';
+  static String updatePriceItem = '/api/orders/updatePriceItem';
 
   //invoice
   static String getAllInvoice = '/api/invoice/list';

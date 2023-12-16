@@ -114,7 +114,7 @@ exports.updateQuantity = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
     console.log('create order');
-
+    let odID
     try {
         const body = req.body;
 
@@ -176,6 +176,7 @@ exports.createOrder = async (req, res) => {
                 }
                 const existingOrderItemId = item.id;
                 const existingQuantity = item.quantity;
+                odID = item.orderID
                 const orderID = item.orderID;
                 const newQuantity = existingQuantity + quantityClient;
                 const newSubTotal = _price * newQuantity;
@@ -223,7 +224,7 @@ exports.createOrder = async (req, res) => {
                         type: QueryTypes.INSERT,
                         transaction
                     });
-
+                    odID = resultRaw[0]
                     const orderId = resultRaw[0];
 
                     const queryRaw2 = 'INSERT INTO orderItems (orderID, productID, quantity, subTotal) VALUES (?, ?, ?, ?)';
@@ -243,13 +244,12 @@ exports.createOrder = async (req, res) => {
                         type: QueryTypes.UPDATE,
                         transaction
                     });
-
                     return orderId;
                 });
                 // res.status(200).json({ message: 'Order created successfully', orderId });
             }
-
-            res.status(200).json({ message: 'Order created successfully' });
+            console.log("ORRRRRRRDER Uid la", odID)
+            res.status(200).json({ message: 'Order created successfully', oid: odID });
 
         } else {
             res.status(403).json({ message: 'Unauthorized' });
@@ -581,6 +581,7 @@ exports.payBill = async (req, res) => {
 exports.updatePriceOrder = async (req, res) => {
     try {
         const body = req.body;
+        console.log(body)
         const isAuth = await Auth.checkAuth(req);
         let quantyti = 0;
         const price = body.subTotal;

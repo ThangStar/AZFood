@@ -33,14 +33,29 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     if (loginResponse != null) {
       int userID = loginResponse.id;
-      Object result = await OrderApi.create(event.product, userID);
+      Object result = await OrderApi.create(event.product, userID, event.price);
       if (result is Success) {
-        io.emit("listProductByIdTable", {"id": event.product.tableID});
+        print("DATA VUA TRA VE LA ${result.response.data}");
+        // Object result = await OrderApi.updatePriceItem(event.price, );
+        if (event.idSize == null) {
+          io.emit("listProductByIdTable", {"id": event.product.tableID});
+          return;
+        }else{
+          Object result2 = await OrderApi.updatePriceItem(event.price, event.idSize, result.response.data['oid']);
+          if (result2 is Success) {
+            io.emit("listProductByIdTable", {"id": event.product.tableID});
+          } else if (result is Failure) {
+            print("failure ${result.response}");
+          }
+
+        }
       } else if (result is Failure) {
         print(result.response);
       }
     }
   }
+
+
 
   FutureOr<void> _getOrderInTableEvent(
       GetOrderInTableEvent event, Emitter<OrderState> emit) async {

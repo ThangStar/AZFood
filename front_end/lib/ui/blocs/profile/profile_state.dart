@@ -41,4 +41,7 @@ class UpdateProfileFailed extends ProfileState {}
 
 class UpdateProfileConnectionFailed extends ProfileState {}
 
-class GetProfileLoading extends ProfileState{}
+class GetProfileLoading extends ProfileState{
+  @override
+  List<Object> get props => [];
+}

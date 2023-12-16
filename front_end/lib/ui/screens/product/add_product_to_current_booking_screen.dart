@@ -348,9 +348,14 @@ class _SubTitleProductState extends State<SubTitleProduct> {
               ],
             )),
         Padding(
+// <<<<<<< Updated upstream
           padding: const EdgeInsets.all(8.0),
           child: BlocBuilder<ProductSizeBloc, ProductSizeState>(
             builder: (context, state) {
+// =======
+//           padding: const EdgeInsets.symmetric(horizontal: 8.0)
+//         )
+// >>>>>>> Stashed changes
 
               ProductPriceSize? prd;
               try {

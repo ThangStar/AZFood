@@ -116,7 +116,7 @@ class _ItemTableState extends State<ItemTable> {
                                                   .withOpacity(0.6),
                                               size: 18),
                                           Text(
-                                            " ${spacingDateToNow(DateTime.parse(widget.table.firstTime!))}",
+                                            "${spacingDateToNow(DateTime.parse(widget.table.firstTime!))}",
                                             style: TextStyle(
                                                 color: colorScheme(context)
                                                     .scrim

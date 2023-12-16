@@ -13,6 +13,8 @@ class OrderApi {
         "productID": productCheckOuts.productID,
         "quantity": productCheckOuts.quantity,
         "userID": userID,
+        "category": 1,
+        "price": 200,
         "tableID": productCheckOuts.tableID
       });
       if (response.statusCode == 200) {

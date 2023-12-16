@@ -31,7 +31,7 @@ exports.insertMessage = async (socket, io, data) => {
     // }
     const { type, message, raw, imageUrl, sendBy } = data
     try {
-        const queryRaw = `INSERT INTO MESSAGE(type, message, raw, imageUrl, sendBy) VALUES (?,?,?,?,?)`;
+        const queryRaw = `INSERT INTO message(type, message, raw, imageUrl, sendBy) VALUES (?,?,?,?,?)`;
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
             logging: false,

@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'product_bloc.dart';
 
-enum ProductStatus { initial, loading, success, failure }
+enum ProductStatus { initial, loading, success, failure, loadPrice }
 
 class ProductState extends Equatable {
   const ProductState(

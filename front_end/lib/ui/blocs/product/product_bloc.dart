@@ -121,6 +121,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         total: data['totalItems'],
         totalPage: data['totalPages'],
         page: data['currentPage']));
+    emit(state.copyWith(
+      status: ProductStatus.loadPrice
+    ));
   }
 
   FutureOr<void> _decreaseProductQuantity(

@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.example.restaurant_manager_app"
+    namespace "com.finallapp.azfood"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 

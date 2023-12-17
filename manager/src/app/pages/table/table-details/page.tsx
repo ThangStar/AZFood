@@ -49,10 +49,7 @@ export default function TableDetails() {
     const [userID, setUserID] = useState();
     const [orderID, setOrderID] = useState();
     const [idItemDelete, setIdDelete] = useState();
-    const [payMethod, setPayMethod] = useState<number>(1)
-
-    const [showAddButton, setShowAddButton] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [payMethod, setPayMethod] = useState<number>(1);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -121,7 +118,7 @@ export default function TableDetails() {
             await dispatch(getMenuListAsync());
         }
         fetchData();
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
 
@@ -148,7 +145,6 @@ export default function TableDetails() {
         });
         return totalAll;
     }
-
 
     const handlePlusOrder = async (item: any) => {
         var productID;
@@ -189,10 +185,17 @@ export default function TableDetails() {
     }
     const handleUpdatepriceItem = async () => {
         if (priceProduct != null) {
+            const selectedItem: any = listPriceOfProd.find((item: any) => item.id === priceProduct);
+            const sizeValue = selectedItem?.products_size;
+            const price = selectedItem?.product_price
+
             const data = {
                 id: orderID,
-                subTotal: priceProduct
+                subTotal: price,
+                portion: sizeValue,
             }
+
+
             await dispatch(updatePriceOrderAsync({ data }));
             const updatedOrders = order.map((item) => {
                 if (item.orderID === orderID) {
@@ -289,7 +292,8 @@ export default function TableDetails() {
         } else {
             dispatch(getMenuListAsync());
         }
-    }
+    };
+
     return (
         <div style={{ display: 'flex' }}>
             <div style={{ width: '38%', padding: '10px', height: '100vh' }}>
@@ -383,7 +387,10 @@ export default function TableDetails() {
                                             </td>
                                             <td className="text-center" onClick={() => {
                                                 openModal3(item)
-                                            }}>{formatMoney(item.price_produc ? item.price_produc : item.price)} </td>
+                                            }}>
+                                                {formatMoney(item.price_produc ? item.price_produc : item.price)}
+                                                {/* {formatMoney(item.totalAmount / item.quantity)} */}
+                                            </td>
                                             <td style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                                                 <button className='btn btn-outline-dark' onClick={() => handleMinusOrder(item)}>-</button>
                                                 {item.quantity}
@@ -510,11 +517,12 @@ export default function TableDetails() {
                                 value={priceProduct}
                                 onChange={(e) => {
                                     setPriceProduct(Number(e.target.value));
+
                                 }}
                             >
                                 <option value=" ">Chọn phần cho món ăn</option>
                                 {listPriceOfProd && listPriceOfProd.length > 0 ? listPriceOfProd.map((item: any, id: number) => (
-                                    <option value={item.product_price}>{`${item.SizeName} : ${item.product_price}`}</option>
+                                    <option value={item.id}>{`${item.SizeName}`}</option>
                                 )) : ""}
                             </select>
                         </div>

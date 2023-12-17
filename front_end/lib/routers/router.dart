@@ -10,6 +10,7 @@ class Router {
   static String productsFilter = '/api/products/filterData';
   static String searchProduct = '/api/products/searchProducts';
   static String getSizePrice = '/api/products/getSizePrice';
+  static String getPriceBySizeAndIdProduct = '/api/products/getPriceBySizeAndIdProduct';
 
   //table
   static String updateStatusTable = '/api/table/updateStatus';
@@ -19,6 +20,7 @@ class Router {
   static String getOrderInTable = '/api/orders/getOrder';
   static String payBill = '/api/orders/payBill';
   static String updateQuantity = '/api/orders/updateQuantity';
+  static String updatePriceItem = '/api/orders/updatePriceItem';
 
   //invoice
   static String getAllInvoice = '/api/invoice/list';

@@ -24,6 +24,7 @@ module.exports = app => {
   router.post("/deletePrice", products.deletePriceProduct);
   router.get("/listPriceProduct", products.getPriceProduct);
   router.get("/getSizePrice", products.getSizePrice);
+  router.get("/getPriceBySizeAndIdProduct", products.getPriceBySizeAndIdProduct);
 
   app.use('/api/products', router);
 };

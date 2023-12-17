@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 
 class PageIndex extends StatelessWidget {
-  const PageIndex({
-    super.key,
-  });
+  const PageIndex({super.key, this.currentPage = 1});
+
+  final int currentPage;
 
   @override
   Widget build(BuildContext context) {
@@ -55,12 +55,11 @@ class PageIndex extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 5.0),
               child: Text(
-                "1",
+                "$currentPage",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: colorScheme(context).primary),
-                    
               ),
             ),
           ),

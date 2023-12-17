@@ -60,3 +60,10 @@ class OnChangeTableId extends ProductEvent {
 
   const OnChangeTableId({required this.id});
 }
+
+class OnChangeSizeTransformPrice extends ProductEvent {
+  final int idSize;
+  final int productId;
+
+  const OnChangeSizeTransformPrice({required this.idSize, required this.productId});
+}

@@ -117,7 +117,7 @@ class _ItemTableState extends State<ItemTable> {
                                                   .withOpacity(0.6),
                                               size: 18),
                                           Text(
-                                            " ${spacingDateToNow(DateTime.parse(widget.table.firstTime!))}",
+                                            "${spacingDateToNow(DateTime.parse(widget.table.firstTime!))}",
                                             style: TextStyle(
                                                 color: colorScheme(context)
                                                     .scrim
@@ -165,10 +165,10 @@ class _ItemTableState extends State<ItemTable> {
                                                   status: 3));
                                         },
                                         child: Container(
-                                            padding: const EdgeInsets.all(8.0),
+                                            margin: const EdgeInsets.all(8.0),
                                             alignment: Alignment.center,
                                             child: Icon(
-                                              Icons.arrow_forward,
+                                              Ionicons.arrow_forward_circle_outline,
                                               size: 30,
                                               color: colorScheme(context).scrim.withOpacity(0.6),
                                             )))

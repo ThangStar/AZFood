@@ -114,7 +114,7 @@ exports.updateQuantity = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
     console.log('create order');
-
+    let odID
     try {
         const body = req.body;
 
@@ -176,6 +176,7 @@ exports.createOrder = async (req, res) => {
                 }
                 const existingOrderItemId = item.id;
                 const existingQuantity = item.quantity;
+                odID = item.orderID
                 const orderID = item.orderID;
                 const newQuantity = existingQuantity + quantityClient;
                 const newSubTotal = _price * newQuantity;
@@ -223,7 +224,7 @@ exports.createOrder = async (req, res) => {
                         type: QueryTypes.INSERT,
                         transaction
                     });
-
+                    odID = resultRaw[0]
                     const orderId = resultRaw[0];
 
                     const queryRaw2 = 'INSERT INTO orderItems (orderID, productID, quantity, subTotal) VALUES (?, ?, ?, ?)';
@@ -243,13 +244,12 @@ exports.createOrder = async (req, res) => {
                         type: QueryTypes.UPDATE,
                         transaction
                     });
-
                     return orderId;
                 });
                 // res.status(200).json({ message: 'Order created successfully', orderId });
             }
-
-            res.status(200).json({ message: 'Order created successfully' });
+            console.log("ORRRRRRRDER Uid la", odID)
+            res.status(200).json({ message: 'Order created successfully', oid: odID });
 
         } else {
             res.status(403).json({ message: 'Unauthorized' });
@@ -581,23 +581,39 @@ exports.payBill = async (req, res) => {
 exports.updatePriceOrder = async (req, res) => {
     try {
         const body = req.body;
+        console.log(body)
         const isAuth = await Auth.checkAuth(req);
+        let quantyti = 0;
+        const price = body.subTotal;
+
 
         if (isAuth) {
-            const queryRaw = 'UPDATE orderItems SET subTotal = ? WHERE orderID = ?;'
+            if (body.portion === 5) {
+                quantyti = 24;
+
+            } else if (body.portion === 6) {
+                quantyti = 6;
+            } else {
+                quantyti = 1;
+            }
+
+
+
+            let subTotal = quantyti * price;
+            const queryRaw = 'UPDATE orderItems SET subTotal = ? ,quantity = ? WHERE orderID = ?;'
             const queryRaw_ = 'UPDATE orders SET totalAmount = ? , price=? WHERE id = ?;'
 
             console.log('body::', body);
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,
                 logging: false,
-                replacements: [body.subTotal, body.id],
+                replacements: [subTotal, quantyti, body.id],
                 type: QueryTypes.UPDATE,
             });
             const resultRaw_ = await sequelize.query(queryRaw_, {
                 raw: true,
                 logging: false,
-                replacements: [body.subTotal, body.subTotal, body.id],
+                replacements: [subTotal, price, body.id],
                 type: QueryTypes.UPDATE,
             });
             res.status(200).json({ message: 'Order updated successfully' });
@@ -606,3 +622,74 @@ exports.updatePriceOrder = async (req, res) => {
         console.log(" error::", error);
     }
 }
+
+// exports.updatePriceOrder = async (req, res) => {
+//     const body = req.body;
+
+//     try {
+//         const isAuth = await Auth.checkAuth(req);
+//         let quantyti = 0;
+//         const price = body.subTotal;
+//         if (isAuth) {
+//             const queryOrder = 'SELECT * FROM orderItems';
+//             const resultOrder = await sequelize.query(queryOrder, {
+//                 raw: true,
+//                 logging: false,
+//                 replacements: [body.id],
+//                 type: QueryTypes.SELECT,
+//             });
+
+//             const queryOrderItem = 'SELECT * FROM orders';
+//             const resultOrderItem = await sequelize.query(queryOrderItem, {
+//                 raw: true,
+//                 logging: false,
+//                 replacements: [body.id],
+//                 type: QueryTypes.SELECT,
+//             });
+
+//             const orderItems = resultOrder.map((item) => ({ ...item, type: 'orderItems' }));
+//             const orders = resultOrderItem.map((item) => ({ ...item, type: 'orders' }));
+
+//             const consolidatedData = [...orderItems, ...orders];
+//             const groupedData = {};
+//             consolidatedData.forEach((item) => {
+//                 const key = `${item.productID}-${item.price}`;
+//                 if (!groupedData[key]) {
+//                     groupedData[key] = { ...item };
+//                 } else {
+//                     groupedData[key].quantity += item.quantity || 0;
+//                     groupedData[key].subTotal += item.subTotal || 0;
+//                 }
+//             });
+
+//             // Update orderItems and orders
+//             for (const key in groupedData) {
+//                 const item = groupedData[key];
+//                 const { type, id, quantity, subTotal } = item;
+//                 console.log({ item });
+//                 if (type === 'orderItems') {
+//                     const queryRawOrderItem = 'UPDATE orderItems SET quantity = ?, subTotal = ? WHERE id = ?';
+//                     await sequelize.query(queryRawOrderItem, {
+//                         raw: true,
+//                         logging: false,
+//                         replacements: [quantity, subTotal, id],
+//                         type: QueryTypes.UPDATE,
+//                     });
+//                 } else if (type === 'orders') {
+//                     const queryRawOrder = 'UPDATE orders SET totalAmount = ? WHERE id = ?';
+//                     await sequelize.query(queryRawOrder, {
+//                         raw: true,
+//                         logging: false,
+//                         replacements: [subTotal, id],
+//                         type: QueryTypes.UPDATE,
+//                     });
+//                 }
+//             }
+
+//             res.status(200).json({ message: 'Orders updated successfully' });
+//         }
+//     } catch (error) {
+//         console.log('error::', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// }

@@ -7,12 +7,14 @@ import '../../utils/response.dart';
 
 class OrderApi {
   static Future<Object> create(
-      ProductCheckOut productCheckOuts, int userID) async {
+      ProductCheckOut productCheckOuts, int userID, int price) async {
     try {
       Response<dynamic> response = await http.post(Router.createOrder, data: {
         "productID": productCheckOuts.productID,
         "quantity": productCheckOuts.quantity,
         "userID": userID,
+        "category": 1,
+        "price": price,
         "tableID": productCheckOuts.tableID
       });
       if (response.statusCode == 200) {
@@ -75,6 +77,23 @@ class OrderApi {
         "type": type.name,
         "idOrderItems": idOrderItems
       });
+      if (response.statusCode == 200) {
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure  ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error  ${err.response}");
+      return Failure(response: err.response);
+    }
+  }
+
+  static Future<Object> updatePriceItem(price, portion, orderID) async {
+    print("od id là ${orderID}");
+    try {
+      Response<dynamic> response = await http.post(Router.updatePriceItem,
+          data: {"subTotal": price, "portion": portion, "id": orderID});
       if (response.statusCode == 200) {
         return Success(response: response, statusCode: response.statusCode);
       } else {

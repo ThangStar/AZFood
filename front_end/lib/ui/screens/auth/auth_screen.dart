@@ -27,7 +27,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 children: [
                   SvgPicture.asset('assets/svgs/logo.svg', width: 40),
                   const SizedBox(width: 10,),
-                  Text('Bloc App', style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  Text('AZFood', style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                   ))
@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       height: sizeScreen.height * 0.4,
                       'assets/svgs/person_pay.svg'),
                   Text(
-                    "Quản lí nhà hàng thông minh với Smart Restaurant",
+                    "Quản lí nhà hàng thông minh với AZFood",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 12

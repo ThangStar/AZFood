@@ -88,4 +88,21 @@ class ProductApi {
       return Failure(response: err.response);
     }
   }
+
+  static Future<Object> transformPriceByIdSize(int idSize) async {
+    try {
+      Response<dynamic> response = await http.get(
+          Router.getPriceBySizeAndIdProduct,
+          queryParameters: {"id": idSize});
+      if (response.statusCode == 200) {
+        return Success(response: response, statusCode: response.statusCode);
+      } else {
+        print("failure search ${response.data}");
+        return Failure(response: response, statusCode: response.statusCode);
+      }
+    } on DioException catch (err) {
+      print("error search ${err.response}");
+      return Failure(response: err.response);
+    }
+  }
 }

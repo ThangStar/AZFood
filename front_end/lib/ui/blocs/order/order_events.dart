@@ -18,8 +18,10 @@ class ProductCheckOut {
 
 class CreateOrderEvent extends OrderEvent {
   final ProductCheckOut product;
+  final int price;
+  final int? idSize;
 
-  const CreateOrderEvent({required this.product});
+  const CreateOrderEvent({required this.product, required this.price, required this.idSize});
 }
 
 class GetOrderInTableEvent extends OrderEvent {
@@ -34,7 +36,9 @@ class PayBillEvent extends OrderEvent {
   final Function(PayStatus, BillData?) pushScreen;
 
   const PayBillEvent(
-      {required this.tableId, required this.pushScreen, required this.payMethod});
+      {required this.tableId,
+      required this.pushScreen,
+      required this.payMethod});
 }
 
 class OnUpdateProductQuantity extends OrderEvent {
@@ -43,9 +47,10 @@ class OnUpdateProductQuantity extends OrderEvent {
   final TypeUpdateQuantity type;
   final int? idOrderItems;
 
-  const OnUpdateProductQuantity({required this.productID,
-    required this.tableID,
-    this.quantity,
-    this.idOrderItems,
-    required this.type});
+  const OnUpdateProductQuantity(
+      {required this.productID,
+      required this.tableID,
+      this.quantity,
+      this.idOrderItems,
+      required this.type});
 }

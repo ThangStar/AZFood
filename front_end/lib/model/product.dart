@@ -9,6 +9,7 @@ class Product {
   int amountCart;
   String? dvtName;
   int? idOrdersItem;
+  int? idSizeCurrent;
 
   Product(
       {this.dvtName,
@@ -20,6 +21,7 @@ class Product {
       required this.quantity,
       this.imageUrl,
       this.idOrdersItem,
+      this.idSizeCurrent,
       this.amountCart = 1});
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -31,6 +33,7 @@ class Product {
       quantity: json["quantity"],
       dvtName: json["dvt_name"],
       idOrdersItem: json["idOrdersItem"],
+      idSizeCurrent: json["idSizeCurrent"],
       imageUrl: json['imgUrl']);
 
   Map<String, dynamic> toJson() => {
@@ -42,7 +45,8 @@ class Product {
         "status": status,
         "quantity": quantity,
         "imgUrl": imageUrl,
-        "idOrdersItem": idOrdersItem
+        "idOrdersItem": idOrdersItem,
+        "idSizeCurrent": idSizeCurrent
       };
 
   @override
@@ -58,6 +62,7 @@ class Product {
             imageUrl == other.imageUrl &&
             amountCart == other.amountCart &&
             idOrdersItem == other.idOrdersItem &&
+            idSizeCurrent == other.idSizeCurrent &&
             dvtName == other.dvtName;
   }
 
@@ -71,5 +76,34 @@ class Product {
       imageUrl.hashCode ^
       amountCart.hashCode ^
       idOrdersItem.hashCode ^
+      idSizeCurrent.hashCode ^
       dvtName.hashCode;
+
+  Product copyWith({
+    int? id,
+    String? name,
+    int? price,
+    int? category,
+    int? status,
+    int? quantity,
+    String? imageUrl,
+    int? amountCart,
+    String? dvtName,
+    int? idOrdersItem,
+    int? idSizeCurrent,
+  }) {
+    return Product(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      category: category ?? this.category,
+      status: status ?? this.status,
+      quantity: quantity ?? this.quantity,
+      imageUrl: imageUrl ?? this.imageUrl,
+      amountCart: amountCart ?? this.amountCart,
+      dvtName: dvtName ?? this.dvtName,
+      idOrdersItem: idOrdersItem ?? this.idOrdersItem,
+      idSizeCurrent: idSizeCurrent ?? this.idSizeCurrent,
+    );
+  }
 }

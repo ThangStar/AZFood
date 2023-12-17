@@ -398,9 +398,24 @@ class _ItemMsgState extends State<ItemMsg> {
             textDirection:
                 widget.isMine ? TextDirection.rtl : TextDirection.ltr,
             children: [
-              ClipOval(
-                child: Image.asset("assets/images/avatar.jpg",
-                    width: 24, fit: BoxFit.cover),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      surfaceTintColor:
+                      Colors.transparent,
+                      backgroundColor:
+                      Colors.transparent,
+                      child: Image.network(
+                          widget.msg.profile?.imgUrl ?? 'https://thumbs.dreamstime.com/b/default-placeholder-profile-icon-avatar-gray-man-90197993.jpg'),
+                    ),
+                  );
+                },
+                child: ClipOval(
+                  child: Image.network(widget.msg.profile?.imgUrl ?? 'https://thumbs.dreamstime.com/b/default-placeholder-profile-icon-avatar-gray-man-90197993.jpg',
+                      width: 24, fit: BoxFit.cover),
+                ),
               ),
               const SizedBox(
                 width: 8,
@@ -542,42 +557,45 @@ class _MsgItemUtilsState extends State<MsgItemUtils> {
 
   @override
   Widget build(BuildContext context) {
-    return Transform.scale(
-      scale: 0.8,
-      child: Row(
-        children: [
-          IconButton(
-              onPressed: () {},
-              icon: const Opacity(
-                  opacity: 0.8,
-                  child: Icon(
-                    Icons.reply,
-                  ))),
-          IconButton(
-              key: motionKey,
-              onPressed: () {
-                Position pos = getPositionByKey(motionKey);
-                showMenu(
-                    context: context,
-                    position: RelativeRect.fromLTRB(pos.x, pos.y,
-                        pos.size.width + pos.x, pos.y + pos.size.height),
-                    items: [
-                      const PopupMenuItem(
-                        child: InkWell(child: Text("❤ Yêu thích")),
-                      ),
-                      const PopupMenuItem(
-                        child: InkWell(child: Text("😆 Haha")),
-                      ), const PopupMenuItem(
-                        child: InkWell(child: Text("😥 Buồn")),
-                      ),
-                    ]);
-              },
-              icon: const Opacity(
-                  opacity: 0.8,
-                  child: Icon(
-                    Icons.emoji_emotions_outlined,
-                  ))),
-        ],
+    return SizedBox(
+      height: 33,
+      child: Transform.scale(
+        scale: 0.8,
+        child: Row(
+          children: [
+            IconButton(
+                onPressed: () {},
+                icon: const Opacity(
+                    opacity: 0.8,
+                    child: Icon(
+                      Icons.reply,
+                    ))),
+            IconButton(
+                key: motionKey,
+                onPressed: () {
+                  Position pos = getPositionByKey(motionKey);
+                  showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(pos.x, pos.y,
+                          pos.size.width + pos.x, pos.y + pos.size.height),
+                      items: [
+                        const PopupMenuItem(
+                          child: InkWell(child: Text("❤ Yêu thích")),
+                        ),
+                        const PopupMenuItem(
+                          child: InkWell(child: Text("😆 Haha")),
+                        ), const PopupMenuItem(
+                          child: InkWell(child: Text("😥 Buồn")),
+                        ),
+                      ]);
+                },
+                icon: const Opacity(
+                    opacity: 0.8,
+                    child: Icon(
+                      Icons.emoji_emotions_outlined,
+                    ))),
+          ],
+        ),
       ),
     );
   }

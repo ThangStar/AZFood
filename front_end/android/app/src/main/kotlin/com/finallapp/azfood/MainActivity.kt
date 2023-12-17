@@ -1,4 +1,4 @@
-package com.example.restaurant_manager_app
+package com.finallapp.azfood
 
 import io.flutter.embedding.android.FlutterActivity
 

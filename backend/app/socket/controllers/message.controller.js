@@ -6,7 +6,7 @@ exports.getMessages = async (socket, io, data) => {
     try {
         const queryRaw =
             `SELECT message.*, 
-            JSON_OBJECT('id', users.id, 'name', users.name) as profile
+            JSON_OBJECT('id', users.id, 'name', users.name, 'imgUrl', users.imgUrl) as profile
             FROM message
             JOIN users 
             ON message.sendBy = users.id 
@@ -31,7 +31,7 @@ exports.insertMessage = async (socket, io, data) => {
     // }
     const { type, message, raw, imageUrl, sendBy } = data
     try {
-        const queryRaw = `INSERT INTO MESSAGE(type, message, raw, imageUrl, sendBy) VALUES (?,?,?,?,?)`;
+        const queryRaw = `INSERT INTO message(type, message, raw, imageUrl, sendBy) VALUES (?,?,?,?,?)`;
         const resultRaw = await sequelize.query(queryRaw, {
             raw: true,
             logging: false,

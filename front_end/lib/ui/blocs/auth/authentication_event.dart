@@ -16,3 +16,14 @@ class LoginAutEvent extends AuthenticationEvent{
   List<Object?> get props => [username, password];
 }
 
+class UpdateProfileEvent extends AuthenticationEvent{
+  final String email;
+  final String phoneNumber;
+  final String imgUrl;
+  final String birtDay;
+
+  const UpdateProfileEvent({ required this.email, required this.phoneNumber, required this.imgUrl, required this.birtDay});
+  @override
+  List<Object?> get props => [email, phoneNumber, imgUrl, birtDay];
+}
+

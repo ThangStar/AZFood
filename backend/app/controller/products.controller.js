@@ -482,7 +482,27 @@ exports.searchProduct = async (req, res) => {
         try {
             const name = req.query.name;
             console.log(req.query.name);
-            const queryRaw = `SELECT *FROM products where name LIKE :name`;
+            const queryRaw = `SELECT
+            p.id,
+            p.name ,
+            p.price,
+            p.category,
+            p.status,
+            k.quantity,
+            p.dvtID,
+            p.imgUrl,
+            c.name AS category_name,
+            d.tenDVT AS dvt_name
+        FROM
+            products p
+        JOIN
+            category c ON p.category = c.id
+        JOIN
+            donViTinh d ON p.dvtID = d.id
+            LEFT JOIN
+            kho k ON p.id = k.productID
+             where p.name LIKE :name 
+             LIMIT 10`;
 
             const resultRaw = await sequelize.query(queryRaw, {
                 raw: true,

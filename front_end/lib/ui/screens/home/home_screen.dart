@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
                             ).animate().moveY(),
-                            const PageIndex(),
+                             PageIndex(),
                           ],
                         ),
                       ),

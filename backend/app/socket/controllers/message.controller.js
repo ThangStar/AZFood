@@ -6,7 +6,7 @@ exports.getMessages = async (socket, io, data) => {
     try {
         const queryRaw =
             `SELECT message.*, 
-            JSON_OBJECT('id', users.id, 'name', users.name) as profile
+            JSON_OBJECT('id', users.id, 'name', users.name, 'imgUrl', users.imgUrl) as profile
             FROM message
             JOIN users 
             ON message.sendBy = users.id 

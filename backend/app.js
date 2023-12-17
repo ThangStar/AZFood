@@ -5,16 +5,30 @@ const session = require('express-session');
 const cors = require('cors');
 const app = express();
 const server = require('http').createServer(app);
+const Domain = [
+    'http://localhost:3000',
+    'https://manager-az-food.vercel.app',
+    'https://manager-az-food-quochuys-projects.vercel.app',
+    'https://manager-az-food-git-main-quochuys-projects.vercel.app'
+];
 const io = require('socket.io')(server, {
     cors: {
-        origin: "http://localhost:3000" || '*',
+        origin: Domain,
         methods: ["GET", "POST"]
     }
 });
 app.io = io;
-
-
-app.use(cors());
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || Domain.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST']
+};
+app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.static('public'));

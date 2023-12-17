@@ -444,7 +444,7 @@ class _SubTitleProductState extends State<SubTitleProduct> {
                 Text(
                   quantity != 0 && widget.product.category != 1
                       ? "Kho: $quantity"
-                      : widget.product.status == 2 ||
+                      : widget.product.status == 2 || widget.product.status == null ||
                               (quantity == 0 && widget.product.category != 1)
                           ? " Hết hàng "
                           : "Sẵn sàng",

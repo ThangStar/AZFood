@@ -30,5 +30,7 @@ class UpdateProfileEvent extends ProfileEvent{
 class GetProfileEvent extends ProfileEvent{
   final int id;
   const GetProfileEvent({required this.id});
+  @override
+  List<Object?> get props => [id];
 }
 

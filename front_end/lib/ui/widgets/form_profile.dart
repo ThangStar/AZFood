@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
-import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
+import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/info/change_password_screen.dart';
 import 'package:restaurant_manager_app/ui/theme/color_schemes.dart';
 import 'package:restaurant_manager_app/ui/utils/my_alert.dart';
@@ -16,17 +16,13 @@ import 'package:restaurant_manager_app/ui/utils/size_config.dart';
 class FormProfile extends StatefulWidget {
   const FormProfile({
     super.key,
-    required this.profile,
   });
-  final Profile? profile;
- 
 
   @override
   State<FormProfile> createState() => _FormProfileState();
 }
 
 class _FormProfileState extends State<FormProfile> {
-
   final controllerEmail = TextEditingController(text: "");
   final controllerPhone = TextEditingController(text: "");
   final controllerBirth = TextEditingController(text: "");
@@ -34,14 +30,16 @@ class _FormProfileState extends State<FormProfile> {
   String? errorPhone;
   DateTime selectedDate = DateTime.now();
   bool isValid = false;
+  late AuthenticationBloc authenticationBloc;
 
   @override
   void initState() {
-    print("profileBlocprofileBlocvprofileBloc ${json.encode(widget.profile)}");
-    controllerEmail.text = widget.profile?.email ?? "";
-    controllerPhone.text = widget.profile?.phoneNumber ?? "";
-    if ((widget.profile?.birtDay) != "") {
-      controllerBirth.text = widget.profile?.birtDay ?? "";
+    authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    print("Test data: ${json.encode(authenticationBloc.state.profile)}");
+    controllerEmail.text = authenticationBloc.state.profile?.email ?? "";
+    controllerPhone.text = authenticationBloc.state.profile?.phoneNumber ?? "";
+    if ((authenticationBloc.state.profile?.birtDay ?? "") != "") {
+      controllerBirth.text = authenticationBloc.state.profile?.birtDay ?? "";;
     }
     super.initState();
   }
@@ -125,24 +123,41 @@ class _FormProfileState extends State<FormProfile> {
                           width: 1.0,
                         ),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: (() {
-                          if (imgFist != null) {
-                            return Image.file(
-                              imgFist!,
-                              width: 300,
-                              height: 300,
-                              fit: BoxFit.cover,
-                            );
-                          } else if ((widget.profile?.imgUrl ?? "") != "") {
-                            return Image.network(widget.profile?.imgUrl ?? "",
-                                width: 300, height: 300, fit: BoxFit.cover);
-                          } else {
-                            return Image.asset('assets/images/avatar.jpg',
-                                width: 300, height: 300, fit: BoxFit.cover);
-                          }
-                        })(),
+                      child:
+                          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                        builder: (context, state) {
+                          Profile profile = state.profile ??
+                              Profile(
+                                  id: 0,
+                                  username: "ABC",
+                                  password: "pass",
+                                  name: "ABC",
+                                  role: "admin",
+                                  phoneNumber: "0123",
+                                  email: "email");
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(5.0),
+                            child: (() {
+                              if (imgFist != null) {
+                                return Image.file(
+                                  imgFist!,
+                                  width: 300,
+                                  height: 300,
+                                  fit: BoxFit.cover,
+                                );
+                              } else if ((state.profile?.imgUrl ?? "") != "") {
+                                return Image.network(
+                                    state.profile?.imgUrl ?? "",
+                                    width: 300,
+                                    height: 300,
+                                    fit: BoxFit.cover);
+                              } else {
+                                return Image.asset('assets/images/avatar.jpg',
+                                    width: 300, height: 300, fit: BoxFit.cover);
+                              }
+                            })(),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -153,8 +168,7 @@ class _FormProfileState extends State<FormProfile> {
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(3.0),
+                            borderRadius: BorderRadius.circular(3.0),
                           ),
                         ),
                       ),
@@ -317,355 +331,10 @@ class _FormProfileState extends State<FormProfile> {
     return File(image.path);
   }
 
-  // _showDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text(
-  //           "ĐỔI MẬT KHẨU",
-  //           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-  //                 fontSize: 20,
-  //                 fontWeight: FontWeight.bold,
-  //                 color: colorScheme(context).scrim,
-  //               ),
-  //         ),
-  //         elevation: 24.0,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(15.0),
-  //           side: const BorderSide(
-  //             color: Colors.white,
-  //             width: 2.0,
-  //           ),
-  //         ),
-  //         backgroundColor: colorScheme(context).background,
-  //         surfaceTintColor: Colors.transparent,
-  //         content: BlocListener<ProfileBloc, ProfileState>(
-  //     listener: (context, state) {
-  //       if (state is ChangePasswordSuccess) {
-  //         myAlert(context, checkDeviceType(size.width), AlertType.success,
-  //                 "Thông báo", "Đổi mật khẩu thành công.")
-  //             .show(context);
-  //         _controllerOldPassword.clear();
-  //         _controllerNewPassword.clear();
-  //         _controllerRepeatNewPassword.clear();
-  //       } else if (state is ChangePasswordFailed) {
-  //         setState(() {
-  //           oldPasswordExist = true;
-  //         });
-  //       } else if (state is ChangePasswordConnectionFailed) {
-  //         myAlert(context, checkDeviceType(size.width), AlertType.error,
-  //                 "Thông báo", "Mất kết nối với máy chủ.")
-  //             .show(context);
-  //       }
-  //     },
-  //     child: Scaffold(
-  //       resizeToAvoidBottomInset: false,
-  //       backgroundColor: colorScheme(context).onSecondary,
-  //       appBar: AppBar(
-  //         backgroundColor: colorScheme(context).onTertiary,
-  //         scrolledUnderElevation: 0,
-  //         centerTitle: false,
-  //         titleSpacing: -5.0,
-  //         leading: IconButton(
-  //           icon: Icon(
-  //             Icons.arrow_back,
-  //             color: colorScheme(context).scrim,
-  //           ),
-  //           onPressed: () {
-  //             Navigator.pop(context);
-  //           },
-  //         ),
-  //         title: Text(
-  //           'THAY ĐỔI MẬT KHẨU',
-  //           style: Theme.of(context)
-  //               .textTheme
-  //               .titleMedium
-  //               ?.copyWith(fontSize: 19, fontWeight: FontWeight.bold),
-  //         ),
-  //         shape: Border(
-  //             bottom: BorderSide(
-  //           color: colorScheme(context).outlineVariant,
-  //           width: 1,
-  //         )),
-  //       ),
-  //       body: Center(
-  //         child: ScrollConfiguration(
-  //           behavior:
-  //               ScrollConfiguration.of(context).copyWith(scrollbars: false),
-  //           child: SingleChildScrollView(
-  //             child: Center(
-  //               child: Padding(
-  //                 padding: const EdgeInsets.all(16.0),
-  //                 child: Column(
-  //                   mainAxisSize: MainAxisSize.max,
-  //                   children: [
-  //                     const SizedBox(
-  //                       height: 10,
-  //                     ),
-  //                     Image.asset(
-  //                       'assets/images/image_password.png',
-  //                       height: 200,
-  //                       width: 200,
-  //                       fit: BoxFit.cover,
-  //                     ),
-  //                     SizedBox(
-  //                       width: 270,
-  //                       child: Text(
-  //                           "Vui lòng tạo mật khẩu mới độ dài từ 10 ~ 25 bao gồm ký tự và số.",
-  //                           textAlign: TextAlign.center,
-  //                           style: Theme.of(context)
-  //                               .textTheme
-  //                               .labelMedium
-  //                               ?.copyWith(fontSize: 12)),
-  //                     ),
-  //                     ConstrainedBox(
-  //                       constraints: const BoxConstraints(maxWidth: 800),
-  //                       child: Form(
-  //                         child: Column(
-  //                           crossAxisAlignment: CrossAxisAlignment.start,
-  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                           children: [
-  //                             Text(
-  //                               "Mật khẩu cũ: ",
-  //                               style: Theme.of(context)
-  //                                   .textTheme
-  //                                   .bodyLarge
-  //                                   ?.copyWith(
-  //                                       fontSize: 13,
-  //                                       color: _errorTextOldPassword != null
-  //                                           ? colorScheme(context).error
-  //                                           : colorScheme(context).outline),
-  //                             ),
-  //                             TextField(
-  //                               controller: _controllerOldPassword,
-  //                               obscureText: passwordVisibleOld,
-  //                               obscuringCharacter: '●',
-  //                               decoration: InputDecoration(
-  //                                 border: OutlineInputBorder(
-  //                                     borderRadius: BorderRadius.circular(5.0)),
-  //                                 hintStyle: Theme.of(context)
-  //                                     .textTheme
-  //                                     .bodyLarge
-  //                                     ?.copyWith(fontSize: 12),
-  //                                 hintText: 'Nhập mật khẩu cũ...',
-  //                                 errorText: _errorTextOldPassword,
-  //                                 contentPadding: const EdgeInsets.all(10),
-  //                                 suffixIcon: IconButton(
-  //                                   icon: Icon(
-  //                                     passwordVisibleOld
-  //                                         ? Icons.visibility
-  //                                         : Icons.visibility_off,
-  //                                     color: colorScheme(context).outline,
-  //                                   ),
-  //                                   onPressed: () {
-  //                                     setState(
-  //                                       () {
-  //                                         passwordVisibleOld =
-  //                                             !passwordVisibleOld;
-  //                                       },
-  //                                     );
-  //                                   },
-  //                                 ),
-  //                                 alignLabelWithHint: false,
-  //                               ),
-  //                               keyboardType: TextInputType.visiblePassword,
-  //                               textInputAction: TextInputAction.done,
-  //                             ),
-  //                             const SizedBox(height: 20),
-  //                             Text(
-  //                               "Mật khẩu mới: ",
-  //                               style: Theme.of(context)
-  //                                   .textTheme
-  //                                   .bodyLarge
-  //                                   ?.copyWith(
-  //                                       fontSize: 13,
-  //                                       color: _errorTextNewPassword != null
-  //                                           ? colorScheme(context).error
-  //                                           : colorScheme(context).outline),
-  //                             ),
-  //                             TextField(
-  //                               controller: _controllerNewPassword,
-  //                               obscureText: passwordVisibleNew,
-  //                               obscuringCharacter: '●',
-  //                               decoration: InputDecoration(
-  //                                 border: OutlineInputBorder(
-  //                                     borderRadius: BorderRadius.circular(8.0)),
-  //                                 hintStyle: Theme.of(context)
-  //                                     .textTheme
-  //                                     .bodyLarge
-  //                                     ?.copyWith(fontSize: 12),
-  //                                 hintText: 'Nhập mật khẩu mới...',
-  //                                 errorText: _errorTextNewPassword,
-  //                                 contentPadding: const EdgeInsets.all(10),
-  //                                 suffixIcon: IconButton(
-  //                                   icon: Icon(
-  //                                     passwordVisibleNew
-  //                                         ? Icons.visibility
-  //                                         : Icons.visibility_off,
-  //                                     color: colorScheme(context).outline,
-  //                                   ),
-  //                                   onPressed: () {
-  //                                     setState(
-  //                                       () {
-  //                                         passwordVisibleNew =
-  //                                             !passwordVisibleNew;
-  //                                       },
-  //                                     );
-  //                                   },
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                             const SizedBox(height: 20),
-  //                             Text(
-  //                               "Nhập lại mật khẩu mới: ",
-  //                               style: Theme.of(context)
-  //                                   .textTheme
-  //                                   .bodyLarge
-  //                                   ?.copyWith(
-  //                                       fontSize: 13,
-  //                                       color:
-  //                                           _errorTextRepeatNewPassword != null
-  //                                               ? colorScheme(context).error
-  //                                               : colorScheme(context).outline),
-  //                             ),
-  //                             TextField(
-  //                               controller: _controllerRepeatNewPassword,
-  //                               obscureText: passwordVisibleRepeat,
-  //                               obscuringCharacter: '●',
-  //                               decoration: InputDecoration(
-  //                                 border: OutlineInputBorder(
-  //                                     borderRadius: BorderRadius.circular(8.0)),
-  //                                 hintStyle: Theme.of(context)
-  //                                     .textTheme
-  //                                     .bodyLarge
-  //                                     ?.copyWith(fontSize: 12),
-  //                                 hintText: "Nhập lại mật khẩu mới...",
-  //                                 errorText: _errorTextRepeatNewPassword,
-  //                                 contentPadding: const EdgeInsets.all(10),
-  //                                 suffixIcon: IconButton(
-  //                                   icon: Icon(
-  //                                     passwordVisibleRepeat
-  //                                         ? Icons.visibility
-  //                                         : Icons.visibility_off,
-  //                                     color: colorScheme(context).outline,
-  //                                   ),
-  //                                   onPressed: () {
-  //                                     setState(
-  //                                       () {
-  //                                         passwordVisibleRepeat =
-  //                                             !passwordVisibleRepeat;
-  //                                       },
-  //                                     );
-  //                                   },
-  //                                 ),
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     const SizedBox(
-  //                       height: 80,
-  //                     ),
-  //                     ConstrainedBox(
-  //                       constraints: const BoxConstraints(maxWidth: 800),
-  //                       child: Row(
-  //                         crossAxisAlignment: CrossAxisAlignment.center,
-  //                         mainAxisAlignment: MainAxisAlignment.center,
-  //                         children: [
-  //                           Expanded(
-  //                               child: Container(
-  //                             height: 45.0,
-  //                             decoration: BoxDecoration(
-  //                                 borderRadius: const BorderRadius.all(
-  //                                     Radius.circular(5.0)),
-  //                                 gradient: const LinearGradient(colors: [
-  //                                   Color.fromRGBO(109, 92, 255, 1),
-  //                                   Color.fromRGBO(160, 91, 255, 1)
-  //                                 ]),
-  //                                 boxShadow: [
-  //                                   BoxShadow(
-  //                                     color: const Color.fromARGB(255, 0, 0, 0)
-  //                                         .withOpacity(0.2),
-  //                                     spreadRadius: 4,
-  //                                     blurRadius: 12,
-  //                                     offset: const Offset(0, 5),
-  //                                   )
-  //                                 ]),
-  //                             child: ElevatedButton(
-  //                               onPressed: () {
-  //                                 setState(() => _submitted = true);
-  //                                 if(oldPasswordExist){
-  //                                   oldPasswordExist = false;
-  //                                 }
-  //                                 if (_errorTextOldPassword == null &&
-  //                                     _errorTextNewPassword == null &&
-  //                                     _errorTextRepeatNewPassword == null) {
-  //                                   profileBloc.add(ChangePasswordEvent(
-  //                                       oldPassword:
-  //                                           _controllerOldPassword.text,
-  //                                       newPassword:
-  //                                           _controllerNewPassword.text));
-  //                                 }
-  //                               },
-  //                               style: ElevatedButton.styleFrom(
-  //                                 backgroundColor: Colors.transparent,
-  //                                 shadowColor: Colors.transparent,
-  //                                 elevation: 0,
-  //                                 shape: RoundedRectangleBorder(
-  //                                   borderRadius: BorderRadius.circular(5.0),
-  //                                 ),
-  //                               ),
-  //                               child: Text(
-  //                                 'THAY ĐỔI MẬT KHẨU',
-  //                                 style: Theme.of(context)
-  //                                     .textTheme
-  //                                     .labelMedium
-  //                                     ?.copyWith(
-  //                                         fontSize: 16,
-  //                                         color:
-  //                                             colorScheme(context).onSecondary),
-  //                               ),
-  //                             ),
-  //                           )),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text("CANCEL"),
-  //             onPressed: () => Navigator.pop(context, "cancel"),
-  //           ),
-  //           TextButton(
-  //               child: const Text("OK"),
-  //               onPressed: () {
-  //                 Navigator.pop(context, "ok");
-  //                 selectedImage = imgFist;
-  //                 setState(() {
-  //                   changeImage = (selectedImage != null);
-  //                   isValid = true;
-  //                 });
-  //               }),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return BlocListener<ProfileBloc, ProfileState>(
+    return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is UpdateProfileSuccess) {
           myAlert(context, checkDeviceType(size.width), AlertType.success,
@@ -673,9 +342,6 @@ class _FormProfileState extends State<FormProfile> {
               .show(context);
           setState(() {
             isValid = false;
-          });
-          MySharePreferences.loadProfile().then((value) {
-            context.read<ProfileBloc>().add(GetProfileEvent(id: value?.id ?? 0));
           });
         } else if (state is UpdateProfileFailed) {
           myAlert(context, checkDeviceType(size.width), AlertType.error,
@@ -707,90 +373,102 @@ class _FormProfileState extends State<FormProfile> {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment(checkDevice(size.width, 1.5, 1.1, 1.1),
-                    checkDevice(size.width, -1.2, -1.0, -1.0)),
+          child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              Profile profile = state.profile ??
+                  Profile(
+                      id: 0,
+                      username: "ABC",
+                      password: "pass",
+                      name: "ABC",
+                      role: "admin",
+                      phoneNumber: "0123",
+                      email: "email");
+              return Column(
                 children: [
-                  ClipOval(
-                    child: SizedBox.fromSize(
-                      size: Size.fromRadius(
-                          50.0 * checkDevice(size.width, 1.0, 1.5, 1.6)),
-                      child: (() {
-                        if (changeImage) {
-                          return Image.file(
-                            selectedImage!,
-                            width: 300,
-                            height: 300,
-                            fit: BoxFit.cover,
-                          );
-                        } else if ((widget.profile?.imgUrl ?? "") != "") {
-                          return Image.network(widget.profile?.imgUrl ?? "",
-                              width: 300, height: 300, fit: BoxFit.cover);
-                        } else {
-                          return const Center(
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: AspectRatio(
-                                  aspectRatio: 1,
-                                  child: CircularProgressIndicator()),
-                            ),
-                          );
-                        }
-                      })(),
+                  Stack(
+                    alignment: Alignment(checkDevice(size.width, 1.5, 1.1, 1.1),
+                        checkDevice(size.width, -1.2, -1.0, -1.0)),
+                    children: [
+                      ClipOval(
+                        child: SizedBox.fromSize(
+                          size: Size.fromRadius(
+                              50.0 * checkDevice(size.width, 1.0, 1.5, 1.6)),
+                          child: (() {
+                            if (changeImage) {
+                              return Image.file(
+                                selectedImage!,
+                                width: 300,
+                                height: 300,
+                                fit: BoxFit.cover,
+                              );
+                            } else if ((state.profile?.imgUrl ?? "") != "") {
+                              return Image.network(state.profile?.imgUrl ?? "",
+                                  width: 300, height: 300, fit: BoxFit.cover);
+                            } else {
+                              return const Center(
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: CircularProgressIndicator()),
+                                ),
+                              );
+                            }
+                          })(),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          _showDialog();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: EdgeInsets.all(
+                              15.0 * checkDevice(size.width, 1, 1.2, 1.2)),
+                          surfaceTintColor: colorScheme(context).onSecondary,
+                          backgroundColor: Colors.white,
+                          foregroundColor: colorScheme(context).outlineVariant,
+                        ),
+                        child: const Icon(
+                          Icons.create_outlined,
+                          color: Color.fromRGBO(102, 103, 106, 1),
+                          size: 20.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    state.profile?.name ?? "",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                        fontSize: 18.0 * checkDevice(size.width, 1.0, 1.2, 1.3),
+                        color: colorScheme(context).scrim.withOpacity(0.8)),
+                  ),
+                  const SizedBox(height: 15),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15.0, vertical: 3.0),
+                    decoration: const BoxDecoration(
+                      color: Color.fromRGBO(238, 245, 239, 1),
+                      borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    ),
+                    child: Text(
+                      (state.profile?.role ?? "") == "admin"
+                          ? "Admin"
+                          : "User",
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: 15.0,
+                          color: const Color.fromRGBO(94, 194, 129, 1)),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _showDialog();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: EdgeInsets.all(
-                          15.0 * checkDevice(size.width, 1, 1.2, 1.2)),
-                      surfaceTintColor: colorScheme(context).onSecondary,
-                      backgroundColor: Colors.white,
-                      foregroundColor: colorScheme(context).outlineVariant,
-                    ),
-                    child: const Icon(
-                      Icons.create_outlined,
-                      color: Color.fromRGBO(102, 103, 106, 1),
-                      size: 20.0,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Text(
-                widget.profile?.name ?? "",
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontSize: 18.0 * checkDevice(size.width, 1.0, 1.2, 1.3),
-                    color: colorScheme(context).scrim.withOpacity(0.8)),
-              ),
-              const SizedBox(height: 15),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 3.0),
-                decoration: const BoxDecoration(
-                  color: Color.fromRGBO(238, 245, 239, 1),
-                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                ),
-                child: Text(
-                  (widget.profile?.role ?? "") == "admin" ? "Admin" : "User",
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontSize: 15.0,
-                      color: const Color.fromRGBO(94, 194, 129, 1)),
-                ),
-              ),
-              const SizedBox(height: 50),
+                  const SizedBox(height: 50),
                   Column(
                     children: [
                       TextField(
                         controller: controllerEmail,
-                        
                         style: TextStyle(
                           color: colorScheme(context).scrim,
                         ),
@@ -997,13 +675,11 @@ class _FormProfileState extends State<FormProfile> {
                                 child: ElevatedButton(
                                   onPressed: () {
                                     Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ChangePasswordScreen(
-                                              ),
-                                            ));
-
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChangePasswordScreen(),
+                                        ));
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
@@ -1056,12 +732,9 @@ class _FormProfileState extends State<FormProfile> {
                                   onPressed: isValid &&
                                           errorEmail == null &&
                                           errorPhone == null
-                                      ? () {
-                                          BlocProvider.of<ProfileBloc>(context)
-                                              .add(UpdateProfileEvent(
+                                      ? () { BlocProvider.of<AuthenticationBloc>(context).add(UpdateProfileEvent(
                                                   email: controllerEmail.text,
-                                                  phoneNumber:
-                                                      controllerPhone.text,
+                                                  phoneNumber:controllerPhone.text,
                                                   imgUrl: selectedImage != null
                                                       ? selectedImage!.path
                                                       : "",
@@ -1097,8 +770,9 @@ class _FormProfileState extends State<FormProfile> {
                       ),
                     ],
                   )
-              
-            ],
+                ],
+              );
+            },
           ),
         ),
       ),

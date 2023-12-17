@@ -21,3 +21,14 @@ class AuthLoginFailed extends AuthenticationState {}
 
 class AuthLoginConnectionFailed extends AuthenticationState {}
 
+class UpdateProfileProgress extends AuthenticationState {
+  @override
+  List<Object> get props => [];
+}
+
+class UpdateProfileSuccess extends AuthenticationState {}
+
+class UpdateProfileFailed extends AuthenticationState {}
+
+class UpdateProfileConnectionFailed extends AuthenticationState {}
+

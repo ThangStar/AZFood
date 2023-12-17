@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_manager_app/model/profile.dart';
 import 'package:restaurant_manager_app/storage/share_preferences.dart';
+import 'package:restaurant_manager_app/ui/blocs/auth/authentication_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/invoice/invoice_bloc.dart';
 import 'package:restaurant_manager_app/ui/blocs/profile/profile_bloc.dart';
 import 'package:restaurant_manager_app/ui/screens/home/home_menu.dart';
@@ -33,20 +34,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final controllerSearch = TextEditingController(text: "");
   final outerController = ScrollController();
   final innerController = ScrollController();
-  late ProfileBloc profileBloc;
   late InvoiceBloc invoiceBloc;
-  Profile? profile;
-
   @override
   void initState() {
-    profileBloc = BlocProvider.of<ProfileBloc>(context);
     invoiceBloc = BlocProvider.of<InvoiceBloc>(context);
     MySharePreferences.loadProfile().then((value) {
-      profileBloc.add(GetProfileEvent(id: value?.id ?? 0));
       invoiceBloc.add(GetInvoiceByIdUserEvent(userID: value?.id ?? 0, keysearch: ''));
     });
-    profile = profileBloc.state.profile;
-    print("Test data ${json.encode(profile)}");
+    print("Test id: ${id}");
     super.initState();
   }
 
@@ -250,7 +245,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ClipOval(
               child: SizedBox.fromSize(
                 size: const Size.fromRadius(20.0),
-                child: BlocBuilder<ProfileBloc, ProfileState>(
+                child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
                     builder: (context, state) {
                   if (state is GetProfileLoading) {
                     return const Center(
@@ -286,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   size.width * 0.6,
                   Center(
                     child: Column(children: [
-                      FormProfile(profile: profile),
+                      FormProfile(),
                       const SizedBox(
                         width: 20,
                         height: 20,
@@ -304,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          FormProfile(profile: profile,),
+                          FormProfile(),
                           const SizedBox(width: 20),
                           Expanded(
                             child: _ListBill(
@@ -320,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        FormProfile(profile: profile,),
+                        FormProfile(),
                         const SizedBox(width: 20),
                         Expanded(
                           child: _ListBill(

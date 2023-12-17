@@ -24,7 +24,13 @@ const initialState: AuthenticationState = {
 export const loginAsync = createAsyncThunk(
   'authentication/login',
   async (account: any) => {
-    const response = await axios.post(api + '/api/user/login', { username: account.username, password: account.password })
+    const response = await axios.post(api + '/api/user/login', { username: account.username, password: account.password },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      },
+    )
     console.log("response ", response.data);
 
     return response.data;

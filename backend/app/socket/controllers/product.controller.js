@@ -15,7 +15,7 @@ exports.getOrdersForTable = async (socket, io, data) => {
             INNER JOIN orderItems oi ON o.id = oi.orderID
             INNER JOIN products p ON oi.productID = p.id
             INNER JOIN users u ON o.userID = u.id
-            INNER JOIN donvitinh d ON p.dvtID = d.id
+            INNER JOIN donViTinh d ON p.dvtID = d.id
             WHERE o.tableID = ?
         `;
 

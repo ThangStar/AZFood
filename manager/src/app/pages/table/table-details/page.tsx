@@ -522,7 +522,7 @@ export default function TableDetails() {
                             >
                                 <option value=" ">Chọn phần cho món ăn</option>
                                 {listPriceOfProd && listPriceOfProd.length > 0 ? listPriceOfProd.map((item: any, id: number) => (
-                                    <option value={item.id}>{`${item.SizeName} : ${item.product_price}`}</option>
+                                    <option value={item.id}>{`${item.SizeName}`}</option>
                                 )) : ""}
                             </select>
                         </div>

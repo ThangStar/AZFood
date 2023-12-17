@@ -530,7 +530,7 @@ exports.getListTop = async (req, res) => {
             JOIN
                 donViTinh d ON p.dvtID = d.id
             LEFT JOIN
-                invoicedetails id ON p.id = id.productID
+                invoiceDetails id ON p.id = id.productID
             GROUP BY
                 p.id
             ORDER BY
